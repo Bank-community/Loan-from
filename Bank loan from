@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Community Loan</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        /* नया इनपुट CSS */
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #4cc9f0;
+            outline: none;
+            box-shadow: 0 0 5px rgba(76, 201, 240, 0.5);
+        }
+
+        /* बटन CSS */
+        .btn {
+            padding: 1.1em 2em;
+            background: none;
+            border: 2px solid #fff;
+            font-size: 15px;
+            color: #131313;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            border-radius: 12px;
+            background-color: #ecd448;
+            font-weight: bolder;
+            box-shadow: 0 2px 0 2px #000;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .btn:before {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 120%;
+            background-color: #ff6700;
+            top: 50%;
+            transform: skewX(30deg) translate(-150%, -50%);
+            transition: all 0.5s;
+        }
+
+        .btn:hover {
+            background-color: #4cc9f0;
+            color: #fff;
+            box-shadow: 0 2px 0 2px #0d3b66;
+        }
+
+        .btn:hover::before {
+            transform: skewX(30deg) translate(150%, -50%);
+            transition-delay: 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.9);
+        }
+
+        #capture {
+            display: none;
+            position: relative;
+            width: 210mm;
+            height: 297mm;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border: 5px solid #056fff;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #056fff;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header-info {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            text-align: right;
+            font-weight: bold; /* डेट को बोल्ड किया */
+        }
+h1 {
+  text-align: center;
+}
+        .header .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .registration-number {
+            color: #ff0000;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .signature-section {
+            position: absolute;
+            right: 30px;
+            bottom: 50px;
+            text-align: center;
+        }
+
+        .signature-img {
+            width: 250px;
+            height: auto;
+            margin-top: 10px;
+        }
+
+        .loan-details {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .highlight {
+            color: #056fff;
+            font-weight: bold;
+        }
+
+        .uploaded-image {
+            max-width: 250px;
+            max-height: 150px;
+            margin: 15px auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .stamp {
+            position: absolute;
+            left: 30px;
+            bottom: 100px;
+            width: 220px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Helping form</h1>
+        <form id="loanForm">
+            <input type="text" id="name" placeholder="Enter your name" required>
+            <input type="text" id="mobile" placeholder="Enter mobile number" required>
+            <input type="number" id="amount" placeholder="Loan amount" required>
+            <select id="monthlyRate" required>
+                <option value="1%">1% for 1 month</option>
+                <option value="3%">3% for 2 months</option>
+                <option value="5%">5% for 3 months</option>
+                <option value="2%">2% for 1 month (2× loan)</option>
+                <option value="8% EMI">8% EMI</option>
+            </select>
+            <input type="file" id="uploadImage" accept="image/*" required>
+            <button type="submit" class="btn">Generate Letter</button>
+        </form>
+    </div>
+
+    <div id="capture">
+        <div class="header">
+            <div class="header-info">
+                Date: <span id="currentDate"></span>
+            </div>
+            <img src="https://i.imgur.com/JLyQvpv.png" class="logo" alt="Bank Logo">
+            <h1>BANK COMMUNITY LOAN FORM</h1>
+            <h2>बैंक कम्युनिटी लोन</h2>
+            <div class="registration-number" id="regNumber"></div>
+        </div>
+
+        <div class="loan-details">
+            <p>Applicant Name: <span class="highlight" id="displayName"></span></p>
+            <p>Mobile Number: <span id="displayMobile"></span></p>
+            <p>Loan Amount: ₹<span id="displayAmount"></span></p>
+            <p>Interest Rate: <span id="displayRate"></span></p>
+            <p>Total Payable: ₹<span id="displayTotalAmount"></span></p>
+            <p>EMI: ₹<span id="displayEMI"></span>/month</p>
+            <p>Repayment Date: <span id="repaymentDate"></span></p>
+            <p class="highlight">I request to bank community members, please approve the loan form.</p>
+        </div>
+
+        <img id="uploadedImagePreview" class="uploaded-image" src="" alt="Applicant Photo">
+        <img src="https://i.imgur.com/w9J5t2N.png" class="stamp" alt="Bank Stamp">
+
+        <div class="signature-section">
+            <p>Authorized Signature</p>
+            <img src="https://i.imgur.com/kkg2glD.png" class="signature-img" alt="Signature">
+            <p>Prime members</p>
+        </div>
+    </div>
+
+    <button id="download" class="btn">Download Letter</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        const form = document.getElementById('loanForm');
+        const captureDiv = document.getElementById('capture');
+        const downloadBtn = document.getElementById('download');
+
+        function generateRegistrationNumber() {
+            const timestamp = new Date().getTime().toString().slice(-6);
+            return `BCL-${timestamp}`;
+        }
+
+        function formatDate(date) {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+            return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+        }
+
+        function calculateRepaymentDate(months) {
+            const date = new Date();
+            date.setMonth(date.getMonth() + months);
+            return formatDate(date);
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const userData = {
+                name: document.getElementById('name').value,
+                mobile: document.getElementById('mobile').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                rate: document.getElementById('monthlyRate').value
+            };
+
+            const interest = parseFloat(userData.rate.match(/\d+/)[0]);
+            const totalAmount = userData.amount + (userData.amount * (interest/100));
+            const emi = userData.rate.includes("EMI") ? (totalAmount/3).toFixed(2) : "-";
+            const months = parseInt(userData.rate.match(/\d+/)[0][0]) || 1;
+
+            document.getElementById('displayName').textContent = userData.name;
+            document.getElementById('displayMobile').textContent = userData.mobile;
+            document.getElementById('displayAmount').textContent = userData.amount.toFixed(2);
+            document.getElementById('displayRate').textContent = userData.rate;
+            document.getElementById('displayTotalAmount').textContent = totalAmount.toFixed(2);
+            document.getElementById('displayEMI').textContent = emi;
+            document.getElementById('repaymentDate').textContent = calculateRepaymentDate(months);
+            document.getElementById('regNumber').textContent = "Registration No: " + generateRegistrationNumber();
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('uploadedImagePreview').src = e.target.result;
+            };
+            reader.readAsDataURL(document.getElementById('uploadImage').files[0]);
+
+            document.getElementById('currentDate').textContent = formatDate(new Date());
+            captureDiv.style.display = 'block';
+            downloadBtn.style.display = 'block';
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            html2canvas(captureDiv, {
+                scale: 3,
+                useCORS: true,
+                windowWidth: 794,
+                windowHeight: 1123
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Loan_Letter_${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>
