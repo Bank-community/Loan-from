@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>बैंक कम्युनिटी लोन</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+       
+            
+
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px 0;
+        }
+
+        header img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+        }
+        
+        h1 {
+            color: #fff;
+        }
+
+        p {
+            margin: 10px 0;
+            color: #000;
+        }
+
+        .circle-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+            border-radius: 50%;
+            background: #0056b3;
+            animation: rotate 10s linear infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .button {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            text-align: center;
+            transform-origin: center center;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+
+        .button:active {
+            transform: scale(0.95);
+        }
+
+        .whatsapp-button {
+            background-color: #25D366;
+        }
+
+        .button img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .top { top: 10%; left: 50%; transform: translate(-50%, -50%) rotate(0deg); }
+        .right { top: 50%; right: 10%; transform: translate(50%, -50%) rotate(0deg); }
+        .bottom { bottom: 10%; left: 50%; transform: translate(-50%, 50%) rotate(0deg); }
+        .left { top: 50%; left: 10%; transform: translate(-50%, -50%) rotate(0deg); }
+
+        .features {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .feature {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 30%;
+            margin: 10px;
+        }
+
+        .feature h3 {
+            color: #007bff;
+        }
+
+        .feature p {
+            color: #555;
+        }
+
+        footer {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+
+        .loan-calculator, .feedback-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .loan-calculator input, .loan-calculator select, .feedback-form input, .feedback-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .loan-calculator button, .feedback-form button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .loan-calculator button:hover, .feedback-form button:hover {
+            background-color: #000;
+        }
+
+        .gallery {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+
+        .slides {
+            display: flex;
+            transition: transform 1s ease-in-out;
+        }
+
+        .slides img {
+            width: 100%;
+ 
+        }
+
+        .toggle-button {
+            margin: 10px 0;
+            padding: 10px 20px;
+            background-color: #000;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+
+        .toggle-button:hover {
+            background-color: #000;
+        }
+        
+        
+
+        @media (max-width: 768px) {
+            .gallery {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery {
+                max-width: 100%;
+            }
+        }
+        
+        body {
+    overflow-x: hidden; /* पेज को साइड में स्क्रॉल होने से रोकें */
+    touch-action: pan-y; /* केवल वर्टिकल स्क्रॉल की अनुमति दें */
+    overscroll-behavior: contain; /* ओवरस्क्रॉल बिहेवियर को कंट्रोल करें */
+}
+     
+          .slider-container {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+            overflow: hidden;
+            border: 2px solid #ccc;
+            border-radius: px;
+        }
+
+        /* इमेज कंटेनर */
+        .slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        /* प्रत्येक स्लाइड */
+        .slide {
+            min-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .slide img {
+            width: 100%;
+            display: block;
+        }
+
+        /* स्लाइड नेविगेशन बटन */
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 60%;
+            transform: translateY(-50%);
+            width: auto;
+            padding: 16px;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: none;
+            border-radius: 5px;
+            user-select: none;
+        }
+
+        .next {
+            right: 0;
+        }
+
+        /* स्लाइड इंडिकेटर */
+        .slide-indicator {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .indicator-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #bbb;
+            border-radius: 50%;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .indicator-dot.active {
+            background-color: #333;
+        }
+        
+        .bank-members {
+    background: pink;
+    background-size: cover;
+    background-position: center;
+    padding: 5px;
+    border-radius: 0;
+    color: black;
+    max-width: 100vw; /* व्यूपोर्ट की चौड़ाई से ज्यादा नहीं होगा */
+    position: relative;
+    box-sizing: border-box;
+}
+
+h1 {
+    font-size: 18px;
+    font-weight: 1000;
+    
+    color: black;
+    padding: 10px;
+    border-radius: 8px;
+    text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.3);
+}
+
+.member-slider {
+    display: flex;
+    gap: 5px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 5px;
+}
+
+.member-card {
+    position: relative;
+    background-color: #fff569;
+    margin: 5px;
+    border-radius: 6px;
+    flex: 0 0 calc(40% - 10px);
+    max-width: 190px;
+    text-align: center;
+    font-weight: bold; 
+    padding: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.member-card:hover {
+    transform: scale(1.1);
+}
+
+.member-card img {
+    width: 100%;
+    height: 120px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.member-name {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 5px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.member-balance {
+    background-color: black;
+    color: white;
+    padding: 5px;
+    margin-top: 5px;
+    border-radius: 5px;
+}
+
+.prime-tag {
+    position: absolute;
+    top: 113.5px;
+    right: 5px;
+    background-color: blue;
+    color: #fff;
+    padding: 1px 2.5px;
+    border-radius: 3px;
+    font-size: 1px;
+    font-weight: bold;
+}
+
+@media (min-width: 768px) {
+    .member-card {
+        flex: 0 0 calc(25% - 20px);
+    }
+
+    .bank-members h2 {
+        font-size: 28px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .member-card {
+        flex: 0 0 calc(20% - 20px);
+    }
+}
+
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.view-balance {
+    font-size: 10px;  /* यह आइकन और टेक्स्ट दोनों को छोटा करेगा */
+}
+
+.view-balance img.balance-icon {
+    width: 18px;      /* आइकन साइज */
+    height: 18px;     /* आइकन साइज */
+}
+
+.view-balance {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    background-color: #fff569;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: transform 0.1s ease;
+}
+.view-balance:hover {
+    transform: scale(1.05);
+}
+
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fff569;
+    margin: 10vh auto; /* ऊपर से 10% नीचे और ऑटो मार्जिन */
+    padding: 20px; /* पैडिंग थोड़ा कम किया */
+    border-radius: 10px;
+    width: 250px;
+    height: auto; /* हाइट ऑटो रखी */
+    min-height: 10px; /* मिनिमम हाइट सेट की */
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: fixed; /* पोजीशन फिक्स्ड की */
+    top: 20%; /* टॉप 50% पर */
+    left: 45%; /* लेफ्ट 50% पर */
+    transform: translate(-50%, -50%); /* परफेक्ट सेंटरिंग के लिए */
+    display: flex; /* फ्लेक्स बॉक्स बनाया */
+    flex-direction: column; /* कॉलम में अरेंज किया */
+    justify-content: space-between; /* कंटेंट को स्पेस बिटवीन किया */
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+
+.balance-display {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 20px 0;
+    color: blue;
+    text-align: left;      /* टेक्स्ट को लेफ्ट अलाइन करने के लिए */
+    margin-left: 20px;     /* लेफ्ट से मार्जिन */
+    margin-bottom: 30px;   /* नीचे से मार्जिन बढ़ाने के लिए */
+    display: inline-block; /* सिर्फ कंटेंट के अनुसार जगह ले */
+}
+        
+    </style>
+</head>
+<body>
+    <header>
+    
+        <img src="https://i.imgur.com/jy7gXWz.png" alt="Community Loan Banner">
+        
+ <h1 style="color: white; font-size: 25px; text-align: center; font-family: Arial, sans-serif; margin: 20px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Bank Community Loan</h1>
+        
+        <h4 style="color: white;">ESTD: 23 जून 2024</h4>
+    </header>
+    <p>हमारी कम्युनिटी में लोग आपस में मिलकर <strong>Bank Community Loan</strong> में फंड इकट्ठा करते हैं। सभी सदस्य थोड़ी-थोड़ी राशि जमा करते हैं, जिसकी शुरुआत सिर्फ <strong>₹500/-</strong> से होती है।</p>
+    
+    
+    <div class="bank-members">
+    <div class="header-container">
+        <h1 class="bank-headline">BANK MEMBERS</h1>
+        <div class="view-balance" id="viewBalanceBtn">
+            <!-- SVG को PNG इमेज से रिप्लेस किया गया -->
+            <img src="https://i.imgur.com/TEHsZ32.png" alt="View Balance" class="balance-icon">
+            <span>View Balance</span>
+        </div>
+    </div>
+    <div class="member-slider" id="memberContainer"></div>
+</div>
+
+<div id="balanceModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Available Balance</h2>
+        <div id="totalBalance" class="balance-display">₹0</div>
+    </div>
+</div>
+
+    
+    
+    <h2>💡 कैसे काम करता है?</h2>
+    <div class="features">
+        <div class="feature">
+            <h3>फंड जमा</h3>
+            <p>सभी सदस्य मिलकर फंड जमा करते हैं।</p>
+        </div>
+        <div class="feature">
+            <h3>लोन प्रदान</h3>
+            <p>जरूरतमंद व्यक्ति को उसी फंड से <strong>लोन</strong> दिया जाता है।</p>
+        </div>
+        <div class="feature">
+            <h3>लोन अवधि</h3>
+            <p>लोन केवल <strong>1 महीने</strong> के लिए होता है।</p>
+        </div>
+        <div class="feature">
+            <h3>1 month +</h3>
+            <p>1 महीने से ज्यादा लोन लेने पर  <strong>Extra प्रतिशत</strong> रखा गया है</p>
+        </div>
+    </div>
+    <h2>👑 प्राइम सदस्य</h2>
+    <p>👉 Amit kumar<br>👉 Mithlesh sahani<br>👉 Prince rama</p>
+    <h2>📝 पारदर्शिता और जानकारी</h2>
+    <p>हमारी पूरी प्रक्रिया पारदर्शी है। आपके सभी डिटेल्स और लेन-देन की जानकारी <strong>वेबसाइट</strong> पर सुरक्षित रहती है।</p>
+    <div class="circle-container">
+        <button class="button top" onclick="window.open('https://codepen.io/Vk-T/full/dPyOWgR')">
+            <img src="https://cdn-icons-png.flaticon.com/128/9942/9942543.png" alt="Member">Member
+        </button>
+        <button class="button right whatsapp-button" onclick="window.open('https://chat.whatsapp.com/G39I0hP55WIDHMu5YkAjDZ', '_blank')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp"> WhatsApp
+        </button>
+        <button class="button bottom" onclick="window.open('https://codepen.io/Vk-T/full/vEYpqev')">
+            <img src="https://cdn-icons-png.flaticon.com/128/9196/9196974.png" alt="Helping"> Loan
+        </button>
+        <button class="button left" onclick="window.open('https://codepen.io/Vk-T/full/azbEeba')">
+            <img src="https://cdn-icons-png.flaticon.com/128/5836/5836188.png" alt="New Member">New join
+        </button>
+    </div>
+    <div class="loan-calculator">
+        <h2>लोन कैलकुलेटर</h2>
+        <input type="number" id="loanAmount" placeholder="लोन राशि (₹)">
+        <select id="interestRate">
+            <option value="1">1 महीने के लिए 1% ब्याज</option>
+            <option value="3">2 महीने के लिए 3% ब्याज</option>
+            <option value="5">3 महीने के लिए 5% ब्याज</option>
+        </select>
+        <button class="toggle-button" onclick="toggleInterestRate()">2 गुना लोन</button>
+        <button onclick="calculateLoan()">गणना करें</button>
+        <p id="loanResult"></p>
+    </div>
+    <div class="feedback-form">
+        <h2>फीडबैक दें</h2>
+        <form action="https://formspree.io/f/xvgkokge" method="POST">
+            <input type="text" name="name" placeholder="नाम" required>
+            <input type="email" name="email" placeholder="ईमेल" required>
+            <textarea name="message" placeholder="आपका फीडबैक" required></textarea>
+            <button type="submit">Submit</button>          
+        </form>
+    </div>
+        
+      <h2>About community letter</h2>
+    <div class="slider-container">
+        <div class="slides">
+            <div class="slide">
+                <img src="https://i.imgur.com/6x6AuuN.png" alt="Loan Letter">
+            </div>
+            <div class="slide">
+                <img src="https://i.imgur.com/fUMEyY9.png" alt="Prime Letter">
+            </div>
+            <div class="slide">
+                <img src="https://i.imgur.com/ZsvB26M.png" alt="Join Letter">
+            </div>
+        </div>
+        <!-- नेविगेशन बटन -->
+        <button class="prev" onclick="prevSlide()">&#10094;</button>
+        <button class="next" onclick="nextSlide()">&#10095;</button>
+    </div>
+    <!-- स्लाइड इंडिकेटर -->
+    <div class="slide-indicator">
+        <span class="indicator-dot active" onclick="goToSlide(0)"></span>
+        <span class="indicator-dot" onclick="goToSlide(1)"></span>
+        <span class="indicator-dot" onclick="goToSlide(2)"></span>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 बैंक कम्युनिटी लोन. सभी अधिकार सुरक्षित.</p>
+    </footer>
+    <script>
+        let is2PercentMode = false;
+
+        function toggleInterestRate() {
+            is2PercentMode = !is2PercentMode;
+            const interestRateSelect = document.getElementById('interestRate');
+            if (is2PercentMode) {
+                interestRateSelect.innerHTML = `
+                    <option value="2">1 महीने के लिए 2% ब्याज</option>
+                    <option value="4">2 महीने के लिए 4% ब्याज</option>
+                    <option value="6">3 महीने के लिए 6% ब्याज</option>
+                `;
+            } else {
+                interestRateSelect.innerHTML = `
+                    <option value="1">1 महीने के लिए 1% ब्याज</option>
+                    <option value="3">2 महीने के लिए 3% ब्याज</option>
+                    <option value="5">3 महीने के लिए 5% ब्याज</option>
+                `;
+            }
+        }
+
+        function calculateLoan() {
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const interestRate = parseFloat(document.getElementById('interestRate').value);
+            const interest = (loanAmount * interestRate) / 100;
+            const totalAmount = loanAmount + interest;
+            document.getElementById('loanResult').innerText = `कुल राशि: ₹${totalAmount.toFixed(2)} (ब्याज सहित)`;
+        }
+
+        let currentSlide = 0;
+        const slides = document.querySelector('.slides');
+        const dots = document.querySelectorAll('.indicator-dot');
+
+        // स्लाइड बदलने के लिए फंक्शन
+        function showSlide(index) {
+            if (index >= slides.children.length) index = 0;
+            if (index < 0) index = slides.children.length - 1;
+            currentSlide = index;
+            slides.style.transform = `translateX(${-currentSlide * 100}%)`;
+            updateDots();
+        }
+
+        // पिछली स्लाइड पर जाने के लिए
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // अगली स्लाइड पर जाने के लिए
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        // विशिष्ट स्लाइड पर जाने के लिए
+        function goToSlide(index) {
+            showSlide(index);
+        }
+
+        // इंडिकेटर डॉट्स को अपडेट करने के लिए
+        function updateDots() {
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+
+// Member images mapping
+const memberImages = {
+    "Prince rama": "https://i.imgur.com/4kFyas3.jpeg",
+    "Amit kumar": "https://i.imgur.com/kXWIKjw.jpeg",
+    "Mithlesh sahni": "https://i.imgur.com/58fgaGT.jpeg",
+    "Raja sahni": "https://i.imgur.com/qtfQtv4.jpeg",
+    "Dilkhush kumar": "https://i.imgur.com/FsCV1bU.jpeg",
+    "Nitish sahni": "https://i.imgur.com/5YakI70.jpeg",
+    "Dr Santosh": "https://i.imgur.com/6aATcZR.jpeg",
+    "Vijay sah": "https://i.imgur.com/5YakI70.jpeg",
+    "Vikash kumar": "https://i.imgur.com/6aATcZR.jpeg",
+    "Kunal kumar": "https://i.imgur.com/KjaLOhI.jpeg"
+};
+
+// Function to fetch data from API
+async function fetchMemberData() {
+    try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbyzs5UbjLWv9U-JBiT87iTd8Pbgy2yxYUI8vsiiiQ7zkFNF7L5t49aBZOnsFgvK4GZc2A/exec');
+        const data = await response.json();
+        processMemberData(data);
+    } catch (error) {
+        console.error('Error fetching member data:', error);
+    }
+}
+
+// Process and calculate balances
+function processMemberData(data) {
+    const members = {};
+    
+    // Calculate balances for each member
+    data.forEach(entry => {
+        if (!members[entry.Name]) {
+            members[entry.Name] = {
+                name: entry.Name,
+                loan: parseFloat(entry.Loan) || 0,
+                totalPayment: parseFloat(entry.Payment) || 0,
+                totalEMI: parseFloat(entry[" EMI payment"]) || 0
+            };
+        } else {
+            members[entry.Name].loan += parseFloat(entry.Loan) || 0;
+            members[entry.Name].totalPayment += parseFloat(entry.Payment) || 0;
+            members[entry.Name].totalEMI += parseFloat(entry[" EMI payment"]) || 0;
+        }
+    });
+    
+    // Calculate final balance for each member
+    const memberList = Object.values(members).map(member => {
+        const balance = (member.totalPayment + member.totalEMI) - member.loan;
+        return {
+            ...member,
+            balance: balance
+        };
+    });
+    
+    // Sort members by balance (highest first)
+    memberList.sort((a, b) => b.balance - a.balance);
+    
+    // Display members
+    displayMembers(memberList);
+}
+
+// Display members in cards
+// Display members in cards
+function displayMembers(members) {
+    const container = document.getElementById('memberContainer');
+    container.innerHTML = '';
+    
+    members.forEach(member => {
+        const card = document.createElement('div');
+        card.className = 'member-card';
+        
+        const primeMembers = ["Prince rama", "Amit kumar", "Mithlesh sahni"];
+        const primeTag = primeMembers.includes(member.name) ? '<div class="prime-tag">Prime Member</div>' : '';
+  
+        // Use member image or default if not available
+        const imageUrl = memberImages[member.name] || 'https://i.imgur.com/default.jpg';
+        
+        card.innerHTML = `
+            ${primeTag}
+            <img src="${imageUrl}" alt="${member.name}">
+            <p class="member-name">${member.name}</p>
+            <p class="member-balance">Balance: ₹${member.balance.toFixed(2)}</p>
+        `;
+        
+        // Add click event to show full image
+        card.onclick = () => showFullImage(imageUrl, member.name);
+        
+        container.appendChild(card);
+    });
+}
+
+function showFullImage(imageUrl, memberName) {
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.95)';
+    modal.style.display = 'flex';
+    modal.style.flexDirection = 'column';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '1000';
+    modal.style.cursor = 'pointer';
+    modal.style.overflow = 'hidden';
+    
+    // Image container with white border
+    const imgContainer = document.createElement('div');
+    imgContainer.style.display = 'flex';
+    imgContainer.style.justifyContent = 'center';
+    imgContainer.style.alignItems = 'center';
+    imgContainer.style.maxWidth = '100%';
+    imgContainer.style.maxHeight = '100%';
+    imgContainer.style.border = '2px solid white';
+    imgContainer.style.borderRadius = '5px';
+    imgContainer.style.padding = '5px';
+    imgContainer.style.boxSizing = 'border-box';
+    imgContainer.style.overflow = 'hidden';
+    
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.style.maxWidth = '100%';
+    img.style.maxHeight = '100%';
+    img.style.objectFit = 'contain';
+    img.style.display = 'block';
+    
+    imgContainer.appendChild(img);
+    
+    const name = document.createElement('p');
+    name.textContent = memberName;
+    name.style.color = 'white';
+    name.style.marginTop = '20px';
+    name.style.fontSize = '1.5rem';
+    name.style.textAlign = 'center';
+    
+    modal.appendChild(imgContainer);
+    modal.appendChild(name);
+    
+    // Close modal when clicked
+    modal.onclick = () => document.body.removeChild(modal);
+    
+    document.body.appendChild(modal);
+}
+
+// Fetch data when page loads
+window.addEventListener('DOMContentLoaded', fetchMemberData);
+
+
+
+
+// View Balance बटन फंक्शनैलिटी
+// View Balance बटन फंक्शनैलिटी (पहले जैसा ही रहेगा)
+document.getElementById('viewBalanceBtn').addEventListener('click', function() {
+    calculateAndShowNetBalance();
+});
+
+function calculateAndShowNetBalance() {
+    const members = Array.from(document.querySelectorAll('.member-card'));
+    let netBalance = 0;
+    
+    members.forEach(card => {
+        const balanceText = card.querySelector('.member-balance').textContent;
+        const balance = parseFloat(balanceText.replace('Balance: ₹', '').replace(/,/g, ''));
+        netBalance += balance;
+    });
+    
+    const modal = document.getElementById('balanceModal');
+    const balanceDisplay = document.getElementById('totalBalance');
+    
+    modal.style.display = 'block';
+    balanceDisplay.textContent = '₹0';
+    
+    let current = 0;
+    const increment = Math.abs(netBalance) / 100;
+    const timer = setInterval(() => {
+        if(netBalance >= 0) {
+            current += increment;
+            if(current >= netBalance) {
+                clearInterval(timer);
+                current = netBalance;
+            }
+        } else {
+            current -= increment;
+            if(current <= netBalance) {
+                clearInterval(timer);
+                current = netBalance;
+            }
+        }
+        balanceDisplay.textContent = '₹' + Math.floor(current).toLocaleString();
+    }, 20);
+}
+
+// मोडल क्लोज करने का कोड
+document.querySelector('.close').addEventListener('click', function() {
+    document.getElementById('balanceModal').style.display = 'none';
+});
+
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('balanceModal');
+    if(event.target == modal) {
+        modal.style.display = 'none';
+    }
+});
+
+
+
+
+ </script>
+</body>
+</html>
