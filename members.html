@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Community Loan</title>
+    <style>
+     body { font-family: Arial, sans-serif; margin: 0; background-color: #f9f9f9; }
+        
+        h3 { text-align: center; margin: 5px 0; font-size: 18px; color: #555; }
+        .header { text-align: center; background-color: #007BFF; color: white; padding: 20px 0; display: flex; align-items: center; justify-content: center; }
+        .header img { width: 50px; height: 50px; margin-right: 10px; }
+
+.slider {
+    width: 100%; /* स्लाइडर की चौड़ाई फिक्स करें */
+    height: auto;
+    overflow: hidden;
+    position: relative;
+    margin: 10px 0;
+    aspect-ratio: 10 / 3; /* स्लाइडर का अनुपात 10:3 */
+}
+
+.slides {
+    display: flex;
+    width: 300%; /* स्लाइडर की कुल चौड़ाई */
+    animation: slide 15s infinite; /* स्लाइड एनिमेशन */
+}
+
+.slides img {
+    width: 34%; /* प्रत्येक स्लाइड की चौड़ाई 34% */
+    flex-shrink: 0; /* इमेज को सिकुड़ने से रोकें */
+    height: auto; /* ऊँचाई ऑटोमेटिक */
+    object-fit: cover; /* इमेज स्लाइडर में सही ढंग से फिट हो */
+}
+.header, .slider {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* ऊपर रखने के लिए */
+}
+
+.slider {
+    top: -10px; /* हेडलाइन के नीचे स्लाइडर सेट करने के लिए */
+}
+
+body {
+    padding-top: 200px; /* हेडर और स्लाइडर के नीचे कंटेंट दिखाने के लिए */
+}
+
+@keyframes slide {
+    0%, 33.33% { transform: translateX(0); } /* पहले स्लाइड पर 6 सेकंड */
+    33.34%, 66.66% { transform: translateX(-34%); } /* दूसरे स्लाइड पर 6 सेकंड */
+    66.67%, 100% { transform: translateX(-68%); } /* तीसरे स्लाइड पर 6 सेकंड */
+}
+
+
+
+
+        .filters { display: flex; justify-content: center; margin: 20px; gap: 30px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        select { padding: 8px; font-size: 16px; }
+        table { width: 100%; margin: 20px auto; border-collapse: collapse; background-color: white; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: center; }
+        th { background-color: #007BFF; color: white; }
+        .loan { color: red; }
+        .payment { color: green; }
+        .net-balance { font-weight: bold; }
+        tfoot td { font-weight: bold; background-color: #ffe68d ; }
+        .positive { color: green; font-size: 18px; }
+        .negative { color: red; font-size: 18px; }
+        
+.results-box {
+    display: flex;
+    gap: 20px;
+    justify-content: center; /* बॉक्स को केंद्र में लाना */
+    margin-bottom: 10px;
+}
+
+.box {
+    background-color: #fff;
+    border: 2px solid #007BFF;
+    border-radius: 5px;
+    padding: 8px 12px;
+    text-align: center;
+    min-width: 130px;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* हल्का शैडो */
+}
+/* Profile Section */
+.profile-section {
+    position: fixed; /* प्रोफाइल सेक्शन को फिक्स्ड करता है */
+    top: 115px; /* ऊपर से 20px का स्पेस */
+    left: 50%; /* स्क्रीन के बीच में लाने के लिए */
+    transform: translateX(-50%); /* कंटेनर को सही तरीके से सेंटर में लाता है */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* सामग्री को बाईं तरफ रखता है */
+    padding: 10px;
+    background-color: #fff;
+    border: 2px solid #007BFF;
+    border-radius: 5px; /* किनारों को थोड़ा गोल करता है */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    width: 330px; /* अधिकतम चौड़ाई सेट करता है */
+    height: 70px;
+    gap: 20px; /* पिक्चर और टेक्स्ट के बीच में गैप */
+    z-index: 1000; /* अन्य एलिमेंट्स के ऊपर लाता है */
+}
+
+/* Profile Picture */
+.profile-picture {
+    width: 80px; /* प्रोफाइल पिक्चर का आकार */
+    height: 80px;
+    border-radius: 50%; /* सर्कुलर लुक */
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* पिक्चर के नीचे शैडो */
+    flex-shrink: 0; /* आकार को स्थिर रखता है */
+}
+
+/* प्रोफाइल सेक्शन अपडेट */
+.profile-section {
+    background-color: #056fff;
+    border: 1px solid #000;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    padding-bottom: 10px; /* नीचे अतिरिक्त जगह */
+}
+
+/* प्रोफाइल पिक्चर */
+.profile-picture {
+    border: 3px solid #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+/* प्रोग्रेस बार कंटेनर */
+.progress-bar-container {
+    width: 100%;
+    height: 10px;
+    background-color: #fff; /* बैकग्राउंड सफेद */
+    border-radius: 9px;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+/* प्रोग्रेस बार */
+.progress-bar {
+    height: 100%;
+    width: 0; /* शुरुआत में चौड़ाई 0 */
+    transition: width 1s ease-in-out, background-color 0.5s ease-in-out; /* एनिमेशन */
+}
+
+/* पॉजिटिव कलर */
+.progress-bar.positive {
+    background-color: #05ff00; /* ग्रीन */
+}
+
+/* नेगेटिव कलर */
+.progress-bar.negative {
+    background-color: #ff0001; /* रेड */
+}
+
+
+/* एनिमेटेड टेक्स्ट के लिए पॉजिटिव रंग */
+.animated-text.positive {
+    color: #05ff00;
+    transition: color 0.5s ease-in-out;
+}
+/* Profile Details */
+.profile-details {
+    flex: 1; /* टेक्स्ट वाले भाग को फैलने देता है */
+}
+
+.profile-details h3 {
+    margin-top: -5;
+    font-size: 20px;
+    color: #fff;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.profile-details p {
+    margin: 1px 0 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    line-height: 1;
+}
+
+
+/* टेबल के लिए डिफॉल्ट स्टाइल */
+table {
+    width: 100%; /* पूरे उपलब्ध चौड़ाई का उपयोग करें */
+    margin: 20px auto; /* टेबल को केंद्र में रखें */
+    border-collapse: collapse; /* बॉर्डर को मर्ज करें */
+    background-color: white;
+}
+
+/* मोबाइल के लिए स्टाइल (600px तक की स्क्रीन) */
+@media only screen and (max-width: 600px) {
+    table {
+        font-size: 12px; /* टेक्स्ट साइज छोटा करें */
+    }
+    th, td {
+        padding: 8px; /* पैडिंग घटाएं */
+    }
+}
+
+/* टैबलेट के लिए स्टाइल (600px से 1024px) */
+@media only screen and (min-width: 601px) and (max-width: 1024px) {
+    table {
+        font-size: 14px; /* टेक्स्ट साइज मध्यम रखें */
+    }
+    th, td {
+        padding: 10px; /* टैबलेट के लिए उचित पैडिंग */
+    }
+}
+
+/* डेस्कटॉप के लिए स्टाइल (1024px से अधिक चौड़ाई) */
+@media only screen and (min-width: 1025px) {
+    table {
+        font-size: 16px; /* बड़े स्क्रीन के लिए टेक्स्ट साइज बड़ा रखें */
+    }
+    th, td {
+        padding: 12px; /* उचित पैडिंग */
+    }
+}
+
+
+           
+    </style>
+</head>
+<body>
+     <!-- Slider Section -->
+    <div class="slider">
+        <div class="slides">
+            <img src="https://lh3.googleusercontent.com/pw/AP1GczMzEraidh_f2wUVBKNIPxd1SdOQqws0C7LQ3Sqqd01C7eSgjOY-KpAFL7GpAkuxeEC9wyUC8Q77eJwAifbc0CB-gATK-d_I53cT76wvzQIayphn1kosCk_kgoiMLmaiFcXmZSDkxt1Te69uLf92ENMl=w1080-h324-s-no-gm?authuser=0" alt="Slide 1">
+            <img src="https://lh3.googleusercontent.com/pw/AP1GczPky9qmGBH3SXUpO-qsKFW1DMJFCPpj8W7TGqvmbwI7U2063Vz0UmW8pNT5Yj84ggQ7na6z9eb2H4wmGuZcheWNNeSnWszAizuOXcReY_156twFFN4sa4DDuWAu3svKlYTWfCVz6w3_OmsJckSoulmY=w1080-h324-s-no-gm?authuser=0" alt="Slide 2">
+            <img src="https://lh3.googleusercontent.com/pw/AP1GczPnrbz4OK_mCKZTXZsY3_8kMHhHQd7zfsfyz_OYpdjonMqV_WmFG2Xou2ZUWbNPo7yoO1O1KBzPUazFMkWRa0WCML7A8s6Ay1E-VeI8_ibl107f9zXiabzHeqWfL1o5OYyfNDqeAvnQeTBBZzrneYrH=w1080-h324-s-no-gm?authuser=0" alt="Slide 3">
+        </div>
+    </div>
+
+<!-- Profile Section -->
+<div id="profileSection" class="profile-section">
+    <div class="profile-picture"></div>
+    <div class="profile-details">
+        <h3 id="profileName">Select a name</h3>
+        <p>Amount: <span id="profileAmount">0</span></p>
+        <p>Balance SCORE: <span id="profileScore">0</span></p>
+        <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+</div>
+    </div>
+</div>
+
+<!-- Fullscreen Image Modal -->
+<div id="imageModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center;">
+    <img id="modalImage" src="" alt="Profile Image" style="max-width: 100%; max-height: 100%; border-radius: 10px;">
+</div>
+
+
+
+
+    <div class="filters">
+        <div>
+            <label for="nameFilter">Select Name:</label>
+            <select id="nameFilter"></select>
+        </div>
+        <!-- Type Filter Dropdown -->
+<div>
+    <label for="typeFilter">Filter Data By:</label>
+    <select id="typeFilter">
+        <option value="all">All</option>
+        <option value="members_invest">Loan payment</option>
+        <option value="loan_history">Loan History</option>
+        <option value="emi_payment">EMI Payment</option>
+        <option value="Civil Score">Balance Score</option>
+    </select>
+</div>
+    </div>
+
+    <!-- Data Table -->
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Loan</th>
+                <th>Payment</th>
+                <th>Net Balance</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+            <tr>
+                <td>Total</td>
+                <td id="totalLoan">0</td>
+                <td id="totalPayment">0</td>
+                <td id="totalNetBalance" class="positive">0</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <!-- JavaScript -->
+<script>
+    let data = [];
+
+    const commonUrl = 'https://script.google.com/macros/s/AKfycbyzs5UbjLWv9U-JBiT87iTd8Pbgy2yxYUI8vsiiiQ7zkFNF7L5t49aBZOnsFgvK4GZc2A/exec';
+
+    // डेटा लोड करने का फंक्शन
+    async function fetchData() {
+        const response = await fetch(commonUrl);
+        data = await response.json();
+        populateNameFilter();
+        filterData();
+    }
+
+    // नाम का फिल्टर जोड़ें
+    function populateNameFilter() {
+        const nameFilter = document.getElementById('nameFilter');
+        const uniqueNames = [...new Set(data.map(row => row.Name))];
+        nameFilter.innerHTML = '<option value="all">All</option>';
+        uniqueNames.forEach(name => {
+            nameFilter.innerHTML += `<option value="${name}">${name}</option>`;
+        });
+    }
+
+    // टेबल हेडर अपडेट करने का फंक्शन
+    function updateTableHeader(typeFilter) {
+        const tableHead = document.querySelector('#dataTable thead');
+        const headers = {
+            "civil_score": ["#", "Name", "BALANCE SCORE", "Amount"],
+            "loan_history": ["Date", "Loan", "Payment", "Net Balance"],
+            "emi_payment": ["Date", "Loan", "EMI Payment", "Net Balance"],
+            "members_invest": ["Date", "Loan", "Payment", "Net Balance"],
+           "default": ["Date", "Loan", "Payment", "Net Balance"]
+        };
+        
+        const currentHeaders = headers[typeFilter] || headers["default"];
+        tableHead.innerHTML = `<tr>${currentHeaders.map(h => `<th>${h}</th>`).join('')}</tr>`;
+    }
+
+    // डेटा को फिल्टर और डिस्प्ले करने का मुख्य फंक्शन
+    function filterData() {
+    const nameFilter = document.getElementById('nameFilter').value;
+    const typeFilter = document.getElementById('typeFilter').value;
+
+    let filteredData = [];
+
+    if (nameFilter === "all" && typeFilter === "all") {
+        // Loan history, Members invest और EMI payment का मर्ज किया हुआ डेटा दिखाएँ
+        const loanData = data.filter(row => parseFloat(row.Loan) > 0)
+            .map(row => ({ ...row, IsEmi: false }));
+        const paymentData = data.filter(row => parseFloat(row.Payment) > 0)
+            .map(row => ({ ...row, IsEmi: false }));
+        const emiData = data.filter(row => parseFloat(row[" EMI payment"] || 0) > 0)
+            .map(row => ({
+                Date: row.Date,
+                Loan: 0,
+                Payment: parseFloat(row[" EMI payment"] || 0),
+                Name: row.Name,
+                IsEmi: true
+            }));
+        filteredData = [...loanData, ...paymentData, ...emiData];
+    } 
+    else if (nameFilter === "all" && typeFilter === "loan_history") {
+        // सभी व्यक्तियों का Loan Amount दिखाएँ
+        filteredData = data.filter(row => parseFloat(row.Loan) > 0)
+            .map(row => ({
+                Date: row.Date,
+                Loan: parseFloat(row.Loan),
+                Payment: 0,
+                Name: row.Name
+            }));
+    } 
+    else if (nameFilter === "all" && typeFilter === "members_invest") {
+        // सभी व्यक्तियों का Payment Loan दिखाएँ
+        filteredData = data.filter(row => parseFloat(row.Payment) > 0)
+            .map(row => ({
+                Date: row.Date,
+                Loan: 0,
+                Payment: parseFloat(row.Payment),
+                Name: row.Name
+            }));
+    } 
+    else if (nameFilter === "all" && typeFilter === "emi_payment") {
+        // सभी व्यक्तियों का EMI payment डेटा दिखाएँ
+        filteredData = data.filter(row => parseFloat(row[" EMI payment"] || 0) > 0)
+            .map(row => ({
+                Date: row.Date,
+                Loan: 0,
+                Payment: parseFloat(row[" EMI payment"] || 0),
+                Name: row.Name,
+                IsEmi: true
+            }));
+    } 
+    else if (nameFilter !== "all") {
+        // जब किसी विशेष नाम को चुना जाए
+        if (typeFilter === "loan_history") {
+            filteredData = data.filter(row => row.Name === nameFilter && parseFloat(row.Loan) > 0);
+        } else if (typeFilter === "members_invest") {
+            filteredData = data.filter(row => row.Name === nameFilter && parseFloat(row.Payment) > 0);
+            
+        } else if (typeFilter === "Civil Score") {
+    updateTableHeader("civil_score");
+    displayCivilScore();
+}
+
+        else if (typeFilter === "emi_payment") {
+            filteredData = data.filter(row => row.Name === nameFilter && parseFloat(row[" EMI payment"] || 0) > 0)
+                .map(row => ({
+                    Date: row.Date,
+                    Loan: 0,
+                    Payment: parseFloat(row[" EMI payment"] || 0),
+                    IsEmi: true
+                }));
+                
+        } else if (typeFilter === "all") {
+            const loanData = data.filter(row => row.Name === nameFilter && parseFloat(row.Loan) > 0);
+            const paymentData = data.filter(row => row.Name === nameFilter && parseFloat(row.Payment) > 0);
+            const emiData = data.filter(row => row.Name === nameFilter && parseFloat(row[" EMI payment"] || 0) > 0)
+                .map(row => ({
+                    Date: row.Date,
+                    Loan: 0,
+                    Payment: parseFloat(row[" EMI payment"] || 0),
+                    IsEmi: true
+                }));
+            filteredData = [...loanData, ...paymentData, ...emiData];
+        }
+    }
+
+    updateTableHeader(typeFilter);
+    displayData(filteredData);
+}
+function displayData(filteredData) {
+    const tableBody = document.querySelector("#dataTable tbody");
+    tableBody.innerHTML = "";
+
+    let loanSum = 0, paymentSum = 0;
+
+    filteredData.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+
+    filteredData.forEach(row => {
+        const loan = parseFloat(row.Loan) || 0;
+        const payment = parseFloat(row.Payment) || 0;
+
+        const netBalance = payment - loan;
+        loanSum += loan;
+        paymentSum += payment;
+
+        // EMI का टैग जोड़ें
+        const emiTag = row.IsEmi ? `<span style="background-color: green; color: white; padding: 2px 5px;">EMI</span>` : '';
+
+        tableBody.innerHTML += `
+            <tr>
+                <td>${formatDate(row.Date)}</td>
+                <td>${loan || ""}</td>
+                <td>${payment || ""} ${emiTag}</td>
+                <td>${row.Name || ""}</td>
+                <td>${netBalance}</td>
+            </tr>
+        `;
+    });
+
+    updateTotals(loanSum, paymentSum);
+}
+
+// हाल ही में लोन लेने वाले व्यक्तियों की पहचान और मार्क करने वाला फंक्शन
+function checkRecentStatus() {
+    const recentRows = {}; // प्रत्येक व्यक्ति का रीसेंट लोन स्टोर होगा
+    const today = new Date(); // प्रेजेंट डेट
+
+    // Step 1: डेटा को नाम के आधार पर समूहित करें
+    const groupedData = {};
+    data.forEach(row => {
+        const name = row.Name.trim();
+        if (!groupedData[name]) {
+            groupedData[name] = [];
+        }
+        groupedData[name].push({ ...row, Date: new Date(row.Date) }); // Date को Date object में कन्वर्ट करें
+    });
+
+    // Step 2: प्रत्येक व्यक्ति का डेटा एनालिसिस करें
+    Object.keys(groupedData).forEach(name => {
+        const records = groupedData[name];
+
+        // Step 3: डेटा को डेट के हिसाब से DESCENDING क्रम में सॉर्ट करें (नवीनतम सबसे पहले)
+        records.sort((a, b) => b.Date - a.Date);
+
+        let foundLoan = false; // सबसे रीसेंट लोन की पहचान के लिए फ्लैग
+
+        // Step 4: प्रेजेंट डेट से ठीक पीछे का डेटा चेक करें
+        for (let i = 0; i < records.length; i++) {
+            const current = records[i];
+
+            const currentLoan = parseFloat(current.Loan) || 0;
+            const currentPayment = parseFloat(current.Payment) || 0;
+            const currentEmi = parseFloat(current[" EMI payment"]) || 0;
+
+            // EMI पेमेंट को इग्नोर करें
+            if (currentEmi > 0) {
+                continue;
+            }
+
+            // पेमेंट मिलने पर मार्क न करें और अगले रिकॉर्ड पर जाएं
+            if (currentPayment > 0) {
+                break; // पेमेंट मिल गया है, लोन की जांच खत्म करें
+            }
+
+            // लोन का डेटा मिला
+            if (currentLoan > 0) {
+                recentRows[name] = current; // लोन डेटा स्टोर करें
+                foundLoan = true;
+                break; // केवल पहला सही लोन ही चेक करें
+            }
+        }
+    });
+
+    // Step 5: टेबल में रीसेंट लोन वाले रो को हाइलाइट करें
+    const tableRows = document.querySelectorAll("#dataTable tbody tr");
+    tableRows.forEach(row => {
+        const cells = row.querySelectorAll("td");
+        if (cells.length > 0) {
+            const memberName = cells[3]?.textContent?.trim();
+            const rowDate = new Date(cells[0]?.textContent?.trim());
+
+            // रीसेंट लोन की जांच करें और हाइलाइट करें
+            if (
+                recentRows[memberName] &&
+                recentRows[memberName].Date.getTime() === rowDate.getTime()
+            ) {
+                row.style.backgroundColor = "rgba(255, 0, 0, 0.2)"; // हल्का रेड बैकग्राउंड
+            } else {
+                row.style.backgroundColor = ""; // अन्य पंक्तियों का बैकग्राउंड साफ करें
+            }
+        }
+    });
+}
+
+// displayData() में फंक्शन को कॉल करें
+function displayData(filteredData) {
+    const tableBody = document.querySelector("#dataTable tbody");
+    tableBody.innerHTML = "";
+
+    let loanSum = 0, paymentSum = 0;
+
+    // डेट के आधार पर सॉर्टिंग
+    filteredData.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+
+    filteredData.forEach(row => {
+        const loan = parseFloat(row.Loan) || 0;
+        const payment = parseFloat(row.Payment) || 0;
+
+        const netBalance = payment - loan;
+        loanSum += loan;
+        paymentSum += payment;
+
+        tableBody.innerHTML += `
+            <tr>
+                <td>${formatDate(row.Date)}</td>
+                <td>${loan || ""}</td>
+                <td>${payment || ""}</td>
+                <td>${row.Name || ""}</td>
+                <td>${netBalance}</td>
+            </tr>
+        `;
+    });
+
+    updateTotals(loanSum, paymentSum);
+
+    // हाल ही के लोन वाले रो को हाइलाइट करें
+    checkRecentStatus();
+}
+
+// Helper function: Date को DD-MM-YYYY फॉर्मेट में बदलने के लिए
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+// Civil Score ऑप्शन के लिए डेटा को प्रोसेस और टेबल में डिस्प्ले करने वाला फंक्शन
+function displayCivilScoreData() {
+    const tableBody = document.querySelector("#dataTable tbody");
+    const totalCibilScore = document.getElementById("totalPayment");
+    const totalAmount = document.getElementById("totalNetBalance");
+    const memberCountElement = document.getElementById("totalLoan");
+    const nameFilter = document.getElementById("nameFilter").value;
+
+    tableBody.innerHTML = "";
+
+    let totalCibilSum = 0;
+    let totalAmountSum = 0;
+    let totalMembers = 0;
+
+    const userData = {};
+
+    // डेटा प्रोसेसिंग
+    data.forEach(row => {
+        const name = row.Name.trim();
+        const loan = parseFloat(row.Loan) || 0;
+        const payment = parseFloat(row.Payment) || 0;
+        const emiPayment = parseFloat(row[" EMI payment"] || 0);
+
+        const amount = (emiPayment + payment) - loan;
+
+        if (!userData[name]) {
+            userData[name] = { amount: 0 };
+            totalMembers++;
+        }
+
+        userData[name].amount += amount;
+    });
+
+    // CIBIL स्कोर निकालें और सॉर्ट करें
+    const sortedData = Object.entries(userData).map(([name, { amount }]) => {
+        const civilScore = Math.min(1000, Math.max(-1000, amount / 10));
+        totalCibilSum += civilScore;
+        totalAmountSum += amount;
+        return { name, civilScore, amount };
+    }).sort((a, b) => b.civilScore - a.civilScore);
+
+    // टेबल में डेटा डिस्प्ले करें
+    sortedData.forEach((user, index) => {
+        const isSelectedName = nameFilter !== "all" && user.name === nameFilter;
+        const backgroundColor = user.amount < 0 ? 'rgba(255, 0, 0, 0.2)' : '#d1ffcf';
+
+        // इमोजी के अनुसार सीरियल नंबर सेट करें
+        let serialNumber = index + 1;
+        if (index === 0) serialNumber = "🥇";
+        else if (index === 1) serialNumber = "🥈";
+        else if (index === 2) serialNumber = "🥉";
+
+        tableBody.innerHTML += `
+            <tr style="${isSelectedName ? `font-weight: bold; background-color: ${backgroundColor};` : ''}">
+                <td>${serialNumber}</td>
+                <td>${user.name}</td>
+                <td style="color: ${user.civilScore < 0 ? 'red' : '#017203'};">${user.civilScore}</td>
+                <td>${user.amount.toFixed(2)}</td>
+            </tr>
+        `;
+    });
+
+    // टोटल वैल्यू अपडेट करें
+    totalCibilScore.textContent = totalCibilSum.toFixed(2);
+    totalAmount.textContent = totalAmountSum.toFixed(2);
+    memberCountElement.textContent = `${totalMembers} Members`;
+}
+
+
+// टाइप फिल्टर और नाम फिल्टर के इवेंट को अपडेट करें
+function handleFilterChange() {
+    const typeFilter = document.getElementById("typeFilter").value;
+
+    if (typeFilter === "Civil Score") {
+        updateTableHeader("civil_score"); // सही हेडर दिखाएँ
+        displayCivilScoreData(); // CIBIL स्कोर डेटा डिस्प्ले करें
+    } else {
+        filterData(); // अन्य फंक्शन के लिए फ़िल्टर लागू करें
+    }
+}
+
+// इवेंट लिसनर्स
+document.getElementById("typeFilter").addEventListener("change", handleFilterChange);
+document.getElementById("nameFilter").addEventListener("change", handleFilterChange);
+
+// पेज लोड पर Default Civil Score दिखाने के लिए
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("typeFilter").value = "Civil Score";
+    document.getElementById("nameFilter").value = "all"; // Default "all" सेट करें
+    handleFilterChange();
+});
+    // टोटल वैल्यू अपडेट करें
+    function updateTotals(loan, payment) {
+        document.getElementById("totalLoan").textContent = loan;
+        document.getElementById("totalPayment").textContent = payment;
+        const netBalance = payment - loan;
+        const totalNetBalance = document.getElementById("totalNetBalance");
+        totalNetBalance.textContent = netBalance;
+        totalNetBalance.className = netBalance < 0 ? "negative" : "positive";
+    }
+
+    // फॉर्मेट डेट
+    function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    // इवेंट लिसनर्स
+    document.getElementById('nameFilter').addEventListener('change', filterData);
+    document.getElementById('typeFilter').addEventListener('change', filterData);
+
+    // डेटा लोड करें
+    fetchData();
+    
+        // प्रोफाइल डेटा को मैप करें (नाम और इमेज URL)
+    const profileData = [
+        { name: "Prince Rama", image: "https://bit.ly/49GvZh4" },
+        { name: "Amit Kumar", image: "https://bit.ly/4gzlMFs" },
+        { name: "Mithlesh Sahni", image: "https://bit.ly/3ZCGptv" },
+        { name: "Raja Sahni", image: "https://bit.ly/3ZEnwGK" },
+        { name: "Dilkhush Kumar", image: "https://bit.ly/4iTxRrh" },
+        { name: "Nitish Sahni", image: "https://bit.ly/3BxVjcw" },
+        { name: "Kunal kumar", image: "https://bit.ly/49H7tMO" },
+        { name: "Dr Santosh", image: "https://bit.ly/3BBiGC3" }
+    ];
+
+    // प्रोफाइल सेक्शन को अपडेट करने का फंक्शन
+    // Animation function to increment a value smoothly
+function animateValue(element, start, end, duration, unit = "") {
+    let startTime = null;
+
+    function step(currentTime) {
+        if (!startTime) startTime = currentTime;
+        const progress = Math.min((currentTime - startTime) / duration, 1);
+        const value = Math.floor(progress * (end - start) + start);
+        element.textContent = value + unit;
+
+        if (progress < 1) {
+            requestAnimationFrame(step);
+        }
+    }
+
+    requestAnimationFrame(step);
+}
+
+function updateProfileSection(name, typeFilter = "all") {
+    const profileName = document.getElementById("profileName");
+    const profileAmount = document.getElementById("profileAmount");
+    const profileScore = document.getElementById("profileScore");
+    const progressBar = document.getElementById("progressBar");
+    const profilePicture = document.querySelector(".profile-picture");
+
+    if (name === "all" && typeFilter === "all") {
+        const totalEmiPayment = data.reduce((acc, row) => acc + (parseFloat(row[" EMI payment"]) || 0), 0);
+        const totalPayment = data.reduce((acc, row) => acc + (parseFloat(row.Payment) || 0), 0);
+        const totalLoan = data.reduce((acc, row) => acc + (parseFloat(row.Loan) || 0), 0);
+        const availableBalance = (totalEmiPayment + totalPayment) - totalLoan;
+
+        profileName.textContent = "Available Balance";
+        animateValue(profileAmount, 0, availableBalance, 1000, "");
+        profileScore.textContent = "";
+        progressBar.style.width = "0%";
+        progressBar.style.backgroundColor = "transparent";
+        profilePicture.innerHTML = "";
+        return;
+    }
+    
+    const userData = data.filter(row => row.Name.trim().toLowerCase() === name.trim().toLowerCase());
+    const userProfile = profileData.find(profile => profile.name.trim().toLowerCase() === name.trim().toLowerCase());
+
+    if (userData.length > 0) {
+        const totalEmiPayment = userData.reduce((acc, row) => acc + (parseFloat(row[" EMI payment"]) || 0), 0);
+        const totalPayment = userData.reduce((acc, row) => acc + (parseFloat(row.Payment) || 0), 0);
+        const totalLoan = userData.reduce((acc, row) => acc + (parseFloat(row.Loan) || 0), 0);
+        const amount = (totalEmiPayment + totalPayment) - totalLoan;
+        const civilScore = Math.min(700, Math.max(-700, amount / 10));
+
+        profileName.textContent = name;
+
+        animateValue(profileAmount, 0, amount, 1000, "");
+        animateValue(profileScore, 0, civilScore, 1000, "");
+
+        profileScore.style.color = civilScore < 0 ? "red" : "#13ff00";
+        progressBar.style.width = `${Math.abs(civilScore / 7)}%`;
+        progressBar.style.backgroundColor = civilScore < 0 ? "red" : "#13ff00";
+
+        const profileImageUrl = userProfile ? userProfile.image : 'https://via.placeholder.com/100';
+        profilePicture.innerHTML = `
+            <img src="${profileImageUrl}" alt="Profile Image" style="width: 80px; height: 80px; border-radius: 50%; cursor: pointer;">
+        `;
+        
+        document.querySelector(".profile-picture img").addEventListener("click", () => {
+            const modal = document.getElementById("imageModal");
+            const modalImage = document.getElementById("modalImage");
+            modalImage.src = profileImageUrl;
+            modal.style.display = "flex";
+        });
+    } else {
+        profileName.textContent = "Select a name";
+        profileAmount.textContent = "0";
+        profileScore.textContent = "0";
+        progressBar.style.width = "0%";
+        progressBar.style.backgroundColor = "transparent";
+        profilePicture.innerHTML = "";
+    }
+}
+    // इमेज मोडल को बंद करने का इवेंट
+    document.getElementById("imageModal").addEventListener("click", () => {
+        document.getElementById("imageModal").style.display = "none";
+    });
+
+    // नाम और टाइप फिल्टर पर इवेंट लिसनर
+    document.getElementById("nameFilter").addEventListener("change", () => {
+        const nameFilter = document.getElementById("nameFilter").value;
+        const typeFilter = document.getElementById("typeFilter").value;
+        updateProfileSection(nameFilter, typeFilter);
+    });
+
+    document.getElementById("typeFilter").addEventListener("change", () => {
+        const nameFilter = document.getElementById("nameFilter").value;
+        const typeFilter = document.getElementById("typeFilter").value;
+        updateProfileSection(nameFilter, typeFilter);
+    });
+
+    // नाम फ़िल्टर को प्री-पॉप्युलेट करना
+    function populateNameFilter() {
+    const nameFilter = document.getElementById("nameFilter");
+    const memberData = {};
+
+    // सभी सदस्यों का नाम और उनका कुल बैलेंस निकालें
+    data.forEach(row => {
+        const name = row.Name.trim();
+        const loan = parseFloat(row.Loan) || 0;
+        const payment = parseFloat(row.Payment) || 0;
+        const emiPayment = parseFloat(row[" EMI payment"] || 0);
+
+        if (!memberData[name]) {
+            memberData[name] = 0; // Initialize balance
+        }
+
+        memberData[name] += (payment + emiPayment) - loan; // कुल बैलेंस
+    });
+
+    // सदस्यों को उनके बैलेंस के अनुसार सॉर्ट करें (Descending order)
+    const sortedMembers = Object.entries(memberData).sort((a, b) => b[1] - a[1]);
+
+    // नाम फ़िल्टर को अपडेट करें
+    nameFilter.innerHTML = '<option value="all">All</option>';
+    sortedMembers.forEach(([name]) => {
+        nameFilter.innerHTML += `<option value="${name}">${name}</option>`;
+    });
+
+    // सबसे पहला ऑप्शन सेट करें (Highest Balance)
+    if (sortedMembers.length > 0) {
+        nameFilter.value = sortedMembers[0][0];
+        updateProfileSection(sortedMembers[0][0]);
+    }
+}
+
+    // डेटा लोड होने के बाद नाम फ़िल्टर को भरें
+    document.addEventListener("DOMContentLoaded", () => {
+        populateNameFilter();
+    });
+    
+// फंक्शन: टोटल रिटर्न की गणना, सॉर्टिंग और स्टाइलिंग
+function calculateTotalReturn() {
+    const tableBody = document.querySelector("#dataTable tbody");
+    const totalLoanElement = document.getElementById("totalLoan");
+    const totalPaymentElement = document.getElementById("totalPayment");
+    const totalNetBalanceElement = document.getElementById("totalNetBalance");
+    tableBody.innerHTML = "";
+
+    let overallLoanSum = 0, overallPaymentSum = 0, overallReturnSum = 0;
+
+    // सभी मेंबर्स को प्रोसेस करें
+    const members = [...new Set(data.map(row => row.Name.trim()))];
+    const memberResults = members.map(member => {
+        // मेंबर का डेटा निकालें
+        const memberData = data.filter(row => row.Name.trim() === member);
+
+        // हालिया पेमेंट की तारीख निकालें (excluding EMI payments)
+        const recentPaymentDate = memberData
+            .filter(row => parseFloat(row.Payment) > 0) // केवल पेमेंट देखें
+            .reduce((latest, row) => {
+                const date = new Date(row.Date);
+                return date > latest ? date : latest;
+            }, new Date(0));
+
+        // हालिया पेमेंट की तारीख से पहले सभी लोन जोड़ें
+        const totalLoan = memberData
+            .filter(row => new Date(row.Date) <= recentPaymentDate && parseFloat(row.Loan) > 0) // हालिया तारीख से पहले
+            .reduce((sum, row) => sum + parseFloat(row.Loan), 0);
+
+        // सभी पेमेंट जोड़ें (excluding EMI payments)
+        const totalPayment = memberData
+            .filter(row => parseFloat(row.Payment) > 0) // केवल पेमेंट जोड़ें
+            .reduce((sum, row) => sum + parseFloat(row.Payment), 0);
+
+        // रिटर्न की गणना
+        const totalReturn = totalPayment - totalLoan;
+
+        // कुल योग अपडेट करें
+        overallLoanSum += totalLoan;
+        overallPaymentSum += totalPayment;
+        overallReturnSum += totalReturn;
+
+        return {
+            member,
+            totalLoan,
+            totalPayment,
+            totalReturn
+        };
+    });
+
+    // रिटर्न अमाउंट के आधार पर सॉर्ट करें (Descending Order)
+    memberResults.sort((a, b) => b.totalReturn - a.totalReturn);
+
+    // टेबल में डेटा जोड़ें
+    memberResults.forEach(({ member, totalLoan, totalPayment, totalReturn }) => {
+        tableBody.innerHTML += `
+            <tr>
+                <td>${member}</td>
+                <td>${totalLoan.toFixed(2)}</td>
+                <td>${totalPayment.toFixed(2)}</td>
+                <td style="color: green; font-weight: bold;">${totalReturn.toFixed(2)}</td>
+            </tr>
+        `;
+    });
+
+    // टेबल के नीचे कुल योग दिखाएँ
+    totalLoanElement.textContent = overallLoanSum.toFixed(2);
+    totalPaymentElement.textContent = overallPaymentSum.toFixed(2);
+    totalNetBalanceElement.textContent = overallReturnSum.toFixed(2);
+}
+
+// टाइप फिल्टर में 'Total Return' ऑप्शन जोड़ें
+document.addEventListener("DOMContentLoaded", () => {
+    const typeFilter = document.getElementById("typeFilter");
+    const option = document.createElement("option");
+    option.value = "total_return";
+    option.textContent = "Total Return";
+    typeFilter.appendChild(option);
+});
+
+// टाइप फिल्टर चेंज इवेंट पर 'Total Return' फंक्शन कॉल करें
+document.getElementById("typeFilter").addEventListener("change", () => {
+    const typeFilter = document.getElementById("typeFilter").value;
+    if (typeFilter === "total_return") {
+        calculateTotalReturn();
+    }
+});
+
+    
+</script>
+</body>
+</html>
