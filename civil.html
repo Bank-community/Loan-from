@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>क्रेडिट स्कोर और लोन पात्रता</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 10px;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        select, button, input {
+            padding: 12px 15px;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            width: 100%;
+            max-width: 400px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 25px;
+            font-size: 18px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .badge-gold {
+            background-color: gold;
+            color: #333;
+        }
+        .badge-silver {
+            background-color: silver;
+            color: #333;
+        }
+        .badge-bronze {
+            background-color: #cd7f32;
+            color: white;
+        }
+        .top-members {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #e8f4fc;
+            border-radius: 8px;
+        }
+        .top-member {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #d1e7f7;
+        }
+        .score-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4fc;
+            border-radius: 8px;
+        }
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .score-table th, .score-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .score-table th {
+            background-color: #3498db;
+            color: white;
+        }
+        .score-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .score-card {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        .score-level {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-align: center;
+            flex: 1;
+            margin: 0 5px;
+        }
+        .score-good {
+            background-color: #ffcc00;
+            color: #333;
+        }
+        .score-better {
+            background-color: #ff9900;
+            color: white;
+        }
+        .score-best {
+            background-color: #00cc66;
+            color: white;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            select, button, input {
+                font-size: 14px;
+                padding: 10px 12px;
+            }
+            .result {
+                font-size: 16px;
+            }
+            .chart-container {
+                height: 250px;
+            }
+            .score-card {
+                flex-direction: column;
+            }
+            .score-level {
+                margin: 5px 0;
+            }
+            .modal-content {
+                width: 90%;
+                margin: 20% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>CIVIL SCORE AND LOAN ELIGIBILITY</h2>
+        <label>Select Name:</label>
+        <select id="personSelect"></select>
+        <button onclick="calculateCreditScore()">CHEAK CIVIL SCORE</button>
+        <button onclick="showScoreDetails()" id="scoreDetailsBtn" style="display: none; background-color: #2ecc71;">Score Point History</button>
+        <div class="result" id="result"></div>
+        <div class="chart-container">
+            <canvas id="historyChart"></canvas>
+        </div>
+        <div class="score-info" id="scoreInfo"></div>
+        <div class="top-members" id="topMembers"></div>
+    </div>
+
+    <!-- Score Details Modal -->
+    <div id="scoreModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle">स्कोर विवरण</h3>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = "https://script.google.com/macros/s/AKfycbyzs5UbjLWv9U-JBiT87iTd8Pbgy2yxYUI8vsiiiQ7zkFNF7L5t49aBZOnsFgvK4GZc2A/exec";
+        let allData = [];
+        let historyChart = null;
+        let currentMemberData = null;
+
+        async function fetchData() {
+            try {
+                document.getElementById("result").innerHTML = "<p>डेटा लोड हो रहा है...</p>";
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                allData = data;
+
+                let uniqueNames = [...new Set(data.map(item => item.Name))];
+
+                let selectBox = document.getElementById("personSelect");
+                selectBox.innerHTML = "";
+                uniqueNames.forEach(name => {
+                    let option = document.createElement("option");
+                    option.value = name;
+                    option.innerText = name;
+                    selectBox.appendChild(option);
+                });
+
+                displayTopMembers();
+            } catch (error) {
+                document.getElementById("result").innerHTML = `<p style="color: red;">डेटा लोड करने में त्रुटि: ${error.message}</p>`;
+            }
+        }
+
+        function displayTopMembers() {
+            let individualBalances = calculateIndividualBalances();
+            
+            let sortedMembers = Object.entries(individualBalances)
+                .map(([name, data]) => ({
+                    name,
+                    balance: data.currentBalance,
+                    loan: data.totalLoan,
+                    timelyPayments: data.timelyPayments,
+                    creditScore: calculateCreditScoreForMember(data).totalScore
+                }))
+                .sort((a, b) => b.creditScore - a.creditScore);
+            
+            let topMembers = sortedMembers.slice(0, 3);
+            
+            let topMembersDiv = document.getElementById("topMembers");
+            if (topMembers.length > 0) {
+                topMembersDiv.innerHTML = "<h3>शीर्ष 3 सदस्य (इस माह)</h3>";
+                
+                topMembers.forEach((member, index) => {
+                    let badgeClass = "";
+                    let badgeText = "";
+                    if (index === 0) {
+                        badgeClass = "badge-gold";
+                        badgeText = "🏆 सर्वश्रेष्ठ";
+                    } else if (index === 1) {
+                        badgeClass = "badge-silver";
+                        badgeText = "🥈 द्वितीय";
+                    } else if (index === 2) {
+                        badgeClass = "badge-bronze";
+                        badgeText = "🥉 तृतीय";
+                    }
+                    
+                    topMembersDiv.innerHTML += `
+                        <div class="top-member">
+                            <span>${member.name} <span class="badge ${badgeClass}">${badgeText}</span></span>
+                            <span>स्कोर: ${member.creditScore >= 900 ? '900+' : member.creditScore}</span>
+                        </div>
+                    `;
+                });
+            } else {
+                topMembersDiv.innerHTML = "<p>कोई शीर्ष सदस्य उपलब्ध नहीं है</p>";
+            }
+        }
+
+        function calculateCreditScoreForMember(memberData) {
+            // Calculate score components
+            const balancePoints = Math.min(300, Math.floor(memberData.currentBalance / 1000) * 10);
+            const paymentPoints = Math.min(300, memberData.timelyPayments * 15);
+            const loanUtilization = memberData.totalLoan > 0 ? 
+                (memberData.currentBalance / memberData.totalLoan) : 1;
+            const utilizationPoints = Math.min(300, Math.floor(loanUtilization * 100));
+            
+            // Calculate total score (300-900)
+            const totalScore = Math.min(900, Math.max(300, 
+                300 + balancePoints + paymentPoints + utilizationPoints));
+            
+            return {
+                totalScore: Math.floor(totalScore),
+                components: {
+                    balance: Math.floor(balancePoints),
+                    payments: Math.floor(paymentPoints),
+                    utilization: Math.floor(utilizationPoints)
+                }
+            };
+        }
+
+        function calculateIndividualBalances() {
+            let individualBalances = {};
+
+            allData.forEach(entry => {
+                let name = entry.Name;
+                let emi = parseInt(entry[" EMI payment"]) || 0;
+                let loan = parseInt(entry["Loan"]) || 0;
+                let payment = parseInt(entry["Payment"]) || 0;
+                let date = entry.Date || "";
+
+                if (!individualBalances[name]) {
+                    individualBalances[name] = {
+                        totalEMI: 0,
+                        totalPayment: 0,
+                        totalLoan: 0,
+                        timelyPayments: 0,
+                        history: [],
+                        currentBalance: 0
+                    };
+                }
+
+                individualBalances[name].totalEMI += emi;
+                individualBalances[name].totalPayment += payment;
+                individualBalances[name].totalLoan += loan;
+                
+                if (payment > 0) {
+                    individualBalances[name].timelyPayments++;
+                }
+                
+                individualBalances[name].currentBalance = 
+                    individualBalances[name].totalEMI + 
+                    individualBalances[name].totalPayment - 
+                    individualBalances[name].totalLoan;
+                
+                if (date) {
+                    individualBalances[name].history.push({
+                        date,
+                        balance: individualBalances[name].currentBalance
+                    });
+                }
+            });
+
+            return individualBalances;
+        }
+
+        function calculateCreditScore() {
+            let selectedName = document.getElementById("personSelect").value;
+            if (!selectedName) {
+                alert("कृपया एक व्यक्ति चुनें");
+                return;
+            }
+
+            let individualBalances = calculateIndividualBalances();
+            let personData = individualBalances[selectedName];
+            
+            if (!personData) {
+                document.getElementById("result").innerHTML = "<p style='color: red;'>इस व्यक्ति का डेटा उपलब्ध नहीं है</p>";
+                document.getElementById("scoreDetailsBtn").style.display = "none";
+                return;
+            }
+
+            currentMemberData = personData;
+            currentMemberData.name = selectedName;
+
+            let totalBankBalance = Object.values(individualBalances)
+                .reduce((sum, person) => sum + person.currentBalance, 0);
+            
+            let currentBalance = personData.currentBalance;
+            let approvedLoan = currentBalance > 0 && totalBankBalance > 0 ? currentBalance * 1.5 : 0;
+
+            // Calculate credit score with components
+            let creditScore = calculateCreditScoreForMember(personData);
+            let displayScore = creditScore.totalScore >= 900 ? "900+" : creditScore.totalScore;
+            
+            let color = creditScore.totalScore >= 750 ? "green" : 
+                       creditScore.totalScore >= 600 ? "orange" : "red";
+            
+            let loanMessage = approvedLoan > 0
+                ? `<p style="color: green;">आप अधिकतम ₹${approvedLoan.toLocaleString()} तक लोन ले सकते हैं।</p>`
+                : `<p style="color: red;">आपका बैलेंस कम है, लोन अप्रूव नहीं होगा।</p>`;
+
+            // Check if member is in top 3
+            let isTopMember = false;
+            let memberRank = 0;
+            let topMembersDiv = document.getElementById("topMembers");
+            if (topMembersDiv.innerHTML.includes(selectedName)) {
+                isTopMember = true;
+                if (topMembersDiv.innerHTML.indexOf(selectedName) < topMembersDiv.innerHTML.indexOf("द्वितीय")) {
+                    memberRank = 1;
+                } else if (topMembersDiv.innerHTML.indexOf(selectedName) < topMembersDiv.innerHTML.indexOf("तृतीय")) {
+                    memberRank = 2;
+                } else {
+                    memberRank = 3;
+                }
+            }
+
+            let topMemberTag = isTopMember 
+                ? `<p style="color: ${memberRank === 1 ? 'gold' : memberRank === 2 ? 'silver' : '#cd7f32'}; 
+                    font-weight: bold;">${memberRank === 1 ? '🏆 1st ' : memberRank === 2 ? '🥈 2nd ' : '🥉 3rd'}</p>`
+                : "";
+
+            // Display result
+            let resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = `
+                <p style="font-size: 22px; font-weight: bold; color: ${color};">CIVIL SCORE: ${displayScore}</p>
+                ${topMemberTag}
+                <p>Your current balance: ₹${currentBalance.toLocaleString()}</p>
+                <p>Total Payment: ₹${personData.totalPayment.toLocaleString()}</p>
+                <p>total debt (ऋण): ₹${personData.totalLoan.toLocaleString()}</p>
+                <p>Timely Payment: ${personData.timelyPayments}</p>
+                ${loanMessage}
+            `;
+
+            // Show score details button
+            document.getElementById("scoreDetailsBtn").style.display = "block";
+
+            // Display score info and rating
+            displayScoreInfo(creditScore);
+            
+            // Display history chart
+            displayHistoryChart(selectedName, personData.history);
+        }
+
+        function displayScoreInfo(creditScore) {
+            let scoreInfoDiv = document.getElementById("scoreInfo");
+            
+            // Score level rating
+            let scoreLevel = "";
+            let scoreClass = "";
+            if (creditScore.totalScore >= 800) {
+                scoreLevel = "BEST";
+                scoreClass = "score-best";
+            } else if (creditScore.totalScore >= 650) {
+                scoreLevel = "BETTER";
+                scoreClass = "score-better";
+            } else {
+                scoreLevel = "GOOD";
+                scoreClass = "score-good";
+            }
+            
+            // Score card visualization
+            scoreInfoDiv.innerHTML = `
+                <h3>Your Credit Rating: <span class="${scoreClass}">${scoreLevel}</span></h3>
+                <div class="score-card">
+                    <div class="score-level ${creditScore.totalScore >= 300 ? 'score-good' : ''}">300-599</div>
+                    <div class="score-level ${creditScore.totalScore >= 600 ? 'score-better' : ''}">600-799</div>
+                    <div class="score-level ${creditScore.totalScore >= 800 ? 'score-best' : ''}">800-900+</div>
+                </div>
+                
+                <h4>क्रेडिट स्कोर कैसे बढ़ाएं:</h4>
+                <ul>
+                    <li>समय पर भुगतान करें (15 पॉइंट प्रति भुगतान)</li>
+                    <li>अपना बैलेंस बढ़ाएं (₹1000 पर 10 पॉइंट)</li>
+                    <li>ऋण का कम उपयोग करें (कम ऋण = अधिक पॉइंट)</li>
+                </ul>
+                
+                <table class="score-table">
+                    <tr>
+                        <th>Score Range</th>
+                        <th>Rating</th>
+                        <th>Loan Eligibility</th>
+                    </tr>
+                    <tr>
+                        <td>800-900+</td>
+                        <td>Best</td>
+                        <td>Highest eligibility</td>
+                    </tr>
+                    <tr>
+                        <td>650-799</td>
+                        <td>Better</td>
+                        <td>Good eligibility</td>
+                    </tr>
+                    <tr>
+                        <td>300-649</td>
+                        <td>Good</td>
+                        <td>Limited eligibility</td>
+                    </tr>
+                </table>
+            `;
+        }
+
+        function displayHistoryChart(name, historyData) {
+            const ctx = document.getElementById('historyChart').getContext('2d');
+            
+            historyData.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            const labels = historyData.map(item => {
+                const date = new Date(item.date);
+                return `${date.getDate()}/${date.getMonth()+1}`;
+            });
+            
+            const data = historyData.map(item => item.balance);
+            
+            const minValue = Math.max(100, Math.min(...data) - 100);
+            const maxValue = Math.max(...data) + 100;
+            
+            if (historyChart) {
+                historyChart.destroy();
+            }
+            
+            historyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `${name} का बैलेंस इतिहास (₹)`,
+                        data: data,
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'मासिक बैलेंस परिवर्तन',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `बैलेंस: ₹${context.raw.toLocaleString()}`;
+                                },
+                                afterLabel: function(context) {
+                                    const index = context.dataIndex;
+                                    if (index > 0) {
+                                        const change = data[index] - data[index-1];
+                                        const changeText = change >= 0 ? 
+                                            `↑ ₹${Math.abs(change).toLocaleString()}` : 
+                                            `↓ ₹${Math.abs(change).toLocaleString()}`;
+                                        return `परिवर्तन: ${changeText}`;
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: minValue,
+                            max: maxValue,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value.toLocaleString();
+                                },
+                                stepSize: Math.ceil((maxValue - minValue) / 5)
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'महीना'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function showScoreDetails() {
+            if (!currentMemberData) return;
+            
+            let creditScore = calculateCreditScoreForMember(currentMemberData);
+            
+            document.getElementById("modalTitle").textContent = `${currentMemberData.name} के स्कोर पॉइंट्स`;
+            
+            document.getElementById("modalContent").innerHTML = `
+                <h4>कुल स्कोर: ${creditScore.totalScore >= 900 ? '900+' : creditScore.totalScore}</h4>
+                <table class="score-table">
+                    <tr>
+                        <th>पैरामीटर</th>
+                        <th>विवरण</th>
+                        <th>अर्जित पॉइंट्स</th>
+                    </tr>
+                    <tr>
+                        <td>बैलेंस</td>
+                        <td>₹${currentMemberData.currentBalance.toLocaleString()} (₹1000 पर 10 पॉइंट)</td>
+                        <td>${creditScore.components.balance}</td>
+                    </tr>
+                    <tr>
+                        <td>भुगतान इतिहास</td>
+                        <td>${currentMemberData.timelyPayments} समय पर भुगतान (प्रति भुगतान 15 पॉइंट)</td>
+                        <td>${creditScore.components.payments}</td>
+                    </tr>
+                    <tr>
+                        <td>ऋण उपयोग</td>
+                        <td>ऋण: ₹${currentMemberData.totalLoan.toLocaleString()}, बैलेंस: ₹${currentMemberData.currentBalance.toLocaleString()}</td>
+                        <td>${creditScore.components.utilization}</td>
+                    </tr>
+                </table>
+                
+                <h4 style="margin-top: 20px;">स्कोर बढ़ाने के टिप्स:</h4>
+                <ul>
+                    <li>अगले ₹${Math.ceil((300 - creditScore.components.balance) * 100)} जमा करके ${300 - creditScore.components.balance} और पॉइंट कमाएं</li>
+                    <li>${Math.ceil((300 - creditScore.components.payments) / 15)} और समय पर भुगतान करके ${300 - creditScore.components.payments} पॉइंट कमाएं</li>
+                    <li>ऋण कम करके ${300 - creditScore.components.utilization} अतिरिक्त पॉइंट प्राप्त करें</li>
+                </ul>
+            `;
+            
+            document.getElementById("scoreModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("scoreModal").style.display = "none";
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == document.getElementById("scoreModal")) {
+                closeModal();
+            }
+        }
+    
+        // Initialize the app
+        fetchData();
+    </script>
+</body>
+</html>
