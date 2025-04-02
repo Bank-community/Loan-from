@@ -1,242 +1,364 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>क्रेडिट स्कोर और लोन पात्रता</title>
+    <title>Credit Score and Loan Eligibility</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #f94144;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f5f7fa;
             margin: 0;
-            padding: 15px;
-            color: #333;
+            padding: 20px;
+            color: var(--dark-color);
         }
+        
         .container {
             background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
             margin: 0 auto;
         }
+        
         h2 {
-            color: #2c3e50;
-            margin-bottom: 20px;
+            color: var(--primary-color);
+            margin-bottom: 25px;
             text-align: center;
+            font-size: 28px;
+            font-weight: 600;
         }
+        
         select, button, input {
-            padding: 12px 15px;
-            margin: 10px 0;
+            padding: 12px 18px;
+            margin: 12px 0;
             font-size: 16px;
             border-radius: 8px;
             border: 1px solid #ddd;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             display: block;
             margin-left: auto;
             margin-right: auto;
+            transition: all 0.3s;
         }
+        
+        select {
+            background-color: white;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234361ee' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            appearance: none;
+            padding-right: 40px;
+        }
+        
+        select:focus, input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            outline: none;
+        }
+        
         button {
-            background-color: #3498db;
+            background-color: var(--primary-color);
             color: white;
             border: none;
             cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
+            font-weight: 600;
+            transition: all 0.3s;
         }
+        
         button:hover {
-            background-color: #2980b9;
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        #scoreDetailsBtn {
+            background-color: var(--success-color);
+            display: none;
+        }
+        
+        #scoreDetailsBtn:hover {
+            background-color: #3aa8d8;
+        }
+        
         .result {
-            margin-top: 25px;
+            margin-top: 30px;
             font-size: 18px;
-            padding: 15px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: var(--light-color);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
+        
         .chart-container {
-    position: relative;
-    height: 450px; /* मैंने ऊंचाई बढ़ा दी */
-    margin: 20px 0;
-}
-
-@media (max-width: 600px) {
-    .chart-container {
-        height: 350px; /* मोबाइल के लिए भी बढ़ाई */
-    }
-}
+            position: relative;
+            height: 500px;
+            margin: 30px 0;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
         .badge {
             display: inline-block;
-            padding: 5px 10px;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 14px;
             font-weight: bold;
             margin-left: 10px;
         }
+        
         .badge-gold {
-            background-color: gold;
+            background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
             color: #333;
         }
+        
         .badge-silver {
-            background-color: silver;
+            background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%);
             color: #333;
         }
+        
         .badge-bronze {
-            background-color: #cd7f32;
+            background: linear-gradient(135deg, #CD7F32 0%, #A97142 100%);
             color: white;
         }
-        .top-members {
-            margin-top: 30px;
-            padding: 15px;
-            background-color: #e8f4fc;
-            border-radius: 8px;
-        }
+        
         .all-members {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f0f8ff;
-            border-radius: 8px;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
+        
         .member-item {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #d1e7f7;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            transition: all 0.2s;
         }
+        
+        .member-item:hover {
+            background-color: #f8f9fa;
+        }
+        
         .member-rank {
             font-weight: bold;
-            margin-right: 10px;
+            margin-right: 15px;
             width: 30px;
             display: inline-block;
+            text-align: center;
+            color: var(--primary-color);
         }
-        .top-member {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #d1e7f7;
-        }
+        
         .score-info {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #e8f4fc;
-            border-radius: 8px;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
+        
         .score-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 20px;
+            font-size: 15px;
         }
+        
         .score-table th, .score-table td {
-            padding: 10px;
+            padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #eee;
         }
+        
         .score-table th {
-            background-color: #3498db;
+            background-color: var(--primary-color);
             color: white;
+            font-weight: 600;
         }
+        
         .score-table tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background-color: #f8f9fa;
         }
+        
         .score-card {
             display: flex;
             justify-content: space-between;
-            margin-top: 15px;
+            margin-top: 20px;
+            gap: 10px;
         }
+        
         .score-level {
-            padding: 8px 15px;
-            border-radius: 20px;
+            padding: 10px;
+            border-radius: 8px;
             font-weight: bold;
             text-align: center;
             flex: 1;
-            margin: 0 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
         }
+        
+        .score-level:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
         .score-good {
-            background-color: #ffcc00;
-            color: #333;
+            background: linear-gradient(135deg, #FFD166 0%, #f8961e 100%);
+            color: white;
         }
+        
         .score-better {
-            background-color: #ff9900;
+            background: linear-gradient(135deg, #06D6A0 0%, #118ab2 100%);
             color: white;
         }
+        
         .score-best {
-            background-color: #00cc66;
+            background: linear-gradient(135deg, #7209B7 0%, #4361ee 100%);
             color: white;
         }
+        
         .modal {
             display: none;
             position: fixed;
-            z-index: 1;
+            z-index: 100;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
         }
+        
         .modal-content {
             background-color: #fefefe;
             margin: 10% auto;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 12px;
             width: 80%;
             max-width: 600px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            animation: modalopen 0.4s;
         }
+        
+        @keyframes modalopen {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
         .close {
             color: #aaa;
             float: right;
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
+            transition: all 0.2s;
         }
+        
+        .close:hover {
+            color: #555;
+            transform: rotate(90deg);
+        }
+        
         .highlight {
-            background-color: #fffacd;
+            background-color: rgba(67, 97, 238, 0.1);
         }
-        @media (max-width: 600px) {
+        
+        .tips-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .tips-section h4 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+        
+        .tips-section ul {
+            padding-left: 20px;
+        }
+        
+        .tips-section li {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
             .container {
                 padding: 15px;
             }
+            
             select, button, input {
-                font-size: 14px;
-                padding: 10px 12px;
+                font-size: 15px;
+                padding: 12px 15px;
+                max-width: 100%;
             }
+            
             .result {
                 font-size: 16px;
+                padding: 15px;
             }
+            
             .chart-container {
-                height: 250px;
+                height: 400px;
+                padding: 10px;
             }
+            
             .score-card {
                 flex-direction: column;
+                gap: 8px;
             }
-            .score-level {
-                margin: 5px 0;
-            }
+            
             .modal-content {
                 width: 90%;
                 margin: 20% auto;
+                padding: 20px;
+            }
+            
+            .score-table th, .score-table td {
+                padding: 10px 12px;
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>क्रेडिट स्कोर और लोन पात्रता</h2>
-        <label>व्यक्ति का नाम चुनें:</label>
+        <h2>Credit Score and Loan Eligibility</h2>
+        <label>Select Person:</label>
         <select id="personSelect"></select>
-        <button onclick="calculateCreditScore()">क्रेडिट स्कोर निकालें</button>
-        <button onclick="showScoreDetails()" id="scoreDetailsBtn" style="display: none; background-color: #2ecc71;">स्कोर पॉइंट्स देखें</button>
+        <button onclick="calculateCreditScore()">Calculate Credit Score</button>
+        <button onclick="showScoreDetails()" id="scoreDetailsBtn">View Score Details</button>
         <div class="result" id="result"></div>
-        
-<div class="chart-container">
-    <canvas id="historyChart"></canvas>
-</div>
-        
-        
+        <div class="chart-container">
+            <canvas id="historyChart"></canvas>
+        </div>
         <div class="score-info" id="scoreInfo"></div>
-        <div class="top-members" id="topMembers"></div>
         <div class="all-members" id="allMembers"></div>
     </div>
 
@@ -244,7 +366,7 @@
     <div id="scoreModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h3 id="modalTitle">स्कोर विवरण</h3>
+            <h3 id="modalTitle">Score Details</h3>
             <div id="modalContent"></div>
         </div>
     </div>
@@ -257,7 +379,7 @@
 
         async function fetchData() {
             try {
-                document.getElementById("result").innerHTML = "<p>डेटा लोड हो रहा है...</p>";
+                document.getElementById("result").innerHTML = "<p>Loading data...</p>";
                 const response = await fetch(apiUrl);
                 const data = await response.json();
                 allData = data;
@@ -269,20 +391,19 @@
                 uniqueNames.forEach(name => {
                     let option = document.createElement("option");
                     option.value = name;
-                    option.innerText = name;
+                    option.textContent = name;
                     selectBox.appendChild(option);
                 });
 
-                displayTopMembers();
+                displayAllMembers();
             } catch (error) {
-                document.getElementById("result").innerHTML = `<p style="color: red;">डेटा लोड करने में त्रुटि: ${error.message}</p>`;
+                document.getElementById("result").innerHTML = `<p style="color: red;">Error loading data: ${error.message}</p>`;
             }
         }
 
-        function displayTopMembers() {
+        function displayAllMembers() {
             let individualBalances = calculateIndividualBalances();
             
-            // Convert to array and calculate scores for all members
             let allMembers = Object.entries(individualBalances)
                 .map(([name, data]) => {
                     let scoreData = calculateCreditScoreForMember(data);
@@ -297,49 +418,11 @@
                 })
                 .sort((a, b) => b.creditScore - a.creditScore);
             
-            // Get top 3 members
-            let topMembers = allMembers.slice(0, 3);
-            
-            // Display top members with medals
-            let topMembersDiv = document.getElementById("topMembers");
-            if (topMembers.length > 0) {
-                topMembersDiv.innerHTML = "<h3>शीर्ष 3 सदस्य (इस माह)</h3>";
-                
-                topMembers.forEach((member, index) => {
-                    let badgeClass = "";
-                    let badgeText = "";
-                    if (index === 0) {
-                        badgeClass = "badge-gold";
-                        badgeText = "🏆 सर्वश्रेष्ठ";
-                    } else if (index === 1) {
-                        badgeClass = "badge-silver";
-                        badgeText = "🥈 द्वितीय";
-                    } else if (index === 2) {
-                        badgeClass = "badge-bronze";
-                        badgeText = "🥉 तृतीय";
-                    }
-                    
-                    topMembersDiv.innerHTML += `
-                        <div class="top-member">
-                            <span>${member.name} <span class="badge ${badgeClass}">${badgeText}</span></span>
-                            <span>स्कोर: ${member.creditScore >= 900 ? '900+' : member.creditScore}</span>
-                        </div>
-                    `;
-                });
-            } else {
-                topMembersDiv.innerHTML = "<p>कोई शीर्ष सदस्य उपलब्ध नहीं है</p>";
-            }
-            
-            // Display all members with their scores
-            displayAllMembers(allMembers);
-        }
-
-        function displayAllMembers(allMembers) {
             let allMembersDiv = document.getElementById("allMembers");
-            allMembersDiv.innerHTML = "<h3>सभी सदस्यों के क्रेडिट स्कोर</h3>";
+            allMembersDiv.innerHTML = "<h3>All Members Credit Scores</h3>";
             
             if (allMembers.length === 0) {
-                allMembersDiv.innerHTML += "<p>कोई सदस्य डेटा उपलब्ध नहीं है</p>";
+                allMembersDiv.innerHTML += "<p>No member data available</p>";
                 return;
             }
             
@@ -349,11 +432,11 @@
                 let rankBadge = "";
                 
                 if (index === 0) {
-                    rankBadge = '<span class="badge badge-gold">🥇</span>';
+                    rankBadge = '<span class="badge badge-gold">🥇 Gold</span>';
                 } else if (index === 1) {
-                    rankBadge = '<span class="badge badge-silver">🥈</span>';
+                    rankBadge = '<span class="badge badge-silver">🥈 Silver</span>';
                 } else if (index === 2) {
-                    rankBadge = '<span class="badge badge-bronze">🥉</span>';
+                    rankBadge = '<span class="badge badge-bronze">🥉 Bronze</span>';
                 }
                 
                 allMembersDiv.innerHTML += `
@@ -362,21 +445,19 @@
                             <span class="member-rank">${index + 1}.</span>
                             ${member.name} ${rankBadge}
                         </div>
-                        <span>स्कोर: ${member.creditScore >= 900 ? '900+' : member.creditScore}</span>
+                        <span>Score: ${member.creditScore >= 900 ? '900+' : member.creditScore}</span>
                     </div>
                 `;
             });
         }
 
         function calculateCreditScoreForMember(memberData) {
-            // Calculate score components
             const balancePoints = Math.min(300, Math.floor(memberData.currentBalance / 1000) * 10);
             const paymentPoints = Math.min(300, memberData.timelyPayments * 15);
             const loanUtilization = memberData.totalLoan > 0 ? 
                 (memberData.currentBalance / memberData.totalLoan) : 1;
             const utilizationPoints = Math.min(300, Math.floor(loanUtilization * 100));
             
-            // Calculate total score (300-900)
             const totalScore = Math.min(900, Math.max(300, 
                 300 + balancePoints + paymentPoints + utilizationPoints));
             
@@ -438,7 +519,7 @@
         function calculateCreditScore() {
             let selectedName = document.getElementById("personSelect").value;
             if (!selectedName) {
-                alert("कृपया एक व्यक्ति चुनें");
+                alert("Please select a person");
                 return;
             }
 
@@ -446,7 +527,7 @@
             let personData = individualBalances[selectedName];
             
             if (!personData) {
-                document.getElementById("result").innerHTML = "<p style='color: red;'>इस व्यक्ति का डेटा उपलब्ध नहीं है</p>";
+                document.getElementById("result").innerHTML = "<p style='color: red;'>No data available for this person</p>";
                 document.getElementById("scoreDetailsBtn").style.display = "none";
                 return;
             }
@@ -460,26 +541,31 @@
             let currentBalance = personData.currentBalance;
             let approvedLoan = currentBalance > 0 && totalBankBalance > 0 ? currentBalance * 1.5 : 0;
 
-            // Calculate credit score with components
             let creditScore = calculateCreditScoreForMember(personData);
             let displayScore = creditScore.totalScore >= 900 ? "900+" : creditScore.totalScore;
             
-            let color = creditScore.totalScore >= 750 ? "green" : 
-                       creditScore.totalScore >= 600 ? "orange" : "red";
+            let color;
+            if (creditScore.totalScore >= 800) {
+                color = "#7209B7"; // Best
+            } else if (creditScore.totalScore >= 650) {
+                color = "#06D6A0"; // Better
+            } else {
+                color = "#FFD166"; // Good
+            }
             
             let loanMessage = approvedLoan > 0
-                ? `<p style="color: green;">आप अधिकतम ₹${approvedLoan.toLocaleString()} तक लोन ले सकते हैं।</p>`
-                : `<p style="color: red;">आपका बैलेंस कम है, लोन अप्रूव नहीं होगा।</p>`;
+                ? `<p style="color: #06D6A0;">You can get a loan up to ₹${approvedLoan.toLocaleString()}.</p>`
+                : `<p style="color: #f94144;">Your balance is low, loan will not be approved.</p>`;
 
             // Check if member is in top 3
             let isTopMember = false;
             let memberRank = 0;
-            let topMembersDiv = document.getElementById("topMembers");
-            if (topMembersDiv.innerHTML.includes(selectedName)) {
+            let allMembersDiv = document.getElementById("allMembers");
+            if (allMembersDiv.innerHTML.includes(selectedName)) {
                 isTopMember = true;
-                if (topMembersDiv.innerHTML.indexOf(selectedName) < topMembersDiv.innerHTML.indexOf("द्वितीय")) {
+                if (allMembersDiv.innerHTML.indexOf(selectedName) < allMembersDiv.innerHTML.indexOf("🥈")) {
                     memberRank = 1;
-                } else if (topMembersDiv.innerHTML.indexOf(selectedName) < topMembersDiv.innerHTML.indexOf("तृतीय")) {
+                } else if (allMembersDiv.innerHTML.indexOf(selectedName) < allMembersDiv.innerHTML.indexOf("🥉")) {
                     memberRank = 2;
                 } else {
                     memberRank = 3;
@@ -487,19 +573,19 @@
             }
 
             let topMemberTag = isTopMember 
-                ? `<p style="color: ${memberRank === 1 ? 'gold' : memberRank === 2 ? 'silver' : '#cd7f32'}; 
-                    font-weight: bold;">${memberRank === 1 ? '🏆 सर्वश्रेष्ठ सदस्य' : memberRank === 2 ? '🥈 द्वितीय स्थान' : '🥉 तृतीय स्थान'}</p>`
+                ? `<p style="color: ${memberRank === 1 ? '#FFD700' : memberRank === 2 ? '#C0C0C0' : '#CD7F32'}; 
+                    font-weight: bold;">${memberRank === 1 ? '🥇 Top Member' : memberRank === 2 ? '🥈 Second Rank' : '🥉 Third Rank'}</p>`
                 : "";
 
             // Display result
             let resultDiv = document.getElementById("result");
             resultDiv.innerHTML = `
-                <p style="font-size: 22px; font-weight: bold; color: ${color};">क्रेडिट स्कोर: ${displayScore}</p>
+                <p style="font-size: 22px; font-weight: bold; color: ${color};">Credit Score: ${displayScore}</p>
                 ${topMemberTag}
-                <p>आपका वर्तमान बैलेंस: ₹${currentBalance.toLocaleString()}</p>
-                <p>कुल भुगतान: ₹${personData.totalPayment.toLocaleString()}</p>
-                <p>कुल ऋण: ₹${personData.totalLoan.toLocaleString()}</p>
-                <p>समय पर भुगतान: ${personData.timelyPayments}</p>
+                <p>Current Balance: ₹${currentBalance.toLocaleString()}</p>
+                <p>Total Payments: ₹${personData.totalPayment.toLocaleString()}</p>
+                <p>Total Loan: ₹${personData.totalLoan.toLocaleString()}</p>
+                <p>Timely Payments: ${personData.timelyPayments}</p>
                 ${loanMessage}
             `;
 
@@ -519,53 +605,59 @@
             // Score level rating
             let scoreLevel = "";
             let scoreClass = "";
+            let scoreColor = "";
             if (creditScore.totalScore >= 800) {
-                scoreLevel = "बेस्ट";
+                scoreLevel = "Best";
                 scoreClass = "score-best";
+                scoreColor = "#7209B7";
             } else if (creditScore.totalScore >= 650) {
-                scoreLevel = "बेटर";
+                scoreLevel = "Better";
                 scoreClass = "score-better";
+                scoreColor = "#06D6A0";
             } else {
-                scoreLevel = "गुड";
+                scoreLevel = "Good";
                 scoreClass = "score-good";
+                scoreColor = "#FFD166";
             }
             
             // Score card visualization
             scoreInfoDiv.innerHTML = `
-                <h3>आपका क्रेडिट रेटिंग: <span class="${scoreClass}">${scoreLevel}</span></h3>
+                <h3 style="color: ${scoreColor};">Your Credit Rating: <span class="${scoreClass}">${scoreLevel}</span></h3>
                 <div class="score-card">
                     <div class="score-level ${creditScore.totalScore >= 300 ? 'score-good' : ''}">300-599</div>
                     <div class="score-level ${creditScore.totalScore >= 600 ? 'score-better' : ''}">600-799</div>
                     <div class="score-level ${creditScore.totalScore >= 800 ? 'score-best' : ''}">800-900+</div>
                 </div>
                 
-                <h4>क्रेडिट स्कोर कैसे बढ़ाएं:</h4>
-                <ul>
-                    <li>समय पर भुगतान करें (15 पॉइंट प्रति भुगतान)</li>
-                    <li>अपना बैलेंस बढ़ाएं (₹1000 पर 10 पॉइंट)</li>
-                    <li>ऋण का कम उपयोग करें (कम ऋण = अधिक पॉइंट)</li>
-                </ul>
+                <div class="tips-section">
+                    <h4>क्रेडिट स्कोर कैसे बढ़ाएं (Tips in Hindi):</h4>
+                    <ul>
+                        <li>समय पर भुगतान करें (15 पॉइंट प्रति भुगतान)</li>
+                        <li>अपना बैलेंस बढ़ाएं (₹1000 पर 10 पॉइंट)</li>
+                        <li>ऋण का कम उपयोग करें (कम ऋण = अधिक पॉइंट)</li>
+                    </ul>
+                </div>
                 
                 <table class="score-table">
                     <tr>
-                        <th>स्कोर रेंज</th>
-                        <th>रेटिंग</th>
-                        <th>लोन पात्रता</th>
+                        <th>Score Range</th>
+                        <th>Rating</th>
+                        <th>Loan Eligibility</th>
                     </tr>
                     <tr>
                         <td>800-900+</td>
-                        <td>बेस्ट</td>
-                        <td>उच्चतम पात्रता</td>
+                        <td>Best</td>
+                        <td>Highest eligibility</td>
                     </tr>
                     <tr>
                         <td>650-799</td>
-                        <td>बेटर</td>
-                        <td>अच्छी पात्रता</td>
+                        <td>Better</td>
+                        <td>Good eligibility</td>
                     </tr>
                     <tr>
                         <td>300-649</td>
-                        <td>गुड</td>
-                        <td>सीमित पात्रता</td>
+                        <td>Good</td>
+                        <td>Limited eligibility</td>
                     </tr>
                 </table>
             `;
@@ -595,29 +687,49 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: `${name} का बैलेंस इतिहास (₹)`,
+                        label: `${name}'s Balance History (₹)`,
                         data: data,
-                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                        borderColor: 'rgba(52, 152, 219, 1)',
-                        borderWidth: 2,
+                        backgroundColor: 'rgba(67, 97, 238, 0.2)',
+                        borderColor: 'rgba(67, 97, 238, 1)',
+                        borderWidth: 3,
                         tension: 0.1,
-                        fill: true
+                        fill: true,
+                        pointBackgroundColor: 'rgba(67, 97, 238, 1)',
+                        pointRadius: 5,
+                        pointHoverRadius: 7
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         title: {
                             display: true,
-                            text: 'मासिक बैलेंस परिवर्तन',
+                            text: 'Monthly Balance Changes',
                             font: {
-                                size: 16
+                                size: 18,
+                                weight: 'bold'
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 20
+                            }
+                        },
+                        legend: {
+                            labels: {
+                                font: {
+                                    size: 14
+                                },
+                                padding: 20
                             }
                         },
                         tooltip: {
+                            bodyFont: {
+                                size: 14
+                            },
                             callbacks: {
                                 label: function(context) {
-                                    return `बैलेंस: ₹${context.raw.toLocaleString()}`;
+                                    return `Balance: ₹${context.raw.toLocaleString()}`;
                                 },
                                 afterLabel: function(context) {
                                     const index = context.dataIndex;
@@ -626,7 +738,7 @@
                                         const changeText = change >= 0 ? 
                                             `↑ ₹${Math.abs(change).toLocaleString()}` : 
                                             `↓ ₹${Math.abs(change).toLocaleString()}`;
-                                        return `परिवर्तन: ${changeText}`;
+                                        return `Change: ${changeText}`;
                                     }
                                     return '';
                                 }
@@ -638,18 +750,55 @@
                             beginAtZero: false,
                             min: minValue,
                             max: maxValue,
+                            title: {
+                                display: true,
+                                text: 'Amount (₹)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
                             ticks: {
+                                font: {
+                                    size: 12
+                                },
                                 callback: function(value) {
                                     return '₹' + value.toLocaleString();
                                 },
-                                stepSize: Math.ceil((maxValue - minValue) / 5)
+                                stepSize: Math.ceil((maxValue - minValue) / 5),
+                                padding: 10
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                lineWidth: 1
                             }
                         },
                         x: {
                             title: {
                                 display: true,
-                                text: 'महीना'
+                                text: 'Month',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12
+                                },
+                                padding: 10
+                            },
+                            grid: {
+                                display: false
                             }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            left: 20,
+                            right: 20,
+                            top: 20,
+                            bottom: 20
                         }
                     }
                 }
@@ -661,39 +810,41 @@
             
             let creditScore = calculateCreditScoreForMember(currentMemberData);
             
-            document.getElementById("modalTitle").textContent = `${currentMemberData.name} के स्कोर पॉइंट्स`;
+            document.getElementById("modalTitle").textContent = `${currentMemberData.name}'s Score Details`;
             
             document.getElementById("modalContent").innerHTML = `
-                <h4>कुल स्कोर: ${creditScore.totalScore >= 900 ? '900+' : creditScore.totalScore}</h4>
+                <h4>Total Score: ${creditScore.totalScore >= 900 ? '900+' : creditScore.totalScore}</h4>
                 <table class="score-table">
                     <tr>
-                        <th>पैरामीटर</th>
-                        <th>विवरण</th>
-                        <th>अर्जित पॉइंट्स</th>
+                        <th>Parameter</th>
+                        <th>Details</th>
+                        <th>Points Earned</th>
                     </tr>
                     <tr>
-                        <td>बैलेंस</td>
-                        <td>₹${currentMemberData.currentBalance.toLocaleString()} (₹1000 पर 10 पॉइंट)</td>
+                        <td>Balance</td>
+                        <td>₹${currentMemberData.currentBalance.toLocaleString()} (10 points per ₹1000)</td>
                         <td>${creditScore.components.balance}</td>
                     </tr>
                     <tr>
-                        <td>भुगतान इतिहास</td>
-                        <td>${currentMemberData.timelyPayments} समय पर भुगतान (प्रति भुगतान 15 पॉइंट)</td>
+                        <td>Payment History</td>
+                        <td>${currentMemberData.timelyPayments} timely payments (15 points each)</td>
                         <td>${creditScore.components.payments}</td>
                     </tr>
                     <tr>
-                        <td>ऋण उपयोग</td>
-                        <td>ऋण: ₹${currentMemberData.totalLoan.toLocaleString()}, बैलेंस: ₹${currentMemberData.currentBalance.toLocaleString()}</td>
+                        <td>Loan Utilization</td>
+                        <td>Loan: ₹${currentMemberData.totalLoan.toLocaleString()}, Balance: ₹${currentMemberData.currentBalance.toLocaleString()}</td>
                         <td>${creditScore.components.utilization}</td>
                     </tr>
                 </table>
                 
-                <h4 style="margin-top: 20px;">स्कोर बढ़ाने के टिप्स:</h4>
-                <ul>
-                    <li>अगले ₹${Math.ceil((300 - creditScore.components.balance) * 100)} जमा करके ${300 - creditScore.components.balance} और पॉइंट कमाएं</li>
-                    <li>${Math.ceil((300 - creditScore.components.payments) / 15)} और समय पर भुगतान करके ${300 - creditScore.components.payments} पॉइंट कमाएं</li>
-                    <li>ऋण कम करके ${300 - creditScore.components.utilization} अतिरिक्त पॉइंट प्राप्त करें</li>
-                </ul>
+                <div class="tips-section" style="margin-top: 20px;">
+                    <h4>Score Improvement Tips:</h4>
+                    <ul>
+                        <li>Deposit ₹${Math.ceil((300 - creditScore.components.balance) * 100)} more to earn ${300 - creditScore.components.balance} additional points</li>
+                        <li>Make ${Math.ceil((300 - creditScore.components.payments) / 15)} more timely payments to earn ${300 - creditScore.components.payments} points</li>
+                        <li>Reduce loan to earn ${300 - creditScore.components.utilization} more utilization points</li>
+                    </ul>
+                </div>
             `;
             
             document.getElementById("scoreModal").style.display = "block";
