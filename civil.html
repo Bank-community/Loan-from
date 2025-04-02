@@ -10,7 +10,7 @@
             font-family: 'Arial', sans-serif;
             background-color: #f5f7fa;
             margin: 0;
-            padding: 10px;
+            padding: 15px;
             color: #333;
         }
         .container {
@@ -57,10 +57,16 @@
             background-color: #f8f9fa;
         }
         .chart-container {
-            position: relative;
-            height: 300px;
-            margin: 20px 0;
-        }
+    position: relative;
+    height: 450px; /* मैंने ऊंचाई बढ़ा दी */
+    margin: 20px 0;
+}
+
+@media (max-width: 600px) {
+    .chart-container {
+        height: 350px; /* मोबाइल के लिए भी बढ़ाई */
+    }
+}
         .badge {
             display: inline-block;
             padding: 5px 10px;
@@ -86,6 +92,24 @@
             padding: 15px;
             background-color: #e8f4fc;
             border-radius: 8px;
+        }
+        .all-members {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+        }
+        .member-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #d1e7f7;
+        }
+        .member-rank {
+            font-weight: bold;
+            margin-right: 10px;
+            width: 30px;
+            display: inline-block;
         }
         .top-member {
             display: flex;
@@ -167,6 +191,9 @@
             font-weight: bold;
             cursor: pointer;
         }
+        .highlight {
+            background-color: #fffacd;
+        }
         @media (max-width: 600px) {
             .container {
                 padding: 15px;
@@ -196,17 +223,21 @@
 </head>
 <body>
     <div class="container">
-        <h2>CIVIL SCORE AND LOAN ELIGIBILITY</h2>
-        <label>Select Name:</label>
+        <h2>क्रेडिट स्कोर और लोन पात्रता</h2>
+        <label>व्यक्ति का नाम चुनें:</label>
         <select id="personSelect"></select>
-        <button onclick="calculateCreditScore()">CHEAK CIVIL SCORE</button>
-        <button onclick="showScoreDetails()" id="scoreDetailsBtn" style="display: none; background-color: #2ecc71;">Score Point History</button>
+        <button onclick="calculateCreditScore()">क्रेडिट स्कोर निकालें</button>
+        <button onclick="showScoreDetails()" id="scoreDetailsBtn" style="display: none; background-color: #2ecc71;">स्कोर पॉइंट्स देखें</button>
         <div class="result" id="result"></div>
-        <div class="chart-container">
-            <canvas id="historyChart"></canvas>
-        </div>
+        
+<div class="chart-container">
+    <canvas id="historyChart"></canvas>
+</div>
+        
+        
         <div class="score-info" id="scoreInfo"></div>
         <div class="top-members" id="topMembers"></div>
+        <div class="all-members" id="allMembers"></div>
     </div>
 
     <!-- Score Details Modal -->
@@ -251,18 +282,25 @@
         function displayTopMembers() {
             let individualBalances = calculateIndividualBalances();
             
-            let sortedMembers = Object.entries(individualBalances)
-                .map(([name, data]) => ({
-                    name,
-                    balance: data.currentBalance,
-                    loan: data.totalLoan,
-                    timelyPayments: data.timelyPayments,
-                    creditScore: calculateCreditScoreForMember(data).totalScore
-                }))
+            // Convert to array and calculate scores for all members
+            let allMembers = Object.entries(individualBalances)
+                .map(([name, data]) => {
+                    let scoreData = calculateCreditScoreForMember(data);
+                    return {
+                        name,
+                        balance: data.currentBalance,
+                        loan: data.totalLoan,
+                        timelyPayments: data.timelyPayments,
+                        creditScore: scoreData.totalScore,
+                        scoreData: scoreData
+                    };
+                })
                 .sort((a, b) => b.creditScore - a.creditScore);
             
-            let topMembers = sortedMembers.slice(0, 3);
+            // Get top 3 members
+            let topMembers = allMembers.slice(0, 3);
             
+            // Display top members with medals
             let topMembersDiv = document.getElementById("topMembers");
             if (topMembers.length > 0) {
                 topMembersDiv.innerHTML = "<h3>शीर्ष 3 सदस्य (इस माह)</h3>";
@@ -291,6 +329,43 @@
             } else {
                 topMembersDiv.innerHTML = "<p>कोई शीर्ष सदस्य उपलब्ध नहीं है</p>";
             }
+            
+            // Display all members with their scores
+            displayAllMembers(allMembers);
+        }
+
+        function displayAllMembers(allMembers) {
+            let allMembersDiv = document.getElementById("allMembers");
+            allMembersDiv.innerHTML = "<h3>सभी सदस्यों के क्रेडिट स्कोर</h3>";
+            
+            if (allMembers.length === 0) {
+                allMembersDiv.innerHTML += "<p>कोई सदस्य डेटा उपलब्ध नहीं है</p>";
+                return;
+            }
+            
+            allMembers.forEach((member, index) => {
+                let isTop3 = index < 3;
+                let highlightClass = isTop3 ? "highlight" : "";
+                let rankBadge = "";
+                
+                if (index === 0) {
+                    rankBadge = '<span class="badge badge-gold">🥇</span>';
+                } else if (index === 1) {
+                    rankBadge = '<span class="badge badge-silver">🥈</span>';
+                } else if (index === 2) {
+                    rankBadge = '<span class="badge badge-bronze">🥉</span>';
+                }
+                
+                allMembersDiv.innerHTML += `
+                    <div class="member-item ${highlightClass}">
+                        <div>
+                            <span class="member-rank">${index + 1}.</span>
+                            ${member.name} ${rankBadge}
+                        </div>
+                        <span>स्कोर: ${member.creditScore >= 900 ? '900+' : member.creditScore}</span>
+                    </div>
+                `;
+            });
         }
 
         function calculateCreditScoreForMember(memberData) {
@@ -413,18 +488,18 @@
 
             let topMemberTag = isTopMember 
                 ? `<p style="color: ${memberRank === 1 ? 'gold' : memberRank === 2 ? 'silver' : '#cd7f32'}; 
-                    font-weight: bold;">${memberRank === 1 ? '🏆 1st ' : memberRank === 2 ? '🥈 2nd ' : '🥉 3rd'}</p>`
+                    font-weight: bold;">${memberRank === 1 ? '🏆 सर्वश्रेष्ठ सदस्य' : memberRank === 2 ? '🥈 द्वितीय स्थान' : '🥉 तृतीय स्थान'}</p>`
                 : "";
 
             // Display result
             let resultDiv = document.getElementById("result");
             resultDiv.innerHTML = `
-                <p style="font-size: 22px; font-weight: bold; color: ${color};">CIVIL SCORE: ${displayScore}</p>
+                <p style="font-size: 22px; font-weight: bold; color: ${color};">क्रेडिट स्कोर: ${displayScore}</p>
                 ${topMemberTag}
-                <p>Your current balance: ₹${currentBalance.toLocaleString()}</p>
-                <p>Total Payment: ₹${personData.totalPayment.toLocaleString()}</p>
-                <p>total debt (ऋण): ₹${personData.totalLoan.toLocaleString()}</p>
-                <p>Timely Payment: ${personData.timelyPayments}</p>
+                <p>आपका वर्तमान बैलेंस: ₹${currentBalance.toLocaleString()}</p>
+                <p>कुल भुगतान: ₹${personData.totalPayment.toLocaleString()}</p>
+                <p>कुल ऋण: ₹${personData.totalLoan.toLocaleString()}</p>
+                <p>समय पर भुगतान: ${personData.timelyPayments}</p>
                 ${loanMessage}
             `;
 
@@ -445,19 +520,19 @@
             let scoreLevel = "";
             let scoreClass = "";
             if (creditScore.totalScore >= 800) {
-                scoreLevel = "BEST";
+                scoreLevel = "बेस्ट";
                 scoreClass = "score-best";
             } else if (creditScore.totalScore >= 650) {
-                scoreLevel = "BETTER";
+                scoreLevel = "बेटर";
                 scoreClass = "score-better";
             } else {
-                scoreLevel = "GOOD";
+                scoreLevel = "गुड";
                 scoreClass = "score-good";
             }
             
             // Score card visualization
             scoreInfoDiv.innerHTML = `
-                <h3>Your Credit Rating: <span class="${scoreClass}">${scoreLevel}</span></h3>
+                <h3>आपका क्रेडिट रेटिंग: <span class="${scoreClass}">${scoreLevel}</span></h3>
                 <div class="score-card">
                     <div class="score-level ${creditScore.totalScore >= 300 ? 'score-good' : ''}">300-599</div>
                     <div class="score-level ${creditScore.totalScore >= 600 ? 'score-better' : ''}">600-799</div>
@@ -473,24 +548,24 @@
                 
                 <table class="score-table">
                     <tr>
-                        <th>Score Range</th>
-                        <th>Rating</th>
-                        <th>Loan Eligibility</th>
+                        <th>स्कोर रेंज</th>
+                        <th>रेटिंग</th>
+                        <th>लोन पात्रता</th>
                     </tr>
                     <tr>
                         <td>800-900+</td>
-                        <td>Best</td>
-                        <td>Highest eligibility</td>
+                        <td>बेस्ट</td>
+                        <td>उच्चतम पात्रता</td>
                     </tr>
                     <tr>
                         <td>650-799</td>
-                        <td>Better</td>
-                        <td>Good eligibility</td>
+                        <td>बेटर</td>
+                        <td>अच्छी पात्रता</td>
                     </tr>
                     <tr>
                         <td>300-649</td>
-                        <td>Good</td>
-                        <td>Limited eligibility</td>
+                        <td>गुड</td>
+                        <td>सीमित पात्रता</td>
                     </tr>
                 </table>
             `;
