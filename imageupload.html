@@ -43,8 +43,16 @@
       border-color: #007BFF;
     }
 
+    .button-group {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
     button {
-      display: inline-block;
+      flex: 1;
       padding: 12px 24px;
       background-color: #007BFF;
       color: white;
@@ -53,6 +61,7 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
       font-weight: 600;
+      text-align: center;
     }
 
     button:hover {
@@ -70,9 +79,17 @@
       display: none;
     }
 
+    .home-btn {
+      background-color: red;
+    }
+
+    .home-btn:hover {
+      background-color: #5a6268;
+    }
+
     .result {
       margin-top: 20px;
-      word-break: break-all;
+      word-break: break-word;
     }
 
     input[type="text"] {
@@ -89,14 +106,18 @@
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     }
-
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Upload Image to Ramazone</h2>
     <input type="file" id="imageInput" accept="image/*" />
-    <button onclick="uploadImage()">Upload Image</button>
+    
+    <div class="button-group">
+      <button onclick="uploadImage()">Upload Image</button>
+      <button onclick="goHome()" class="home-btn">Home</button>
+    </div>
+
     <div class="result" id="result"></div>
     <button id="whatsappShareBtn" class="whatsapp-btn" onclick="shareOnWhatsApp()">Share on WhatsApp</button>
   </div>
@@ -156,6 +177,10 @@
         const whatsappURL = `https://wa.me/?text=${encodeURIComponent("Check out this image from Ramazone: " + imageUrl)}`;
         window.open(whatsappURL, "_blank");
       }
+    }
+
+    function goHome() {
+      window.location.href = "https://ramazone.imgbb.com/";
     }
   </script>
 </body>
