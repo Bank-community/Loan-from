@@ -8,8 +8,8 @@
         /* Basic Reset & Body Style */
         :root {
              --primary-color: #007BFF; --secondary-color: #056fff; --light-bg: #f8f9fa;
-             --text-light: #fff; --text-dark: #343a40; --positive-color: #198754;
-             --negative-color: #dc3545; --warning-color: #ffc107; --neutral-color: #6c757d; /* Gray for Due */
+             --text-light: #fff; --text-dark: #343a40; --positive-color: #04c800;
+             --negative-color: #ff1f02; --warning-color: #ffc107; --neutral-color: #000; /* Gray for Due */
              --profile-bg: linear-gradient(135deg, #0d6efd, #0a58ca); --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
              --profile-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
              --rating-good: #dc3545; --rating-better: #ffc107; --rating-best: #198754;
@@ -355,8 +355,97 @@
      // --- Rank Calculation (Performance Score Rank) --- (Unchanged)
      function calculateAllUserRanks() { userRankMap.clear(); const userData={}; allData.forEach(row=>{const name=row.Name; if(name==='Unknown')return; if(!userData[name])userData[name]={amount:0}; userData[name].amount+=row.Payment+row.SipPayment-row.Loan;}); const sortedData=Object.entries(userData).map(([name,{amount}])=>({name, score:calculatePerformanceScore(amount)})).sort((a,b)=>b.score-a.score); sortedData.forEach((user,index)=>{let rankDisplay; if(index===0)rankDisplay="🥇"; else if(index===1)rankDisplay="🥈"; else if(index===2)rankDisplay="🥉"; else rankDisplay=`#${index + 1}`; userRankMap.set(user.name,rankDisplay);}); }
 
-     // --- CIBIL Score Calculation (With Penalty) --- (Unchanged logic)
-     function calculateCivilScore(userName) { if(userName==='all'){return{scoreValue:0,scoreDisplay:"N/A",rating:"",balanceScore:0,historyScore:0,utilizationScore:0,penalty:0};} const userData=allData.filter(r=>r.Name===userName); if(userData.length===0){return{scoreValue:300,scoreDisplay:"300",rating:"Good",balanceScore:0,historyScore:0,utilizationScore:0,penalty:0};} const totalLoanTaken=userData.reduce((acc,r)=>acc+r.Loan,0); const totalPayment=userData.reduce((acc,r)=>acc+r.Payment,0); const totalSipPayment=userData.reduce((acc,r)=>acc+r.SipPayment,0); const currentBalance=totalPayment+totalSipPayment-totalLoanTaken; const balanceScore=Math.min(300,Math.max(0,Math.floor(currentBalance/1000)*10)); let timelySipCount=0; userData.filter(r=>r.SipPayment>0).forEach(sip=>{if(sip.Date.getDate()>=1&&sip.Date.getDate()<=10)timelySipCount++;}); const historyScore=Math.min(300,timelySipCount*15); const totalRepaid=totalPayment+totalSipPayment; const utilizationRatio=(totalLoanTaken===0)?1:Math.max(0,Math.min(1,totalRepaid/totalLoanTaken)); const utilizationScore=Math.round(utilizationRatio*300); let penalty=0; const outstandingLoan=Math.max(0,totalLoanTaken-totalRepaid); if(outstandingLoan>0){const lastLoan=userData.filter(r=>r.Loan>0).sort((a,b)=>b.Date-a.Date)[0]; if(lastLoan){const today=new Date(); const dueDate=new Date(lastLoan.Date); dueDate.setDate(dueDate.getDate()+31); const daysOverdue=Math.floor((today-dueDate)/(1000*60*60*24)); if(daysOverdue>100)penalty=-600; else if(daysOverdue>80)penalty=-200; else if(daysOverdue>50)penalty=-100; else if(daysOverdue>0)penalty=-50;}} const calculatedScore=balanceScore+historyScore+utilizationScore+penalty; const finalScore=Math.max(300,Math.min(900,calculatedScore)); let rating=""; if(finalScore<=649)rating="Good"; else if(finalScore<=799)rating="Better"; else rating="Best"; const scoreDisplay=finalScore>=900?"900+":String(finalScore); return{scoreValue:finalScore,scoreDisplay,rating,balanceScore,historyScore,utilizationScore,penalty}; }
+          // --- CIBIL Score Calculation (With Penalty & Updated Rating) ---
+     function calculateCivilScore(userName) {
+         // Handle "All Members" case
+         if (userName === 'all') {
+             return { scoreValue: 0, scoreDisplay: "N/A", rating: "", balanceScore: 0, historyScore: 0, utilizationScore: 0, penalty: 0 };
+         }
+
+         const userData = allData.filter(r => r.Name === userName);
+
+         // Handle case where user exists but has no data entries yet
+         if (userData.length === 0) {
+              // Return minimum possible score and "Poor" rating
+             return { scoreValue: 100, scoreDisplay: "100", rating: "Poor", balanceScore: 0, historyScore: 0, utilizationScore: 0, penalty: 0 };
+         }
+
+         // Calculate components based on user data
+         const totalLoanTaken = userData.reduce((acc, r) => acc + r.Loan, 0);
+         const totalPayment = userData.reduce((acc, r) => acc + r.Payment, 0);
+         const totalSipPayment = userData.reduce((acc, r) => acc + r.SipPayment, 0);
+         const currentBalance = totalPayment + totalSipPayment - totalLoanTaken;
+
+         // 1. Balance Component (Max 100 as per user's provided code)
+         const balanceScore = Math.min(100, Math.max(0, Math.floor(currentBalance / 1000) * 10));
+
+         // 2. Payment History Component (Max 300) - Timely SIPs
+         let timelySipCount = 0;
+         userData.filter(r => r.SipPayment > 0).forEach(sip => {
+             // Ensure Date is valid before calling getDate
+             if (sip.Date instanceof Date && !isNaN(sip.Date)) {
+                 const paymentDay = sip.Date.getDate();
+                 if (paymentDay >= 1 && paymentDay <= 10) {
+                     timelySipCount++;
+                 }
+             }
+         });
+         const historyScore = Math.min(300, timelySipCount * 15);
+
+         // 3. Loan Utilization Component (Max 300) - % Repaid
+         const totalRepaid = totalPayment + totalSipPayment;
+         const utilizationRatio = (totalLoanTaken === 0) ? 1 : Math.max(0, Math.min(1, totalRepaid / totalLoanTaken));
+         const utilizationScore = Math.round(utilizationRatio * 300);
+
+         // 4. Overdue Loan Penalty
+         let penalty = 0;
+         const outstandingLoan = Math.max(0, totalLoanTaken - totalRepaid);
+         if (outstandingLoan > 0) {
+             // Find the most recent loan to check for overdue status
+             const lastLoan = userData.filter(r => r.Loan > 0).sort((a, b) => b.Date - a.Date)[0];
+             if (lastLoan && lastLoan.Date instanceof Date && !isNaN(lastLoan.Date)) {
+                 const today = new Date();
+                 const dueDate = new Date(lastLoan.Date);
+                 dueDate.setDate(dueDate.getDate() + 31); // Due 31 days after loan date
+                 // Ensure dates are valid before comparison
+                 if (!isNaN(dueDate)) {
+                    const daysOverdue = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+
+                    if (daysOverdue > 100) penalty = -600;
+                    else if (daysOverdue > 80) penalty = -200;
+                    else if (daysOverdue > 50) penalty = -100;
+                    else if (daysOverdue > 0) penalty = -50; // Overdue by 1-50 days (after 31 day grace)
+                 }
+             }
+         }
+
+         // Calculate Final Score (Sum components + penalty)
+         const calculatedScore = balanceScore + historyScore + utilizationScore + penalty;
+
+         // Clamp Final Score between 100 and 900 (as per user's provided code minimum)
+         const finalScore = Math.max(100, Math.min(900, calculatedScore));
+
+         // Determine Rating (UPDATED with "Poor")
+         let rating = "";
+         if (finalScore <= 499) rating = "Poor";    // Scores 100-499
+         else if (finalScore <= 649) rating = "Good";   // Scores 500-649
+         else if (finalScore <= 799) rating = "Better"; // Scores 650-799
+         else rating = "Best";                          // Scores 800-900+
+
+         // Format Display Score
+         const scoreDisplay = finalScore >= 900 ? "900+" : String(finalScore);
+
+         // Return full breakdown
+         return {
+             scoreValue: finalScore,
+             scoreDisplay: scoreDisplay,
+             rating: rating,
+             balanceScore: balanceScore,
+             historyScore: historyScore,
+             utilizationScore: utilizationScore,
+             penalty: penalty
+         };
+     }
 
      // --- Loan Eligibility Calculation --- (Unchanged)
      function calculateEligibility(userName) { if(userName==='all'){return{isEligible:false,approvedAmount:0};} const userData=allData.filter(r=>r.Name===userName); if(userData.length===0){return{isEligible:false,approvedAmount:0};} const totalLoanTaken=userData.reduce((acc,r)=>acc+r.Loan,0); const totalPayment=userData.reduce((acc,r)=>acc+r.Payment,0); const totalSipPayment=userData.reduce((acc,r)=>acc+r.SipPayment,0); const userCurrentBalance=totalPayment+totalSipPayment-totalLoanTaken; const isEligible=userCurrentBalance>0&&communityBalance>0; const approvedAmount=isEligible?userCurrentBalance*1.5:0; return{isEligible:isEligible,approvedAmount:approvedAmount}; }
@@ -433,7 +522,7 @@
                  joinDate = firstSipPayment ? formatDate(firstSipPayment.Date, { month: 'long' }) : "--";
                  // SIP Status
                  const paidThisMonth = userData.some(r => r.SipPayment > 0 && r.Date.getMonth() === currentMonth && r.Date.getFullYear() === currentYear);
-                 if(paidThisMonth){sipStatus="Paid"; sipStatusClass="paid";}else if(currentDay>10){sipStatus="Pending"; sipStatusClass="pending";}else{sipStatus="Due"; sipStatusClass="due";}
+                 if(paidThisMonth){sipStatus="✅ Paid"; sipStatusClass="paid";}else if(currentDay>10){sipStatus="❌ Pending"; sipStatusClass="pending";}else{sipStatus="🔴 Due"; sipStatusClass="due";}
                  // Rank & Best Member
                  if(rank){profileRankEl.textContent=rank; profileRankEl.classList.remove('hidden');}else{profileRankEl.classList.add('hidden');}
                  if(performanceScore > 1000){bestMemberTagEl.classList.remove('hidden');}else{bestMemberTagEl.classList.add('hidden');}
