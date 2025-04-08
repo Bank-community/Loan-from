@@ -346,31 +346,56 @@
             }
             const rawData = await response.json();
 
-            // --- *** MODIFICATION START *** ---
             // Process rawData based on the new JSON structure
             allData = rawData.map(row => {
-                // Attempt to parse the date string ("23 June 2024").
-                // Note: This format might not be universally supported by `new Date()`.
-                // If issues arise, a more robust date parsing library (like Moment.js or date-fns)
-                // or manual parsing might be needed.
-                let parsedDate = new Date(row.Date);
-                if (isNaN(parsedDate)) { // Check if parsing failed
-                   console.warn(`Could not parse date: "${row.Date}". Using default date.`);
+                // Robust date parsing (attempt multiple formats if needed)
+                let parsedDate = new Date(NaN); // Start with invalid date
+                if (row.Date) {
+                    // Try standard parsing first (handles ISO, YYYY-MM-DD, etc.)
+                    parsedDate = new Date(row.Date);
+                    // If standard parsing fails, try specific format like "DD Month YYYY"
+                    if (isNaN(parsedDate)) {
+                        // Try DD Month YYYY format (case-insensitive month)
+                         const dateParts = String(row.Date).match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);
+                         if (dateParts) {
+                            // Convert month name to number (case-insensitive)
+                            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                            const monthIndex = monthNames.findIndex(m => m.toLowerCase() === dateParts[2].toLowerCase());
+                            if (monthIndex !== -1) {
+                                // Let JS parse a rearranged string "Month DD, YYYY"
+                                parsedDate = new Date(`${dateParts[2]} ${dateParts[1]}, ${dateParts[3]}`);
+                             }
+                         }
+                    }
+                     // Add more parsing attempts for other formats if needed here
+                }
+
+                // If still invalid after attempts, use epoch or log warning
+                if (isNaN(parsedDate)) {
+                   console.warn(`Could not parse date: "${row.Date}" for Name: "${row.Name}". Using default date (Epoch).`);
                    parsedDate = new Date(0); // Use epoch as default if invalid
                 }
 
-                return {
-                    Name: row.Name ? String(row.Name).trim() : 'Unknown', // Get Name
-                    Date: parsedDate, // Use parsed date
-                    Loan: parseFloat(row.Loan) || 0,          // Get Loan, default to 0 if empty/invalid
-                    Payment: parseFloat(row.Payment) || 0,      // Get Payment, default to 0 if empty/invalid
-                    SipPayment: parseFloat(row["SIP Payment"]) || 0, // Get SIP Payment (using bracket notation), default to 0
-                    ImageUrl: row.imageUrl || null             // Get imageUrl
-                };
-            });
-            // --- *** MODIFICATION END *** ---
+                // Ensure numeric fields handle empty strings "" correctly -> convert to 0
+                const loanAmount = parseFloat(row.Loan) || 0;
+                const paymentAmount = parseFloat(row.Payment) || 0;
+                const sipPaymentAmount = parseFloat(row["SIP Payment"]) || 0;
 
-            // Calculate overall community balance after processing
+
+                return {
+                    Name: row.Name ? String(row.Name).trim() : 'Unknown',
+                    Date: parsedDate,
+                    Loan: loanAmount,         // Store as number (0 if empty/invalid)
+                    Payment: paymentAmount,     // Store as number (0 if empty/invalid)
+                    SipPayment: sipPaymentAmount, // Store as number (0 if empty/invalid)
+                    ImageUrl: row.imageUrl || null
+                };
+            }).filter(r => r.Name !== 'Unknown'); // Filter out 'Unknown' names early if desired
+
+            // Sort all data by date ascending once after processing
+            allData.sort((a, b) => a.Date - b.Date);
+
+            // Calculate overall community balance after processing (using correct numeric values)
             communityBalance = allData.reduce((acc, r) => acc + r.Payment + r.SipPayment - r.Loan, 0);
 
             initializeDashboard(); // Setup dashboard after data is ready
@@ -378,11 +403,10 @@
         } catch (error) {
             console.error("Error fetching/processing data:", error);
             const dashboardContent = document.getElementById('dashboardContent');
-            // Display error message to the user
             dashboardContent.innerHTML = `<p style='color: red; text-align: center; padding: 50px;'>Error loading data: ${error.message}. Please check the console or contact support.</p>`;
-            dashboardContent.classList.add('visible'); // Show the content area to display the error
+            dashboardContent.classList.add('visible');
         } finally {
-            loader.classList.add('hidden'); // Hide loader regardless of success or error
+            loader.classList.add('hidden');
         }
     }
 
@@ -407,9 +431,8 @@
         });
         // Open image modal when clicking the profile picture (if it's an img)
         document.getElementById('profilePictureContainer').addEventListener('click', (event) => {
-            if (event.target.tagName === 'IMG' && event.target.src !== defaultProfilePic) {
-                 // Prevent modal closing immediately due to event bubbling
-                 event.stopPropagation();
+            if (event.target.tagName === 'IMG' && event.target.src !== defaultProfilePic && event.target.src) {
+                 event.stopPropagation(); // Prevent modal closing immediately
                 openModal('imageModal', event.target.src);
             }
         });
@@ -430,25 +453,22 @@
     function openModal(modalId, imageSrc = null) {
         const modal = document.getElementById(modalId);
         if (modal) {
-            // Special handling for image modal
             if (modalId === 'imageModal' && imageSrc) {
                 modal.querySelector('#modalImage').src = imageSrc;
             }
-            // Special handling for CIBIL history modal (populate content)
             if (modalId === 'cibilHistoryModal') {
                 populateCibilHistoryModal();
             }
-            modal.classList.remove('hidden'); // Show the modal
+            modal.classList.remove('hidden');
         }
     }
 
     function closeModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
-            modal.classList.add('hidden'); // Hide the modal
-             // Clear image src when closing image modal to prevent showing old image briefly
+            modal.classList.add('hidden');
              if (modalId === 'imageModal') {
-                 modal.querySelector('#modalImage').src = "";
+                 modal.querySelector('#modalImage').src = ""; // Clear src
              }
         }
     }
@@ -472,15 +492,14 @@
 
         listContainer.innerHTML = ""; // Clear previous list
 
-        // Get unique member names, filter out 'Unknown', and sort
+        // Get unique member names from the already filtered allData (excludes 'Unknown')
         const members = [...new Set(allData.map(r => r.Name))]
-                         .filter(name => name !== 'Unknown')
                          .sort((a, b) => a.localeCompare(b)); // Sort alphabetically
 
         const now = new Date();
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
-        const currentDay = now.getDate(); // Day of the month (1-31)
+        const currentDay = now.getDate();
 
         if (members.length === 0) {
             listContainer.innerHTML = "No member data found.";
@@ -492,7 +511,7 @@
             // Check if *any* SIP payment was made this calendar month/year
             const paidThisMonth = userData.some(r =>
                 r.SipPayment > 0 &&
-                r.Date instanceof Date && !isNaN(r.Date) && // Ensure valid date
+                r.Date instanceof Date && !isNaN(r.Date) &&
                 r.Date.getMonth() === currentMonth &&
                 r.Date.getFullYear() === currentYear
             );
@@ -530,20 +549,17 @@
 
         allData.forEach(row => {
             const name = row.Name;
-            if (name === 'Unknown') return; // Skip unknown entries
+            // No need to check for 'Unknown' here if filtered during fetchData
             if (!memberData[name]) memberData[name] = 0;
-            // Calculate current balance for sorting
-            memberData[name] += row.Payment + row.SipPayment - row.Loan;
+            memberData[name] += row.Payment + row.SipPayment - row.Loan; // Uses already parsed numbers
         });
 
         // Sort members by balance (descending)
         const sortedMembers = Object.entries(memberData)
                                      .sort(([, balA], [, balB]) => balB - balA);
 
-        // Clear existing options except the "All Members" default
-        nameFilter.innerHTML = '<option value="all">All Members</option>';
+        nameFilter.innerHTML = '<option value="all">All Members</option>'; // Reset
 
-        // Add sorted member names to the dropdown
         sortedMembers.forEach(([name]) => {
             nameFilter.innerHTML += `<option value="${name}">${name}</option>`;
         });
@@ -551,123 +567,101 @@
 
      // --- Rank Calculation (Performance Score Rank) ---
      function calculateAllUserRanks() {
-         userRankMap.clear(); // Reset ranks
-         const userData = {}; // Aggregate data per user
+         userRankMap.clear();
+         const userData = {};
 
          // Calculate total balance per user
          allData.forEach(row => {
              const name = row.Name;
-             if (name === 'Unknown') return;
              if (!userData[name]) userData[name] = { amount: 0 };
-             userData[name].amount += row.Payment + row.SipPayment - row.Loan;
+             userData[name].amount += row.Payment + row.SipPayment - row.Loan; // Use parsed numbers
          });
 
-         // Calculate performance score and sort users by score (descending)
          const sortedData = Object.entries(userData)
              .map(([name, { amount }]) => ({
                  name,
-                 score: calculatePerformanceScore(amount) // Use helper function
+                 score: calculatePerformanceScore(amount) // Use helper
              }))
              .sort((a, b) => b.score - a.score);
 
-         // Assign ranks (with medals for top 3)
          sortedData.forEach((user, index) => {
              let rankDisplay;
-             if (index === 0) rankDisplay = "🥇"; // Gold
-             else if (index === 1) rankDisplay = "🥈"; // Silver
-             else if (index === 2) rankDisplay = "🥉"; // Bronze
-             else rankDisplay = `#${index + 1}`; // Numeric rank
+             if (index === 0) rankDisplay = "🥇";
+             else if (index === 1) rankDisplay = "🥈";
+             else if (index === 2) rankDisplay = "🥉";
+             else rankDisplay = `#${index + 1}`;
              userRankMap.set(user.name, rankDisplay);
          });
      }
 
      // --- CIBIL Score Calculation (Internal Performance Metric) ---
      function calculateCivilScore(userName) {
-         // Handle "All Members" case - No individual score
          if (userName === 'all') {
              return { scoreValue: 0, scoreDisplay: "N/A", rating: "", balanceScore: 0, historyScore: 0, utilizationScore: 0, penalty: 0 };
          }
 
          const userData = allData.filter(r => r.Name === userName);
-
-         // Handle case where user exists but has no transaction data yet
          if (userData.length === 0) {
-              // Assign a base minimum score and "Poor" rating for new/inactive users
+             // Assign base minimum for new/inactive users
              return { scoreValue: 100, scoreDisplay: "100", rating: "Poor", balanceScore: 0, historyScore: 0, utilizationScore: 0, penalty: 0 };
          }
-
-         // Calculate totals for the selected user
+         // Use pre-parsed numbers
          const totalLoanTaken = userData.reduce((acc, r) => acc + r.Loan, 0);
-         const totalPayment = userData.reduce((acc, r) => acc + r.Payment, 0);
+         const totalPayment = userData.reduce((acc, r) => acc + r.Payment, 0); // Regular payments
          const totalSipPayment = userData.reduce((acc, r) => acc + r.SipPayment, 0);
          const currentBalance = totalPayment + totalSipPayment - totalLoanTaken;
 
-         // --- Score Components ---
-         // 1. Balance Component (Max 100 points): Based on current balance
-         //    10 points for every 1000 in positive balance, capped at 100.
-         const balanceScore = Math.min(100, Math.max(0, Math.floor(currentBalance / 100) * 1)); // Simplified: 1 point per 100 balance
+         // 1. Balance Component (Max 100)
+         const balanceScore = Math.min(100, Math.max(0, Math.floor(currentBalance / 100) * 1)); // 1 pt per 100 balance
 
-         // 2. Payment History Component (Max 300 points): Based on timely SIPs
+         // 2. Payment History Component (Max 300): Timely SIPs
          let timelySipCount = 0;
          userData
-            .filter(r => r.SipPayment > 0 && r.Date instanceof Date && !isNaN(r.Date)) // Valid SIP payments
+            .filter(r => r.SipPayment > 0 && r.Date instanceof Date && !isNaN(r.Date))
             .forEach(sip => {
-                 const paymentDay = sip.Date.getDate(); // Day of the month (1-31)
-                 if (paymentDay >= 1 && paymentDay <= 10) { // Paid within the first 10 days
-                     timelySipCount++;
-                 }
+                 const paymentDay = sip.Date.getDate();
+                 if (paymentDay >= 1 && paymentDay <= 10) timelySipCount++;
              });
-         const historyScore = Math.min(300, timelySipCount * 15); // 15 points per timely SIP, capped at 300
+         const historyScore = Math.min(300, timelySipCount * 15); // 15 pts per timely SIP
 
-         // 3. Loan Utilization Component (Max 300 points): Based on repayment ratio
+         // 3. Loan Utilization Component (Max 300): Repayment ratio (using ALL payments)
          const totalRepaid = totalPayment + totalSipPayment;
-         // Ratio of total repaid amount to total loan taken. Avoid division by zero.
          const utilizationRatio = (totalLoanTaken === 0) ? 1 : Math.max(0, Math.min(1, totalRepaid / totalLoanTaken));
-         const utilizationScore = Math.round(utilizationRatio * 300); // Scale ratio to 300 points
+         const utilizationScore = Math.round(utilizationRatio * 300);
 
-         // 4. Overdue Loan Penalty (Negative points)
+         // 4. Overdue Loan Penalty (Negative points) - Check based on last loan and current balance
          let penalty = 0;
-         const outstandingLoan = Math.max(0, totalLoanTaken - totalRepaid);
-         if (outstandingLoan > 0) {
-             // Find the date of the most recent loan *that hasn't been fully covered by subsequent payments*
-             // (Simpler approach: check last loan date if balance is negative)
-             const loans = userData.filter(r => r.Loan > 0).sort((a, b) => b.Date - a.Date);
-             if (loans.length > 0 && loans[0].Date instanceof Date && !isNaN(loans[0].Date)) {
+         const outstandingLoanBalance = totalLoanTaken - totalRepaid; // Negative if overpaid
+         if (outstandingLoanBalance > 0) { // Only apply penalty if loan is outstanding
+            const loans = userData.filter(r => r.Loan > 0).sort((a, b) => b.Date - a.Date); // Most recent loans first
+            if (loans.length > 0 && loans[0].Date instanceof Date && !isNaN(loans[0].Date)) {
                 const lastLoanDate = loans[0].Date;
                 const today = new Date();
-                // Due date is typically considered 1 month (approx 30/31 days) after loan
-                // Using a fixed 31 days for calculation consistency
+                // Assume due date is ~1 month after loan. Use 31 days for consistency.
                 const dueDate = new Date(lastLoanDate);
-                dueDate.setDate(dueDate.getDate() + 31); // Add 31 days grace period
+                dueDate.setDate(dueDate.getDate() + 31); // 31-day grace period
 
-                if (!isNaN(dueDate) && today > dueDate) { // Check if overdue
+                if (!isNaN(dueDate) && today > dueDate) {
                     const daysOverdue = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
-
-                    // Apply penalties based on overdue duration
                     if (daysOverdue > 100) penalty = -600;
                     else if (daysOverdue > 80) penalty = -200;
                     else if (daysOverdue > 50) penalty = -100;
-                    else if (daysOverdue > 0) penalty = -50; // Overdue by 1-50 days (after grace period)
+                    else if (daysOverdue > 0) penalty = -50; // Overdue by 1-50 days (after grace)
                 }
              }
          }
-         // Base score + components + penalty
-         const calculatedScore = 300 + balanceScore + historyScore + utilizationScore + penalty; // Start base at 300
 
-         // Clamp Final Score between 100 and 900
-         const finalScore = Math.max(100, Math.min(900, calculatedScore));
+         const calculatedScore = 300 + balanceScore + historyScore + utilizationScore + penalty; // Base 300
+         const finalScore = Math.max(100, Math.min(900, Math.round(calculatedScore))); // Clamp & round
 
-         // Determine Rating based on the final clamped score
          let rating = "";
          if (finalScore <= 499) rating = "Poor";
          else if (finalScore <= 649) rating = "Good";
          else if (finalScore <= 799) rating = "Better";
-         else rating = "Best"; // 800-900+
+         else rating = "Best";
 
-         // Format Display Score (Show "900+" if maxed out)
          const scoreDisplay = finalScore >= 900 ? "900+" : String(finalScore);
 
-         // Return the detailed breakdown
          return {
              scoreValue: finalScore,
              scoreDisplay: scoreDisplay,
@@ -681,34 +675,29 @@
 
      // --- Loan Eligibility Calculation ---
      function calculateEligibility(userName) {
-         // No eligibility for "All Members" view
          if (userName === 'all') {
              return { isEligible: false, approvedAmount: 0 };
          }
-
          const userData = allData.filter(r => r.Name === userName);
-         // Not eligible if no data
          if (userData.length === 0) {
              return { isEligible: false, approvedAmount: 0 };
          }
-
-         // Calculate user's current balance
+         // Use pre-parsed numbers
          const totalLoanTaken = userData.reduce((acc, r) => acc + r.Loan, 0);
          const totalPayment = userData.reduce((acc, r) => acc + r.Payment, 0);
          const totalSipPayment = userData.reduce((acc, r) => acc + r.SipPayment, 0);
          const userCurrentBalance = totalPayment + totalSipPayment - totalLoanTaken;
 
-         // Eligibility criteria: User must have a positive balance, AND
-         // the overall community fund must have a positive balance.
+         // Eligibility: Positive user balance AND positive community balance
          const isEligible = userCurrentBalance > 0 && communityBalance > 0;
 
-         // Approved amount: 1.5 times the user's positive balance, if eligible.
-         const approvedAmount = isEligible ? Math.min(userCurrentBalance * 1.5, communityBalance) : 0; // Also ensure community has enough
+         // Amount: 1.5x user balance, capped by available community funds
+         const potentialAmount = userCurrentBalance * 1.5;
+         const approvedAmount = isEligible ? Math.floor(Math.min(potentialAmount, communityBalance)) : 0;
 
          return {
              isEligible: isEligible,
-             // Format approved amount nicely
-             approvedAmount: Math.floor(approvedAmount) // Use floor to avoid cents
+             approvedAmount: approvedAmount
          };
      }
 
@@ -717,26 +706,22 @@
         const selectedName = document.getElementById('nameFilter').value;
         const selectedType = document.getElementById('typeFilter').value;
 
-        // Recalculate ranks each time display updates (scores might change)
-        calculateAllUserRanks();
+        calculateAllUserRanks(); // Recalculate ranks
 
-        // Get calculated data for the selected user (or 'all')
         const currentUserRank = selectedName === 'all' ? null : userRankMap.get(selectedName);
         const civilScoreResult = calculateCivilScore(selectedName);
         const eligibilityResult = calculateEligibility(selectedName);
 
-        // Update the profile section at the top
         updateProfileSection(selectedName, currentUserRank, civilScoreResult, eligibilityResult);
 
-        // Update the table based on the selected filter type
         switch (selectedType) {
-            case 'Civil Score': // Renamed from Performance Score
+            case 'Civil Score':
                 updateTableHeader('civil_score');
                 displayPerformanceScoreTable(selectedName);
                 break;
             case 'total_return':
-                updateTableHeader('total_return');
-                calculateAndDisplayTotalReturn(selectedName);
+                updateTableHeader('total_return'); // Set correct header for return view
+                calculateAndDisplayTotalReturn(selectedName); // Call the updated return function
                 break;
             case 'loan_history':
             case 'members_invest': // Renamed to Loan Repayments
@@ -745,46 +730,47 @@
                 updateTableHeader(selectedType);
                 const transactionData = getFilteredTransactionData(selectedName, selectedType);
                 displayTransactionData(transactionData);
-                 // Highlight recent loan row only in transaction views
+                 // Highlight only in transaction views
                 checkRecentStatus(selectedName);
                 break;
             default:
                 console.error("Unknown filter type:", selectedType);
                 document.querySelector("#dataTable tbody").innerHTML = `<tr><td colspan="5">Invalid filter selected.</td></tr>`;
-                // Optionally reset totals or header here
-                updateTableHeader('default'); // Reset to a default state
+                updateTableHeader('default');
         }
+         // No need for extra checkRecentStatus call here
     }
 
     // --- Table Header Management ---
     function updateTableHeader(type) {
         const tableHead = document.querySelector('#dataTable thead');
         let headers = [];
-        // Reset footer cells before setting new IDs and content
         const footCells = document.querySelectorAll('#dataTable tfoot td');
-        footCells.forEach(cell => cell.removeAttribute('id')); // Remove old IDs
-        footCells[0].colSpan = 1; // Reset colspan
+        footCells.forEach(cell => { cell.removeAttribute('id'); cell.className = ''; }); // Clear IDs and classes
+        footCells[0].colSpan = 1;
         footCells[1].textContent = '0';
         footCells[2].textContent = '0';
         footCells[3].textContent = '0';
 
-        // Define headers and footer labels/IDs based on the view type
         switch (type) {
             case 'civil_score':
                 headers = ["Rank", "Name", "Perf. Score*", "Balance"];
                 footCells[0].textContent = "Total Members:";
-                footCells[1].id = "totalMembers"; // ID for member count
-                footCells[2].id = "totalScore"; // ID for total score (less meaningful)
-                footCells[3].id = "totalBalance"; // ID for total balance sum
-                 footCells[3].className = 'positive'; // Default class
+                footCells[1].id = "totalMembers";
+                footCells[2].id = "totalScore"; // Less meaningful sum
+                footCells[3].id = "totalBalance";
+                footCells[3].className = 'positive'; // Default class
                 break;
             case 'total_return':
-                headers = ["Member", "Loan*", "Payment*", "Return*"];
+                // Headers for Return View
+                headers = ["Member", "Loan Taken", "Payment Made*", "Return Amt**"];
                 footCells[0].textContent = "Overall Total:";
-                footCells[1].id = "totalLoanReturn";
-                footCells[2].id = "totalPaymentReturn";
-                footCells[3].id = "totalNetReturn"; // ID for net return sum
+                footCells[1].id = "totalLoanReturn";     // Total Loan
+                footCells[2].id = "totalPaymentReturn";  // Total *Regular* Payment
+                footCells[3].id = "totalNetReturn";      // Total *Return* Amount
                 footCells[3].className = 'positive'; // Default class
+                // Add footnotes explanation below the table if needed
+                // e.g., * = Regular Payments only (excluding SIP). ** = Payment Made - Loan Taken.
                 break;
             case 'loan_history':
             case 'members_invest':
@@ -792,27 +778,23 @@
             case 'all_transactions':
                 headers = ["Date", "Loan", "Payment", "Member", "Net"];
                 footCells[0].textContent = "Total:";
-                footCells[0].colSpan = 2; // Span first two columns for label
-                footCells[1].id = "totalLoan"; // Total loan in view
-                footCells[2].id = "totalPayment"; // Total payment in view
-                footCells[3].id = "totalNetBalance"; // Net balance for the view
-                 footCells[3].className = 'positive'; // Default class
-                // Adjust specific header labels
+                footCells[0].colSpan = 2; // Spans Date & Loan columns
+                // Footer IDs point to the correct cells:
+                footCells[1].id = "totalLoan"; // Cell index 1 (Loan total)
+                footCells[2].id = "totalPayment"; // Cell index 2 (Payment total - includes SIP in some views)
+                footCells[3].id = "totalNetBalance"; // Cell index 3 (Net total)
+                footCells[3].className = 'positive';
+                // Adjust specific labels if needed
                 if (type === 'sip_payment') headers[2] = "SIP Paid";
-                if (type === 'members_invest') headers[1] = "Loan Repaid"; // Change header for clarity
-                 else if (type === 'loan_history') headers[2] = ""; // Hide Payment column header for loan history
-
+                if (type === 'members_invest') headers[2] = "Reg. Payment"; // Changed header label
+                // if (type === 'loan_history') // Keep Payment header for consistency? Or hide? Let's keep it.
                 break;
-            default: // Fallback case
+            default: // Fallback
                 headers = ["Date", "Loan", "Payment", "Member", "Net"];
-                footCells[0].textContent = "Total:";
-                footCells[0].colSpan = 2;
-                footCells[1].id = "totalLoan";
-                footCells[2].id = "totalPayment";
-                footCells[3].id = "totalNetBalance";
-                 footCells[3].className = 'positive';
+                footCells[0].textContent = "Total:"; footCells[0].colSpan = 2;
+                footCells[1].id = "totalLoan"; footCells[2].id = "totalPayment"; footCells[3].id = "totalNetBalance";
+                footCells[3].className = 'positive';
         }
-        // Build and inject the header row HTML
         tableHead.innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
     }
 
@@ -821,145 +803,149 @@
         let filtered = [];
         const isAllNames = nameFilter === 'all';
 
-        // Start with data filtered by name (or all data if 'all' is selected)
         const nameFilteredData = isAllNames
-            ? allData
-            : allData.filter(row => row.Name === nameFilter);
+            ? allData // Use already date-sorted allData
+            : allData.filter(row => row.Name === nameFilter); // Already sorted
 
-        // Further filter based on the transaction type
         switch (typeFilter) {
-            case 'loan_history': // Show only rows with a Loan amount > 0
-                 // Map to ensure consistent object structure, blanking out payment
+            case 'loan_history':
                 filtered = nameFilteredData
                     .filter(r => r.Loan > 0)
-                    .map(r => ({ ...r, Payment: 0, SipPayment: 0, IsSip: false })); // Standardize structure
+                    .map(r => ({ ...r, Payment: 0, SipPayment: 0, IsSip: false })); // Use existing Payment=0 mapping
                 break;
-            case 'members_invest': // Show only rows with Payment > 0 (Loan Repayments)
-                // Map to ensure consistent structure, blanking out loan
+            case 'members_invest': // Loan Repayments (REGULAR Payment only)
                  filtered = nameFilteredData
-                    .filter(r => r.Payment > 0) // Filter for actual 'Payment' entries, not SIP
-                    .map(r => ({ ...r, Loan: 0, SipPayment: 0, IsSip: false }));
+                    .filter(r => r.Payment > 0) // Filter for REGULAR Payment entries
+                    .map(r => ({ ...r, Loan: 0, SipPayment: 0, IsSip: false })); // Show only Payment, zero others
                 break;
-            case 'sip_payment': // Show only rows with SipPayment > 0
-                // Map SipPayment to the 'Payment' field for display consistency, mark as SIP
+            case 'sip_payment':
                 filtered = nameFilteredData
                     .filter(r => r.SipPayment > 0)
-                    .map(r => ({ ...r, Payment: r.SipPayment, Loan: 0, IsSip: true })); // Map SipPayment -> Payment
+                    .map(r => ({ ...r, Payment: r.SipPayment, Loan: 0, IsSip: true })); // Map SipPayment -> Payment column for display
                 break;
             case 'all_transactions': // Combine Loans, Payments, and SIPs
-                const loans = nameFilteredData.filter(r => r.Loan > 0).map(r => ({ ...r, Payment: 0, SipPayment: 0, IsSip: false }));
-                const payments = nameFilteredData.filter(r => r.Payment > 0).map(r => ({ ...r, Loan: 0, SipPayment: 0, IsSip: false }));
-                const sips = nameFilteredData.filter(r => r.SipPayment > 0).map(r => ({ ...r, Payment: r.SipPayment, Loan: 0, IsSip: true }));
-                filtered = [...loans, ...payments, ...sips];
+                 filtered = nameFilteredData.map(r => {
+                     if (r.SipPayment > 0) {
+                         // Treat SIP as a payment, zero out loan/regular payment for this row representation
+                         return { ...r, Payment: r.SipPayment, Loan: 0, IsSip: true };
+                     } else if (r.Payment > 0) {
+                          // Regular payment, zero out loan/sip
+                         return { ...r, Loan: 0, SipPayment: 0, IsSip: false };
+                     } else if (r.Loan > 0) {
+                         // Loan, zero out payments
+                         return { ...r, Payment: 0, SipPayment: 0, IsSip: false };
+                     } else {
+                         // Ignore rows with no value? Or return as is? Let's ignore for clarity.
+                         return null; // Mark for removal
+                     }
+                 }).filter(r => r !== null); // Remove null entries
                 break;
-            default: // Should not happen if switch in updateDisplay is correct
-                filtered = nameFilteredData; // Show all data for the user if type is unknown
+            default:
+                console.warn("Unhandled transaction filter type:", typeFilter);
+                 // Default to showing all non-zero transactions, mapping SIP to payment column
+                 filtered = nameFilteredData
+                    .filter(r => r.Loan > 0 || r.Payment > 0 || r.SipPayment > 0)
+                    .map(r => ({
+                        ...r,
+                        Payment: r.SipPayment > 0 ? r.SipPayment : r.Payment, // Show SIP or Regular Payment in Payment column
+                        Loan: r.SipPayment > 0 ? 0 : r.Loan, // Zero out loan if it's a SIP row
+                        IsSip: r.SipPayment > 0
+                    }));
         }
-
-        // Sort the final filtered data by date (ascending)
-        return filtered.sort((a, b) => a.Date - b.Date);
+        // Data is already sorted by date from fetchData.
+        return filtered;
     }
 
     function displayTransactionData(filteredData) {
         const tbody = document.querySelector("#dataTable tbody");
-        tbody.innerHTML = ""; // Clear existing rows
-        let loanSum = 0, paymentSum = 0;
+        tbody.innerHTML = "";
+        let loanSum = 0, paymentSum = 0; // Sums based on the FILTERED/MAPPED view
 
         if (filteredData.length === 0) {
-            const colSpan = document.querySelectorAll('#dataTable thead th').length || 5; // Get number of columns
+            const colSpan = document.querySelectorAll('#dataTable thead th').length || 5;
             tbody.innerHTML = `<tr><td colspan="${colSpan}">No transactions found for this filter.</td></tr>`;
-            updateTransactionTotals(0, 0); // Reset totals
+            updateTransactionTotals(0, 0);
             return;
         }
 
-        // Create table rows from filtered data
         filteredData.forEach(row => {
-            const loan = row.Loan;
-            const payment = row.Payment; // This now includes mapped SIP payments if type is sip_payment or all_transactions
-            const net = payment - loan;
-            loanSum += loan;
-            paymentSum += payment;
+            // Use the amounts directly from the mapped 'row' object from getFilteredTransactionData
+            const displayLoan = row.Loan;
+            const displayPayment = row.Payment; // Includes mapped SIPs for relevant views
+            const net = displayPayment - displayLoan; // Net for this specific transaction row
 
-            // Add a small tag for SIP entries
+            // Accumulate sums based on the DISPLAYED values for footer consistency
+            loanSum += displayLoan;
+            paymentSum += displayPayment;
+
             const sipTag = row.IsSip ? `<span class="sip-tag">SIP</span>` : '';
-            const dateStr = formatDate(row.Date); // Format date consistently
+            const dateStr = formatDate(row.Date);
 
-            // Create the table row HTML
+             // Use original date/name from row for data attributes
+             const originalDateISO = row.Date instanceof Date && !isNaN(row.Date) ? row.Date.toISOString() : '';
+
             tbody.innerHTML += `
-                <tr data-name="${row.Name}" data-date="${row.Date.toISOString()}">
+                <tr data-name="${row.Name}" data-date="${originalDateISO}">
                     <td>${dateStr}</td>
-                    <td class="loan">${loan > 0 ? loan.toFixed(2) : ""}</td>
-                    <td class="payment">${payment > 0 ? payment.toFixed(2) : ""} ${sipTag}</td>
+                    <td class="loan">${displayLoan > 0 ? displayLoan.toFixed(2) : ""}</td>
+                    <td class="payment">${displayPayment > 0 ? displayPayment.toFixed(2) : ""} ${sipTag}</td>
                     <td>${row.Name}</td>
                     <td class="${net < 0 ? 'negative' : 'positive'}">${net.toFixed(2)}</td>
                 </tr>`;
         });
 
-        // Update footer totals
         updateTransactionTotals(loanSum, paymentSum);
     }
 
     function displayPerformanceScoreTable(selectedName) {
         const tbody = document.querySelector("#dataTable tbody");
-        tbody.innerHTML = ""; // Clear table body
+        tbody.innerHTML = "";
         const isAllNames = selectedName === 'all';
-        const userData = {}; // Aggregate data per user
+        const userData = {};
         let totalMembers = 0;
 
-        // Calculate amount per user
         allData.forEach(row => {
             const name = row.Name;
-            if (name === 'Unknown') return;
             if (!userData[name]) {
                 userData[name] = { amount: 0 };
-                // Count members only once
-                 if(isAllNames) totalMembers++;
+                 if (isAllNames) { // Count unique members only when adding the first time
+                    totalMembers++;
+                 }
             }
-            userData[name].amount += row.Payment + row.SipPayment - row.Loan;
+            userData[name].amount += row.Payment + row.SipPayment - row.Loan; // Use parsed numbers
         });
-        // If viewing a single user, set member count to 1 if they exist
-         if (!isAllNames && userData[selectedName]) {
-              totalMembers = 1;
-         } else if (!isAllNames) {
-              totalMembers = 0; // User selected but has no data
-         }
 
+        if (!isAllNames) {
+             totalMembers = userData[selectedName] ? 1 : 0; // Set to 1 if selected user exists, else 0
+        }
 
-        let totalScoreSum = 0; // Less meaningful metric, but calculated
-        let totalAmountSum = 0; // Total balance of users shown
+        let totalScoreSum = 0; // Sum of scores for displayed users
+        let totalAmountSum = 0; // Sum of balances for displayed users
 
-        // Prepare data for sorting and display
         const dataToDisplay = Object.entries(userData)
             .map(([name, { amount }]) => {
-                const score = calculatePerformanceScore(amount); // Calculate score
-                 // Only sum if viewing all or the selected user matches
-                 if (isAllNames || name === selectedName) {
-                    totalScoreSum += score;
-                    totalAmountSum += amount;
-                }
-                return { name, score, amount };
+                const score = calculatePerformanceScore(amount); // Calculate score based on balance
+                 return { name, score, amount };
             })
-             // Filter for the selected user if not viewing all
-             .filter(user => isAllNames || user.name === selectedName)
-            // Sort by score (descending)
-            .sort((a, b) => b.score - a.score);
+             .filter(user => isAllNames || user.name === selectedName) // Filter if single user selected
+            .sort((a, b) => b.score - a.score); // Sort by performance score desc
 
 
         if (dataToDisplay.length === 0) {
              const colSpan = document.querySelectorAll('#dataTable thead th').length || 4;
             tbody.innerHTML = `<tr><td colspan="${colSpan}">No performance score data available.</td></tr>`;
-            updateScoreTotals(0, 0, 0); // Reset totals
+            updateScoreTotals(0, 0, 0);
             return;
         }
 
-        // Create table rows
         dataToDisplay.forEach((user) => {
             const rankDisplay = userRankMap.get(user.name) || '-'; // Get rank from pre-calculated map
-            // Add visual indicator for very high scores (optional)
             const scoreTag = user.score > 1000 ? ' <span style="color: green;" title="Excellent Performance">✨</span>' : '';
-            // Style row based on balance, highlight selected user
-             const isSelectedUser = !isAllNames && user.name === selectedName;
-             const rowStyle = `background-color:${user.amount < 0 ? 'rgba(220,53,69,0.05)' : 'rgba(40,167,69,0.05)'}; ${isSelectedUser ? 'font-weight: bold;' : ''}`;
+            const rowStyle = `background-color:${user.amount < 0 ? 'rgba(220,53,69,0.05)' : 'transparent'};`;
+
+            // Accumulate totals for displayed users
+            totalScoreSum += user.score;
+            totalAmountSum += user.amount;
 
             tbody.innerHTML += `
                 <tr style="${rowStyle}">
@@ -974,120 +960,157 @@
                 </tr>`;
         });
 
-        // Update footer totals
         updateScoreTotals(totalMembers, totalScoreSum, totalAmountSum);
     }
 
-    function calculateAndDisplayTotalReturn(selectedName) {
-        const tbody = document.querySelector("#dataTable tbody");
-        tbody.innerHTML = ""; // Clear table
-        let overallLoanSum = 0, overallPaymentSum = 0, overallReturnSum = 0;
-        const isAllNames = selectedName === 'all';
+// --- *** UPDATED Return Calculation and Display Function (Version 4) *** ---
+// This version EXCLUDES loan amounts from the 'Loan Taken' total if no REGULAR payment
+// was ever made by that member strictly AFTER the date of that specific loan.
+// SIP payments DO NOT influence loan inclusion in this version.
+function calculateAndDisplayTotalReturn(selectedName) {
+    const tbody = document.querySelector("#dataTable tbody");
+    tbody.innerHTML = ""; // Clear table body first
+    let overallLoanSum = 0; // Will sum the *adjusted* loan amounts (V4 logic)
+    let overallRegularPaymentSum = 0; // Sum of ONLY regular payments
+    let overallReturnSum = 0;         // Sum of calculated returns (based on adjusted loan sum V4)
+    const isAllNames = selectedName === 'all';
 
-        // Get unique member names to process
-        const members = [...new Set(allData.map(r => r.Name.trim()))]
-            .filter(name => name !== 'Unknown' && (isAllNames || name === selectedName)); // Filter 'Unknown' and selected name
+    // 1. Get unique member names to process
+    const membersToProcess = isAllNames
+        ? [...new Set(allData.map(r => r.Name))]
+        : (allData.some(r => r.Name === selectedName) ? [selectedName] : []);
 
-        const memberResults = members.map(member => {
-            const memberData = allData.filter(r => r.Name === member);
+    // 2. Calculate return for each member with the new loan exclusion logic (V4)
+    const memberResults = membersToProcess.map(member => {
+        const memberData = allData.filter(r => r.Name === member);
 
-            // Find the date of the last payment (either regular or SIP)
-            const lastPaymentDate = memberData
-                .filter(r => (r.Payment > 0 || r.SipPayment > 0) && r.Date instanceof Date && !isNaN(r.Date))
-                .reduce((latest, r) => (r.Date > latest ? r.Date : latest), new Date(0)); // Initialize with epoch
+        // --- New Logic V4: Calculate Adjusted Total Loan (Based on REGULAR payments only) ---
+        let adjustedTotalLoan = 0;
+        const loanRecords = memberData.filter(r => r.Loan > 0); // Get all loans for this member
 
-            // Sum loans taken *up to* the last payment date (or all if no payments)
-            const totalLoan = memberData
-                .filter(r => r.Loan > 0 && (lastPaymentDate.getTime() === 0 || (r.Date instanceof Date && !isNaN(r.Date) && r.Date <= lastPaymentDate)))
-                .reduce((sum, r) => sum + r.Loan, 0);
+        loanRecords.forEach(loanRecord => {
+            const currentLoanAmount = loanRecord.Loan;
+            const currentLoanDate = loanRecord.Date;
 
-            // Sum all payments (regular + SIP)
-            const totalPayment = memberData.reduce((sum, r) => sum + r.Payment + r.SipPayment, 0);
+            // Proceed only if the loan date is valid
+            if (currentLoanDate instanceof Date && !isNaN(currentLoanDate)) {
+                // Check if there's *any* REGULAR payment recorded for this member
+                // with a date *strictly after* the current loan's date.
+                // *** THIS IS THE CHANGED LINE (V4 Logic) ***
+                const paymentExistsAfterThisLoan = memberData.some(paymentRecord =>
+                    (paymentRecord.Payment > 0) && // Check for REGULAR Payment only
+                    paymentRecord.Date instanceof Date && !isNaN(paymentRecord.Date) && // Payment date is valid
+                    paymentRecord.Date > currentLoanDate // Payment date is AFTER the loan date
+                );
 
-            const totalReturn = totalPayment - totalLoan;
-
-            // Accumulate overall totals
-            overallLoanSum += totalLoan;
-            overallPaymentSum += totalPayment;
-            overallReturnSum += totalReturn;
-
-            return { member, totalLoan, totalPayment, totalReturn };
-        })
-        // Sort results by total return (descending)
-        .sort((a, b) => b.totalReturn - a.totalReturn);
-
-        if (memberResults.length === 0) {
-             const colSpan = document.querySelectorAll('#dataTable thead th').length || 4;
-            tbody.innerHTML = `<tr><td colspan="${colSpan}">No return data available for this filter.</td></tr>`;
-            updateReturnTotals(0, 0, 0); // Reset totals
-            return;
-        }
-
-        // Create table rows for each member's return
-        memberResults.forEach(({ member, totalLoan, totalPayment, totalReturn }) => {
-            tbody.innerHTML += `
-                <tr>
-                    <td>${member}</td>
-                    <td class="loan">${totalLoan.toFixed(2)}</td>
-                    <td class="payment">${totalPayment.toFixed(2)}</td>
-                    <td class="${totalReturn >= 0 ? 'positive' : 'negative'}" style="font-weight:bold;">
-                        ${totalReturn.toFixed(2)}
-                    </td>
-                </tr>`;
+                // If a REGULAR payment exists after this loan date, INCLUDE this loan amount in the total.
+                // Otherwise (even if SIP payment exists), EXCLUDE it.
+                if (paymentExistsAfterThisLoan) {
+                    adjustedTotalLoan += currentLoanAmount;
+                }
+                // Implicit else: if no REGULAR payment exists after this loan, do not add currentLoanAmount
+            }
+            // Else: If loan date is invalid, skip this loan record for safety
         });
+        // --- End of New Logic V4 ---
 
-        // Update footer totals
-        updateReturnTotals(overallLoanSum, overallPaymentSum, overallReturnSum);
+        // Calculate TOTAL REGULAR Payment Made by this member (same as before)
+        const totalRegularPayment = memberData.reduce((sum, r) => sum + r.Payment, 0);
+
+        // Calculate Return Amount using the ADJUSTED loan total (V4)
+        const memberReturn = totalRegularPayment - adjustedTotalLoan;
+
+        // Accumulate overall totals for the footer using the adjusted loan sum (V4)
+        overallLoanSum += adjustedTotalLoan; // Accumulate the V4 adjusted loan amount
+        overallRegularPaymentSum += totalRegularPayment;
+        overallReturnSum += memberReturn;
+
+        // Return the calculated data for this member
+        return {
+             member: member,
+             totalLoan: adjustedTotalLoan, // Display the V4 adjusted loan total
+             totalRegularPayment: totalRegularPayment,
+             memberReturn: memberReturn
+        };
+    })
+    // 3. Sort the results by Return Amount (memberReturn) in descending order
+    .sort((a, b) => b.memberReturn - a.memberReturn); // Highest return first
+
+    // 4. Display the sorted results in the table
+    if (memberResults.length === 0) {
+        const colSpan = document.querySelectorAll('#dataTable thead th').length || 4;
+        tbody.innerHTML = `<tr><td colspan="${colSpan}">No return data available for this filter.</td></tr>`;
+        updateReturnTotals(0, 0, 0);
+        return; // Exit the function
     }
+
+    // Generate table rows from the SORTED memberResults array
+    memberResults.forEach(({ member, totalLoan, totalRegularPayment, memberReturn }) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${member}</td>
+                <td class="loan">${totalLoan.toFixed(2)}</td>
+                <td class="payment">${totalRegularPayment.toFixed(2)}</td>
+                <td class="${memberReturn >= 0 ? 'positive' : 'negative'}" style="font-weight:bold;">
+                    ${memberReturn.toFixed(2)}
+                </td>
+            </tr>`;
+    });
+
+    // 5. Update the footer with the overall calculated totals (using V4 adjusted loan sum)
+    updateReturnTotals(overallLoanSum, overallRegularPaymentSum, overallReturnSum);
+}
+// --- *** End of updated function V4 *** ---
 
 
     // --- Footer Total Updates ---
     function updateTransactionTotals(loanSum, paymentSum) {
         const netSum = paymentSum - loanSum;
-        const elLoan = document.getElementById("totalLoan");
-        const elPay = document.getElementById("totalPayment");
-        const elNet = document.getElementById("totalNetBalance");
+        const elLoan = document.getElementById("totalLoan"); // Footer cell index 1
+        const elPay = document.getElementById("totalPayment"); // Footer cell index 2
+        const elNet = document.getElementById("totalNetBalance"); // Footer cell index 3
 
         if (elLoan) elLoan.textContent = loanSum.toFixed(2);
         if (elPay) elPay.textContent = paymentSum.toFixed(2);
         if (elNet) {
             elNet.textContent = netSum.toFixed(2);
-            elNet.className = netSum < 0 ? "negative" : "positive"; // Set class based on value
+            elNet.className = netSum < 0 ? "negative" : "positive";
         }
     }
 
     function updateScoreTotals(count, scoreSum, balanceSum) {
-        const elMem = document.getElementById("totalMembers");
-        const elScore = document.getElementById("totalScore"); // Total score might not be very meaningful
-        const elBal = document.getElementById("totalBalance");
+        const elMem = document.getElementById("totalMembers"); // Footer cell index 1
+        const elScore = document.getElementById("totalScore"); // Footer cell index 2
+        const elBal = document.getElementById("totalBalance"); // Footer cell index 3
 
         if (elMem) elMem.textContent = `${count}`;
-        if (elScore) elScore.textContent = scoreSum.toFixed(0);
+        if (elScore) elScore.textContent = scoreSum.toFixed(0); // Sum of scores might not be meaningful average
         if (elBal) {
             elBal.textContent = balanceSum.toFixed(2);
-            elBal.className = balanceSum < 0 ? "negative" : "positive"; // Set class based on value
+            elBal.className = balanceSum < 0 ? "negative" : "positive";
         }
     }
 
-    function updateReturnTotals(loanSum, paymentSum, returnSum) {
-        const elLoan = document.getElementById("totalLoanReturn");
-        const elPay = document.getElementById("totalPaymentReturn");
-        const elRet = document.getElementById("totalNetReturn");
+    // Footer Update for Return View (matches header/logic)
+    function updateReturnTotals(loanSum, regularPaymentSum, returnSum) {
+        const elLoan = document.getElementById("totalLoanReturn");     // Footer cell index 1
+        const elPay = document.getElementById("totalPaymentReturn");  // Footer cell index 2
+        const elRet = document.getElementById("totalNetReturn");      // Footer cell index 3
 
         if (elLoan) elLoan.textContent = loanSum.toFixed(2);
-        if (elPay) elPay.textContent = paymentSum.toFixed(2);
+        if (elPay) elPay.textContent = regularPaymentSum.toFixed(2); // Display sum of regular payments
         if (elRet) {
-            elRet.textContent = returnSum.toFixed(2);
-            elRet.className = returnSum < 0 ? "negative" : "positive"; // Set class based on value
+            elRet.textContent = returnSum.toFixed(2);           // Display sum of returns
+            elRet.className = returnSum < 0 ? "negative" : "positive";
         }
     }
 
     // --- Profile Section Update ---
     function updateProfileSection(name, rank, civilScoreResult, eligibilityResult) {
-        // Get DOM Elements for profile widgets
+        // Get DOM Elements
         const profileNameEl = document.getElementById("profileName");
-        const profileAmountEl = document.getElementById("profileAmount");
-        const profileCurrentLoanEl = document.getElementById("profileCurrentLoan");
+        const profileAmountEl = document.getElementById("profileAmount"); // Overall Balance
+        const profileCurrentLoanEl = document.getElementById("profileCurrentLoan"); // Active Loan (outstanding)
         const profileSipStatusEl = document.getElementById("profileSipStatus");
         const profileJoinDateEl = document.getElementById("profileJoinDate");
         const profileRankEl = document.getElementById("profileRank");
@@ -1100,16 +1123,16 @@
         const eligibilityStatusEl = document.getElementById("profileEligibilityStatus");
         const eligibilityAmountEl = document.getElementById("profileEligibilityAmount");
         const cibilCardEl = document.getElementById("profileCibilCard");
-        const sipStatusCardEl = document.getElementById("profileSipStatusCard"); // SIP Card for class update
+        const sipStatusCardEl = document.getElementById("profileSipStatusCard");
 
-        // Reset CIBIL history click listener (will be re-added if applicable)
+        // Reset CIBIL history click listener
         cibilCardEl.onclick = null;
         cibilCardEl.style.cursor = 'default';
-        cibilCardEl.title = ''; // Clear tooltip
+        cibilCardEl.title = '';
 
-        // Initialize variables with defaults
+        // Initialize variables
         let amount = 0, currentLoan = 0, joinDate = "--", sipStatus = "--", sipStatusClass = "", profileImageUrl = defaultProfilePic, displayName = "All Members";
-        let performanceScore = 0; // Internal score based on balance
+        let performanceScore = 0;
         const now = new Date();
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
@@ -1117,20 +1140,14 @@
 
         // --- Handle "All Members" View ---
         if (name === 'all') {
-            displayName = "Community Overview"; // More descriptive name
-            amount = communityBalance; // Show overall balance
-            performanceScore = calculatePerformanceScore(amount); // Score based on community balance
-            currentLoan = 0; // No individual current loan
-            sipStatus = "N/A";
-            sipStatusClass = ""; // No specific class
-            joinDate = "N/A";
-            profileRankEl.classList.add('hidden'); // Hide rank
-            bestMemberTagEl.classList.add('hidden'); // Hide best member tag
-            eligibilityCardEl.style.display = 'none'; // Hide eligibility card
-            profileCibilScoreEl.textContent = "N/A"; // No CIBIL for 'all'
-            profileCibilRatingEl.textContent = "";
-            profileCibilRatingEl.className = "rating"; // Reset rating class
-            // Show a generic group icon
+            displayName = "Community Overview";
+            amount = communityBalance; // Show overall community balance (already calculated)
+            performanceScore = calculatePerformanceScore(amount);
+            currentLoan = 0; // N/A for all members view
+            sipStatus = "N/A"; sipStatusClass = ""; joinDate = "N/A";
+            profileRankEl.classList.add('hidden'); bestMemberTagEl.classList.add('hidden');
+            eligibilityCardEl.style.display = 'none'; // Hide eligibility card for 'all'
+            profileCibilScoreEl.textContent = "N/A"; profileCibilRatingEl.textContent = ""; profileCibilRatingEl.className = "rating";
             profilePicContainer.innerHTML = `<div style="width:100%; height:100%; background-color:#ddd; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:30px; color: #555;" title="Community Overview">👥</div>`;
             latestCivilScoreBreakdown = {}; // Clear breakdown
             sipStatusCardEl.className = 'metric-card'; // Reset SIP card class
@@ -1138,39 +1155,30 @@
         // --- Handle Individual Member View ---
         } else {
             const userData = allData.filter(r => r.Name === name);
-            displayName = name; // Show the member's name
-            eligibilityCardEl.style.display = 'flex'; // Ensure eligibility card is visible
+            displayName = name;
+            eligibilityCardEl.style.display = 'flex'; // Show eligibility card
 
             if (userData.length > 0) {
-                 // Calculate Balance & Performance Score
+                 // Calculate Balance & Performance Score using pre-parsed numbers
                  const totalLoanTaken = userData.reduce((acc, r) => acc + r.Loan, 0);
                  const totalPayment = userData.reduce((acc, r) => acc + r.Payment, 0);
                  const totalSipPayment = userData.reduce((acc, r) => acc + r.SipPayment, 0);
-                 amount = (totalPayment + totalSipPayment) - totalLoanTaken;
+                 amount = (totalPayment + totalSipPayment) - totalLoanTaken; // Net Balance
                  performanceScore = calculatePerformanceScore(amount);
 
-                 // Calculate Current Loan (Loans taken *after* the last payment/SIP)
-                 const lastPaymentOrSipDate = userData
-                    .filter(r => (r.Payment > 0 || r.SipPayment > 0) && r.Date instanceof Date && !isNaN(r.Date))
-                    .reduce((latest, r) => (r.Date > latest ? r.Date : latest), new Date(0));
+                 // Calculate Current Active Loan (Outstanding balance)
+                 currentLoan = Math.max(0, totalLoanTaken - (totalPayment + totalSipPayment));
 
-                 currentLoan = userData
-                    .filter(r => r.Loan > 0 && r.Date instanceof Date && !isNaN(r.Date) && r.Date > lastPaymentOrSipDate)
-                    .reduce((sum, r) => sum + r.Loan, 0);
-
-
-                 // Find Join Date (Date of the first SIP payment)
-                 const firstSipPayment = userData
-                     .filter(r => r.SipPayment > 0 && r.Date instanceof Date && !isNaN(r.Date))
-                     .sort((a, b) => a.Date - b.Date)[0]; // Sort by date ascending, take first
-                 joinDate = firstSipPayment ? formatDate(firstSipPayment.Date, { month: 'short', year: 'numeric' }) : "--"; // Format: Jun 2024
+                 // Find Join Date (Date of the first transaction)
+                 // Data is already sorted by date asc, so first record is the earliest.
+                 joinDate = userData.length > 0 && userData[0].Date instanceof Date && !isNaN(userData[0].Date)
+                           ? formatDate(userData[0].Date, { month: 'short', year: 'numeric' })
+                           : "--";
 
                  // Determine SIP Status for the current month
                  const paidThisMonth = userData.some(r =>
-                     r.SipPayment > 0 &&
-                     r.Date instanceof Date && !isNaN(r.Date) &&
-                     r.Date.getMonth() === currentMonth &&
-                     r.Date.getFullYear() === currentYear
+                     r.SipPayment > 0 && r.Date instanceof Date && !isNaN(r.Date) &&
+                     r.Date.getMonth() === currentMonth && r.Date.getFullYear() === currentYear
                  );
                  if (paidThisMonth) {
                      sipStatus = "✅ Paid"; sipStatusClass = "paid";
@@ -1187,42 +1195,42 @@
                  } else {
                      profileRankEl.classList.add('hidden');
                  }
-                 // Show "Best Member" tag if performance score is high (adjust threshold if needed)
-                 if (performanceScore > 1000) { // Example threshold
+                 // Update 'best member' criteria if needed (e.g., based on CIBIL score or rank)
+                 if (rank === '🥇') { // Example: Highlight top rank
                      bestMemberTagEl.classList.remove('hidden');
                  } else {
                      bestMemberTagEl.classList.add('hidden');
                  }
 
                  // Find the latest Image URL associated with the user
-                 const userRecordWithImage = userData
-                     .filter(row => row.ImageUrl) // Only consider rows with an ImageUrl
-                     .sort((a, b) => b.Date - a.Date)[0]; // Sort by date descending, take first
+                  const userRecordWithImage = [...userData]
+                      .reverse()
+                      .find(row => row.ImageUrl);
                  profileImageUrl = userRecordWithImage ? userRecordWithImage.ImageUrl : defaultProfilePic;
 
             } else {
-                 // User selected, but no data found (shouldn't happen if filters are populated correctly)
+                 // User selected, but no data found in allData
                  amount = 0; performanceScore = 0; currentLoan = 0; joinDate = "--"; sipStatus = "--"; sipStatusClass = "";
                  profileRankEl.classList.add('hidden'); bestMemberTagEl.classList.add('hidden');
-                 profileImageUrl = defaultProfilePic; // Show default pic
-                 // Reset CIBIL/Eligibility as well
-                 civilScoreResult = { scoreDisplay: '---', rating: '' };
+                 profileImageUrl = defaultProfilePic;
+                 civilScoreResult = { scoreDisplay: '---', rating: '', scoreValue: 0 }; // Reset score object
                  eligibilityResult = { isEligible: false, approvedAmount: 0 };
             }
 
-            // Update Profile Picture (with error handling for broken links)
-             profilePicContainer.innerHTML = `<img src="${profileImageUrl}" alt="Profile image of ${name}" onerror="this.onerror=null; this.src='${defaultProfilePic}';" style="cursor: pointer;">`;
+            // Update Profile Picture
+            profilePicContainer.innerHTML = `<img src="${profileImageUrl}" alt="Profile image of ${name}" onerror="this.onerror=null; this.src='${defaultProfilePic}';" style="cursor: ${profileImageUrl !== defaultProfilePic ? 'pointer' : 'default'};">`;
 
 
-            // Update CIBIL Score Display & Store Breakdown for Modal
+            // Update CIBIL Score Display & Store Breakdown
             profileCibilScoreEl.textContent = civilScoreResult.scoreDisplay;
             profileCibilRatingEl.textContent = civilScoreResult.rating;
-            profileCibilRatingEl.className = `rating ${civilScoreResult.rating.toLowerCase()}`; // Set class e.g., "rating good"
-            latestCivilScoreBreakdown = civilScoreResult; // Store for modal
-             // Make CIBIL card clickable to show breakdown
-            cibilCardEl.onclick = () => { openModal('cibilHistoryModal'); };
-            cibilCardEl.style.cursor = 'pointer';
-            cibilCardEl.title = 'Click to see score breakdown'; // Tooltip
+            profileCibilRatingEl.className = `rating ${civilScoreResult.rating.toLowerCase()}`;
+            latestCivilScoreBreakdown = civilScoreResult; // Store full breakdown
+             if (civilScoreResult.scoreValue > 0 && civilScoreResult.scoreDisplay !== 'N/A') { // Make clickable if valid score exists
+                 cibilCardEl.onclick = () => { openModal('cibilHistoryModal'); };
+                 cibilCardEl.style.cursor = 'pointer';
+                 cibilCardEl.title = 'Click to see score breakdown';
+             }
 
 
              // Update Eligibility Display
@@ -1233,116 +1241,99 @@
              } else {
                  eligibilityStatusEl.textContent = "Not Eligible";
                  eligibilityStatusEl.className = 'value not-eligible';
-                 // Show reason if balance is negative, otherwise just blank
-                 eligibilityAmountEl.textContent = amount < 0 ? `(Balance: ₹${amount.toFixed(0)})` : ` `;
+                 let reason = "";
+                 if (amount < 0) reason = `(Balance: ₹${amount.toFixed(0)})`;
+                 else if (communityBalance <= 0 && !(amount < 0)) reason = "(Fund Low)"; // Check community funds only if user balance isn't negative
+                 eligibilityAmountEl.textContent = reason;
              }
         }
 
-        // --- Update Common DOM Elements (for both 'all' and individual) ---
+        // --- Update Common DOM Elements ---
         profileNameEl.textContent = displayName;
 
-        // Update Amount/Balance display and card style
+        // Update Amount/Balance display
         profileAmountEl.textContent = amount.toFixed(2);
-        profileAmountEl.parentElement.classList.toggle('positive', amount >= 0); // Add/remove positive class
-        profileAmountEl.parentElement.classList.toggle('negative', amount < 0); // Add/remove negative class
+        profileAmountEl.className = amount >= 0 ? 'value positive' : 'value negative';
 
-        // Update Current Loan display and card style
+        // Update Current Loan display
         profileCurrentLoanEl.textContent = currentLoan.toFixed(2);
-        profileCurrentLoanEl.parentElement.classList.toggle('positive', currentLoan <= 0); // Positive if 0 loan
-        profileCurrentLoanEl.parentElement.classList.toggle('negative', currentLoan > 0); // Negative if loan exists
+        profileCurrentLoanEl.className = currentLoan <= 0 ? 'value positive' : 'value negative'; // Positive class if loan is 0 or less
 
 
-        // Update SIP Status display and card style
+        // Update SIP Status display
         profileSipStatusEl.textContent = sipStatus;
-        // Remove old status classes before adding the new one
-        sipStatusCardEl.classList.remove('paid', 'pending', 'due');
-        if (sipStatusClass) {
-            sipStatusCardEl.classList.add(sipStatusClass); // Add class like 'paid', 'pending', 'due'
-        }
-
+        profileSipStatusEl.className = `value ${sipStatusClass}`; // e.g., "value paid"
 
         profileJoinDateEl.textContent = joinDate;
 
-        // Update progress bar (based on Performance Score relative to a max range)
-        const maxPerfScoreAbs = 2000; // Max absolute value for scaling (e.g., -2000 to +2000 range)
-        // Calculate percentage, ensuring it's between 0 and 100
-        const progressPercent = Math.max(0, Math.min(100, (Math.abs(performanceScore) / maxPerfScoreAbs) * 100));
+        // Update progress bar (based on simple balance for now, could use perf score)
+        const maxBalanceAbs = 50000; // Adjust scale as needed
+        const progressPercent = Math.max(0, Math.min(100, (Math.abs(amount) / maxBalanceAbs) * 50 + 50));
         progressBar.style.width = `${progressPercent}%`;
-        // Set progress bar color based on positive/negative score
-        progressBar.className = `progress-bar ${performanceScore < 0 ? 'negative' : 'positive'}`;
+        progressBar.className = `progress-bar ${amount < 0 ? 'negative' : 'positive'}`;
     }
 
     // --- Utility Functions ---
 
-    // Calculates a simple performance score based on balance (adjust logic as needed)
+    // Calculates a simple performance score based on balance
     function calculatePerformanceScore(amount) {
-        // Example: Score is balance / 10, clamped between -2000 and 2000
-        return Math.max(-2000, Math.min(2000, Math.round(amount / 10)));
+        // Example: Score is balance / 10, clamped +/- 1500. Adjust base/scale as needed.
+        const baseScore = 500; // Base score
+        const calculatedScore = baseScore + (amount / 10); // Scale factor
+        return Math.max(0, Math.min(1500, Math.round(calculatedScore))); // Clamp 0-1500
     }
 
-    // Formats a Date object into a string (e.g., "08 Apr 2025")
+    // Formats a Date object
     function formatDate(date, options = {}) {
-        if (!(date instanceof Date) || isNaN(date)) return "Invalid Date"; // Basic validation
-        // Default format: DD Mon YYYY (e.g., 08 Apr 2025)
+        if (!(date instanceof Date) || isNaN(date)) return "Invalid Date";
         const defaultOptions = { day: '2-digit', month: 'short', year: 'numeric' };
-        const mergedOptions = { ...defaultOptions, ...options }; // Allow overriding defaults
+        const mergedOptions = { ...defaultOptions, ...options };
         try {
-             return date.toLocaleDateString('en-GB', mergedOptions); // en-GB often gives dd/mm/yyyy or dd Mon yyyy
+             // Use 'en-GB' for DD/MM/YYYY style preference
+             return date.toLocaleDateString('en-GB', mergedOptions);
         } catch (e) {
-             console.error("Error formatting date:", e);
-             // Fallback to ISO string if formatting fails
-             return date.toISOString().split('T')[0];
+             console.error("Error formatting date:", date, e);
+             // Fallback to simple YYYY-MM-DD
+             const y = date.getFullYear();
+             const m = String(date.getMonth() + 1).padStart(2, '0');
+             const d = String(date.getDate()).padStart(2, '0');
+             return `${y}-${m}-${d}`;
         }
     }
 
-    // Highlights the row corresponding to the most recent loan for a user if it hasn't been 'cleared' by a subsequent payment.
+    // Highlights recent uncleared loans in transaction views
      function checkRecentStatus(selectedName) {
-        // Remove existing highlights first
+        // Clear previous highlights first
         document.querySelectorAll("#dataTable tbody tr.highlight-recent-loan").forEach(r => r.classList.remove('highlight-recent-loan'));
 
         const namesToProcess = selectedName === 'all'
-                             ? [...new Set(allData.map(d => d.Name))] // Get all unique names
-                             : [selectedName]; // Process only the selected name
+                             ? [...new Set(allData.map(d => d.Name))]
+                             : (allData.some(r => r.Name === selectedName) ? [selectedName] : []); // Process only if name exists
 
         namesToProcess.forEach(name => {
-            if (name === 'Unknown') return; // Skip 'Unknown'
-
-            // Get records for the current name, sorted by date descending
             const records = allData
                               .filter(r => r.Name === name)
-                              .sort((a, b) => b.Date - a.Date);
+                              .sort((a, b) => b.Date - a.Date); // Sorted descending by date (latest first)
 
-            let lastLoanRecord = null;
-            let lastPaymentOrSipAfterLoan = false;
+            // Find the most recent loan record for this user
+            const lastLoanRecord = records.find(r => r.Loan > 0 && r.Date instanceof Date && !isNaN(r.Date));
 
-            // Find the most recent loan
-            for (const record of records) {
-                 if (record.Loan > 0 && record.Date instanceof Date && !isNaN(record.Date)) {
-                      lastLoanRecord = record;
-                      break; // Found the most recent loan
-                 }
-            }
-
-             // If a recent loan was found, check if there's a payment/SIP after it
              if(lastLoanRecord) {
-                  for (const record of records) {
-                      if (record.Date instanceof Date && !isNaN(record.Date) && record.Date > lastLoanRecord.Date) {
-                           if (record.Payment > 0 || record.SipPayment > 0) {
-                                lastPaymentOrSipAfterLoan = true;
-                                break; // Found a payment/SIP after the last loan
-                           }
-                      } else if (record.Date <= lastLoanRecord.Date) {
-                           // Stop searching once we are at or before the last loan date
-                           break;
-                      }
-                  }
+                  // Check if any payment (Regular or SIP) exists *strictly after* this last loan's date
+                  const paymentOrSipFoundAfterLoan = records.some(r =>
+                       r.Date instanceof Date && !isNaN(r.Date) && r.Date > lastLoanRecord.Date && (r.Payment > 0 || r.SipPayment > 0)
+                  );
 
-                   // Highlight the loan row ONLY IF no payment/SIP occurred after it
-                  if (!lastPaymentOrSipAfterLoan) {
-                     // Find the corresponding row in the *currently displayed table*
-                     const rowToHighlight = document.querySelector(`#dataTable tbody tr[data-name="${name}"][data-date="${lastLoanRecord.Date.toISOString()}"]`);
-                     if (rowToHighlight) {
-                         rowToHighlight.classList.add('highlight-recent-loan');
+                  // Highlight the loan row in the *currently displayed table* ONLY IF no payment/SIP occurred after it
+                  if (!paymentOrSipFoundAfterLoan) {
+                     const lastLoanDateISO = lastLoanRecord.Date.toISOString();
+                     // Find the row using data attributes. Need to query the specific table body.
+                     const tableBody = document.querySelector("#dataTable tbody");
+                     if (tableBody) {
+                         const rowToHighlight = tableBody.querySelector(`tr[data-name="${name}"][data-date="${lastLoanDateISO}"]`);
+                         if (rowToHighlight) {
+                             rowToHighlight.classList.add('highlight-recent-loan');
+                         }
                      }
                   }
              }
@@ -1350,6 +1341,7 @@
     }
 
 </script>
+
 
 </body>
 </html>
