@@ -7,8 +7,8 @@
     <style>
         /* Basic Reset & Body Style */
         :root {
-             --primary-color: #007BFF; --secondary-color: #056fff; --light-bg: #f8f9fa;
-             --text-light: #fff; --text-dark: #343a40; --positive-color: #04c800;
+             --primary-color: #007BFF; --secondary-color: #056fff; --light-bg: #fff;
+             --text-light: #fff; --text-dark: #555; --positive-color: #04c800;
              --negative-color: #ff1f02; --warning-color: #ffc107; --neutral-color: #808080; /* Gray for Due */
              --profile-bg: linear-gradient(135deg, #0d6efd, #0a58ca); --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
              --profile-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
@@ -41,10 +41,16 @@
 
         /* Dashboard Content Container */
         #dashboardContent { display: none; } #dashboardContent.visible { display: block; }
+        
+          #dataTable tbody tr.highlight-recent-loan td {
+    font-weight: bold; /* Make text bold */
+    color: black;      /* Ensure text color is black */
+  }
 
         /* Header (Unchanged) */
         .header { text-align: center; background-color: var(--primary-color); color: var(--text-light); padding: 10px 0; display: flex; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; width: 100%; z-index: 1001; height: 60px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .header img { width: 40px; height: 40px; margin-right: 10px; } .header h1 { font-size: 1.2em; margin: 0; font-weight: 500; }
+        
 
         /* --- Profile Section Redesigned --- */
         .profile-section { /* Main outer card */
@@ -1314,9 +1320,8 @@ function calculateAndDisplayTotalReturn(selectedName) {
         }
     }
 
-    // Highlights recent uncleared loans in transaction views
-    // Kept this function as it's generally useful for transaction views
-     function checkRecentStatus(selectedName) {
+    // Highlights recent uncleared loans (based on REGULAR payments only) in transaction views
+    function checkRecentStatus(selectedName) {
         // Clear previous highlights first
         document.querySelectorAll("#dataTable tbody tr.highlight-recent-loan").forEach(r => r.classList.remove('highlight-recent-loan'));
 
@@ -1333,19 +1338,22 @@ function calculateAndDisplayTotalReturn(selectedName) {
             const lastLoanRecord = records.find(r => r.Loan > 0 && r.Date instanceof Date && !isNaN(r.Date));
 
              if(lastLoanRecord) {
-                  // Check if any payment (Regular or SIP) exists *strictly after* this last loan's date
-                  const paymentOrSipFoundAfterLoan = records.some(r =>
-                       r.Date instanceof Date && !isNaN(r.Date) && r.Date > lastLoanRecord.Date && (r.Payment > 0 || r.SipPayment > 0)
+                  // *** MODIFIED LOGIC: Check if any *REGULAR* payment exists strictly after this last loan's date ***
+                  // We are now IGNORING SipPayment for this check.
+                  const regularPaymentFoundAfterLoan = records.some(r =>
+                       r.Date instanceof Date && !isNaN(r.Date) && // Date is valid
+                       r.Date > lastLoanRecord.Date &&             // Date is AFTER the last loan
+                       r.Payment > 0                               // Record is a REGULAR payment (SipPayment is ignored here)
                   );
+                  // *** End of Modified Logic ***
 
-                  // Highlight the loan row in the *currently displayed table* ONLY IF no payment/SIP occurred after it
-                  if (!paymentOrSipFoundAfterLoan) {
+                  // Highlight the loan row in the *currently displayed table* ONLY IF no REGULAR payment occurred after it
+                  if (!regularPaymentFoundAfterLoan) { // If NO regular payment was found after the loan
                      const lastLoanDateISO = lastLoanRecord.Date.toISOString();
                      // Find the row using data attributes. Need to query the specific table body.
                      const tableBody = document.querySelector("#dataTable tbody");
                      if (tableBody) {
                          // Corrected selector to handle potential ISO string variations (e.g., trailing Z)
-                         // It's safer to query based on the essential parts if exact match fails sometimes
                          const rowToHighlight = tableBody.querySelector(`tr[data-name="${name}"][data-date^="${lastLoanDateISO.substring(0, 19)}"]`); // Match start of ISO string
                          if (rowToHighlight) {
                              rowToHighlight.classList.add('highlight-recent-loan');
@@ -1358,6 +1366,7 @@ function calculateAndDisplayTotalReturn(selectedName) {
              }
         });
     }
+
 
 </script>
 </body>
