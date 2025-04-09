@@ -1,301 +1,585 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bank Community Loan</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            padding: 20px;
-            margin: 0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bank Community Loan</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 20px;
+      margin: 0;
+    }
+    .form-container {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 450px;
+      margin-bottom: 30px;
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    label {
+        display: block;
+        margin-top: 10px;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    input:focus, select:focus {
+      border-color: #4cc9f0;
+      outline: none;
+      box-shadow: 0 0 8px rgba(76, 201, 240, 0.4);
+    }
+    input[type="file"] {
+        padding: 5px;
+    }
+    .btn {
+      padding: 1.1em 2em;
+      background: #ecd448; /* Yellow */
+      border: none;
+      font-size: 16px;
+      color: #131313;
+      cursor: pointer;
+      border-radius: 8px;
+      font-weight: bolder;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      margin-top: 20px;
+      transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
+    }
+    .btn:hover {
+      background-color: #4cc9f0; /* Blue on hover */
+      color: #fff;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+     #downloadBtn {
+        background-color: #5cb85c; /* Green for download */
+        color: white;
+        display: none; /* Hidden initially */
+        max-width: 450px;
+        margin: 20px auto 0 auto; /* Adjusted margin */
+     }
+     #downloadBtn:hover {
+        background-color: #4cae4c;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        transform: translateY(-2px);
+     }
 
-        .form-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 400px;
-            margin-bottom: 20px;
-        }
+    /* Styles for the capture section (A4 layout) */
+    #capture {
+      display: none; /* Hidden initially */
+      width: 210mm; /* A4 width */
+      min-height: 290mm; /* A4 height - Use min-height */
+      padding: 15mm;
+      background: white;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      margin: 20px auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
 
-        /* नया इनपुट CSS */
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
+    .header {
+      text-align: center;
+      border-bottom: 4px solid #056fff;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .header-info {
+      position: absolute;
+      right: 0;
+      top: 0;
+      text-align: right;
+      font-size: 14px;
+      color: #555;
+    }
+    .header .logo {
+      width: 100px;
+      margin-bottom: 5px;
+    }
+     .header h1 {
+        font-size: 24px;
+        margin: 10px 0 5px 0;
+        color: #056fff;
+     }
+     .header h2 {
+        font-size: 18px;
+        margin: 0;
+        color: #333;
+     }
+    .registration-number {
+      color: #ff0000;
+      font-weight: bold;
+      margin-top: 15px;
+      font-size: 16px;
+    }
 
-        input:focus, select:focus {
-            border-color: #4cc9f0;
-            outline: none;
-            box-shadow: 0 0 5px rgba(76, 201, 240, 0.5);
-        }
+    /* --- Loan Details Section --- */
+    .loan-details-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        background-color: #fafafa;
+    }
+    .details-text {
+        flex-grow: 1;
+        padding-right: 15px; /* Reduced padding */
+    }
+    .details-text p {
+        margin: 8px 0; /* Slightly reduced margin */
+        font-size: 14px; /* Slightly smaller font */
+        color: #333;
+        display: flex;
+        align-items: center;
+    }
+     .details-text p i {
+        margin-right: 8px;
+        color: #056fff;
+        width: 18px; /* Slightly smaller icon width */
+        text-align: center;
+     }
+    .api-photo-container { /* Renamed for clarity */
+        flex-shrink: 0;
+        width: 100px; /* Reduced width for API photo */
+        text-align: center;
+    }
+    #apiApplicantPhoto { /* ID for API image */
+      max-width: 100%;
+      height: auto;
+      max-height: 100px; /* Reduced max height */
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      object-fit: contain;
+      margin-top: 5px;
+      background-color: #fff; /* White background if image is transparent or fails */
+    }
+     .api-photo-container p {
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+        font-size: 13px;
+     }
+    .highlight {
+      color: #056fff;
+      font-weight: bold;
+    }
 
-        /* बटन CSS */
-        .btn {
-            padding: 1.1em 2em;
-            background: none;
-            border: 2px solid #fff;
-            font-size: 15px;
-            color: #131313;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s;
-            border-radius: 12px;
-            background-color: #ecd448;
-            font-weight: bolder;
-            box-shadow: 0 2px 0 2px #000;
-            width: 100%;
-            margin-top: 15px;
-        }
+    /* --- Manual Upload Section --- */
+    #manualUploadSection {
+        display: none; /* Hidden by default */
+        margin: 20px auto; /* Centered below details */
+        padding: 15px;
+        border: 1px dashed #ccc;
+        border-radius: 8px;
+        text-align: center;
+        max-width: 80%; /* Limit width */
+    }
+    #manualUploadSection p {
+        margin-bottom: 10px;
+        font-weight: bold;
+        color: #444;
+        font-size: 14px;
+    }
+    #manualApplicantPhoto { /* ID for manually uploaded image */
+        max-width: 100%;
+        max-height: 200px; /* Max height for uploaded image */
+        height: auto;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        object-fit: contain;
+    }
 
-        .btn:before {
-            content: "";
-            position: absolute;
-            width: 100px;
-            height: 120%;
-            background-color: #ff6700;
-            top: 50%;
-            transform: skewX(30deg) translate(-150%, -50%);
-            transition: all 0.5s;
-        }
+    /* Request text moved to be before footer */
+    .request-text {
+        margin-top: 25px; /* Space above request text */
+        text-align: center;
+        font-style: italic;
+        color: #555;
+        font-size: 14px;
+    }
 
-        .btn:hover {
-            background-color: #4cc9f0;
-            color: #fff;
-            box-shadow: 0 2px 0 2px #0d3b66;
-        }
 
-        .btn:hover::before {
-            transform: skewX(30deg) translate(150%, -50%);
-            transition-delay: 0.1s;
-        }
+    /* Footer section for Stamp and Signature */
+    .footer-section {
+        margin-top: auto; /* Push footer to the bottom */
+        padding-top: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        border-top: 1px solid #eee; /* Lighter separator line */
+    }
+    .stamp-section {
+        text-align: center;
+    }
+    .stamp-img {
+      width: 140px; /* Adjusted size */
+      opacity: 0.8;
+    }
+    .signature-section {
+      text-align: center;
+    }
+    .signature-img {
+      width: 180px; /* Adjusted size */
+      margin-top: 5px;
+    }
+     .signature-section p, .stamp-section p {
+        margin: 0;
+        font-size: 13px; /* Smaller text */
+        color: #333;
+     }
 
-        .btn:active {
-            transform: scale(0.9);
-        }
-
-        #capture {
-            display: none;
-            position: relative;
-            width: 210mm;
-            height: 297mm;
-            padding: 20px;
-            background: white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            border: 5px solid #056fff;
-        }
-
-        .header {
-            text-align: center;
-            border-bottom: 3px solid #056fff;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .header-info {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            text-align: right;
-            font-weight: bold; /* डेट को बोल्ड किया */
-        }
-h1 {
-  text-align: center;
-}
-        .header .logo {
-            width: 120px;
-            height: auto;
-            margin-bottom: 10px;
-        }
-
-        .registration-number {
-            color: #ff0000;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .signature-section {
-            position: absolute;
-            right: 30px;
-            bottom: 50px;
-            text-align: center;
-        }
-
-        .signature-img {
-            width: 250px;
-            height: auto;
-            margin-top: 10px;
-        }
-
-        .loan-details {
-            margin: 15px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .highlight {
-            color: #056fff;
-            font-weight: bold;
-        }
-
-        .uploaded-image {
-            max-width: 250px;
-            max-height: 150px;
-            margin: 15px auto;
-            display: block;
-            object-fit: contain;
-        }
-
-        .stamp {
-            position: absolute;
-            left: 30px;
-            bottom: 100px;
-            width: 220px;
-            opacity: 0.7;
-        }
-    </style>
+  </style>
 </head>
 <body>
-    <div class="form-container">
-        <h1>Loan form</h1>
-        <form id="loanForm">
-            <input type="text" id="name" placeholder="Enter your name" required>
-            <input type="text" id="mobile" placeholder="Enter mobile number" required>
-            <input type="number" id="amount" placeholder="Loan amount" required>
-            <select id="monthlyRate" required>
-                <option value="1%">1% for 1 month</option>
-                <option value="3%">3% for 2 months</option>
-                <option value="5%">5% for 3 months</option>
-                <option value="2%">2% for 1 month (2× loan)</option>
-                <option value="8% EMI">8% EMI</option>
-            </select>
-            <input type="file" id="uploadImage" accept="image/*" required>
-            <button type="submit" class="btn">Generate Letter</button>
-        </form>
+  <div class="form-container">
+    <h1>Loan Application Form</h1>
+    <form id="loanForm">
+      <label for="nameSelect">Applicant Name:</label>
+      <select id="nameSelect" required></select>
+
+      <label for="mobile">Mobile Number:</label>
+      <input type="tel" id="mobile" placeholder="Enter 10-digit mobile number" pattern="[0-9]{10}" required>
+
+      <label for="amount">Loan Amount (₹):</label>
+      <input type="number" id="amount" placeholder="Enter loan amount" min="1" required>
+
+      <label for="monthlyRate">Interest Rate & Duration:</label>
+      <select id="monthlyRate" required>
+        <option value="" disabled selected>Select Rate and Duration</option>
+        <option value="1">1% for 1 month</option>
+        <option value="2">3% for 2 months</option>
+        <option value="3">5% for 3 months</option>
+        <option value="1_2x">2% for 1 month (2× loan)</option>
+        <option value="emi">8% (Flat) for 3 Months (EMI)</option>
+      </select>
+
+      <label for="imageUpload">Upload Additional Photo/Document (Optional):</label>
+      <input type="file" id="imageUpload" accept="image/*">
+
+      <button type="submit" class="btn">Generate Loan Letter</button>
+    </form>
+  </div>
+
+  <div id="capture">
+    <div class="header">
+      <div class="header-info">Date: <span id="currentDate"></span></div>
+      <img src="https://i.imgur.com/JLyQvpv.png" class="logo" alt="Bank Logo">
+      <h1>BANK COMMUNITY LOAN FORM</h1>
+      <h2>बैंक कम्युनिटी लोन</h2>
+      <div class="registration-number">Reg. No: <span id="regNumber"></span></div>
     </div>
 
-    <div id="capture">
-        <div class="header">
-            <div class="header-info">
-                Date: <span id="currentDate"></span>
-            </div>
-            <img src="https://i.imgur.com/JLyQvpv.png" class="logo" alt="Bank Logo">
-            <h1>BANK COMMUNITY LOAN FORM</h1>
-            <h2>बैंक कम्युनिटी लोन</h2>
-            <div class="registration-number" id="regNumber"></div>
+    <div class="loan-details-container">
+        <div class="details-text">
+          <p><i class="fas fa-user"></i>Applicant Name: <span class="highlight" id="displayName"></span></p>
+          <p><i class="fas fa-mobile-alt"></i>Mobile Number: <span id="displayMobile"></span></p>
+          <p><i class="fas fa-rupee-sign"></i>Loan Amount: ₹<span id="displayAmount"></span></p>
+          <p><i class="fas fa-percent"></i>Interest Rate: <span id="displayRate"></span></p>
+          <p><i class="fas fa-file-invoice-dollar"></i>Total Payable: ₹<span id="displayTotalAmount"></span></p>
+          <p><i class="fas fa-calendar-alt"></i>Repayment Period Ends: <span id="repaymentDate"></span></p>
+          <p id="emiRow" style="display: none;"><i class="fas fa-chart-pie"></i>Monthly EMI: ₹<span id="displayEMI"></span>/month</p>
         </div>
+        <div class="api-photo-container">
+            <p>Applicant Photo:</p>
+            <img id="apiApplicantPhoto" src="" alt="Applicant Photo (API)"> </div>
+    </div>
 
-        <div class="loan-details">
-            <p>Applicant Name: <span class="highlight" id="displayName"></span></p>
-            <p>Mobile Number: <span id="displayMobile"></span></p>
-            <p>Loan Amount: ₹<span id="displayAmount"></span></p>
-            <p>Interest Rate: <span id="displayRate"></span></p>
-            <p>Total Payable: ₹<span id="displayTotalAmount"></span></p>
-            <p>EMI: ₹<span id="displayEMI"></span>/month</p>
-            <p>Repayment Date: <span id="repaymentDate"></span></p>
-            <p class="highlight">I request to bank community members, please approve the loan form.</p>
+    <div id="manualUploadSection">
+        <p>Aadhaar Uploaded :</p>
+        <img id="manualApplicantPhoto" src="" alt="Manually Uploaded Photo"> </div>
+
+    <p class="request-text highlight">I request the bank community members to please approve this loan application.</p>
+
+    <div class="footer-section">
+        <div class="stamp-section">
+             <img src="https://i.imgur.com/w9J5t2N.png" class="stamp-img" alt="Bank Stamp">
+             <p>Bank Seal</p>
         </div>
-
-        <img id="uploadedImagePreview" class="uploaded-image" src="" alt="Applicant Photo">
-        <img src="https://i.imgur.com/w9J5t2N.png" class="stamp" alt="Bank Stamp">
-
         <div class="signature-section">
-            <p>Authorized Signature</p>
-            <img src="https://i.imgur.com/kkg2glD.png" class="signature-img" alt="Signature">
-            <p>Prime members</p>
+          <p>Authorized Signature</p>
+          <img src="https://i.imgur.com/kkg2glD.png" class="signature-img" alt="Signature">
+          <p>Prime Members</p>
         </div>
     </div>
+  </div> <button id="downloadBtn" class="btn">Download Letter</button>
 
-    <button id="download" class="btn">Download Letter</button>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script>
-        const form = document.getElementById('loanForm');
-        const captureDiv = document.getElementById('capture');
-        const downloadBtn = document.getElementById('download');
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz9LCkPR8L3-i7F1KG2KUJ6It2l_p55murljRJ_4108nFysOXUOpG5WEs1sdEaGHq1L7w/exec';
+    let membersData = [];
 
-        function generateRegistrationNumber() {
-            const timestamp = new Date().getTime().toString().slice(-6);
-            return `BCL-${timestamp}`;
+    // Form Elements
+    const nameSelect = document.getElementById('nameSelect');
+    const mobileInput = document.getElementById('mobile');
+    const amountInput = document.getElementById('amount');
+    const rateSelect = document.getElementById('monthlyRate');
+    const imageUploadInput = document.getElementById('imageUpload');
+    const loanForm = document.getElementById('loanForm');
+    const captureDiv = document.getElementById('capture');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    // Capture Div Content Elements
+    const currentDateEl = document.getElementById('currentDate');
+    const displayNameEl = document.getElementById('displayName');
+    const displayMobileEl = document.getElementById('displayMobile');
+    const displayAmountEl = document.getElementById('displayAmount');
+    const displayRateEl = document.getElementById('displayRate');
+    const displayTotalAmountEl = document.getElementById('displayTotalAmount');
+    const displayEMIEl = document.getElementById('displayEMI');
+    const repaymentDateEl = document.getElementById('repaymentDate');
+    const regNumberEl = document.getElementById('regNumber');
+    const emiRowEl = document.getElementById('emiRow');
+    const apiApplicantPhotoEl = document.getElementById('apiApplicantPhoto'); // API Image Element
+    const manualUploadSectionEl = document.getElementById('manualUploadSection'); // Manual Upload Section
+    const manualApplicantPhotoEl = document.getElementById('manualApplicantPhoto'); // Manual Image Element
+    // Add references to other images inside #capture if they might affect layout height significantly
+    const logoImgEl = document.querySelector('#capture .header .logo');
+    const stampImgEl = document.querySelector('#capture .stamp-img');
+    const signatureImgEl = document.querySelector('#capture .signature-img');
+
+
+    async function fetchMemberData() {
+      try {
+        const res = await fetch(API_URL);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        membersData = Array.isArray(data) ? data : [data];
+        const validMembers = membersData.filter(d => d && d.Name && d.Name.trim() !== '');
+        const uniqueNames = [...new Set(validMembers.map(d => d.Name.trim()))].sort();
+        nameSelect.innerHTML = '<option value="" disabled selected>Select Applicant Name</option>';
+        uniqueNames.forEach(name => {
+          const option = document.createElement('option');
+          option.value = name; option.textContent = name;
+          nameSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error fetching member data:', error);
+        alert('Failed to load member data. Please check the API or refresh.');
+      }
+    }
+
+    function formatDate(date) {
+      const day = date.getDate();
+      const month = date.toLocaleString('default', { month: 'long' });
+      const year = date.getFullYear();
+      return `${day} ${month} ${year}`;
+    }
+
+    function generateRegistrationNumber() {
+      const timestamp = Date.now().toString();
+      const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+      return `BCL-${timestamp.slice(-6)}-${randomPart}`;
+    }
+
+    function setApiImage(member) {
+        apiApplicantPhotoEl.src = ""; // Clear previous
+        apiApplicantPhotoEl.alt = "Applicant Photo (API)";
+        if (member && member.imageUrl && member.imageUrl.trim() !== '') {
+            apiApplicantPhotoEl.src = member.imageUrl;
+             apiApplicantPhotoEl.onerror = () => {
+                console.warn(`Failed to load API image for ${member.Name} from ${member.imageUrl}`);
+                apiApplicantPhotoEl.alt = "API Photo Not Found";
+             };
+        } else {
+            apiApplicantPhotoEl.alt = "No API Photo Available";
         }
+    }
 
-        function formatDate(date) {
-            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
-                          'July', 'August', 'September', 'October', 'November', 'December'];
-            return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
-        }
+    loanForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      // ... (rest of the form submission logic remains the same as previous version) ...
+       const selectedName = nameSelect.value;
+      const member = membersData.find(m => m.Name === selectedName);
+      const mobile = mobileInput.value;
+      const amount = parseFloat(amountInput.value);
+      const rateValue = rateSelect.value;
+      const uploadedFile = imageUploadInput.files[0];
 
-        function calculateRepaymentDate(months) {
-            const date = new Date();
-            date.setMonth(date.getMonth() + months);
-            return formatDate(date);
-        }
+      if (!selectedName || !mobile || isNaN(amount) || !rateValue) {
+          alert('Please fill in all required fields.');
+          return;
+      }
 
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
+      // --- Calculations ---
+      let interest = 0, months = 1, rateText = '';
+      if (rateValue === 'emi') { interest = 8; months = 3; rateText = `8% Flat for 3 Months (EMI)`; }
+      else if (rateValue === '1_2x') { interest = 2; months = 1; rateText = `2% for 1 Month`; }
+      else if (rateValue === '1') { interest = 1; months = 1; rateText = `1% for 1 Month`; }
+      else if (rateValue === '2') { interest = 3; months = 2; rateText = `3% for 2 Months`; }
+      else if (rateValue === '3') { interest = 5; months = 3; rateText = `5% for 3 Months`; }
 
-            const userData = {
-                name: document.getElementById('name').value,
-                mobile: document.getElementById('mobile').value,
-                amount: parseFloat(document.getElementById('amount').value),
-                rate: document.getElementById('monthlyRate').value
-            };
+      const totalInterestAmount = amount * (interest / 100);
+      const totalAmount = amount + totalInterestAmount;
+      let emi = '-';
 
-            const interest = parseFloat(userData.rate.match(/\d+/)[0]);
-            const totalAmount = userData.amount + (userData.amount * (interest/100));
-            const emi = userData.rate.includes("EMI") ? (totalAmount/3).toFixed(2) : "-";
-            const months = parseInt(userData.rate.match(/\d+/)[0][0]) || 1;
+      if (rateValue === 'emi') {
+          emi = (totalAmount / months).toFixed(2);
+          emiRowEl.style.display = 'flex';
+      } else {
+          emiRowEl.style.display = 'none';
+      }
 
-            document.getElementById('displayName').textContent = userData.name;
-            document.getElementById('displayMobile').textContent = userData.mobile;
-            document.getElementById('displayAmount').textContent = userData.amount.toFixed(2);
-            document.getElementById('displayRate').textContent = userData.rate;
-            document.getElementById('displayTotalAmount').textContent = totalAmount.toFixed(2);
-            document.getElementById('displayEMI').textContent = emi;
-            document.getElementById('repaymentDate').textContent = calculateRepaymentDate(months);
-            document.getElementById('regNumber').textContent = "Registration No: " + generateRegistrationNumber();
+      const today = new Date();
+      const repaymentDate = new Date(today);
+      repaymentDate.setMonth(repaymentDate.getMonth() + months);
 
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('uploadedImagePreview').src = e.target.result;
-            };
-            reader.readAsDataURL(document.getElementById('uploadImage').files[0]);
+      // --- Populate Text Details ---
+      currentDateEl.textContent = formatDate(today);
+      displayNameEl.textContent = selectedName;
+      displayMobileEl.textContent = mobile;
+      displayAmountEl.textContent = amount.toFixed(2);
+      displayRateEl.textContent = rateText;
+      displayTotalAmountEl.textContent = totalAmount.toFixed(2);
+      displayEMIEl.textContent = emi;
+      repaymentDateEl.textContent = formatDate(repaymentDate);
+      regNumberEl.textContent = generateRegistrationNumber();
 
-            document.getElementById('currentDate').textContent = formatDate(new Date());
-            captureDiv.style.display = 'block';
-            downloadBtn.style.display = 'block';
+      // --- Set API Image ---
+      setApiImage(member); // Always attempt to set the API image
+
+      // --- Handle Manual Upload ---
+      manualApplicantPhotoEl.src = ""; // Clear previous manual image
+      manualUploadSectionEl.style.display = 'none'; // Hide section initially
+
+      if (uploadedFile) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+              manualApplicantPhotoEl.src = event.target.result;
+              manualUploadSectionEl.style.display = 'block'; // Show section
+          }
+          reader.onerror = function(event) {
+              console.error("File could not be read: ", event.target.error);
+              alert('Error reading uploaded file.');
+              manualUploadSectionEl.style.display = 'none'; // Keep hidden on error
+          }
+          reader.readAsDataURL(uploadedFile);
+      }
+
+      // --- Show Capture Div and Download Button ---
+      captureDiv.style.display = 'flex';
+      downloadBtn.style.display = 'block';
+      captureDiv.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // --- Function to wait for images to load ---
+    function waitForImages(containerElement) {
+        const images = Array.from(containerElement.getElementsByTagName('img'));
+        const promises = images.map(img => {
+            // Only create promise for images that have a src and aren't already complete
+            if (img.src && !img.complete) {
+                 // Check if src is a data URL, these usually load instantly
+                 if (img.src.startsWith('data:image/')) {
+                    return Promise.resolve(); // Assume data URLs are ready
+                 }
+
+                return new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    // If an image fails, we still resolve, otherwise Promise.all fails.
+                    // You might want to reject if a critical image fails.
+                    img.onerror = () => {
+                         console.warn(`Image failed to load: ${img.src}`);
+                         resolve(); // Resolve even on error to allow canvas generation
+                    };
+                });
+            } else {
+                // If image has no src or is already complete, resolve immediately
+                return Promise.resolve();
+            }
+        });
+        return Promise.all(promises);
+    }
+
+
+    // --- Download Logic ---
+    downloadBtn.addEventListener('click', async function() { // Make the handler async
+      if (captureDiv.style.display === 'none') {
+        alert('Please generate the loan form first.');
+        return;
+      }
+
+      // Show a temporary loading state (optional)
+      downloadBtn.textContent = 'Preparing Download...';
+      downloadBtn.disabled = true;
+
+      try {
+        // Wait for all images inside #capture to load
+        console.log("Waiting for images to load...");
+        await waitForImages(captureDiv);
+        console.log("Images loaded (or timed out/error handled). Proceeding with canvas generation.");
+
+        // --- Run html2canvas AFTER images are loaded ---
+         html2canvas(captureDiv, {
+             scale: 2, // Scale for better resolution
+             useCORS: true, // Important for cross-origin images (API, imgur)
+             allowTaint: false,
+             logging: false, // Optional: enable for debugging
+             scrollX: 0, // Keep these at 0
+             scrollY: 0,
+             // Avoid explicitly setting width/height/windowWidth/windowHeight unless necessary
+         }).then(canvas => {
+            const link = document.createElement('a');
+            const fileName = `Loan_${displayNameEl.textContent.replace(/\s+/g, '_') || 'Form'}_${Date.now()}.png`;
+            link.download = fileName;
+            link.href = canvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Reset button state
+            downloadBtn.textContent = 'Download Letter';
+            downloadBtn.disabled = false;
+
+        }).catch(error => { // Catch errors specifically from html2canvas
+            console.error('Error generating image with html2canvas:', error);
+            alert('Error generating the download image. Please try again. Check console for details.');
+            // Reset button state
+            downloadBtn.textContent = 'Download Letter';
+            downloadBtn.disabled = false;
         });
 
-        downloadBtn.addEventListener('click', () => {
-            html2canvas(captureDiv, {
-                scale: 3,
-                useCORS: true,
-                windowWidth: 794,
-                windowHeight: 1123
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `Loan_Letter_${Date.now()}.png`;
-                link.href = canvas.toDataURL('image/png', 1.0);
-                link.click();
-            });
-        });
-    </script>
+      } catch (error) { // Catch errors from waitForImages promise rejection (if any)
+            console.error('Error waiting for images:', error);
+            alert('Could not confirm all images loaded before download. The image might be incomplete.');
+             // Reset button state
+            downloadBtn.textContent = 'Download Letter';
+            downloadBtn.disabled = false;
+      }
+    });
+
+    // --- Initialize ---
+    fetchMemberData();
+  </script>
+
 </body>
 </html>
