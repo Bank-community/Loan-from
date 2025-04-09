@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group input[type="number"],
+        .form-group input[type="file"],
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            background-color: white;
+        }
+
+         .form-group input[type="number"] {
+            -webkit-appearance: textfield;
+             -moz-appearance: textfield;
+                  appearance: textfield;
+        }
+         .form-group input[type=number] {
+            -moz-appearance: textfield;
+         }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            box-sizing: border-box;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* New top buttons container */
+        .top-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* New top button styles */
+        .top-btn {
+            flex: 1;
+            padding: 12px 5px;
+            text-align: center;
+            background-color: #6c757d;
+            margin: 0;
+        }
+
+        .top-btn:hover {
+            background-color: #5a6268;
+        }
+
+        .top-btn.home {
+            background-color: #28a745;
+        }
+
+        .top-btn.home:hover {
+            background-color: #218838;
+        }
+
+        .top-btn.members {
+            background-color: #17a2b8;
+        }
+
+        .top-btn.members:hover {
+            background-color: #138496;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #message {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            word-wrap: break-word;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+         .form-group input[type="file"] {
+            padding: 5px;
+         }
+         .file-info {
+             font-size: 0.9em;
+             color: #666;
+             margin-top: 5px;
+         }
+         .optional-label {
+             font-weight: normal;
+             font-size: 0.9em;
+             color: #777;
+         }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Updated top buttons section -->
+        <div class="top-buttons">
+            <a href="https://ramazone.imgbb.com" id="homeButton" class="top-btn home">Home</a>
+            <a href="https://bank-community.github.io/Loan-from/members.html" id="membersButton" class="top-btn members">Members Data</a>
+        </div>
+
+        <h2>Admin Data Entry</h2>
+        <form id="dataForm">
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" required>
+                </div>
+
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
+                    <option value="">-- Select Category --</option>
+                    <option value="Loan">Loan</option>
+                    <option value="Payment">Payment</option>
+                    <option value="EMI Payment">EMI Payment</option>
+                     </select>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" name="amount" step="any" required>
+                </div>
+
+            <div class="form-group">
+                <label for="imageFile">Image Upload <span class="optional-label">(Optional)</span>:</label>
+                <input type="file" id="imageFile" name="imageFile" accept="image/*">
+                <div class="file-info" id="fileInfo">No file selected</div>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">
+                Submit Data
+                <div class="loader" id="loader"></div>
+            </button>
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        // --- Get DOM Elements ---
+        const form = document.getElementById('dataForm');
+        const messageDiv = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+        const loader = document.getElementById('loader');
+        const imageFileInput = document.getElementById('imageFile');
+        const fileInfoDiv = document.getElementById('fileInfo');
+        const homeButton = document.getElementById('homeButton');
+        const membersButton = document.getElementById('membersButton');
+        const dateInput = document.getElementById('date');
+        const categorySelect = document.getElementById('category');
+        const amountInput = document.getElementById('amount');
+
+        // --- Configuration ---
+        const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzOFUW4IHCbaT3EdY_IrKs0NuVuuzYDvPhviTDJWsXbqR-s_JNBvMJ4TBaksqeW2Le0XA/exec';
+        const imgbbApiKey = '65bbcf742486328061382f03949b47c6';
+        const imgbbUploadUrl = 'https://api.imgbb.com/1/upload';
+
+        // --- Set default date to today ---
+        function setTodayDate() {
+            if (!dateInput.value) {
+                 const today = new Date();
+                 const year = today.getFullYear();
+                 const month = String(today.getMonth() + 1).padStart(2, '0');
+                 const day = String(today.getDate()).padStart(2, '0');
+                 const todayString = `${year}-${month}-${day}`;
+                 dateInput.value = todayString;
+            }
+        }
+        setTodayDate();
+        // --- End default date setting ---
+
+
+        // --- Event listener for Category change ---
+        categorySelect.addEventListener('change', function() {
+            if (this.value === 'EMI Payment') {
+                amountInput.value = 500;
+            }
+        });
+        // --- End Category change listener ---
+
+
+        // --- Event listener for Image File selection ---
+        imageFileInput.addEventListener('change', () => {
+            if (imageFileInput.files.length > 0) {
+                fileInfoDiv.textContent = `Selected: ${imageFileInput.files[0].name}`;
+            } else {
+                fileInfoDiv.textContent = 'No file selected';
+            }
+        });
+        // --- End Image File listener ---
+
+
+        // --- Helper Function to format date (DD Month YYYY) ---
+        function formatCustomDate(dateString) {
+            try {
+                const parts = dateString.split('-');
+                if (parts.length !== 3) {
+                    throw new Error("इनपुट से अमान्य दिनांक प्रारूप प्राप्त हुआ।");
+                }
+                const year = parts[0];
+                const month = parseInt(parts[1], 10);
+                const day = parseInt(parts[2], 10);
+
+                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+                if (isNaN(day) || isNaN(month) || isNaN(parseInt(year)) || month < 1 || month > 12) {
+                     throw new Error("पार्सिंग के बाद अमान्य दिनांक घटक।");
+                }
+
+                const monthName = monthNames[month - 1];
+                return `${day} ${monthName} ${year}`;
+
+            } catch (error) {
+                console.error("दिनांक फॉर्मेट करते समय त्रुटि:", error);
+                return dateString;
+            }
+        }
+        // --- End Helper Function ---
+
+
+        // --- Form Submit Event Listener ---
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            loader.style.display = 'inline-block';
+            messageDiv.textContent = '';
+            messageDiv.className = '';
+
+            let imageUrl = '';
+
+            try {
+                if (imageFileInput.files.length > 0) {
+                    messageDiv.textContent = 'Uploading image...';
+                    const imageFile = imageFileInput.files[0];
+                    const imgbbFormData = new FormData();
+                    imgbbFormData.append('key', imgbbApiKey);
+                    imgbbFormData.append('image', imageFile);
+
+                    const imgResponse = await fetch(imgbbUploadUrl, {
+                        method: 'POST',
+                        body: imgbbFormData,
+                    });
+
+                    const imgResult = await imgResponse.json();
+
+                    if (imgResult.success && imgResult.data && imgResult.data.url) {
+                        imageUrl = imgResult.data.url;
+                        messageDiv.textContent = 'Image uploaded. Submitting data...';
+                    } else {
+                        console.error('ImgBB Upload Error:', imgResult);
+                        throw new Error(`Image upload failed: ${imgResult.error?.message || 'Unknown error'}`);
+                    }
+                } else {
+                     messageDiv.textContent = 'Submitting data...';
+                }
+
+                const formData = new FormData(form);
+                const data = {};
+                formData.forEach((value, key) => {
+                    if (key !== 'imageFile') {
+                       data[key] = value;
+                    }
+                });
+
+                if (data.date) {
+                    data.date = formatCustomDate(data.date);
+                }
+
+                data.imageUrl = imageUrl;
+
+                messageDiv.textContent = 'Submitting data to Google Sheet...';
+                const scriptResponse = await fetch(appsScriptUrl, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'submitData', data: data }),
+                     headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    },
+                    mode: 'cors'
+                });
+
+                let scriptResultText = await scriptResponse.text();
+                let scriptResult;
+                try {
+                    scriptResult = JSON.parse(scriptResultText);
+                } catch(parseError) {
+                    console.error("Apps Script प्रतिक्रिया को JSON के रूप में पार्स करने में विफल:", scriptResultText);
+                    if (!scriptResponse.ok) {
+                       throw new Error(`Submission failed. Server response: ${scriptResultText || scriptResponse.statusText}`);
+                    } else {
+                        console.warn("Apps Script प्रतिक्रिया मान्य JSON नहीं थी:", scriptResultText);
+                        scriptResult = { status: 'success', message: `Data likely submitted. Response: ${scriptResultText}` };
+                    }
+                }
+
+                if (scriptResponse.ok && scriptResult.status === 'success') {
+                    messageDiv.textContent = scriptResult.message || 'Data submitted successfully!';
+                    messageDiv.className = 'success';
+                    form.reset();
+                    fileInfoDiv.textContent = 'No file selected';
+                    setTodayDate();
+                } else {
+                     throw new Error(`Submission failed: ${scriptResult.message || scriptResultText || 'Unknown error from script'}`);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.textContent = `An error occurred: ${error.message}`;
+                messageDiv.className = 'error';
+            } finally {
+                submitBtn.disabled = false;
+                loader.style.display = 'none';
+            }
+        });
+        // --- End Form Submit Listener ---
+
+        // You can set the href for these buttons later
+        // homeButton.href = "YOUR_HOME_LINK_HERE";
+        // membersButton.href = "YOUR_MEMBERS_DATA_LINK_HERE";
+
+    </script>
+
+</body>
+</html>
