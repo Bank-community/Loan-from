@@ -9,10 +9,11 @@
         :root {
              --primary-color: #007BFF; --secondary-color: #056fff; --light-bg: #f8f9fa;
              --text-light: #fff; --text-dark: #343a40; --positive-color: #04c800;
-             --negative-color: #ff1f02; --warning-color: #ffc107; --neutral-color: #000; /* Gray for Due */
+             --negative-color: #ff1f02; --warning-color: #ffc107; --neutral-color: #808080; /* Gray for Due */
              --profile-bg: linear-gradient(135deg, #0d6efd, #0a58ca); --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
              --profile-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-             --rating-good: #dc3545; --rating-better: #ffc107; --rating-best: #198754;
+             /* REMOVED CIBIL RATING COLORS - No longer needed */
+             /* --rating-good: #dc3545; --rating-better: #ffc107; --rating-best: #198754; */
              --loader-color: var(--primary-color); --modal-bg: rgba(0, 0, 0, 0.88); /* Slightly less opaque */
         }
         body {
@@ -83,7 +84,8 @@
         .best-member-tag { font-size: 11px; font-weight: bold; color: #ffd700; background-color: rgba(0, 0, 0, 0.3); padding: 2px 6px; border-radius: 4px; display: inline-block; }
         .profile-rank.hidden, .best-member-tag.hidden { display: none; }
 
-        .profile-buttons-area { /* Container for Tips & SIP Status buttons */
+        /* Updated Profile Buttons Area (Only SIP Status button remains) */
+        .profile-buttons-area {
             grid-area: buttons; display: flex; flex-direction: column; align-items: end; gap: 5px; margin-top: 5px;
         }
         .profile-buttons-area button {
@@ -96,7 +98,7 @@
 
         .profile-stats-grid { /* Grid for all metric cards */
             grid-area: stats; display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 Columns */
+            grid-template-columns: repeat(3, 1fr); /* 3 Columns */ /* Kept 3, last row might have empty slot */
             gap: 8px; width: 100%; align-self: stretch; /* Stretch to fill height */
         }
         /* Common style for all metric cards */
@@ -107,29 +109,22 @@
         }
         .metric-card .label { font-size: 11px; opacity: 0.9; /* Less transparent */ margin-bottom: 3px; white-space: nowrap; color: #e0e0e0; /* Lighter gray label */ }
         .metric-card .value { font-weight: bold; /* Bolder value */ font-size: 15px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-light); }
+
         /* Specific card adjustments */
-        #profileCibilCard { /* Distinct CIBIL card style */
-             background-color: rgba(255, 255, 255, 0.15); /* Lighter background */
-             border: 1px solid rgba(255, 255, 255, 0.3);
-             cursor: pointer; transition: background-color 0.2s ease;
-        }
-        #profileCibilCard:hover { background-color: rgba(255, 255, 255, 0.25); }
-        #profileCibilCard .value { font-size: 16px; } /* Slightly larger CIBIL score */
-        #profileCibilCard .rating { font-size: 10px; font-weight: bold; margin-left: 5px; padding: 1px 4px; border-radius: 4px; display: inline-block; vertical-align: middle;}
-        #profileCibilCard .rating.good { background-color: var(--rating-good); color: white; }
-        #profileCibilCard .rating.better { background-color: var(--rating-better); color: #333; }
-        #profileCibilCard .rating.best { background-color: var(--rating-best); color: white; }
+        /* REMOVED: #profileCibilCard styles removed */
         #profileEligibilityCard .value.eligible { color: var(--positive-color); font-weight: bold; }
         #profileEligibilityCard .value.not-eligible { color: var(--negative-color); font-weight: bold; }
         #profileEligibilityCard .sub-value { font-size: 10px; opacity: 0.9; color: #e0e0e0; } /* Lighter sub-value */
         #profileAmountCard .value.positive { color: #b2f0b2; } #profileAmountCard .value.negative { color: #f7c8c8; } /* Adjusted contrast */
         #profileCurrentLoanCard .value.positive { color: #b2f0b2; } #profileCurrentLoanCard .value.negative { color: #f7c8c8; }
-        #profileSipStatusCard .value.pending { color: var(--warning-color); } #profileSipStatusCard .value.paid { color: #b2f0b2; }
-        #profileSipStatusCard .value.due { color: var(--neutral-color); } /* Style for Due status */
+        #profileSipStatusCard .value.pending { color: var(--negative-color); } /* Changed from warning for consistency */
+        #profileSipStatusCard .value.paid { color: #b2f0b2; }
+        #profileSipStatusCard .value.due { color: var(--neutral-color); font-weight: bold;} /* Style for Due status */
 
         .progress-bar-container { grid-area: bar; width: 100%; height: 6px; background-color: rgba(255, 255, 255, 0.3); border-radius: 3px; overflow: hidden; margin-top: 8px; }
         .progress-bar { height: 100%; width: 0; transition: width 1s ease-in-out, background-color 0.5s ease-in-out; }
         .progress-bar.positive { background-color: #39ff14; } .progress-bar.negative { background-color: #ff3d3d; }
+        /* Updated footnote */
         .profile-section .footnote { grid-column: 1 / -1; font-size: 9px; opacity: 0.7; margin: 0 0 -5px 0; text-align: center; line-height: 1.1; }
         /* --- End Profile Section --- */
 
@@ -162,10 +157,9 @@
         #imageModal .modal-content { background: none; box-shadow: none; padding: 5px; /* Add padding for border */ width: auto; height: auto; max-width: 95%; max-height: 95%; overflow: hidden; }
         #modalImage { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; border-radius: 10px; border: 4px solid white; /* Thicker border */ object-fit: contain; box-sizing: border-box; }
 
-        /* Tips Modal Specifics */
-        #tipsModal .tip-section { margin-bottom: 15px; } #tipsModal h3 { font-size: 16px; margin-bottom: 8px; color: var(--text-dark); border-bottom: 1px solid #eee; padding-bottom: 4px;} #tipsModal ul { margin: 0; padding-left: 20px; font-size: 14px; color: #555; } #tipsModal li { margin-bottom: 6px; }
-        /* History Modal Specifics */
-        #cibilHistoryModal .history-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dotted #eee; font-size: 14px;} #cibilHistoryModal .history-item:last-child { border-bottom: none; } #cibilHistoryModal .history-item span:first-child { color: #555; } #cibilHistoryModal .history-item span:last-child { font-weight: bold; } #cibilHistoryModal .total-score { margin-top: 15px; text-align: right; font-size: 16px; font-weight: bold; }
+        /* REMOVED: Tips Modal Specific styles removed */
+        /* REMOVED: History Modal Specific styles removed */
+
         /* SIP Status Modal Specifics */
         #sipStatusModal .status-list { max-height: 60vh; overflow-y: auto; margin-top: 10px; padding-right: 5px;} /* Scrollable list */
         #sipStatusModal .status-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 5px; border-bottom: 1px solid #eee; font-size: 14px; }
@@ -173,7 +167,7 @@
         #sipStatusModal .status-item span:first-child { font-weight: 500; } /* Name */
         #sipStatusModal .status-item span:last-child { font-weight: bold; display: flex; align-items: center; gap: 5px;}
         #sipStatusModal .status-paid { color: var(--positive-color); }
-        #sipStatusModal .status-pending { color: var(--negative-color); }
+        #sipStatusModal .status-pending { color: var(--negative-color); } /* Matched profile card color */
         #sipStatusModal .status-due { color: var(--neutral-color); }
 
 
@@ -185,28 +179,48 @@
             .profile-picture { width: 50px; height: 50px; font-size: 22px; border-width: 2px; margin-top: 0;}
             .profile-header-area h3 { font-size: 16px; } .profile-sub-tags{ margin-top: 2px; gap: 5px; } .profile-rank{font-size: 10px; padding: 1px 5px;} .best-member-tag{font-size: 9px; padding: 1px 4px;}
             .profile-buttons-area { flex-direction: row; gap: 6px; grid-column: 3; grid-row: 1; align-self: center; margin-top: 0;} /* Buttons side-by-side */
-            #tipsButton, #sipStatusButton { font-size: 10px; padding: 3px 5px;}
+             /* Adjusted button sizes */
+            #sipStatusButton { font-size: 10px; padding: 3px 5px;}
             .profile-stats-grid{ grid-area: stats; grid-template-columns: 1fr 1fr; /* 2 columns for cards */ gap: 6px; margin-top: 8px; }
             .metric-card{ min-height: 55px; padding: 5px 6px; border-radius: 4px; }
             .metric-card .label{ font-size: 9px; } .metric-card .value{ font-size: 12px; }
-            #profileCibilCard .score { font-size: 13px; } #profileCibilCard .rating { font-size: 9px; }
+            /* REMOVED: #profileCibilCard responsive styles removed */
             #profileEligibilityCard .sub-value { font-size: 9px; }
             .progress-bar-container{ margin-top: 8px; }
             .filters { padding-top: 165px; gap: 10px; margin-top: 15px; } label, select { font-size: 12px; min-width: 110px;} select { padding: 5px 6px; }
             .table-container { margin-top: 10px; } th { font-size: 11px; padding: 6px 8px; } td { font-size: 10px; padding: 5px 6px; white-space: normal; overflow-wrap: break-word; word-break: break-word; vertical-align: middle; } tfoot td { font-size: 11px; }
-            .modal-content{ width: 95%; padding: 15px 20px; } .modal h2{ font-size: 16px; } #tipsModal ul{ font-size: 13px; } #cibilHistoryModal .history-item{ font-size: 13px; } #sipStatusModal .status-item{font-size: 13px;}
+            .modal-content{ width: 95%; padding: 15px 20px; } .modal h2{ font-size: 16px; }
+            /* REMOVED: Tips/History Modal responsive styles */
+            #sipStatusModal .status-item{font-size: 13px;}
         }
-        @media only screen and (max-width: 420px) { body { padding-top: 220px; } .profile-section { grid-template-columns: 50px 1fr auto; gap: 5px 8px; padding: 8px 10px; } .profile-picture { width: 45px; height: 45px; font-size: 20px; } .profile-header-area h3 { font-size: 15px; } .profile-stats-grid { grid-template-columns: 1fr 1fr; } /* Keep 2 columns */ .filters { padding-top: 180px; } }
+        @media only screen and (max-width: 420px) {
+            body { padding-top: 220px; }
+            .profile-section { grid-template-columns: 50px 1fr auto; gap: 5px 8px; padding: 8px 10px; }
+            .profile-picture { width: 45px; height: 45px; font-size: 20px; }
+            .profile-header-area h3 { font-size: 15px; }
+            .profile-stats-grid { grid-template-columns: 1fr 1fr; } /* Keep 2 columns */
+            .filters { padding-top: 180px; }
+        }
 
     </style>
 </head>
 <body>
     <div id="loader"> <div class="spinner"></div> Loading... </div>
 
-    <div id="passwordPromptContainer" class="hidden"> <div id="passwordPromptMessage"> <p>Enter Access PIN:</p> <input type="password" id="passwordInput" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"> <div id="passwordError"></div> <button id="passwordSubmit">Enter</button> </div> </div>
+    <div id="passwordPromptContainer" class="hidden">
+        <div id="passwordPromptMessage">
+            <p>Enter Access PIN:</p>
+            <input type="password" id="passwordInput" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off">
+            <div id="passwordError"></div>
+            <button id="passwordSubmit">Enter</button>
+        </div>
+    </div>
 
     <div id="dashboardContent" class="hidden">
-        <div class="header"> <img src="https://i.postimg.cc/XNpR3cN1/20241030-065157.png" alt="Logo"> <h1>Community Loan Dashboard</h1> </div>
+        <div class="header">
+            <img src="https://i.postimg.cc/XNpR3cN1/20241030-065157.png" alt="Logo">
+            <h1>Community Loan Dashboard</h1>
+        </div>
 
         <div id="profileSection" class="profile-section">
             <div class="profile-picture" id="profilePictureContainer"></div>
@@ -218,45 +232,83 @@
                  </div>
             </div>
             <div class="profile-buttons-area">
-                <button id="tipsButton">Tips Score</button>
-                <button id="sipStatusButton">SIP Status</button> </div>
+                <button id="sipStatusButton">SIP Status</button>
+            </div>
 
-            <div class="profile-stats-grid"> <div class="metric-card" id="profileCibilCard"> <span class="label">CIBIL Score*</span><span class="value"><span id="profileCibilScore">---</span><span class="rating" id="profileCibilRating">---</span></span>
+            <div class="profile-stats-grid">
+                 <div class="metric-card" id="profileEligibilityCard">
+                     <span class="label">Loan Eligibility</span>
+                     <span id="profileEligibilityStatus" class="value not-eligible">Not Eligible</span>
+                     <span id="profileEligibilityAmount" class="sub-value"></span>
                  </div>
-                  <div class="metric-card" id="profileEligibilityCard"> <span class="label">Loan Eligibility</span><span id="profileEligibilityStatus" class="value not-eligible">Not Eligible</span><span id="profileEligibilityAmount" class="sub-value"></span>
+                 <div class="metric-card" id="profileAmountCard">
+                     <span class="label">Balance</span>
+                     <span id="profileAmount" class="value positive">0</span>
                  </div>
-                 <div class="metric-card" id="profileAmountCard"> <span class="label">Balance</span><span id="profileAmount" class="value positive">0</span>
+                 <div class="metric-card" id="profileCurrentLoanCard">
+                     <span class="label">Current Loan*</span>
+                     <span id="profileCurrentLoan" class="value negative">0</span>
                  </div>
-                 <div class="metric-card" id="profileCurrentLoanCard"> <span class="label">Current Loan*</span><span id="profileCurrentLoan" class="value negative">0</span>
+                 <div class="metric-card" id="profileSipStatusCard">
+                     <span class="label">SIP Status</span>
+                     <span id="profileSipStatus" class="value">--</span>
                  </div>
-                 <div class="metric-card" id="profileSipStatusCard"> <span class="label">SIP Status</span><span id="profileSipStatus" class="value">--</span>
-                 </div>
-                 <div class="metric-card" id="profileJoinDateCard"> <span class="label">Join Date</span><span id="profileJoinDate" class="value">--</span>
+                 <div class="metric-card" id="profileJoinDateCard">
+                     <span class="label">Join Date</span>
+                     <span id="profileJoinDate" class="value">--</span>
                  </div>
             </div>
 
-            <div class="progress-bar-container"> <div class="progress-bar" id="progressBar"></div> </div>
-            <p class="footnote">*CIBIL Score & Current Loan calculated via specific rules.</p>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <p class="footnote">*Current Loan calculated based on loans after last regular payment.</p>
         </div>
 
         <div class="filters">
-             <div><label for="nameFilter">Select Name:</label><select id="nameFilter"><option value="all">All Members</option></select></div>
-             <div><label for="typeFilter">Filter Data By:</label><select id="typeFilter">
-                    <option value="Civil Score">Performance Score</option> {/* Renamed Label */}
-                    <option value="all_transactions">All Transactions</option> <option value="members_invest">Loan Repayments</option>
-                    <option value="loan_history">Loan History</option> <option value="sip_payment">SIP Payments</option>
+             <div>
+                <label for="nameFilter">Select Name:</label>
+                <select id="nameFilter">
+                    <option value="all">All Members</option>
+                </select>
+            </div>
+             <div>
+                <label for="typeFilter">Filter Data By:</label>
+                <select id="typeFilter">
+                    <option value="Performance Score">Performance Score</option>
+                    <option value="all_transactions">All Transactions</option>
+                    <option value="members_invest">Loan Repayments</option>
+                    <option value="loan_history">Loan History</option>
+                    <option value="sip_payment">SIP Payments</option>
                     <option value="total_return">Total Return</option>
-             </select></div>
+             </select>
+            </div>
         </div>
 
-        <div class="table-container"> <table id="dataTable"><thead></thead><tbody></tbody><tfoot><tr><td id="totalLabel" colspan="1">Total</td><td id="totalValue1">0</td><td id="totalValue2">0</td><td id="totalValue3" class="positive">0</td></tr></tfoot></table> </div>
-    </div> <div id="imageModal" class="modal hidden"> <div class="modal-content"><button class="modal-close" onclick="closeModal('imageModal')">&times;</button><img id="modalImage" src="" alt="Profile Image Fullscreen"></div></div>
+        <div class="table-container">
+            <table id="dataTable">
+                <thead></thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <td id="totalLabel" colspan="1">Total</td>
+                        <td id="totalValue1">0</td>
+                        <td id="totalValue2">0</td>
+                        <td id="totalValue3" class="positive">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
 
-    <div id="tipsModal" class="modal hidden"> <div class="modal-content"> <button class="modal-close" onclick="closeModal('tipsModal')">&times;</button> <h2>स्कोर सुधारने के टिप्स</h2> <div class="tip-section"> <h3>स्कोर कैसे सुधारें:</h3> <ul> <li>सभी लोन और SIP का भुगतान समय पर (हर महीने 1-10 तारीख के बीच) करें।</li> <li>अपना बैलेंस सकारात्मक (positive) बनाए रखें।</li> <li>लिए गए लोन की तुलना में अधिक भुगतान करने का प्रयास करें (Loan Utilization सुधारें)।</li> <li>नियमित रूप से अपनी वित्तीय स्थिति की समीक्षा करें।</li> </ul> </div> <div class="tip-section"> <h3>क्या न करें (जिससे स्कोर घट सकता है):</h3> <ul> <li>SIP या लोन की किश्तों का भुगतान करने में देरी (31 दिन से अधिक)।</li> <li>लंबे समय तक (50, 80, या 100+ दिन) भुगतान न करना।</li> <li>अपना खाता बैलेंस नकारात्मक (negative) रखना।</li> <li>जितना चुका सकते हैं उससे अधिक लोन लेना।</li> </ul> </div> <p style="font-size: 12px; color: #666; margin-top: 15px;">*यह स्कोर बैंक द्वारा उपयोग किए जाने वाले आधिकारिक CIBIL स्कोर से भिन्न है और केवल इस समूह के आंतरिक मूल्यांकन के लिए है।</p> </div> </div>
+    <div id="imageModal" class="modal hidden">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('imageModal')">&times;</button>
+            <img id="modalImage" src="" alt="Profile Image Fullscreen">
+        </div>
+    </div>
 
-    <div id="cibilHistoryModal" class="modal hidden"> <div class="modal-content"> <button class="modal-close" onclick="closeModal('cibilHistoryModal')">&times;</button> <h2>CIBIL Score Breakdown</h2> <div id="cibilBreakdownContent"> <div class="history-item"><span>Base Score</span><span>+300</span></div> <div class="history-item"><span>Balance Component</span><span id="histBalanceScore">0</span></div> <div class="history-item"><span>Timely SIPs Component</span><span id="histHistoryScore">0</span></div> <div class="history-item"><span>Loan Utilization Component</span><span id="histUtilizationScore">0</span></div> <div class="history-item"><span>Overdue Loan Penalty</span><span id="histPenalty" style="color: var(--negative-color);">0</span></div> <hr style="margin: 10px 0; border: none; border-top: 1px solid #eee;"> <div class="total-score"><span>Final Score</span> <span id="histFinalScore">300</span></div> </div> <p style="font-size: 12px; color: #666; margin-top: 15px;">*यह ब्रेकडाउन अनुमानित है और केवल सूचना के लिए है। पेनल्टी रूल: >31 दिन: -50, >50 दिन: -100, >80 दिन: -200, >100 दिन: -600.</p> </div> </div>
-
-     <div id="sipStatusModal" class="modal hidden">
+    <div id="sipStatusModal" class="modal hidden">
          <div class="modal-content">
              <button class="modal-close" onclick="closeModal('sipStatusModal')">&times;</button>
              <h2>Current Month SIP Status</h2>
@@ -272,7 +324,7 @@
     const CORRECT_PASSWORD = "7536"; // Replace with your desired PIN
     let userRankMap = new Map();
     let communityBalance = 0;
-    let latestCivilScoreBreakdown = {};
+    // REMOVED: latestCivilScoreBreakdown variable removed as Civil Score functionality is gone
 
     // URLs & Defaults
     // IMPORTANT: Replace this URL with your actual Google Apps Script Web App URL
@@ -417,7 +469,8 @@
         setupEventListeners();
         // Set default filter values
         document.getElementById('nameFilter').value = 'all';
-        document.getElementById('typeFilter').value = 'Civil Score'; // Default to Performance Score
+        // Set default filter to 'all_transactions' as 'Civil Score' is removed
+        document.getElementById('typeFilter').value = 'all_transactions';
         updateDisplay(); // Initial display update
     }
 
@@ -438,15 +491,16 @@
         });
 
         // Modal buttons
-        document.getElementById('tipsButton').addEventListener('click', () => {
-            openModal('tipsModal');
-        });
+        // REMOVED: Event listener for #tipsButton removed
+        // document.getElementById('tipsButton').addEventListener('click', () => {
+        //     openModal('tipsModal');
+        // });
         document.getElementById('sipStatusButton').addEventListener('click', () => {
             populateSipStatusModal(); // Populate before opening
             openModal('sipStatusModal');
         });
 
-        // CIBIL history listener is added dynamically in updateProfileSection
+        // REMOVED: CIBIL history listener removed (was added dynamically in updateProfileSection)
     }
 
     // --- Modal Functions ---
@@ -456,9 +510,10 @@
             if (modalId === 'imageModal' && imageSrc) {
                 modal.querySelector('#modalImage').src = imageSrc;
             }
-            if (modalId === 'cibilHistoryModal') {
-                populateCibilHistoryModal();
-            }
+            // REMOVED: Check for cibilHistoryModal removed
+            // if (modalId === 'cibilHistoryModal') {
+            //     populateCibilHistoryModal();
+            // }
             modal.classList.remove('hidden');
         }
     }
@@ -474,16 +529,7 @@
     }
 
     // --- Populate CIBIL History Modal ---
-    function populateCibilHistoryModal() {
-        // Use nullish coalescing (??) for safer defaults
-        document.getElementById('histBalanceScore').textContent = latestCivilScoreBreakdown.balanceScore?.toFixed(0) ?? '0';
-        document.getElementById('histHistoryScore').textContent = latestCivilScoreBreakdown.historyScore?.toFixed(0) ?? '0';
-        document.getElementById('histUtilizationScore').textContent = latestCivilScoreBreakdown.utilizationScore?.toFixed(0) ?? '0';
-        document.getElementById('histPenalty').textContent = latestCivilScoreBreakdown.penalty?.toFixed(0) ?? '0';
-        document.getElementById('histFinalScore').textContent = latestCivilScoreBreakdown.scoreDisplay ?? '---';
-        // Set penalty color
-        document.getElementById('histPenalty').style.color = (latestCivilScoreBreakdown.penalty ?? 0) < 0 ? 'var(--negative-color)' : 'var(--positive-color)';
-    }
+    // REMOVED: populateCibilHistoryModal function removed entirely
 
     // --- Populate SIP Status Modal ---
     function populateSipStatusModal() {
@@ -566,6 +612,7 @@
     }
 
      // --- Rank Calculation (Performance Score Rank) ---
+     // Kept this function as it's used for profile rank based on balance/performance score
      function calculateAllUserRanks() {
          userRankMap.clear();
          const userData = {};
@@ -580,7 +627,7 @@
          const sortedData = Object.entries(userData)
              .map(([name, { amount }]) => ({
                  name,
-                 score: calculatePerformanceScore(amount) // Use helper
+                 score: calculatePerformanceScore(amount) // Use helper based on balance
              }))
              .sort((a, b) => b.score - a.score);
 
@@ -594,86 +641,11 @@
          });
      }
 
-     // --- CIBIL Score Calculation (Internal Performance Metric) ---
-     function calculateCivilScore(userName) {
-         if (userName === 'all') {
-             return { scoreValue: 0, scoreDisplay: "N/A", rating: "", balanceScore: 0, historyScore: 0, utilizationScore: 0, penalty: 0 };
-         }
-
-         const userData = allData.filter(r => r.Name === userName);
-         if (userData.length === 0) {
-             // Assign base minimum for new/inactive users
-             return { scoreValue: 100, scoreDisplay: "100", rating: "Poor", balanceScore: 0, historyScore: 0, utilizationScore: 0, penalty: 0 };
-         }
-         // Use pre-parsed numbers
-         const totalLoanTaken = userData.reduce((acc, r) => acc + r.Loan, 0);
-         const totalPayment = userData.reduce((acc, r) => acc + r.Payment, 0); // Regular payments
-         const totalSipPayment = userData.reduce((acc, r) => acc + r.SipPayment, 0);
-         const currentBalance = totalPayment + totalSipPayment - totalLoanTaken;
-
-         // 1. Balance Component (Max 100)
-         const balanceScore = Math.min(100, Math.max(0, Math.floor(currentBalance / 100) * 1)); // 1 pt per 100 balance
-
-         // 2. Payment History Component (Max 300): Timely SIPs
-         let timelySipCount = 0;
-         userData
-            .filter(r => r.SipPayment > 0 && r.Date instanceof Date && !isNaN(r.Date))
-            .forEach(sip => {
-                 const paymentDay = sip.Date.getDate();
-                 if (paymentDay >= 1 && paymentDay <= 10) timelySipCount++;
-             });
-         const historyScore = Math.min(300, timelySipCount * 15); // 15 pts per timely SIP
-
-         // 3. Loan Utilization Component (Max 300): Repayment ratio (using ALL payments)
-         const totalRepaid = totalPayment + totalSipPayment;
-         const utilizationRatio = (totalLoanTaken === 0) ? 1 : Math.max(0, Math.min(1, totalRepaid / totalLoanTaken));
-         const utilizationScore = Math.round(utilizationRatio * 300);
-
-         // 4. Overdue Loan Penalty (Negative points) - Check based on last loan and current balance
-         let penalty = 0;
-         const outstandingLoanBalance = totalLoanTaken - totalRepaid; // Negative if overpaid
-         if (outstandingLoanBalance > 0) { // Only apply penalty if loan is outstanding
-            const loans = userData.filter(r => r.Loan > 0).sort((a, b) => b.Date - a.Date); // Most recent loans first
-            if (loans.length > 0 && loans[0].Date instanceof Date && !isNaN(loans[0].Date)) {
-                const lastLoanDate = loans[0].Date;
-                const today = new Date();
-                // Assume due date is ~1 month after loan. Use 31 days for consistency.
-                const dueDate = new Date(lastLoanDate);
-                dueDate.setDate(dueDate.getDate() + 31); // 31-day grace period
-
-                if (!isNaN(dueDate) && today > dueDate) {
-                    const daysOverdue = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
-                    if (daysOverdue > 100) penalty = -600;
-                    else if (daysOverdue > 80) penalty = -200;
-                    else if (daysOverdue > 50) penalty = -100;
-                    else if (daysOverdue > 0) penalty = -50; // Overdue by 1-50 days (after grace)
-                }
-             }
-         }
-
-         const calculatedScore = 300 + balanceScore + historyScore + utilizationScore + penalty; // Base 300
-         const finalScore = Math.max(100, Math.min(900, Math.round(calculatedScore))); // Clamp & round
-
-         let rating = "";
-         if (finalScore <= 499) rating = "Poor";
-         else if (finalScore <= 649) rating = "Good";
-         else if (finalScore <= 799) rating = "Better";
-         else rating = "Best";
-
-         const scoreDisplay = finalScore >= 900 ? "900+" : String(finalScore);
-
-         return {
-             scoreValue: finalScore,
-             scoreDisplay: scoreDisplay,
-             rating: rating,
-             balanceScore: balanceScore,
-             historyScore: historyScore,
-             utilizationScore: utilizationScore,
-             penalty: penalty
-         };
-     }
+     // --- CIBIL Score Calculation ---
+     // REMOVED: calculateCivilScore function removed entirely
 
      // --- Loan Eligibility Calculation ---
+     // Kept this function as it seems useful
      function calculateEligibility(userName) {
          if (userName === 'all') {
              return { isEligible: false, approvedAmount: 0 };
@@ -706,18 +678,24 @@
         const selectedName = document.getElementById('nameFilter').value;
         const selectedType = document.getElementById('typeFilter').value;
 
-        calculateAllUserRanks(); // Recalculate ranks
+        calculateAllUserRanks(); // Recalculate ranks (used in profile)
 
         const currentUserRank = selectedName === 'all' ? null : userRankMap.get(selectedName);
-        const civilScoreResult = calculateCivilScore(selectedName);
+        // REMOVED: civilScoreResult calculation removed
         const eligibilityResult = calculateEligibility(selectedName);
 
-        updateProfileSection(selectedName, currentUserRank, civilScoreResult, eligibilityResult);
+        // REMOVED: civilScoreResult parameter removed from updateProfileSection call
+        updateProfileSection(selectedName, currentUserRank, eligibilityResult);
 
         switch (selectedType) {
-            case 'Civil Score':
-                updateTableHeader('civil_score');
-                displayPerformanceScoreTable(selectedName);
+             // REMOVED: Case for 'Civil Score' removed
+             // case 'Civil Score':
+             //     updateTableHeader('civil_score'); // Assuming HTML filter option is removed/renamed
+             //     displayPerformanceScoreTable(selectedName); // Kept this function if 'Performance Score' filter is used
+             //     break;
+             case 'Performance Score': // Kept this case if filter option remains named this
+                updateTableHeader('performance_score'); // Use a distinct header type if needed
+                displayPerformanceScoreTable(selectedName); // Displays table based on balance score
                 break;
             case 'total_return':
                 updateTableHeader('total_return'); // Set correct header for return view
@@ -735,8 +713,18 @@
                 break;
             default:
                 console.error("Unknown filter type:", selectedType);
-                document.querySelector("#dataTable tbody").innerHTML = `<tr><td colspan="5">Invalid filter selected.</td></tr>`;
-                updateTableHeader('default');
+                // Ensure table body is cleared or shows an error message
+                const tbody = document.querySelector("#dataTable tbody");
+                if (tbody) {
+                     const colSpan = document.querySelectorAll('#dataTable thead th').length || 5;
+                     tbody.innerHTML = `<tr><td colspan="${colSpan}">Invalid filter selected or data unavailable.</td></tr>`;
+                }
+                 updateTableHeader('default'); // Set a default header
+                 // Clear footer totals
+                 updateTransactionTotals(0, 0);
+                 updateScoreTotals(0, 0, 0);
+                 updateReturnTotals(0, 0, 0);
+
         }
          // No need for extra checkRecentStatus call here
     }
@@ -753,13 +741,22 @@
         footCells[3].textContent = '0';
 
         switch (type) {
-            case 'civil_score':
+            // REMOVED: Case for 'civil_score' removed
+            // case 'civil_score':
+            //     headers = ["Rank", "Name", "Perf. Score*", "Balance"];
+            //     footCells[0].textContent = "Total Members:";
+            //     footCells[1].id = "totalMembers";
+            //     footCells[2].id = "totalScore"; // Less meaningful sum
+            //     footCells[3].id = "totalBalance";
+            //     footCells[3].className = 'positive'; // Default class
+            //     break;
+             case 'performance_score': // Added case if using this filter type
                 headers = ["Rank", "Name", "Perf. Score*", "Balance"];
                 footCells[0].textContent = "Total Members:";
                 footCells[1].id = "totalMembers";
-                footCells[2].id = "totalScore"; // Less meaningful sum
+                footCells[2].id = "totalScore";
                 footCells[3].id = "totalBalance";
-                footCells[3].className = 'positive'; // Default class
+                footCells[3].className = 'positive';
                 break;
             case 'total_return':
                 // Headers for Return View
@@ -897,6 +894,7 @@
         updateTransactionTotals(loanSum, paymentSum);
     }
 
+    // Kept this function for the 'Performance Score' filter option
     function displayPerformanceScoreTable(selectedName) {
         const tbody = document.querySelector("#dataTable tbody");
         tbody.innerHTML = "";
@@ -964,9 +962,7 @@
     }
 
 // --- *** UPDATED Return Calculation and Display Function (Version 4) *** ---
-// This version EXCLUDES loan amounts from the 'Loan Taken' total if no REGULAR payment
-// was ever made by that member strictly AFTER the date of that specific loan.
-// SIP payments DO NOT influence loan inclusion in this version.
+// Kept this function as it was not requested to be removed
 function calculateAndDisplayTotalReturn(selectedName) {
     const tbody = document.querySelector("#dataTable tbody");
     tbody.innerHTML = ""; // Clear table body first
@@ -1106,7 +1102,8 @@ function calculateAndDisplayTotalReturn(selectedName) {
     }
 
     // --- Profile Section Update ---
-    function updateProfileSection(name, rank, civilScoreResult, eligibilityResult) {
+    // UPDATED: Removed civilScoreResult parameter
+    function updateProfileSection(name, rank, eligibilityResult) {
         // Get DOM Elements
         const profileNameEl = document.getElementById("profileName");
         const profileAmountEl = document.getElementById("profileAmount"); // Overall Balance
@@ -1117,22 +1114,24 @@ function calculateAndDisplayTotalReturn(selectedName) {
         const bestMemberTagEl = document.getElementById("bestMemberTag");
         const progressBar = document.getElementById("progressBar");
         const profilePicContainer = document.getElementById("profilePictureContainer");
-        const profileCibilScoreEl = document.getElementById("profileCibilScore");
-        const profileCibilRatingEl = document.getElementById("profileCibilRating");
+        // REMOVED: CIBIL score related elements removed
+        // const profileCibilScoreEl = document.getElementById("profileCibilScore");
+        // const profileCibilRatingEl = document.getElementById("profileCibilRating");
+        // const cibilCardEl = document.getElementById("profileCibilCard");
         const eligibilityCardEl = document.getElementById("profileEligibilityCard");
         const eligibilityStatusEl = document.getElementById("profileEligibilityStatus");
         const eligibilityAmountEl = document.getElementById("profileEligibilityAmount");
-        const cibilCardEl = document.getElementById("profileCibilCard");
-        const sipStatusCardEl = document.getElementById("profileSipStatusCard");
+        const sipStatusCardEl = document.getElementById("profileSipStatusCard"); // Kept SIP status card
 
-        // Reset CIBIL history click listener
-        cibilCardEl.onclick = null;
-        cibilCardEl.style.cursor = 'default';
-        cibilCardEl.title = '';
+        // REMOVED: Reset CIBIL history click listener removed
+        // cibilCardEl.onclick = null;
+        // cibilCardEl.style.cursor = 'default';
+        // cibilCardEl.title = '';
 
         // Initialize variables
-        let amount = 0, currentLoan = 0, joinDate = "--", sipStatus = "--", sipStatusClass = "", profileImageUrl = defaultProfilePic, displayName = "All Members";
-        let performanceScore = 0;
+        let amount = 0, joinDate = "--", sipStatus = "--", sipStatusClass = "", profileImageUrl = defaultProfilePic, displayName = "All Members";
+        let performanceScore = 0; // Kept performance score based on balance
+        let currentLoan = 0; // Moved calculation inside individual member logic
         const now = new Date();
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
@@ -1147,9 +1146,10 @@ function calculateAndDisplayTotalReturn(selectedName) {
             sipStatus = "N/A"; sipStatusClass = ""; joinDate = "N/A";
             profileRankEl.classList.add('hidden'); bestMemberTagEl.classList.add('hidden');
             eligibilityCardEl.style.display = 'none'; // Hide eligibility card for 'all'
-            profileCibilScoreEl.textContent = "N/A"; profileCibilRatingEl.textContent = ""; profileCibilRatingEl.className = "rating";
+            // REMOVED: CIBIL score update removed
+            // profileCibilScoreEl.textContent = "N/A"; profileCibilRatingEl.textContent = ""; profileCibilRatingEl.className = "rating";
             profilePicContainer.innerHTML = `<div style="width:100%; height:100%; background-color:#ddd; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:30px; color: #555;" title="Community Overview">👥</div>`;
-            latestCivilScoreBreakdown = {}; // Clear breakdown
+            // REMOVED: latestCivilScoreBreakdown clear removed
             sipStatusCardEl.className = 'metric-card'; // Reset SIP card class
 
         // --- Handle Individual Member View ---
@@ -1164,13 +1164,26 @@ function calculateAndDisplayTotalReturn(selectedName) {
                  const totalPayment = userData.reduce((acc, r) => acc + r.Payment, 0);
                  const totalSipPayment = userData.reduce((acc, r) => acc + r.SipPayment, 0);
                  amount = (totalPayment + totalSipPayment) - totalLoanTaken; // Net Balance
-                 performanceScore = calculatePerformanceScore(amount);
+                 performanceScore = calculatePerformanceScore(amount); // Kept this score
 
-                 // Calculate Current Active Loan (Outstanding balance)
-                 currentLoan = Math.max(0, totalLoanTaken - (totalPayment + totalSipPayment));
+                 // *** UPDATED CURRENT LOAN CALCULATION ***
+                 currentLoan = 0; // Initialize
+                 const regularPayments = userData.filter(r => r.Payment > 0 && r.Date instanceof Date && !isNaN(r.Date))
+                                               .sort((a, b) => b.Date - a.Date); // Sort desc to get latest first
+
+                 if (regularPayments.length > 0) {
+                     const lastRegularPaymentDate = regularPayments[0].Date;
+                     // Sum loans taken *strictly after* the last regular payment date
+                     currentLoan = userData.filter(r => r.Loan > 0 && r.Date instanceof Date && !isNaN(r.Date) && r.Date > lastRegularPaymentDate)
+                                         .reduce((sum, r) => sum + r.Loan, 0);
+                 } else {
+                     // No regular payments ever made, current loan is total outstanding loan
+                     currentLoan = Math.max(0, totalLoanTaken - totalPayment - totalSipPayment);
+                 }
+                 // *** END OF UPDATED CURRENT LOAN CALCULATION ***
+
 
                  // Find Join Date (Date of the first transaction)
-                 // Data is already sorted by date asc, so first record is the earliest.
                  joinDate = userData.length > 0 && userData[0].Date instanceof Date && !isNaN(userData[0].Date)
                            ? formatDate(userData[0].Date, { month: 'short', year: 'numeric' })
                            : "--";
@@ -1188,14 +1201,13 @@ function calculateAndDisplayTotalReturn(selectedName) {
                      sipStatus = "🔴 Due"; sipStatusClass = "due";
                  }
 
-                 // Display Rank & Best Member Tag
+                 // Display Rank & Best Member Tag (Based on balance/performance score rank)
                  if (rank) {
                      profileRankEl.textContent = rank;
                      profileRankEl.classList.remove('hidden');
                  } else {
                      profileRankEl.classList.add('hidden');
                  }
-                 // Update 'best member' criteria if needed (e.g., based on CIBIL score or rank)
                  if (rank === '🥇') { // Example: Highlight top rank
                      bestMemberTagEl.classList.remove('hidden');
                  } else {
@@ -1213,24 +1225,24 @@ function calculateAndDisplayTotalReturn(selectedName) {
                  amount = 0; performanceScore = 0; currentLoan = 0; joinDate = "--"; sipStatus = "--"; sipStatusClass = "";
                  profileRankEl.classList.add('hidden'); bestMemberTagEl.classList.add('hidden');
                  profileImageUrl = defaultProfilePic;
-                 civilScoreResult = { scoreDisplay: '---', rating: '', scoreValue: 0 }; // Reset score object
-                 eligibilityResult = { isEligible: false, approvedAmount: 0 };
+                 // REMOVED: civilScoreResult reset removed
+                 eligibilityResult = { isEligible: false, approvedAmount: 0 }; // Reset eligibility
             }
 
             // Update Profile Picture
             profilePicContainer.innerHTML = `<img src="${profileImageUrl}" alt="Profile image of ${name}" onerror="this.onerror=null; this.src='${defaultProfilePic}';" style="cursor: ${profileImageUrl !== defaultProfilePic ? 'pointer' : 'default'};">`;
 
 
-            // Update CIBIL Score Display & Store Breakdown
-            profileCibilScoreEl.textContent = civilScoreResult.scoreDisplay;
-            profileCibilRatingEl.textContent = civilScoreResult.rating;
-            profileCibilRatingEl.className = `rating ${civilScoreResult.rating.toLowerCase()}`;
-            latestCivilScoreBreakdown = civilScoreResult; // Store full breakdown
-             if (civilScoreResult.scoreValue > 0 && civilScoreResult.scoreDisplay !== 'N/A') { // Make clickable if valid score exists
-                 cibilCardEl.onclick = () => { openModal('cibilHistoryModal'); };
-                 cibilCardEl.style.cursor = 'pointer';
-                 cibilCardEl.title = 'Click to see score breakdown';
-             }
+            // REMOVED: CIBIL Score Display & Breakdown storage removed
+            // profileCibilScoreEl.textContent = civilScoreResult.scoreDisplay;
+            // profileCibilRatingEl.textContent = civilScoreResult.rating;
+            // profileCibilRatingEl.className = `rating ${civilScoreResult.rating.toLowerCase()}`;
+            // latestCivilScoreBreakdown = civilScoreResult; // Store full breakdown
+            //  if (civilScoreResult.scoreValue > 0 && civilScoreResult.scoreDisplay !== 'N/A') { // Make clickable if valid score exists
+            //      cibilCardEl.onclick = () => { openModal('cibilHistoryModal'); };
+            //      cibilCardEl.style.cursor = 'pointer';
+            //      cibilCardEl.title = 'Click to see score breakdown';
+            //  }
 
 
              // Update Eligibility Display
@@ -1242,6 +1254,7 @@ function calculateAndDisplayTotalReturn(selectedName) {
                  eligibilityStatusEl.textContent = "Not Eligible";
                  eligibilityStatusEl.className = 'value not-eligible';
                  let reason = "";
+                 // Use 'amount' which is already calculated user balance
                  if (amount < 0) reason = `(Balance: ₹${amount.toFixed(0)})`;
                  else if (communityBalance <= 0 && !(amount < 0)) reason = "(Fund Low)"; // Check community funds only if user balance isn't negative
                  eligibilityAmountEl.textContent = reason;
@@ -1255,7 +1268,7 @@ function calculateAndDisplayTotalReturn(selectedName) {
         profileAmountEl.textContent = amount.toFixed(2);
         profileAmountEl.className = amount >= 0 ? 'value positive' : 'value negative';
 
-        // Update Current Loan display
+        // Update Current Loan display (using the newly calculated currentLoan)
         profileCurrentLoanEl.textContent = currentLoan.toFixed(2);
         profileCurrentLoanEl.className = currentLoan <= 0 ? 'value positive' : 'value negative'; // Positive class if loan is 0 or less
 
@@ -1266,7 +1279,7 @@ function calculateAndDisplayTotalReturn(selectedName) {
 
         profileJoinDateEl.textContent = joinDate;
 
-        // Update progress bar (based on simple balance for now, could use perf score)
+        // Update progress bar (based on simple balance for now)
         const maxBalanceAbs = 50000; // Adjust scale as needed
         const progressPercent = Math.max(0, Math.min(100, (Math.abs(amount) / maxBalanceAbs) * 50 + 50));
         progressBar.style.width = `${progressPercent}%`;
@@ -1275,7 +1288,7 @@ function calculateAndDisplayTotalReturn(selectedName) {
 
     // --- Utility Functions ---
 
-    // Calculates a simple performance score based on balance
+    // Calculates a simple performance score based on balance (Kept for ranking/table)
     function calculatePerformanceScore(amount) {
         // Example: Score is balance / 10, clamped +/- 1500. Adjust base/scale as needed.
         const baseScore = 500; // Base score
@@ -1302,6 +1315,7 @@ function calculateAndDisplayTotalReturn(selectedName) {
     }
 
     // Highlights recent uncleared loans in transaction views
+    // Kept this function as it's generally useful for transaction views
      function checkRecentStatus(selectedName) {
         // Clear previous highlights first
         document.querySelectorAll("#dataTable tbody tr.highlight-recent-loan").forEach(r => r.classList.remove('highlight-recent-loan'));
@@ -1330,9 +1344,14 @@ function calculateAndDisplayTotalReturn(selectedName) {
                      // Find the row using data attributes. Need to query the specific table body.
                      const tableBody = document.querySelector("#dataTable tbody");
                      if (tableBody) {
-                         const rowToHighlight = tableBody.querySelector(`tr[data-name="${name}"][data-date="${lastLoanDateISO}"]`);
+                         // Corrected selector to handle potential ISO string variations (e.g., trailing Z)
+                         // It's safer to query based on the essential parts if exact match fails sometimes
+                         const rowToHighlight = tableBody.querySelector(`tr[data-name="${name}"][data-date^="${lastLoanDateISO.substring(0, 19)}"]`); // Match start of ISO string
                          if (rowToHighlight) {
                              rowToHighlight.classList.add('highlight-recent-loan');
+                         } else {
+                              // Fallback or log if row not found (could be due to filter view not showing this specific loan)
+                              // console.log(`Row not found to highlight for ${name} loan date ${lastLoanDateISO}`);
                          }
                      }
                   }
@@ -1341,7 +1360,5 @@ function calculateAndDisplayTotalReturn(selectedName) {
     }
 
 </script>
-
-
 </body>
-</html>
+<html>
