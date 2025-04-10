@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Joining Letter Generator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            margin: 0;
+        }
+        .form-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 450px;
+            margin-bottom: 30px;
+        }
+        .form-container h1 {
+            text-align: center;
+            color: #056fff;
+            margin-bottom: 25px;
+        }
+         .form-container label {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+         }
+        .form-container input, .form-container textarea, .form-container select, .form-container button {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+             transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-container input:focus, .form-container textarea:focus, .form-container select:focus {
+             border-color: #056fff;
+             outline: none;
+             box-shadow: 0 0 8px rgba(5, 111, 255, 0.4);
+        }
+        .form-container textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-container button {
+            background: #056fff;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            padding: 1.1em 2em;
+            margin-top: 10px;
+             transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
+             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+         .form-container button:hover {
+            background-color: #0056d1;
+             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+             transform: translateY(-2px);
+         }
+
+        /* --- Capture Div Styling --- */
+        #capture {
+            display: none;
+            position: relative;
+            width: 210mm; /* A4 Width */
+            min-height: 297mm; /* A4 Height */
+            background: white;
+            padding: 15mm; /* Padding */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border: 3px solid #056fff;
+            box-sizing: border-box;
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        #capture .header {
+            text-align: center;
+            margin-bottom: 25px; /* Adjusted space */
+            position: relative;
+            border-bottom: 2px solid #056fff;
+            padding-bottom: 15px;
+        }
+         /* Logo Styling (Top Center) */
+         #capture .header #logoStamp {
+             display: block; /* Make it a block element */
+             width: 80px; /* Adjust size */
+             height: 80px;
+             object-fit: contain;
+             margin: 0 auto 10px auto; /* Center horizontally, add bottom margin */
+         }
+         #capture .header .bank-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #056fff;
+            margin: 0;
+         }
+          #capture .header .address {
+            font-size: 14px;
+            color: #444;
+            margin: 5px 0 0 0;
+         }
+        #capture .header .date {
+            position: absolute;
+            top: 5px; /* Align slightly lower */
+            right: 0;
+            font-size: 14px;
+            font-weight: normal;
+             color: #333;
+        }
+        #capture h1.letter-title {
+            text-align: center;
+            color: #056fff;
+            font-size: 24px;
+            margin-bottom: 25px;
+        }
+
+        /* Content Area (Details + Photo) */
+        .content-area {
+             display: flex;
+             justify-content: space-between;
+             align-items: flex-start;
+             margin-bottom: 20px;
+             flex-grow: 1;
+        }
+        #capture .content-text {
+            font-size: 15px;
+            line-height: 1.7;
+            flex-basis: 75%;
+            padding-right: 20px;
+        }
+         #capture .content-text p {
+            margin-bottom: 15px;
+         }
+        #capture .content-text b {
+            font-size: 15px;
+            color: #056fff;
+             font-weight: 600;
+        }
+        #capture .content-text .name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #0056d1;
+        }
+
+        /* API Photo Area */
+        .api-photo-container-joining {
+            flex-basis: 20%;
+            text-align: center;
+             margin-top: 10px;
+        }
+         .api-photo-container-joining p {
+            font-size: 13px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+         }
+        #apiApplicantPhoto {
+            max-width: 100%;
+            height: auto;
+            max-height: 130px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            object-fit: cover;
+            background-color: #f9f9f9;
+        }
+
+/* Board Members List */
+ .board-members-section {
+     margin-top: 10px; /* Reduced margin to move it up */
+     margin-bottom: 20px; /* Keep bottom margin */
+ }
+.board-members-section b { /* यह "Board Members:" शीर्षक के लिए स्टाइल है */
+    font-size: 15px;
+    color: #333;
+}
+.board-members-list { /* यह नामों की सूची वाले कंटेनर के लिए स्टाइल है */
+    margin: 5px 0 0 0;
+    padding-left: 15px;
+    line-height: 1.5;
+}
+.board-members-list p { /* यह सूची में प्रत्येक सदस्य के नाम (<p> टैग) के लिए स्टाइल है */
+    margin: 2px 0;
+    font-size: 14px;
+    color: #0065ff;      /* अपडेट किया गया रंग */
+    font-weight: bold;    /* बोल्ड फॉन्ट वेट जोड़ा गया */
+}
+
+
+         /* Footer */
+        #capture .footer {
+            margin-top: auto;
+            padding-top: 20px;
+            text-align: right;
+            font-size: 14px;
+            color: #555;
+            position: relative;
+             border-top: 1px dashed #ccc;
+        }
+        #capture .footer .signature-text {
+            position: absolute;
+            bottom: 100px;
+            right: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: black;
+        }
+#capture .footer .team-text {
+    position: absolute; /* इसे absolute ही रखें या जोड़ें */
+    bottom: px;      /* नीचे से 5px ऊपर */
+    left: 0;          /* बाएं किनारे से शुरू करें */
+    right: 0;         /* दाएं किनारे तक फैलाएं */
+    text-align: center; /* टेक्स्ट को बीच में संरेखित करें */
+    font-size: 14px;
+ }
+
+
+        /* Stamps */
+        .stamp { /* General stamp class */
+            position: absolute;
+            object-fit: contain;
+        }
+        /* Removed .stamp-top-left as logo is moved */
+        .stamp-bottom-right {
+            bottom: 5mm;
+            right: 10mm;
+            width: 120px;
+            height: 120px;
+        }
+
+        /* Download Button */
+        #download {
+            display: none;
+            margin-top: 20px;
+            padding: 1.1em 2em;
+            background: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            max-width: 450px;
+            transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        #download:hover {
+            background-color: #4cae4c;
+             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+             transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Bank Joining Letter</h1>
+        <form id="letterForm">
+            <label for="nameSelect">Applicant Name:</label>
+            <select id="nameSelect" required>
+                <option value="" disabled selected>Loading names...</option>
+            </select>
+
+            <label for="guarantor">Guarantor Name:</label>
+            <input type="text" id="guarantor" placeholder="Enter Guarantor Name" required>
+
+            <label for="extraText">Additional Details (Auto-generated):</label>
+            <textarea id="extraText" placeholder="Details will appear here based on selected name..." readonly></textarea>
+
+            <button type="submit">Generate Letter</button>
+        </form>
+    </div>
+
+    <div id="capture">
+        <div class="header">
+            <img src="https://i.imgur.com/JLyQvpv.png" alt="Bank Logo" id="logoStamp">
+            <p class="bank-name">Bank Community Loan</p>
+            <p class="address">Lalunagar, Begusarai, Bihar</p>
+            <p class="date">Date: <span id="displayDate"></span></p>
+        </div>
+
+        <h1 class="letter-title">Community Joining Letter</h1>
+
+        <div class="content-area">
+            <div class="content-text">
+                <p>Dear <span class="name" id="displayName"></span>,</p>
+                <p>
+                    We are delighted to welcome you as a <b id="displayPosition"></b>. Your participation is valuable to our community.
+                </p>
+                 <p>
+                    <b>Joining Details:</b><br>
+                    Guarantor: <b id="displayGuarantor"></b><br>
+                    Joining Date (First SIP): <span id="displayStartDate"></span> 
+                </p>
+                 <p id="displayExtraText"></p>
+                 <p>
+                    We look forward to your active participation and contributions. We wish you a successful and collaborative journey with us.
+                 </p>
+            </div>
+             <div class="api-photo-container-joining">
+                <p>Applicant Photo:</p>
+                <img id="apiApplicantPhoto" src="" alt="Applicant Photo">
+            </div>
+        </div>
+
+
+        <div class="board-members-section">
+            <b>Board Members:</b>
+            <div class="board-members-list">
+                <p>AMIT KUMAR</p>
+                <p>MITHLESH SAHNI</p>
+                <p>PRINCE RAMA</p>
+            </div>
+        </div>
+
+
+        <div class="footer">
+             <p class="team-text">Thank you,<br>Bank Community Team</p>
+             <p class="signature-text">Authorized Signature</p>
+            <img src="https://i.imgur.com/P0rtQjw.png" class="stamp stamp-bottom-right" alt="Authorized Signature Stamp" id="signatureStamp">
+        </div>
+    </div>
+
+    <button id="download">Download Letter</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz9LCkPR8L3-i7F1KG2KUJ6It2l_p55murljRJ_4108nFysOXUOpG5WEs1sdEaGHq1L7w/exec';
+        let membersData = [];
+        const primeMemberNames = ["Amit kumar", "Mithlesh sahni", "Prince rama"];
+
+        // Form Elements
+        const form = document.getElementById('letterForm');
+        const nameSelect = document.getElementById('nameSelect');
+        const guarantorInput = document.getElementById('guarantor');
+        // const startDateInput = document.getElementById('startDate'); // Removed
+        const extraTextArea = document.getElementById('extraText');
+
+        // Capture Div Elements
+        const captureDiv = document.getElementById('capture');
+        const displayDateEl = document.getElementById('displayDate');
+        const displayNameEl = document.getElementById('displayName');
+        const displayPositionEl = document.getElementById('displayPosition');
+        const displayGuarantorEl = document.getElementById('displayGuarantor');
+        const displayStartDateEl = document.getElementById('displayStartDate');
+        const displayExtraTextEl = document.getElementById('displayExtraText');
+        const apiApplicantPhotoEl = document.getElementById('apiApplicantPhoto');
+
+        // Buttons
+        const downloadBtn = document.getElementById('download');
+
+        // --- Fetch Member Data ---
+        async function fetchMemberData() {
+            try {
+                const res = await fetch(API_URL);
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                const data = await res.json();
+                // Filter out invalid entries BEFORE storing
+                membersData = Array.isArray(data) ? data.filter(d => d && d.Name && d.Name.trim() !== '') : [];
+
+                const uniqueNames = [...new Set(membersData.map(d => d.Name.trim()))].sort();
+
+                nameSelect.innerHTML = '<option value="" disabled selected>Select Applicant Name</option>';
+                uniqueNames.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    nameSelect.appendChild(option);
+                });
+                 nameSelect.disabled = false;
+            } catch (error) {
+                console.error('Error fetching member data:', error);
+                nameSelect.innerHTML = '<option value="" disabled selected>Error loading names</option>';
+                alert('Failed to load member data. Please check the API or refresh.');
+            }
+        }
+
+        // --- Format Header Date ---
+        function formatDisplayDate(date) {
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            return date.toLocaleDateString('en-GB', options);
+        }
+        // --- No separate joining date formatting needed if API provides usable string ---
+
+
+        // --- Update Auto-Generated Text ---
+        function updateExtraText() {
+            const selectedName = nameSelect.value;
+            if (!selectedName) {
+                extraTextArea.value = "Details will appear here based on selected name...";
+                return;
+            }
+            const position = primeMemberNames.includes(selectedName) ? "Prime Member" : "Bank Member";
+            let text = "";
+            if (position === "Prime Member") {
+                text = `प्रिय ${selectedName},\nआपका हमारे बैंक community में प्राइम मेंबर के रूप में स्वागत है। आपकी सहभागिता हमारे लिए सम्मान की बात है। हमें विश्वास है कि आपका अनुभव हमारे साथ शानदार रहेगा।`;
+            } else { // Bank Member
+                text = `प्रिय ${selectedName},\nआपका हमारे बैंक मेंबर के रूप में स्वागत है। आपकी सहभागिता हमारे लिए मूल्यवान है, और हम आपके साथ एक मजबूत रिश्ता बनाने की आशा करते हैं।`;
+            }
+            extraTextArea.value = text;
+        }
+
+        // --- Set API Image ---
+         function setApiImage(member) {
+            apiApplicantPhotoEl.src = "";
+            apiApplicantPhotoEl.alt = "Applicant Photo";
+            if (member && member.imageUrl && member.imageUrl.trim() !== '') {
+                apiApplicantPhotoEl.src = member.imageUrl;
+                 apiApplicantPhotoEl.onerror = () => {
+                    console.warn(`Failed to load API image for ${member.Name} from ${member.imageUrl}`);
+                    apiApplicantPhotoEl.alt = "Photo Not Found";
+                 };
+            } else {
+                apiApplicantPhotoEl.alt = "No Photo Available";
+            }
+        }
+
+
+        // --- Event Listeners ---
+        nameSelect.addEventListener('change', updateExtraText);
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const selectedName = nameSelect.value;
+            const guarantor = guarantorInput.value;
+            // const startDate = startDateInput.value; // Removed
+
+             if (!selectedName || !guarantor) { // Removed startDate check
+                alert('Please fill in all required fields (Name, Guarantor).');
+                return;
+            }
+
+            // Find member data
+            const member = membersData.find(m => m.Name === selectedName);
+            if (!member) {
+                alert('Selected member data not found. Please refresh or check API.');
+                return;
+            }
+
+            // Determine Position
+            const position = primeMemberNames.includes(selectedName) ? "Prime Member" : "Bank Member";
+
+            // Get Joining Date from API data
+            const joiningDateFromAPI = member.Date || "N/A"; // Use 'Date' field from API, fallback to N/A
+
+            // Populate Capture Div
+            displayDateEl.innerText = formatDisplayDate(new Date()); // Current date
+            displayNameEl.innerText = selectedName;
+            displayPositionEl.innerText = position;
+            displayGuarantorEl.innerText = guarantor;
+            displayStartDateEl.innerText = joiningDateFromAPI; // Use date from API
+
+            // Update and display the auto-generated text
+             updateExtraText();
+             displayExtraTextEl.innerHTML = extraTextArea.value.replace(/\n/g, '<br>');
+
+            // Set API Image
+            setApiImage(member);
+
+            // Show Letter and Download Button
+            captureDiv.style.display = 'flex';
+            downloadBtn.style.display = 'block';
+             captureDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+
+        // --- Wait for Images Function ---
+        function waitForImages(containerElement) {
+            // Ensure selectors are correct after HTML changes
+             const images = Array.from(containerElement.querySelectorAll('img:not([src=""])')); // Select only images with a src attribute
+            const promises = images.map(img => {
+                if (!img.complete) { // Only wait for images not already loaded
+                    return new Promise((resolve) => {
+                        img.onload = resolve;
+                        img.onerror = () => {
+                             console.warn(`Image failed to load: ${img.src}`);
+                             resolve(); // Resolve even on error
+                        };
+                    });
+                } else {
+                    return Promise.resolve(); // Already loaded
+                }
+            });
+            return Promise.all(promises).then(() => new Promise(resolve => setTimeout(resolve, 150))); // Increased buffer slightly
+        }
+
+
+        // --- Download Logic ---
+        downloadBtn.addEventListener('click', async () => {
+            if (captureDiv.style.display === 'none') {
+                alert('Please generate the letter first.');
+                return;
+            }
+            downloadBtn.textContent = 'Preparing Download...';
+            downloadBtn.disabled = true;
+            try {
+                console.log("Waiting for images...");
+                await waitForImages(captureDiv);
+                console.log("Images ready, generating canvas...");
+
+                const canvas = await html2canvas(captureDiv, {
+                    scale: 2.5,
+                    useCORS: true,
+                    allowTaint: false,
+                    logging: false,
+                    scrollX: 0,
+                    scrollY: 0,
+                });
+
+                const link = document.createElement('a');
+                const fileName = `Joining_Letter_${displayNameEl.innerText.replace(/\s+/g, '_') || 'User'}.png`;
+                link.download = fileName;
+                link.href = canvas.toDataURL('image/png', 1.0);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                downloadBtn.textContent = 'Download Letter';
+                downloadBtn.disabled = false;
+
+            } catch (error) {
+                console.error('Error during download generation:', error);
+                alert('Failed to generate download. Please check console for errors.');
+                downloadBtn.textContent = 'Download Letter';
+                downloadBtn.disabled = false;
+            }
+        });
+
+
+        // --- Initialize ---
+         nameSelect.disabled = true;
+         fetchMemberData();
+
+    </script>
+</body>
+</html>
