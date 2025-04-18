@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>बैंक कम्युनिटी लोन - समुदाय, सहयोग, समृद्धि</title> <link rel="shortcut icon" href="https://i.postimg.cc/XNpR3cN1/20241030-065157.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/8F6snVv/20241030-065157.png" sizes="180x180">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+/* --- Global Styles & Variables --- */
+:root {
+    --primary-color: #1A237E; /* Deep Navy Blue */
+    --secondary-color: #B8860B; /* Dark Goldenrod */
+    --accent-color: #D4AF37; /* Pale Gold for accents */
+    --light-bg: #FFFFFF; /* White Background */
+    --medium-bg: #F8F9FA; /* Light Grey Background */
+    --dark-bg: #E9ECEF; /* Slightly Darker Grey */
+    --text-dark: #333333;
+    --text-light: #FFFFFF;
+    --border-color: #DEE2E6;
+    --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.06); /* Softer shadow */
+    --shadow-medium: 0 6px 20px rgba(0, 0, 0, 0.1); /* Softer medium shadow */
+    --font-family: 'Poppins', sans-serif;
+    --border-radius: 8px;
+    --transition-speed: 0.3s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+}
+
+body {
+    font-family: var(--font-family);
+    color: var(--text-dark);
+    background-color: var(--light-bg); /* Base background */
+    line-height: 1.7;
+    overflow-x: hidden;
+    font-size: 16px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    line-height: 1.3; /* Improved line height for headings */
+}
+
+h2 {
+    font-size: 2rem; /* Slightly adjusted size */
+    text-align: center;
+    margin-bottom: 2.5rem; /* More space below h2 */
+}
+
+h3 {
+   font-size: 1.25rem; /* Slightly larger h3 */
+   color: var(--primary-color);
+   margin-bottom: 0.75rem;
+}
+
+p {
+    margin-bottom: 1rem;
+    color: #555;
+}
+
+a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: color var(--transition-speed) ease;
+}
+
+a:hover {
+    color: var(--primary-color);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 20px; /* Consistent padding */
+}
+
+.content-section {
+    padding: 60px 0; /* Consistent vertical padding */
+}
+
+.light-section { background-color: var(--light-bg); }
+.medium-section { background-color: var(--medium-bg); }
+.dark-section { background-color: var(--dark-bg); } /* Optional darker section */
+
+
+/* --- Buttons --- */
+.primary-button, .secondary-button, .cta-button {
+    display: inline-block;
+    padding: 12px 30px; /* Slightly more horizontal padding */
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    font-size: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    border: 1px solid transparent; /* Base border */
+    box-shadow: var(--shadow-light);
+    line-height: 1.5; /* Ensure text aligns well */
+}
+
+.primary-button, .cta-button {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: var(--text-light);
+}
+
+.primary-button:hover, .cta-button:hover {
+    background-color: #a7770a;
+    border-color: #a7770a;
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-2px);
+}
+
+.secondary-button {
+    background-color: var(--text-light);
+    color: var(--primary-color);
+    border-color: var(--primary-color); /* Use primary color for border */
+}
+
+.secondary-button:hover {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-2px);
+}
+
+.button-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+/* --- Top Logo Bar --- */
+.top-logo-bar {
+    padding: 10px 0;
+    background-color: var(--light-bg); /* Or match body/header bg */
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.site-logo {
+    max-height: 60px; /* Control logo size */
+    width: auto;
+    display: inline-block; /* Allows centering */
+}
+
+/* --- Header / Hero Section --- */
+.hero-section {
+    position: relative;
+    height: 65vh; /* Slightly taller */
+    min-height: 450px;
+    /* You can replace this URL or use gradient if needed */
+    background: url('https://i.imgur.com/pEWE3nL.png') no-repeat center center/cover;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Subtle gradient overlay */
+    background: linear-gradient(135deg, rgba(26, 35, 126, 0.75) 0%, rgba(26, 35, 126, 0.6) 100%);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 750px;
+    padding: 20px;
+}
+
+.hero-title {
+    font-size: 3rem; /* Responsive */
+    font-weight: 700;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.hero-subtitle {
+    font-size: 1.4rem;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 1.25rem;
+    font-weight: 300; /* Lighter subtitle */
+}
+
+.hero-estd {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 2.5rem;
+}
+
+.cta-button {
+    padding: 15px 40px;
+    font-size: 1.1rem;
+}
+
+/* --- Introduction Section --- */
+.intro-section {
+    text-align: center;
+    max-width: 800px; /* Keep constrained width */
+    margin: 0 auto; /* Center container */
+    padding-top: 50px;
+    padding-bottom: 50px;
+     margin-top: -60px; /* Overlap hero slightly more */
+     position: relative;
+     z-index: 3;
+     background-color: var(--light-bg); /* Ensure it stands out */
+     border-radius: var(--border-radius);
+     box-shadow: var(--shadow-medium);
+}
+.intro-section .container { width: 100%; padding: 0 30px;} /* Adjust padding inside */
+.intro-section h2 { margin-bottom: 1rem; }
+
+/* --- How it Works Section --- */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Slightly larger min size */
+    gap: 30px;
+    text-align: center;
+}
+
+.feature-item {
+    background-color: var(--light-bg); /* White cards on medium background */
+    padding: 35px 25px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    border: 1px solid var(--border-color); /* Subtle border */
+}
+
+.feature-item:hover {
+    transform: translateY(-6px); /* More hover lift */
+    box-shadow: var(--shadow-medium);
+}
+
+.feature-icon {
+    font-size: 2.8rem; /* Larger icon */
+    color: var(--secondary-color);
+    margin-bottom: 1.25rem;
+    
+    line-height: 1;
+}
+
+/* --- Bank Members Section --- */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem; /* Reduced space */
+    flex-wrap: wrap;
+}
+.section-header h2 {
+    text-align: left;
+    margin-bottom: 0;
+}
+.view-balance-btn {
+     margin-left: auto;
+     white-space: nowrap;
+}
+.prime-members-note {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--text-dark);
+    font-size: 1rem;
+}
+
+.member-slider-container { position: relative; }
+
+.member-slider {
+    display: flex;
+    gap: 25px; /* More space between cards */
+    overflow-x: auto;
+    padding: 20px 10px; /* Adjusted padding */
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--secondary-color) var(--medium-bg); /* Adjusted scrollbar colors */
+}
+.member-slider::-webkit-scrollbar { height: 7px; }
+.member-slider::-webkit-scrollbar-track { background: #e0e0e0; border-radius: 4px;}
+.member-slider::-webkit-scrollbar-thumb { background-color: var(--secondary-color); border-radius: 4px;}
+
+.member-card {
+    flex: 0 0 210px; /* Slightly wider */
+    background-color: #ffffff;
+    border-radius: var(--border-radius);
+    text-align: center;
+    padding: 20px 15px; /* Adjusted padding */
+    box-shadow: var(--shadow-light);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid var(--border-color);
+}
+
+.member-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-medium);
+}
+
+.member-card img {
+    width: 100%;
+    height: 160px; /* Taller image */
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+}
+
+.member-name {
+    font-size: 1.05rem; /* Slightly larger */
+    font-weight: 600;
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text-dark);
+}
+
+.member-balance {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 7px 14px; /* Larger padding */
+    margin-top: 12px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.prime-tag {
+    position: absolute;
+    top: 12px; /* Positioned relative to top */
+    right: 12px;
+    background-color: var(--accent-color);
+    color: var(--primary-color);
+    padding: 4px 9px; /* More padding */
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.loading-text {
+    width: 100%;
+    text-align: center;
+    color: var(--text-dark);
+    padding: 30px;
+    font-size: 1.1rem;
+}
+
+/* --- Balance Modal --- */
+/* (Keep previous modal styles - they are generally good) */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Darker overlay */
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease;
+}
+
+.modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background-color: var(--text-light);
+    padding: 35px 45px; /* More padding */
+    border-radius: var(--border-radius);
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* Enhanced shadow */
+    position: relative;
+    transform: scale(0.95);
+    transition: transform var(--transition-speed) ease;
+}
+.modal.show .modal-content { transform: scale(1); }
+
+.modal-content h2 { margin-top: 0; margin-bottom: 30px; color: var(--primary-color); }
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #aaa;
+    font-size: 32px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    transition: color var(--transition-speed) ease;
+}
+.close-modal:hover, .close-modal:focus { color: var(--text-dark); }
+
+.balance-display {
+    font-size: 3rem; /* Larger balance */
+    font-weight: 700;
+    margin: 30px 0;
+    color: var(--primary-color);
+    display: block;
+}
+
+/* --- Action Buttons Section --- */
+.action-buttons-grid {
+     display: grid;
+     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+     gap: 25px; /* More gap */
+}
+.action-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Align content start */
+    padding: 30px 15px 25px 15px; /* Adjust padding */
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--light-bg); /* White buttons on medium background */
+    color: var(--primary-color);
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    box-shadow: var(--shadow-light);
+    min-height: 150px; /* Ensure consistent height */
+}
+.action-button:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-medium);
+    /* background-color: #fdfdfd; Slightly off-white hover */
+    border-color: var(--secondary-color);
+}
+.action-button .button-icon {
+    font-size: 2.5rem; /* Larger icon */
+    margin-bottom: 15px; /* More space below icon */
+    color: var(--secondary-color);
+    transform: translateY(-3px); /* Move icon slightly up */
+    line-height: 1; /* Ensure icon vertical space is tight */
+}
+.action-button.whatsapp-button .button-icon { color: #25D366; }
+.action-button.whatsapp-button:hover { border-color: #25D366; }
+
+/* --- Transparency Section --- */
+.transparency-section {
+     text-align: center;
+     max-width: 800px;
+     margin: 0 auto; /* Center container */
+}
+.transparency-section .container { width: 100%; padding: 0 30px;}
+
+/* --- Forms Section --- */
+.forms-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Single column default */
+    gap: 40px;
+    align-items: start;
+}
+
+.form-container {
+    background: var(--light-bg); /* White forms on medium background */
+    padding: 35px; /* More padding */
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-color);
+}
+.form-container h2 {
+    text-align: left;
+    margin-bottom: 1.8rem; /* More space */
+    font-size: 1.6rem;
+}
+
+.form-container input[type="text"],
+.form-container input[type="email"],
+.form-container input[type="number"],
+.form-container select,
+.form-container textarea {
+    width: 100%;
+    padding: 14px 18px; /* More padding */
+    margin-bottom: 18px; /* More space */
+    border: 1px solid var(--border-color);
+    border-radius: 6px; /* Slightly more rounded */
+    font-family: var(--font-family);
+    font-size: 1rem;
+    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    background-color: #fff; /* Ensure white input background */
+}
+
+.form-container input:focus,
+.form-container select:focus,
+.form-container textarea:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.15); /* Softer focus ring */
+}
+.form-container select {
+    appearance: none; /* Custom arrow styling maybe needed */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23aaa'%3E%3Cpath d='M6 9l-6-6h12z'/%3E%3C/svg%3E"); /* Simple dropdown arrow */
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 40px; /* Space for arrow */
+}
+
+
+.form-container textarea { resize: vertical; }
+.form-container button { width: 100%; padding: 15px; margin-top: 10px; }
+.form-result { margin-top: 20px; font-weight: 600; color: var(--primary-color); text-align: center; font-size: 1.1rem; }
+
+/* --- Community Letter Slider --- */
+/* (Keeping slider styles mostly the same, minor adjustments) */
+.slider-container {
+    position: relative;
+    max-width: 550px; /* Wider slider */
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: ;
+    box-shadow: var(--shadow-light);
+    background-color: white;
+     border: 1px solid var(--border-color);
+}
+/* Other slider styles (.slides, .slide, .slider-nav, .slide-indicator, .indicator-dot) remain similar to previous version */
+.slides { display: flex; transition: transform 0.5s ease-in-out; }
+.slide { min-width: 100%; box-sizing: border-box; }
+.slide img { width: 100%; display: block; border-radius: ; }
+.slider-nav { cursor: pointer; position: absolute; top: 50%; transform: translateY(-50%); width: auto; padding: 10px 15px; color: white; font-weight: bold; font-size: 22px; background-color: rgba(0, 0, 0, 0.5); border: none; border-radius: 50%; user-select: none; transition: background-color var(--transition-speed) ease; line-height: 1; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+.slider-nav:hover { background-color: rgba(0, 0, 0, 0.8); }
+.prev { left: 15px; } .next { right: 15px; }
+.slide-indicator { text-align: center; margin-top: 20px; }
+.indicator-dot { display: inline-block; width: 11px; height: 11px; background-color: #ccc; border-radius: 50%; margin: 0 6px; cursor: pointer; transition: background-color var(--transition-speed) ease; }
+.indicator-dot.active { background-color: var(--secondary-color); }
+
+/* --- Footer --- */
+.site-footer {
+    background-color: var(--primary-color);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 40px 0; /* More padding */
+    margin-top: 60px;
+    text-align: center;
+    font-size: 0.95em; /* Slightly larger footer text */
+}
+.site-footer .container { padding: 0 20px; }
+.site-footer p { margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.8); }
+.site-footer p:last-child { margin-bottom: 0; font-weight: 500; color: var(--text-light); }
+
+
+/* --- Animation --- */
+.anim-fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.anim-fade-in.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* --- Responsive Adjustments --- */
+@media (min-width: 768px) {
+    h2 { font-size: 2.2rem; }
+    .hero-title { font-size: 3.8rem; }
+    .hero-subtitle { font-size: 1.6rem; }
+    .forms-grid { grid-template-columns: 1fr 1fr; } /* Two columns for forms */
+    .member-card { flex: 0 0 230px; }
+}
+
+@media (min-width: 992px) {
+    h2 { font-size: 2.4rem; }
+    .features-grid { grid-template-columns: repeat(4, 1fr); }
+    .action-buttons-grid { grid-template-columns: repeat(4, 1fr); }
+    .member-card { flex: 0 0 240px; }
+}
+
+@media (max-width: 480px) {
+    body { font-size: 15px; }
+    .content-section { padding: 40px 0; }
+    h2 { font-size: 1.8rem; margin-bottom: 1.5rem;}
+    .hero-title { font-size: 2.5rem; }
+    .hero-subtitle { font-size: 1.2rem; }
+    .cta-button { padding: 12px 25px; font-size: 1rem;}
+    .primary-button, .secondary-button { padding: 10px 20px; font-size: 0.9rem; }
+    .form-container { padding: 25px; }
+    .form-container h2 { font-size: 1.4rem; }
+    .member-card { flex: 0 0 180px; }
+    .section-header { flex-direction: column; align-items: center; }
+    .section-header h2 { text-align: center; margin-bottom: 15px; }
+    .view-balance-btn { margin-left: 0; margin-top: 5px;}
+    .action-buttons-grid { grid-template-columns: 1fr 1fr; gap: 15px;}
+    .action-button { padding: 20px 10px; min-height: 130px;}
+    .action-button .button-icon { font-size: 2rem; margin-bottom: 10px;}
+    .modal-content { padding: 25px 20px; }
+    .balance-display { font-size: 2.5em;}
+    .site-logo { max-height: 50px;}
+}
+
+</style>
+<body>
+
+    <div class="top-logo-bar">
+        <img src="https://i.postimg.cc/XNpR3cN1/20241030-065157.png" alt="बैंक कम्युनिटी लोन लोगो" class="site-logo"> </div>
+
+    <header class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">बैंक कम्युनिटी लोन</h1>
+            <p class="hero-subtitle">आपसी सहयोग से आर्थिक मजबूती की ओर</p>
+            <p class="hero-estd">स्थापित: 23 जून 2024</p>
+            <a href="https://bank-community.github.io/Loan-from/members.html" class="cta-button primary-button">सभी सदस्य देखें</a>
+        </div>
+    </header>
+
+    <main> <section class="intro-section content-section light-section anim-fade-in">
+            <div class="container">
+                <h2>हमारी पहल</h2>
+                <p>हमारी कम्युनिटी में लोग आपस में मिलकर <strong>Bank Community Loan</strong> में फंड इकट्ठा करते हैं। सभी सदस्य थोड़ी-थोड़ी राशि जमा करते हैं, जिसकी शुरुआत सिर्फ <strong>₹500/-</strong> से होती है। यह आपसी विश्वास और सहयोग पर आधारित एक प्रयास है।</p>
+            </div>
+        </section>
+
+        <section class="how-it-works content-section medium-section anim-fade-in">
+             <div class="container">
+                <h2>💡 कैसे काम करता है?</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">💰</div>
+                        <h3>फंड जमा</h3>
+                        <p>सभी सदस्य मिलकर फंड जमा करते हैं (SIP और Payment)।</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🤝</div>
+                        <h3>लोन प्रदान</h3>
+                        <p>जरूरतमंद सदस्य को उसी फंड से लोन दिया जाता है।</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">⏳</div>
+                        <h3>लोन अवधि</h3>
+                        <p>लोन केवल 1 महीने के लिए होता है (न्यूनतम ब्याज पर)।</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📈</div>
+                        <h3>ब्याज दर</h3>
+                        <p>अवधि और राशि के अनुसार ब्याज दरें बदल सकती हैं।</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bank-members-section content-section light-section anim-fade-in">
+            <div class="container">
+                <div class="section-header">
+                    <h2>बैंक सदस्य</h2>
+                    <button class="secondary-button view-balance-btn" id="viewBalanceBtn">
+                        <img src="https://i.imgur.com/TEHsZ32.png" alt="Balance Icon" class="button-icon">
+                        कुल बैलेंस देखें
+                    </button>
+                </div>
+                <p class="prime-members-note">प्रमुख सदस्य: <strong>Amit kumar, Mithlesh sahni, Prince rama</strong></p>
+                <div class="member-slider-container">
+                    <div class="member-slider" id="memberContainer">
+                        <p class="loading-text">सदस्य लोड हो रहे हैं...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="balanceModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+                <h2>उपलब्ध कम्युनिटी बैलेंस</h2>
+                <div id="totalBalance" class="balance-display">₹0</div>
+            </div>
+        </div>
+
+        <section class="action-buttons-section content-section medium-section anim-fade-in">
+             <div class="container">
+                <h2>जुड़ें और जानें</h2>
+                <div class="action-buttons-grid">
+                    <button class="action-button" onclick="window.open('https://bank-community.github.io/Loan-from/members.html')">
+                       <span class="button-icon">👥</span>
+                       <span>सदस्य सूची</span>
+                    </button>
+                    <button class="action-button whatsapp-button" onclick="window.open('https://chat.whatsapp.com/G39I0hP55WIDHMu5YkAjDZ', '_blank')">
+                        <span class="button-icon">📱</span>
+                       <span>WhatsApp ग्रुप</span>
+                    </button>
+                    <button class="action-button" onclick="window.open('https://bank-community.github.io/Loan-from/loan.html')">
+                        <span class="button-icon">📝</span>
+                       <span>लोन फॉर्म</span>
+                    </button>
+                    <button class="action-button" onclick="window.open('https://codepen.io/Vk-T/full/azbEeba')">
+                        <span class="button-icon">➕</span>
+                       <span>नया सदस्य बनें</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+         <section class="transparency-section content-section light-section anim-fade-in">
+             <div class="container">
+                <h2>📝 पारदर्शिता और सूचना</h2>
+                <p>हमारी पूरी प्रक्रिया पारदर्शी है। आपके सभी डिटेल्स और लेन-देन की जानकारी सुरक्षित रहती है और सदस्यों को उपलब्ध कराई जाती है।</p>
+            </div>
+        </section>
+
+        <section class="forms-section content-section medium-section anim-fade-in">
+             <div class="container">
+                <div class="forms-grid">
+                    <div class="form-container loan-calculator">
+                        <h2>लोन कैलकुलेटर (उदाहरण)</h2>
+                        <input type="number" id="loanAmount" placeholder="लोन राशि (₹)">
+                        <select id="interestRate">
+                            <option value="1">1 महीने के लिए 1% ब्याज</option>
+                            <option value="3">2 महीने के लिए 3% ब्याज</option>
+                            <option value="5">3 महीने के लिए 5% ब्याज</option>
+                        </select>
+                        <button class="primary-button" onclick="calculateLoan()">गणना करें</button>
+                        <p id="loanResult" class="form-result"></p>
+                    </div>
+
+                    <div class="form-container feedback-form">
+                        <h2>फीडबैक दें</h2>
+                        <form action="https://formspree.io/f/xvgkokge" method="POST">
+                            <input type="text" name="name" placeholder="आपका नाम" required>
+                            <input type="email" name="email" placeholder="आपका ईमेल" required>
+                            <textarea name="message" placeholder="आपका संदेश..." required rows="4"></textarea>
+                            <button type="submit" class="primary-button">सबमिट करें</button>
+                        </form>
+                    </div>
+                 </div>
+            </div>
+        </section>
+
+        <section class="letter-slider-section content-section light-section anim-fade-in">
+             <div class="container">
+                <h2>कम्युनिटी पत्र</h2>
+                <div class="slider-container">
+                    <div class="slides">
+                        <div class="slide"><img src="https://i.imgur.com/6x6AuuN.png" alt="Loan Letter"></div>
+                        <div class="slide"><img src="https://i.imgur.com/fUMEyY9.png" alt="Prime Letter"></div>
+                        <div class="slide"><img src="https://i.imgur.com/ZsvB26M.png" alt="Join Letter"></div>
+                    </div>
+                    <button class="slider-nav prev" onclick="prevSlide()">&#10094;</button>
+                    <button class="slider-nav next" onclick="nextSlide()">&#10095;</button>
+                </div>
+                <div class="slide-indicator">
+                    <span class="indicator-dot active" onclick="goToSlide(0)"></span>
+                    <span class="indicator-dot" onclick="goToSlide(1)"></span>
+                    <span class="indicator-dot" onclick="goToSlide(2)"></span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+         <div class="container">
+            <p>&copy; 2025 बैंक कम्युनिटी लोन. सभी अधिकार सुरक्षित.</p>
+            <p>आपसी विश्वास, सबका विकास</p>
+        </div>
+    </footer>
+
+    <script> // --- Intersection Observer for Animations ---
+const animatedElements = document.querySelectorAll('.anim-fade-in');
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            // Optional: Stop observing once animation is triggered
+            // observer.unobserve(entry.target);
+        }
+        // Optional: Remove class if element scrolls out of view
+        // else {
+        //     entry.target.classList.remove('is-visible');
+        // }
+    });
+}, {
+    threshold: 0.1 // Trigger when 10% of the element is visible
+});
+
+animatedElements.forEach(el => observer.observe(el));
+
+
+// --- Loan Calculator ---
+function calculateLoan() {
+    const loanAmountInput = document.getElementById('loanAmount');
+    const interestRateSelect = document.getElementById('interestRate');
+    const loanResultElement = document.getElementById('loanResult');
+
+    const loanAmount = parseFloat(loanAmountInput.value);
+    const interestRate = parseFloat(interestRateSelect.value);
+
+    if (isNaN(loanAmount) || loanAmount <= 0) {
+        loanResultElement.innerText = "कृपया मान्य लोन राशि दर्ज करें।";
+        loanResultElement.style.color = 'red';
+        return;
+    }
+    if (isNaN(interestRate)) {
+         loanResultElement.innerText = "कृपया मान्य ब्याज दर चुनें।";
+         loanResultElement.style.color = 'red';
+         return;
+    }
+
+    const interest = (loanAmount * interestRate) / 100;
+    const totalAmount = loanAmount + interest;
+    loanResultElement.innerText = `कुल चुकौती राशि: ₹${totalAmount.toFixed(2)} (ब्याज: ₹${interest.toFixed(2)})`;
+    loanResultElement.style.color = 'var(--primary-color)';
+}
+
+
+// --- About Letter Slider ---
+let currentSlideIndex = 0;
+const slidesContainer = document.querySelector('.slider-container .slides');
+const totalSlides = slidesContainer ? slidesContainer.children.length : 0;
+const indicatorDots = document.querySelectorAll('.indicator-dot');
+
+function showSlide(index) {
+    if (!slidesContainer || totalSlides === 0) return;
+    if (index >= totalSlides) index = 0;
+    if (index < 0) index = totalSlides - 1;
+    currentSlideIndex = index;
+    slidesContainer.style.transform = `translateX(${-currentSlideIndex * 100}%)`;
+    updateDots();
+}
+
+function prevSlide() { showSlide(currentSlideIndex - 1); }
+function nextSlide() { showSlide(currentSlideIndex + 1); }
+function goToSlide(index) { showSlide(index); }
+
+function updateDots() {
+    indicatorDots.forEach((dot, index) => {
+         if(dot) {
+           dot.classList.toggle('active', index === currentSlideIndex);
+         }
+    });
+}
+if (totalSlides > 0) {
+    showSlide(0);
+    // Optional: Auto-slide functionality
+    // setInterval(nextSlide, 5000);
+}
+
+
+// --- Bank Members Data Handling ---
+const API_URL = 'https://script.google.com/macros/s/AKfycbz9LCkPR8L3-i7F1KG2KUJ6It2l_p55murljRJ_4108nFysOXUOpG5WEs1sdEaGHq1L7w/exec';
+const DEFAULT_IMAGE = 'https://i.imgur.com/6aATcZR.jpeg';
+
+async function fetchMemberData() {
+    const container = document.getElementById('memberContainer');
+    if (!container) { console.error("Member container not found!"); return; }
+
+    container.innerHTML = '<p class="loading-text">सदस्य लोड हो रहे हैं...</p>';
+
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
+        const data = await response.json();
+        const validData = data.filter(entry => entry.Name && entry.Name.trim() !== "");
+
+        if (validData.length === 0) {
+             container.innerHTML = '<p class="loading-text">कोई सदस्य डेटा उपलब्ध नहीं है।</p>';
+             updateTotalBalanceDisplay([]);
+        } else {
+             processMemberData(validData);
+        }
+    } catch (error) {
+        console.error('Error fetching member data:', error);
+        container.innerHTML = '<p class="loading-text" style="color: red;">सदस्य डेटा लोड करने में विफल।</p>';
+        updateTotalBalanceDisplay([]);
+    }
+}
+
+function processMemberData(data) {
+    const members = {};
+    data.forEach(entry => {
+        const name = entry.Name.trim();
+        const loanAmount = parseFloat(entry.Loan) || 0;
+        const paymentAmount = parseFloat(entry.Payment) || 0;
+        const sipAmount = parseFloat(entry["SIP Payment"]) || 0;
+        const imageUrl = entry.imageUrl && entry.imageUrl.trim() !== "" ? entry.imageUrl.trim() : null;
+        if (!members[name]) { members[name] = { name: name, totalLoan: 0, totalPayment: 0, totalSIP: 0, imageUrl: null }; }
+        members[name].totalLoan += loanAmount;
+        members[name].totalPayment += paymentAmount;
+        members[name].totalSIP += sipAmount;
+        if (imageUrl) { members[name].imageUrl = imageUrl; }
+    });
+
+    const memberList = Object.values(members).map(member => ({
+        ...member,
+        balance: (member.totalSIP + member.totalPayment) - member.totalLoan,
+        displayImageUrl: member.imageUrl || DEFAULT_IMAGE
+    }));
+
+    memberList.sort((a, b) => b.balance - a.balance);
+    displayMembers(memberList);
+    updateTotalBalanceDisplay(memberList);
+}
+
+
+function displayMembers(members) {
+    const container = document.getElementById('memberContainer');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const primeMemberNames = ["Prince rama", "Amit kumar", "Mithlesh sahni"];
+
+    members.forEach(member => {
+        const card = document.createElement('div');
+        card.className = 'member-card anim-fade-in'; // Add animation class
+
+        const isPrime = primeMemberNames.includes(member.name);
+        const primeTagHTML = isPrime ? '<div class="prime-tag">Prime</div>' : '';
+
+        card.innerHTML = `
+            ${primeTagHTML}
+            <img src="${member.displayImageUrl}" alt="${member.name}" loading="lazy" onerror="this.onerror=null;this.src='${DEFAULT_IMAGE}'">
+            <p class="member-name">${member.name}</p>
+            <p class="member-balance">Balance: ₹${member.balance.toFixed(2)}</p>
+        `;
+        card.onclick = () => showFullImage(member.displayImageUrl, member.name);
+        container.appendChild(card);
+        observer.observe(card); // Observe newly added cards for animation
+    });
+}
+
+// --- Image Modal (showFullImage function remains the same as previous version) ---
+function showFullImage(imageUrl, memberName) {
+    const existingModal = document.getElementById('imageModalOverlay');
+    if(existingModal) { document.body.removeChild(existingModal); }
+
+    const modal = document.createElement('div');
+    modal.id = 'imageModalOverlay';
+    modal.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.85); display: flex; flex-direction: column;
+        justify-content: center; align-items: center; z-index: 1002; cursor: pointer;
+        padding: 20px; box-sizing: border-box; opacity: 0; transition: opacity 0.3s ease;
+    `;
+
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.style.cssText = `
+        max-width: 90%; max-height: 80%; object-fit: contain; display: block;
+        border: 3px solid white; border-radius: 5px; transform: scale(0.9);
+        transition: transform 0.3s ease;
+    `;
+
+    const name = document.createElement('p');
+    name.textContent = memberName;
+    name.style.cssText = `
+        color: white; margin-top: 15px; font-size: 1.2rem; text-align: center;
+    `;
+
+    modal.appendChild(img);
+    modal.appendChild(name);
+    modal.onclick = () => {
+         modal.style.opacity = '0';
+         setTimeout(() => document.body.removeChild(modal), 300);
+    };
+    document.body.appendChild(modal);
+    requestAnimationFrame(() => {
+        modal.style.opacity = '1';
+        img.style.transform = 'scale(1)';
+    });
+}
+
+
+// --- Balance Modal Functionality ---
+const balanceModalElement = document.getElementById('balanceModal');
+const viewBalanceBtn = document.getElementById('viewBalanceBtn');
+const totalBalanceElement = document.getElementById('totalBalance');
+let netCommunityBalance = 0;
+
+function updateTotalBalanceDisplay(memberList) {
+    netCommunityBalance = memberList.reduce((sum, member) => sum + member.balance, 0);
+    if (viewBalanceBtn) { viewBalanceBtn.disabled = false; }
+}
+
+function showBalanceModal() {
+    if (!balanceModalElement || !totalBalanceElement) return;
+    balanceModalElement.classList.add('show');
+    totalBalanceElement.textContent = '₹0';
+
+    let current = 0;
+    const target = netCommunityBalance;
+    const duration = 1100; // Slightly longer animation
+    const stepTime = 20;
+    const steps = duration / stepTime;
+    const increment = target / steps;
+    let timer = null;
+
+    function animateBalance() {
+         current += increment;
+         if ((increment >= 0 && current >= target) || (increment < 0 && current <= target) || increment === 0) {
+             clearInterval(timer);
+             current = target;
+         }
+         // Use Math.round for smoother final display
+         totalBalanceElement.textContent = '₹' + Math.round(current).toLocaleString('en-IN');
+    }
+    clearInterval(timer); // Clear previous timer
+    timer = setInterval(animateBalance, stepTime);
+}
+
+function closeModal() {
+     if (balanceModalElement) { balanceModalElement.classList.remove('show'); }
+}
+
+if (viewBalanceBtn) {
+  viewBalanceBtn.disabled = true;
+  viewBalanceBtn.addEventListener('click', showBalanceModal);
+}
+
+if (balanceModalElement) {
+    balanceModalElement.addEventListener('click', function(event) {
+        if (event.target === balanceModalElement) { closeModal(); }
+    });
+}
+
+// --- Initial Data Load ---
+window.addEventListener('DOMContentLoaded', fetchMemberData);
+</script>
+</body>
+</html>
