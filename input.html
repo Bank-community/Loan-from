@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
     <style>
+        /* CSS Styles remain exactly the same as the previous version */
         body {
             font-family: sans-serif;
             background-color: #f4f4f4;
@@ -25,6 +26,7 @@
             max-width: 500px;
             box-sizing: border-box;
             margin-top: 20px;
+            position: relative;
         }
 
         h2 {
@@ -88,53 +90,51 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            width: 100%; /* Submit button full width */
         }
 
-        /* New top buttons container */
+        /* --- Styles for Top Buttons Container --- */
         .top-buttons {
             display: flex;
-            justify-content: space-between;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        /* New top button styles */
+        /* --- Styles for individual Top Buttons (<a> or <button>) --- */
         .top-btn {
             flex: 1;
             padding: 12px 5px;
             text-align: center;
             background-color: #6c757d;
-            margin: 0;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+             white-space: nowrap;
+             overflow: hidden;
+             text-overflow: ellipsis;
         }
 
         .top-btn:hover {
             background-color: #5a6268;
         }
 
-        .top-btn.home {
-            background-color: #28a745;
-        }
+        .top-btn.home { background-color: #28a745; }
+        .top-btn.home:hover { background-color: #218838; }
+        .top-btn.members { background-color: #17a2b8; }
+        .top-btn.members:hover { background-color: #138496; }
+        .top-btn.names { background-color: #ffc107; color: #212529; }
+        .top-btn.names:hover { background-color: #e0a800; }
+        /* --- End Top Button Styles --- */
 
-        .top-btn.home:hover {
-            background-color: #218838;
-        }
-
-        .top-btn.members {
-            background-color: #17a2b8;
-        }
-
-        .top-btn.members:hover {
-            background-color: #138496;
-        }
-
-        .btn:hover {
-            background-color: #0056b3;
-        }
-
-        .btn:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
+        .btn:hover { background-color: #0056b3; }
+        .btn:disabled { background-color: #cccccc; cursor: not-allowed; }
 
         .loader {
             border: 3px solid #f3f3f3;
@@ -143,8 +143,13 @@
             width: 16px;
             height: 16px;
             animation: spin 1s linear infinite;
-            margin-left: 10px;
-            display: none;
+            margin-left: 10px; /* Loader next to submit text */
+            display: none; /* Hidden by default */
+        }
+        /* Loader specific for names section */
+        .loader.names-loader-style {
+             margin: 20px auto; /* Center in its container */
+             display: block; /* Needs display block to center with margin auto */
         }
 
         @keyframes spin {
@@ -152,43 +157,39 @@
             100% { transform: rotate(360deg); }
         }
 
-        #message {
-            margin-top: 20px;
-            text-align: center;
-            font-weight: bold;
-            word-wrap: break-word;
-        }
+        #message { margin-top: 20px; text-align: center; font-weight: bold; word-wrap: break-word; }
+        .success { color: green; }
+        .error { color: red; text-align: center; } /* Center error messages */
 
-        .success {
-            color: green;
-        }
+        .form-group input[type="file"] { padding: 5px; }
+        .file-info { font-size: 0.9em; color: #666; margin-top: 5px; }
+        .optional-label { font-weight: normal; font-size: 0.9em; color: #777; }
 
-        .error {
-            color: red;
-        }
+        /* --- Styles for Names Section Overlay --- */
+        .names-overlay { position: fixed; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; box-sizing: border-box; }
+        .names-content { background-color: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); width: 100%; max-width: 450px; max-height: 80vh; overflow-y: auto; position: relative; box-sizing: border-box; }
+        .names-content h3 { text-align: center; margin-top: 0; margin-bottom: 20px; color: #333; }
+        .close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.8rem; font-weight: bold; color: #888; cursor: pointer; line-height: 1; padding: 0; }
+        .close-btn:hover { color: #555; }
+        #namesList { list-style: none; padding: 0; margin: 0; }
+        #namesList li { display: flex; justify-content: space-between; align-items: center; padding: 10px 5px; border-bottom: 1px solid #eee; font-size: 1rem; }
+        #namesList li:last-child { border-bottom: none; }
+        #namesList .name-text { margin-right: 10px; word-break: break-word; flex-grow: 1; }
+        #namesList .no-names { text-align: center; color: #777; padding: 15px; } /* Style for no names message */
+        .copy-btn { background-color: #007bff; color: white; border: none; border-radius: 4px; padding: 5px 10px; font-size: 0.85rem; cursor: pointer; transition: background-color 0.2s ease; flex-shrink: 0; }
+        .copy-btn:hover { background-color: #0056b3; }
+        .copy-btn.copied { background-color: #28a745; }
+        #namesError { margin-top: 15px; font-weight: bold; }
 
-         .form-group input[type="file"] {
-            padding: 5px;
-         }
-         .file-info {
-             font-size: 0.9em;
-             color: #666;
-             margin-top: 5px;
-         }
-         .optional-label {
-             font-weight: normal;
-             font-size: 0.9em;
-             color: #777;
-         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Updated top buttons section -->
         <div class="top-buttons">
-            <a href="https://ramazone.imgbb.com" id="homeButton" class="top-btn home">Home</a>
+            <a href="https://bank-community-l.imgbb.com/" id="homeButton" class="top-btn home">Home</a>
             <a href="https://bank-community.github.io/Loan-from/members.html" id="membersButton" class="top-btn members">Members Data</a>
+            <button type="button" id="showNamesBtn" class="top-btn names">Show Names</button>
         </div>
 
         <h2>Admin Data Entry</h2>
@@ -197,12 +198,10 @@
                 <label for="date">Date:</label>
                 <input type="date" id="date" name="date" required>
                 </div>
-
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" required>
             </div>
-
             <div class="form-group">
                 <label for="category">Category:</label>
                 <select id="category" name="category" required>
@@ -210,20 +209,17 @@
                     <option value="Loan">Loan</option>
                     <option value="Payment">Payment</option>
                     <option value="EMI Payment">EMI Payment</option>
-                     </select>
+                </select>
             </div>
-
             <div class="form-group">
                 <label for="amount">Amount:</label>
                 <input type="number" id="amount" name="amount" step="any" required>
-                </div>
-
+            </div>
             <div class="form-group">
                 <label for="imageFile">Image Upload <span class="optional-label">(Optional)</span>:</label>
                 <input type="file" id="imageFile" name="imageFile" accept="image/*">
                 <div class="file-info" id="fileInfo">No file selected</div>
             </div>
-
             <button type="submit" class="btn" id="submitBtn">
                 Submit Data
                 <div class="loader" id="loader"></div>
@@ -232,186 +228,327 @@
         <div id="message"></div>
     </div>
 
+    <div id="namesSection" class="names-overlay">
+        <div class="names-content">
+            <button id="closeNamesBtn" class="close-btn" aria-label="Close">&times;</button>
+            <h3>Existing Names</h3>
+            <div id="namesLoader" class="loader names-loader-style"></div>
+            <ul id="namesList">
+                </ul>
+            <div id="namesError" class="error"></div>
+        </div>
+    </div>
+
     <script>
         // --- Get DOM Elements ---
         const form = document.getElementById('dataForm');
         const messageDiv = document.getElementById('message');
         const submitBtn = document.getElementById('submitBtn');
-        const loader = document.getElementById('loader');
+        const loader = document.getElementById('loader'); // Submit loader
         const imageFileInput = document.getElementById('imageFile');
         const fileInfoDiv = document.getElementById('fileInfo');
-        const homeButton = document.getElementById('homeButton');
-        const membersButton = document.getElementById('membersButton');
         const dateInput = document.getElementById('date');
         const categorySelect = document.getElementById('category');
         const amountInput = document.getElementById('amount');
+
+        // --- Get DOM Elements (Names Section) ---
+        const showNamesBtn = document.getElementById('showNamesBtn');
+        const namesSection = document.getElementById('namesSection');
+        const closeNamesBtn = document.getElementById('closeNamesBtn');
+        const namesList = document.getElementById('namesList');
+        const namesLoader = document.getElementById('namesLoader'); // Names loader
+        const namesError = document.getElementById('namesError');
 
         // --- Configuration ---
         const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzOFUW4IHCbaT3EdY_IrKs0NuVuuzYDvPhviTDJWsXbqR-s_JNBvMJ4TBaksqeW2Le0XA/exec';
         const imgbbApiKey = '7a1be8401cccf5271ff787e57c3035bc';
         const imgbbUploadUrl = 'https://api.imgbb.com/1/upload';
+        const fetchNamesScriptUrl = 'https://script.google.com/macros/s/AKfycbyOEXBVd4JegERzTT3wP6-kw3UUhjOviG4vRl-HGj4olpy1TmgK-10i-0N7Dk9MmlYiEA/exec';
 
-        // --- Set default date to today ---
+        // --- State Variables for Cached Names ---
+        let cachedNames = null; // To store the fetched names array
+        let namesLoadState = 'idle'; // 'idle', 'loading', 'success', 'error'
+
+        // --- Helper Functions ---
+
         function setTodayDate() {
             if (!dateInput.value) {
                  const today = new Date();
-                 const year = today.getFullYear();
-                 const month = String(today.getMonth() + 1).padStart(2, '0');
-                 const day = String(today.getDate()).padStart(2, '0');
-                 const todayString = `${year}-${month}-${day}`;
-                 dateInput.value = todayString;
+                 // Set time to 00:00:00 to avoid timezone issues with date input
+                 today.setHours(0, 0, 0, 0);
+                 dateInput.valueAsDate = today;
             }
         }
-        setTodayDate();
-        // --- End default date setting ---
+
+        function formatCustomDate(dateString) {
+             try {
+                // Assuming dateString is YYYY-MM-DD from the input type="date"
+                const dateObj = new Date(dateString + 'T00:00:00Z'); // Treat as UTC midnight
+                 if (isNaN(dateObj.getTime())) throw new Error("Invalid Date object from string");
+
+                 // Use Intl for locale-aware formatting (more robust)
+                 return dateObj.toLocaleDateString('en-GB', { // en-GB gives DD/MM/YYYY format, change locale as needed
+                     day: 'numeric',
+                     month: 'long',
+                     year: 'numeric',
+                     timeZone: 'UTC' // Specify timezone to match input treatment
+                 });
+            } catch (error) {
+                console.error("Error formatting date:", error, "Input was:", dateString);
+                return dateString; // Fallback
+            }
+        }
+
+        // --- NEW: Function to populate the names list UI ---
+        function populateNamesList(namesArray) {
+            namesList.innerHTML = ''; // Clear existing list
+            namesError.textContent = ''; // Clear any previous error messages in list area
+
+            if (!namesArray || namesArray.length === 0) {
+                // Display a message if the array is empty or null
+                 const li = document.createElement('li');
+                 li.textContent = 'No names found.';
+                 li.classList.add('no-names'); // Add class for styling
+                 namesList.appendChild(li);
+                 return;
+            }
+
+            namesArray.forEach(name => {
+                if (name && typeof name === 'string' && name.trim() !== '') {
+                    const li = document.createElement('li');
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'name-text';
+                    nameSpan.textContent = name;
+
+                    const copyBtn = document.createElement('button');
+                    copyBtn.textContent = 'Copy';
+                    copyBtn.className = 'copy-btn';
+                    copyBtn.type = 'button';
+
+                    copyBtn.addEventListener('click', () => {
+                        navigator.clipboard.writeText(name).then(() => {
+                            copyBtn.textContent = 'Copied!'; copyBtn.classList.add('copied');
+                            setTimeout(() => { copyBtn.textContent = 'Copy'; copyBtn.classList.remove('copied'); }, 1500);
+                        }).catch(err => {
+                            console.error('Failed to copy text: ', err);
+                            copyBtn.textContent = 'Error'; setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+                        });
+                    });
+
+                    li.appendChild(nameSpan);
+                    li.appendChild(copyBtn);
+                    namesList.appendChild(li);
+                } else {
+                    console.warn("Skipping invalid name entry during population:", name);
+                }
+            });
+        }
 
 
-        // --- Event listener for Category change ---
+        // --- NEW: Function to fetch names and cache them ---
+        async function fetchAndCacheNames() {
+            // Don't fetch if already loading or successfully loaded
+            if (namesLoadState === 'loading' || namesLoadState === 'success') {
+                console.log("Names fetch skipped, state:", namesLoadState);
+                return;
+            }
+
+            namesLoadState = 'loading';
+            console.log("Fetching names...");
+            // Optional: Visually indicate loading state if needed immediately on page load
+
+            try {
+                const response = await fetch(fetchNamesScriptUrl + '?action=getNames&cachebust=' + Date.now(), { method: 'GET', mode: 'cors' });
+                const responseText = await response.text();
+
+                if (!response.ok) {
+                    throw new Error(`Workspace failed. Status: ${response.status}. Response: ${responseText}`);
+                }
+
+                let result;
+                try { result = JSON.parse(responseText); }
+                catch (parseError) { throw new Error(`Received invalid JSON format. Response: ${responseText}`); }
+
+                let namesArray = null;
+                if (result?.status === 'success' && Array.isArray(result.names)) {
+                    namesArray = result.names;
+                } else if (Array.isArray(result)) {
+                    namesArray = result; // Handle direct array response
+                } else {
+                    throw new Error("Received unexpected data structure.");
+                }
+
+                // Filter out any invalid entries before caching
+                 cachedNames = namesArray.filter(name => name && typeof name === 'string' && name.trim() !== '');
+                namesLoadState = 'success';
+                console.log("Names fetched and cached successfully:", cachedNames);
+
+            } catch (error) {
+                console.error('Error fetching or caching names:', error);
+                cachedNames = null; // Ensure cache is clear on error
+                namesLoadState = 'error';
+            } finally {
+                 // Optional: Update UI if needed after loading completes (e.g., enable button)
+            }
+        }
+
+        // --- Event Listeners ---
+
+        // Category change
         categorySelect.addEventListener('change', function() {
             if (this.value === 'EMI Payment') {
                 amountInput.value = 500;
             }
         });
-        // --- End Category change listener ---
 
-
-        // --- Event listener for Image File selection ---
+        // Image file selection
         imageFileInput.addEventListener('change', () => {
-            if (imageFileInput.files.length > 0) {
-                fileInfoDiv.textContent = `Selected: ${imageFileInput.files[0].name}`;
-            } else {
-                fileInfoDiv.textContent = 'No file selected';
-            }
+            fileInfoDiv.textContent = imageFileInput.files.length > 0 ? `Selected: ${imageFileInput.files[0].name}` : 'No file selected';
         });
-        // --- End Image File listener ---
 
-
-        // --- Helper Function to format date (DD Month YYYY) ---
-        function formatCustomDate(dateString) {
-            try {
-                const parts = dateString.split('-');
-                if (parts.length !== 3) {
-                    throw new Error("इनपुट से अमान्य दिनांक प्रारूप प्राप्त हुआ।");
-                }
-                const year = parts[0];
-                const month = parseInt(parts[1], 10);
-                const day = parseInt(parts[2], 10);
-
-                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-                if (isNaN(day) || isNaN(month) || isNaN(parseInt(year)) || month < 1 || month > 12) {
-                     throw new Error("पार्सिंग के बाद अमान्य दिनांक घटक।");
-                }
-
-                const monthName = monthNames[month - 1];
-                return `${day} ${monthName} ${year}`;
-
-            } catch (error) {
-                console.error("दिनांक फॉर्मेट करते समय त्रुटि:", error);
-                return dateString;
-            }
-        }
-        // --- End Helper Function ---
-
-
-        // --- Form Submit Event Listener ---
+        // Form Submit (remains largely unchanged)
         form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            submitBtn.disabled = true;
-            loader.style.display = 'inline-block';
-            messageDiv.textContent = '';
-            messageDiv.className = '';
+             e.preventDefault();
+             submitBtn.disabled = true;
+             loader.style.display = 'inline-block';
+             messageDiv.textContent = '';
+             messageDiv.className = '';
+             let imageUrl = '';
 
-            let imageUrl = '';
+             try {
+                 // Image Upload
+                 if (imageFileInput.files.length > 0) {
+                     messageDiv.textContent = 'Uploading image...';
+                     const imageFile = imageFileInput.files[0];
+                     const imgbbFormData = new FormData();
+                     imgbbFormData.append('key', imgbbApiKey);
+                     imgbbFormData.append('image', imageFile);
+                     const imgResponse = await fetch(imgbbUploadUrl, { method: 'POST', body: imgbbFormData });
+                     const imgResult = await imgResponse.json();
+                     if (imgResult.success && imgResult.data?.url) {
+                         imageUrl = imgResult.data.url;
+                     } else {
+                         throw new Error(`Image upload failed: ${imgResult.error?.message || 'Unknown error'}`);
+                     }
+                     messageDiv.textContent = 'Image uploaded. Submitting data...';
+                 } else {
+                      messageDiv.textContent = 'Submitting data...';
+                 }
 
-            try {
-                if (imageFileInput.files.length > 0) {
-                    messageDiv.textContent = 'Uploading image...';
-                    const imageFile = imageFileInput.files[0];
-                    const imgbbFormData = new FormData();
-                    imgbbFormData.append('key', imgbbApiKey);
-                    imgbbFormData.append('image', imageFile);
+                 // Prepare data
+                 const formData = new FormData(form);
+                 const data = {};
+                 formData.forEach((value, key) => { if (key !== 'imageFile') data[key] = value; });
+                 if (data.date) data.date = formatCustomDate(data.date);
+                 data.imageUrl = imageUrl;
 
-                    const imgResponse = await fetch(imgbbUploadUrl, {
-                        method: 'POST',
-                        body: imgbbFormData,
+                 // Submit to Apps Script
+                 messageDiv.textContent = 'Submitting data to Google Sheet...';
+                 const scriptResponse = await fetch(appsScriptUrl, {
+                     method: 'POST',
+                     body: JSON.stringify({ action: 'submitData', data: data }),
+                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                     mode: 'cors'
+                 });
+                 let scriptResultText = await scriptResponse.text();
+                 let scriptResult;
+                 try { scriptResult = JSON.parse(scriptResultText); }
+                 catch(parseError) {
+                     console.warn("Could not parse Apps Script response as JSON:", scriptResultText);
+                     if (!scriptResponse.ok) throw new Error(`Submission failed. Status: ${scriptResponse.status}. Response: ${scriptResultText}`);
+                     if (scriptResultText.toLowerCase().includes('success')) scriptResult = { status: 'success', message: `Submitted (non-JSON: ${scriptResultText})` };
+                     else throw new Error(`Submission failed. Non-JSON: ${scriptResultText}`);
+                 }
+
+                 // Handle result
+                 if (scriptResult.status === 'success') {
+                     messageDiv.textContent = scriptResult.message || 'Data submitted successfully!';
+                     messageDiv.className = 'success';
+                     form.reset();
+                     fileInfoDiv.textContent = 'No file selected';
+                     setTodayDate();
+                     categorySelect.value = '';
+                     if (categorySelect.value === 'EMI Payment') amountInput.value = ''; // Reset amount only if it was EMI
+                 } else {
+                      throw new Error(`Submission failed: ${scriptResult.message || 'Unknown script error'}`);
+                 }
+
+             } catch (error) {
+                 console.error('Submission Error:', error);
+                 messageDiv.textContent = `An error occurred: ${error.message}`;
+                 messageDiv.className = 'error';
+             } finally {
+                 submitBtn.disabled = false;
+                 loader.style.display = 'none';
+             }
+        });
+
+
+        // --- MODIFIED: Event Listener for "Show Names" Button ---
+        showNamesBtn.addEventListener('click', () => {
+            console.log("Show Names clicked. Current state:", namesLoadState);
+            namesSection.style.display = 'flex'; // Show the overlay
+            namesLoader.style.display = 'none'; // Hide loader initially
+            namesError.textContent = '';      // Clear errors initially
+            namesList.innerHTML = '';         // Clear list initially
+
+            switch (namesLoadState) {
+                case 'success':
+                    // Data is cached, populate the list directly
+                    populateNamesList(cachedNames);
+                    break;
+                case 'loading':
+                    // Initial load is still in progress
+                    namesLoader.style.display = 'block'; // Show loader
+                    namesError.textContent = 'Loading names, please wait...';
+                    break;
+                case 'error':
+                    // Initial load failed
+                    namesError.textContent = 'Failed to load names initially. Please refresh the page.';
+                    // Optionally, you could try fetching again here:
+                    // fetchAndCacheNames().then(() => populateNamesList(cachedNames));
+                    break;
+                case 'idle':
+                default:
+                    // Should not happen if fetchAndCacheNames is called on load,
+                    // but handle as a fallback (e.g., try fetching now)
+                    namesError.textContent = 'Names not loaded yet. Trying now...';
+                    namesLoader.style.display = 'block';
+                    // Trigger fetch again and update UI when done
+                    fetchAndCacheNames().then(() => {
+                        namesLoader.style.display = 'none'; // Hide loader once done
+                        if (namesLoadState === 'success') {
+                            populateNamesList(cachedNames);
+                        } else {
+                             namesError.textContent = 'Failed to load names. Please refresh the page.';
+                        }
                     });
-
-                    const imgResult = await imgResponse.json();
-
-                    if (imgResult.success && imgResult.data && imgResult.data.url) {
-                        imageUrl = imgResult.data.url;
-                        messageDiv.textContent = 'Image uploaded. Submitting data...';
-                    } else {
-                        console.error('ImgBB Upload Error:', imgResult);
-                        throw new Error(`Image upload failed: ${imgResult.error?.message || 'Unknown error'}`);
-                    }
-                } else {
-                     messageDiv.textContent = 'Submitting data...';
-                }
-
-                const formData = new FormData(form);
-                const data = {};
-                formData.forEach((value, key) => {
-                    if (key !== 'imageFile') {
-                       data[key] = value;
-                    }
-                });
-
-                if (data.date) {
-                    data.date = formatCustomDate(data.date);
-                }
-
-                data.imageUrl = imageUrl;
-
-                messageDiv.textContent = 'Submitting data to Google Sheet...';
-                const scriptResponse = await fetch(appsScriptUrl, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'submitData', data: data }),
-                     headers: {
-                        'Content-Type': 'text/plain;charset=utf-8',
-                    },
-                    mode: 'cors'
-                });
-
-                let scriptResultText = await scriptResponse.text();
-                let scriptResult;
-                try {
-                    scriptResult = JSON.parse(scriptResultText);
-                } catch(parseError) {
-                    console.error("Apps Script प्रतिक्रिया को JSON के रूप में पार्स करने में विफल:", scriptResultText);
-                    if (!scriptResponse.ok) {
-                       throw new Error(`Submission failed. Server response: ${scriptResultText || scriptResponse.statusText}`);
-                    } else {
-                        console.warn("Apps Script प्रतिक्रिया मान्य JSON नहीं थी:", scriptResultText);
-                        scriptResult = { status: 'success', message: `Data likely submitted. Response: ${scriptResultText}` };
-                    }
-                }
-
-                if (scriptResponse.ok && scriptResult.status === 'success') {
-                    messageDiv.textContent = scriptResult.message || 'Data submitted successfully!';
-                    messageDiv.className = 'success';
-                    form.reset();
-                    fileInfoDiv.textContent = 'No file selected';
-                    setTodayDate();
-                } else {
-                     throw new Error(`Submission failed: ${scriptResult.message || scriptResultText || 'Unknown error from script'}`);
-                }
-
-            } catch (error) {
-                console.error('Error:', error);
-                messageDiv.textContent = `An error occurred: ${error.message}`;
-                messageDiv.className = 'error';
-            } finally {
-                submitBtn.disabled = false;
-                loader.style.display = 'none';
+                    break;
             }
         });
-        // --- End Form Submit Listener ---
 
-        // You can set the href for these buttons later
-        // homeButton.href = "YOUR_HOME_LINK_HERE";
-        // membersButton.href = "YOUR_MEMBERS_DATA_LINK_HERE";
+        // --- Event Listener for "Close" Button in Names Section ---
+        closeNamesBtn.addEventListener('click', () => {
+            namesSection.style.display = 'none';
+        });
+
+        // --- Optional: Close overlay if clicking outside the content ---
+        namesSection.addEventListener('click', (event) => {
+             if (event.target === namesSection) {
+                 namesSection.style.display = 'none';
+             }
+        });
+
+
+        // --- Page Initialization ---
+        setTodayDate(); // Set default date on load
+
+        // --- Automatically fetch names when the page loads ---
+        document.addEventListener('DOMContentLoaded', () => {
+             fetchAndCacheNames();
+        });
+        // If the script is at the end of body, DOMContentLoaded might be redundant,
+        // calling fetchAndCacheNames(); directly might also work. Using DOMContentLoaded is safer.
 
     </script>
 
