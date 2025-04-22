@@ -5,182 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
     <style>
-        /* CSS Styles remain exactly the same as the previous version */
-        body {
-            font-family: sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px 0;
-        }
-
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-            box-sizing: border-box;
-            margin-top: 20px;
-            position: relative;
-        }
-
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 25px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: bold;
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="date"],
-        .form-group input[type="number"],
-        .form-group input[type="file"],
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 1rem;
-            background-color: white;
-        }
-
-         .form-group input[type="number"] {
-            -webkit-appearance: textfield;
-             -moz-appearance: textfield;
-                  appearance: textfield;
-        }
-         .form-group input[type=number] {
-            -moz-appearance: textfield;
-         }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
-        }
-
-        .btn {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s ease;
-            text-decoration: none;
-            box-sizing: border-box;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%; /* Submit button full width */
-        }
-
-        /* --- Styles for Top Buttons Container --- */
-        .top-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        /* --- Styles for individual Top Buttons (<a> or <button>) --- */
-        .top-btn {
-            flex: 1;
-            padding: 12px 5px;
-            text-align: center;
-            background-color: #6c757d;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-            font-size: 0.9rem;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-             white-space: nowrap;
-             overflow: hidden;
-             text-overflow: ellipsis;
-        }
-
-        .top-btn:hover {
-            background-color: #5a6268;
-        }
-
-        .top-btn.home { background-color: #28a745; }
-        .top-btn.home:hover { background-color: #218838; }
-        .top-btn.members { background-color: #17a2b8; }
-        .top-btn.members:hover { background-color: #138496; }
-        .top-btn.names { background-color: #ffc107; color: #212529; }
-        .top-btn.names:hover { background-color: #e0a800; }
-        /* --- End Top Button Styles --- */
-
-        .btn:hover { background-color: #0056b3; }
-        .btn:disabled { background-color: #cccccc; cursor: not-allowed; }
-
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3498db;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s linear infinite;
-            margin-left: 10px; /* Loader next to submit text */
-            display: none; /* Hidden by default */
-        }
-        /* Loader specific for names section */
-        .loader.names-loader-style {
-             margin: 20px auto; /* Center in its container */
-             display: block; /* Needs display block to center with margin auto */
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        #message { margin-top: 20px; text-align: center; font-weight: bold; word-wrap: break-word; }
-        .success { color: green; }
-        .error { color: red; text-align: center; } /* Center error messages */
-
-        .form-group input[type="file"] { padding: 5px; }
-        .file-info { font-size: 0.9em; color: #666; margin-top: 5px; }
-        .optional-label { font-weight: normal; font-size: 0.9em; color: #777; }
-
-        /* --- Styles for Names Section Overlay --- */
-        .names-overlay { position: fixed; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; box-sizing: border-box; }
-        .names-content { background-color: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); width: 100%; max-width: 450px; max-height: 80vh; overflow-y: auto; position: relative; box-sizing: border-box; }
-        .names-content h3 { text-align: center; margin-top: 0; margin-bottom: 20px; color: #333; }
-        .close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.8rem; font-weight: bold; color: #888; cursor: pointer; line-height: 1; padding: 0; }
-        .close-btn:hover { color: #555; }
-        #namesList { list-style: none; padding: 0; margin: 0; }
-        #namesList li { display: flex; justify-content: space-between; align-items: center; padding: 10px 5px; border-bottom: 1px solid #eee; font-size: 1rem; }
-        #namesList li:last-child { border-bottom: none; }
-        #namesList .name-text { margin-right: 10px; word-break: break-word; flex-grow: 1; }
-        #namesList .no-names { text-align: center; color: #777; padding: 15px; } /* Style for no names message */
-        .copy-btn { background-color: #007bff; color: white; border: none; border-radius: 4px; padding: 5px 10px; font-size: 0.85rem; cursor: pointer; transition: background-color 0.2s ease; flex-shrink: 0; }
-        .copy-btn:hover { background-color: #0056b3; }
-        .copy-btn.copied { background-color: #28a745; }
-        #namesError { margin-top: 15px; font-weight: bold; }
-
+        /* CSS Styles remain unchanged */
+        body{font-family:sans-serif;background-color:#f4f4f4;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;margin:0;padding:20px 0}
+        .container{background-color:#fff;padding:30px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1);width:100%;max-width:500px;box-sizing:border-box;margin-top:20px;position:relative}
+        h2{text-align:center;color:#333;margin-bottom:25px}
+        .form-group{margin-bottom:20px}
+        .form-group label{display:block;margin-bottom:8px;color:#555;font-weight:700}
+        .form-group input[type=text],.form-group input[type=date],.form-group input[type=number],.form-group input[type=file],.form-group select{width:100%;padding:12px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;font-size:1rem;background-color:#fff}
+        .form-group input[type=number]{-webkit-appearance:textfield;-moz-appearance:textfield;appearance:textfield}
+        .form-group input:focus,.form-group select:focus{outline:none;border-color:#007bff;box-shadow:0 0 5px rgba(0,123,255,.25)}
+        .btn{background-color:#007bff;color:#fff;padding:12px 20px;border:none;border-radius:4px;cursor:pointer;font-size:1rem;transition:background-color .3s ease;text-decoration:none;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;width:100%}
+        .top-buttons{display:flex;gap:10px;margin-bottom:25px}
+        .top-btn{flex:1;padding:12px 5px;text-align:center;background-color:#6c757d;color:#fff;text-decoration:none;border-radius:4px;transition:background-color .3s ease;font-size:.9rem;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .top-btn:hover{background-color:#5a6268}
+        .top-btn.home{background-color:#28a745}
+        .top-btn.home:hover{background-color:#218838}
+        .top-btn.members{background-color:#17a2b8}
+        .top-btn.members:hover{background-color:#138496}
+        .top-btn.names{background-color:#ffc107;color:#212529}
+        .top-btn.names:hover{background-color:#e0a800}
+        .btn:hover{background-color:#0056b3}
+        .btn:disabled{background-color:#ccc;cursor:not-allowed}
+        .loader{border:3px solid #f3f3f3;border-top:3px solid #3498db;border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;margin-left:10px;display:none}
+        .loader.names-loader-style{margin:20px auto;display:block}
+        @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+        #message{margin-top:20px;text-align:center;font-weight:700;word-wrap:break-word}
+        .success{color:green}
+        .error{color:red;text-align:center}
+        .form-group input[type=file]{padding:5px}
+        .file-info{font-size:.9em;color:#666;margin-top:5px}
+        .optional-label{font-weight:400;font-size:.9em;color:#777}
+        .names-overlay{position:fixed;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,.5);display:none;justify-content:center;align-items:center;z-index:1000;padding:20px;box-sizing:border-box}
+        .names-content{background-color:#fff;padding:25px;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,.2);width:100%;max-width:450px;max-height:80vh;overflow-y:auto;position:relative;box-sizing:border-box}
+        .names-content h3{text-align:center;margin-top:0;margin-bottom:20px;color:#333}
+        .close-btn{position:absolute;top:10px;right:15px;background:0 0;border:none;font-size:1.8rem;font-weight:700;color:#888;cursor:pointer;line-height:1;padding:0}
+        .close-btn:hover{color:#555}
+        #namesList{list-style:none;padding:0;margin:0}
+        #namesList li{display:flex;justify-content:space-between;align-items:center;padding:10px 5px;border-bottom:1px solid #eee;font-size:1rem}
+        #namesList li:last-child{border-bottom:none}
+        #namesList .name-text{margin-right:10px;word-break:break-word;flex-grow:1}
+        #namesList .no-names{text-align:center;color:#777;padding:15px}
+        .copy-btn{background-color:#007bff;color:#fff;border:none;border-radius:4px;padding:5px 10px;font-size:.85rem;cursor:pointer;transition:background-color .2s ease;flex-shrink:0}
+        .copy-btn:hover{background-color:#0056b3}
+        .copy-btn.copied{background-color:#28a745}
+        #namesError{margin-top:15px;font-weight:700}
     </style>
 </head>
 <body>
@@ -250,8 +118,6 @@
         const dateInput = document.getElementById('date');
         const categorySelect = document.getElementById('category');
         const amountInput = document.getElementById('amount');
-
-        // --- Get DOM Elements (Names Section) ---
         const showNamesBtn = document.getElementById('showNamesBtn');
         const namesSection = document.getElementById('namesSection');
         const closeNamesBtn = document.getElementById('closeNamesBtn');
@@ -261,294 +127,233 @@
 
         // --- Configuration ---
         const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzOFUW4IHCbaT3EdY_IrKs0NuVuuzYDvPhviTDJWsXbqR-s_JNBvMJ4TBaksqeW2Le0XA/exec';
-        const imgbbApiKey = '7a1be8401cccf5271ff787e57c3035bc';
+        const imgbbApiKey = '7a1be8401cccf5271ff787e57c3035bc'; // सुनिश्चित करें कि यह कुंजी सही है
         const imgbbUploadUrl = 'https://api.imgbb.com/1/upload';
         const fetchNamesScriptUrl = 'https://script.google.com/macros/s/AKfycbyOEXBVd4JegERzTT3wP6-kw3UUhjOviG4vRl-HGj4olpy1TmgK-10i-0N7Dk9MmlYiEA/exec';
 
         // --- State Variables for Cached Names ---
-        let cachedNames = null; // To store the fetched names array
+        let cachedNames = null;
         let namesLoadState = 'idle'; // 'idle', 'loading', 'success', 'error'
 
         // --- Helper Functions ---
 
+        // अपडेट किया गया: डिफ़ॉल्ट तारीख सेट करने के लिए
         function setTodayDate() {
-            if (!dateInput.value) {
+             if (!dateInput.value) {
                  const today = new Date();
-                 // Set time to 00:00:00 to avoid timezone issues with date input
-                 today.setHours(0, 0, 0, 0);
-                 dateInput.valueAsDate = today;
-            }
-        }
+                 const year = today.getFullYear();
+                 const month = String(today.getMonth() + 1).padStart(2, '0');
+                 const day = String(today.getDate()).padStart(2, '0');
+                 const todayString = `${year}-${month}-${day}`;
+                 dateInput.value = todayString; // YYYY-MM-DD स्ट्रिंग का उपयोग करें
+                 console.log('Default date set to:', todayString);
+             } else {
+                  console.log('Date input already has a value:', dateInput.value);
+             }
+         }
 
+        // (कोई बदलाव नहीं) तारीख स्वरूपण
         function formatCustomDate(dateString) {
              try {
-                // Assuming dateString is YYYY-MM-DD from the input type="date"
-                const dateObj = new Date(dateString + 'T00:00:00Z'); // Treat as UTC midnight
+                 const dateObj = new Date(dateString + 'T00:00:00Z');
                  if (isNaN(dateObj.getTime())) throw new Error("Invalid Date object from string");
-
-                 // Use Intl for locale-aware formatting (more robust)
-                 return dateObj.toLocaleDateString('en-GB', { // en-GB gives DD/MM/YYYY format, change locale as needed
-                     day: 'numeric',
-                     month: 'long',
-                     year: 'numeric',
-                     timeZone: 'UTC' // Specify timezone to match input treatment
-                 });
-            } catch (error) {
-                console.error("Error formatting date:", error, "Input was:", dateString);
-                return dateString; // Fallback
-            }
+                 return dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+             } catch (error) {
+                 console.error("Error formatting date:", error, "Input was:", dateString);
+                 return dateString;
+             }
         }
 
-        // --- NEW: Function to populate the names list UI ---
+        // (कोई बदलाव नहीं) नाम सूची पॉप्युलेट करें
         function populateNamesList(namesArray) {
-            namesList.innerHTML = ''; // Clear existing list
-            namesError.textContent = ''; // Clear any previous error messages in list area
-
+            namesList.innerHTML = '';
+            namesError.textContent = '';
             if (!namesArray || namesArray.length === 0) {
-                // Display a message if the array is empty or null
                  const li = document.createElement('li');
                  li.textContent = 'No names found.';
-                 li.classList.add('no-names'); // Add class for styling
+                 li.classList.add('no-names');
                  namesList.appendChild(li);
                  return;
             }
-
             namesArray.forEach(name => {
                 if (name && typeof name === 'string' && name.trim() !== '') {
                     const li = document.createElement('li');
                     const nameSpan = document.createElement('span');
                     nameSpan.className = 'name-text';
                     nameSpan.textContent = name;
-
                     const copyBtn = document.createElement('button');
                     copyBtn.textContent = 'Copy';
                     copyBtn.className = 'copy-btn';
                     copyBtn.type = 'button';
-
                     copyBtn.addEventListener('click', () => {
                         navigator.clipboard.writeText(name).then(() => {
+                            console.log(`Copied: ${name}`);
                             copyBtn.textContent = 'Copied!'; copyBtn.classList.add('copied');
+                            namesSection.style.display = 'none'; // सफल कॉपी पर बंद करें
                             setTimeout(() => { copyBtn.textContent = 'Copy'; copyBtn.classList.remove('copied'); }, 1500);
                         }).catch(err => {
                             console.error('Failed to copy text: ', err);
                             copyBtn.textContent = 'Error'; setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
                         });
                     });
-
                     li.appendChild(nameSpan);
                     li.appendChild(copyBtn);
                     namesList.appendChild(li);
-                } else {
-                    console.warn("Skipping invalid name entry during population:", name);
                 }
             });
         }
 
-
-        // --- NEW: Function to fetch names and cache them ---
+        // (कोई बदलाव नहीं) नाम प्राप्त करें और कैश करें
         async function fetchAndCacheNames() {
-            // Don't fetch if already loading or successfully loaded
-            if (namesLoadState === 'loading' || namesLoadState === 'success') {
-                console.log("Names fetch skipped, state:", namesLoadState);
-                return;
-            }
-
+            if (namesLoadState === 'loading' || namesLoadState === 'success') return;
             namesLoadState = 'loading';
             console.log("Fetching names...");
-            // Optional: Visually indicate loading state if needed immediately on page load
-
             try {
                 const response = await fetch(fetchNamesScriptUrl + '?action=getNames&cachebust=' + Date.now(), { method: 'GET', mode: 'cors' });
                 const responseText = await response.text();
-
-                if (!response.ok) {
-                    throw new Error(`Workspace failed. Status: ${response.status}. Response: ${responseText}`);
-                }
-
+                if (!response.ok) throw new Error(`Workspace failed. Status: ${response.status}. Response: ${responseText}`);
                 let result;
-                try { result = JSON.parse(responseText); }
-                catch (parseError) { throw new Error(`Received invalid JSON format. Response: ${responseText}`); }
-
+                try { result = JSON.parse(responseText); } catch (parseError) { throw new Error(`Received invalid JSON format. Response: ${responseText}`); }
                 let namesArray = null;
-                if (result?.status === 'success' && Array.isArray(result.names)) {
-                    namesArray = result.names;
-                } else if (Array.isArray(result)) {
-                    namesArray = result; // Handle direct array response
-                } else {
-                    throw new Error("Received unexpected data structure.");
-                }
-
-                // Filter out any invalid entries before caching
-                 cachedNames = namesArray.filter(name => name && typeof name === 'string' && name.trim() !== '');
+                if (result?.status === 'success' && Array.isArray(result.names)) namesArray = result.names;
+                else if (Array.isArray(result)) namesArray = result;
+                else throw new Error("Received unexpected data structure.");
+                cachedNames = namesArray.filter(name => name && typeof name === 'string' && name.trim() !== '');
                 namesLoadState = 'success';
                 console.log("Names fetched and cached successfully:", cachedNames);
-
             } catch (error) {
                 console.error('Error fetching or caching names:', error);
-                cachedNames = null; // Ensure cache is clear on error
-                namesLoadState = 'error';
-            } finally {
-                 // Optional: Update UI if needed after loading completes (e.g., enable button)
+                cachedNames = null; namesLoadState = 'error';
             }
         }
 
         // --- Event Listeners ---
 
-        // Category change
-        categorySelect.addEventListener('change', function() {
-            if (this.value === 'EMI Payment') {
-                amountInput.value = 500;
+        categorySelect.addEventListener('change', function() { if (this.value === 'EMI Payment') amountInput.value = 500; });
+        imageFileInput.addEventListener('change', () => { fileInfoDiv.textContent = imageFileInput.files.length > 0 ? `Selected: ${imageFileInput.files[0].name}` : 'No file selected'; });
+
+        // अपडेट किया गया: छवि अपलोड डिबगिंग के साथ फ़ॉर्म सबमिट करें
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            loader.style.display = 'inline-block';
+            messageDiv.textContent = '';
+            messageDiv.className = '';
+            let imageUrl = '';
+
+            try {
+                // --- छवि अपलोड डिबगिंग ---
+                if (imageFileInput.files.length > 0) {
+                    const imageFile = imageFileInput.files[0];
+                    console.log('Image file selected:', imageFile);
+
+                    messageDiv.textContent = 'Uploading image...';
+                    const imgbbFormData = new FormData();
+                    imgbbFormData.append('key', imgbbApiKey);
+                    imgbbFormData.append('image', imageFile);
+                    console.log('Attempting to upload image to ImgBB...');
+
+                    const imgResponse = await fetch(imgbbUploadUrl, { method: 'POST', body: imgbbFormData });
+                    const imgResultText = await imgResponse.text();
+                    console.log('ImgBB Raw Response Text:', imgResultText);
+
+                    let imgResult;
+                    try {
+                        imgResult = JSON.parse(imgResultText);
+                        console.log('ImgBB Parsed Response:', imgResult);
+                    } catch (jsonError) {
+                         console.error("Failed to parse ImgBB response as JSON.", jsonError);
+                         if (imgResponse.ok && imgResultText.includes('"success":true')) {
+                             console.warn("ImgBB response wasn't valid JSON but seems successful.");
+                             try {
+                                 const urlMatch = imgResultText.match(/"url":"(.*?)"/);
+                                 if (urlMatch && urlMatch[1]) {
+                                     imageUrl = urlMatch[1].replace(/\\\//g, '/');
+                                     console.log("Manually extracted imageUrl:", imageUrl);
+                                     imgResult = { success: true, data: { url: imageUrl } };
+                                 } else { throw new Error("Could not manually extract URL."); }
+                             } catch (extractError) { throw new Error(`Image upload failed: Non-JSON success response. Raw: ${imgResultText}`); }
+                         } else { throw new Error(`Image upload failed: Invalid response. Status: ${imgResponse.status}. Raw: ${imgResultText}`); }
+                    }
+
+                    if (imgResult && imgResult.success && imgResult.data?.url) {
+                        imageUrl = imgResult.data.url;
+                        console.log('Image uploaded successfully. URL:', imageUrl);
+                        messageDiv.textContent = 'Image uploaded. Submitting data...';
+                    } else {
+                         console.error('ImgBB upload failed. API Response:', imgResult);
+                         throw new Error(`Image upload failed: ${imgResult?.error?.message || 'Unknown ImgBB error.'}`);
+                    }
+                } else {
+                     messageDiv.textContent = 'No image selected. Submitting data...';
+                     console.log('No image file selected.');
+                }
+                // --- छवि अपलोड डिबगिंग समाप्त ---
+
+                const formData = new FormData(form);
+                const data = {};
+                formData.forEach((value, key) => { if (key !== 'imageFile') data[key] = value; });
+                if (data.date) data.date = formatCustomDate(data.date);
+                data.imageUrl = imageUrl;
+                console.log('Final data object being sent to Apps Script:', data); // अंतिम डेटा लॉग करें
+
+                messageDiv.textContent = 'Submitting data to Google Sheet...';
+                const scriptResponse = await fetch(appsScriptUrl, { method: 'POST', body: JSON.stringify({ action: 'submitData', data: data }), headers: { 'Content-Type': 'text/plain;charset=utf-8' }, mode: 'cors' });
+                let scriptResultText = await scriptResponse.text();
+                let scriptResult;
+                try { scriptResult = JSON.parse(scriptResultText); }
+                catch(parseError) {
+                    console.warn("Could not parse Apps Script response as JSON:", scriptResultText);
+                    if (!scriptResponse.ok) throw new Error(`Submission failed. Status: ${scriptResponse.status}. Response: ${scriptResultText}`);
+                    if (scriptResultText.toLowerCase().includes('success')) scriptResult = { status: 'success', message: `Submitted (non-JSON: ${scriptResultText})` };
+                    else throw new Error(`Submission failed. Non-JSON: ${scriptResultText}`);
+                }
+                if (scriptResult.status === 'success') {
+                    messageDiv.textContent = scriptResult.message || 'Data submitted successfully!';
+                    messageDiv.className = 'success';
+                    form.reset();
+                    fileInfoDiv.textContent = 'No file selected';
+                    setTodayDate(); // तारीख रीसेट करें
+                    categorySelect.value = '';
+                } else {
+                     throw new Error(`Submission failed: ${scriptResult.message || 'Unknown script error'}`);
+                }
+            } catch (error) {
+                console.error('Submission Error:', error);
+                messageDiv.textContent = `An error occurred: ${error.message}`;
+                messageDiv.className = 'error';
+            } finally {
+                submitBtn.disabled = false;
+                loader.style.display = 'none';
             }
         });
 
-        // Image file selection
-        imageFileInput.addEventListener('change', () => {
-            fileInfoDiv.textContent = imageFileInput.files.length > 0 ? `Selected: ${imageFileInput.files[0].name}` : 'No file selected';
-        });
-
-        // Form Submit (remains largely unchanged)
-        form.addEventListener('submit', async (e) => {
-             e.preventDefault();
-             submitBtn.disabled = true;
-             loader.style.display = 'inline-block';
-             messageDiv.textContent = '';
-             messageDiv.className = '';
-             let imageUrl = '';
-
-             try {
-                 // Image Upload
-                 if (imageFileInput.files.length > 0) {
-                     messageDiv.textContent = 'Uploading image...';
-                     const imageFile = imageFileInput.files[0];
-                     const imgbbFormData = new FormData();
-                     imgbbFormData.append('key', imgbbApiKey);
-                     imgbbFormData.append('image', imageFile);
-                     const imgResponse = await fetch(imgbbUploadUrl, { method: 'POST', body: imgbbFormData });
-                     const imgResult = await imgResponse.json();
-                     if (imgResult.success && imgResult.data?.url) {
-                         imageUrl = imgResult.data.url;
-                     } else {
-                         throw new Error(`Image upload failed: ${imgResult.error?.message || 'Unknown error'}`);
-                     }
-                     messageDiv.textContent = 'Image uploaded. Submitting data...';
-                 } else {
-                      messageDiv.textContent = 'Submitting data...';
-                 }
-
-                 // Prepare data
-                 const formData = new FormData(form);
-                 const data = {};
-                 formData.forEach((value, key) => { if (key !== 'imageFile') data[key] = value; });
-                 if (data.date) data.date = formatCustomDate(data.date);
-                 data.imageUrl = imageUrl;
-
-                 // Submit to Apps Script
-                 messageDiv.textContent = 'Submitting data to Google Sheet...';
-                 const scriptResponse = await fetch(appsScriptUrl, {
-                     method: 'POST',
-                     body: JSON.stringify({ action: 'submitData', data: data }),
-                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                     mode: 'cors'
-                 });
-                 let scriptResultText = await scriptResponse.text();
-                 let scriptResult;
-                 try { scriptResult = JSON.parse(scriptResultText); }
-                 catch(parseError) {
-                     console.warn("Could not parse Apps Script response as JSON:", scriptResultText);
-                     if (!scriptResponse.ok) throw new Error(`Submission failed. Status: ${scriptResponse.status}. Response: ${scriptResultText}`);
-                     if (scriptResultText.toLowerCase().includes('success')) scriptResult = { status: 'success', message: `Submitted (non-JSON: ${scriptResultText})` };
-                     else throw new Error(`Submission failed. Non-JSON: ${scriptResultText}`);
-                 }
-
-                 // Handle result
-                 if (scriptResult.status === 'success') {
-                     messageDiv.textContent = scriptResult.message || 'Data submitted successfully!';
-                     messageDiv.className = 'success';
-                     form.reset();
-                     fileInfoDiv.textContent = 'No file selected';
-                     setTodayDate();
-                     categorySelect.value = '';
-                     if (categorySelect.value === 'EMI Payment') amountInput.value = ''; // Reset amount only if it was EMI
-                 } else {
-                      throw new Error(`Submission failed: ${scriptResult.message || 'Unknown script error'}`);
-                 }
-
-             } catch (error) {
-                 console.error('Submission Error:', error);
-                 messageDiv.textContent = `An error occurred: ${error.message}`;
-                 messageDiv.className = 'error';
-             } finally {
-                 submitBtn.disabled = false;
-                 loader.style.display = 'none';
-             }
-        });
-
-
-        // --- MODIFIED: Event Listener for "Show Names" Button ---
+        // (कोई बदलाव नहीं) नाम दिखाएँ बटन लिस्नर
         showNamesBtn.addEventListener('click', () => {
             console.log("Show Names clicked. Current state:", namesLoadState);
-            namesSection.style.display = 'flex'; // Show the overlay
-            namesLoader.style.display = 'none'; // Hide loader initially
-            namesError.textContent = '';      // Clear errors initially
-            namesList.innerHTML = '';         // Clear list initially
-
+            namesSection.style.display = 'flex';
+            namesLoader.style.display = 'none'; namesError.textContent = ''; namesList.innerHTML = '';
             switch (namesLoadState) {
-                case 'success':
-                    // Data is cached, populate the list directly
-                    populateNamesList(cachedNames);
-                    break;
-                case 'loading':
-                    // Initial load is still in progress
-                    namesLoader.style.display = 'block'; // Show loader
-                    namesError.textContent = 'Loading names, please wait...';
-                    break;
-                case 'error':
-                    // Initial load failed
-                    namesError.textContent = 'Failed to load names initially. Please refresh the page.';
-                    // Optionally, you could try fetching again here:
-                    // fetchAndCacheNames().then(() => populateNamesList(cachedNames));
-                    break;
-                case 'idle':
+                case 'success': populateNamesList(cachedNames); break;
+                case 'loading': namesLoader.style.display = 'block'; namesError.textContent = 'Loading names, please wait...'; break;
+                case 'error': namesError.textContent = 'Failed to load names initially. Please refresh the page.'; break;
                 default:
-                    // Should not happen if fetchAndCacheNames is called on load,
-                    // but handle as a fallback (e.g., try fetching now)
-                    namesError.textContent = 'Names not loaded yet. Trying now...';
-                    namesLoader.style.display = 'block';
-                    // Trigger fetch again and update UI when done
+                    namesError.textContent = 'Names not loaded yet. Trying now...'; namesLoader.style.display = 'block';
                     fetchAndCacheNames().then(() => {
-                        namesLoader.style.display = 'none'; // Hide loader once done
-                        if (namesLoadState === 'success') {
-                            populateNamesList(cachedNames);
-                        } else {
-                             namesError.textContent = 'Failed to load names. Please refresh the page.';
-                        }
-                    });
-                    break;
+                        namesLoader.style.display = 'none';
+                        if (namesLoadState === 'success') populateNamesList(cachedNames);
+                        else namesError.textContent = 'Failed to load names. Please refresh the page.';
+                    }); break;
             }
         });
 
-        // --- Event Listener for "Close" Button in Names Section ---
-        closeNamesBtn.addEventListener('click', () => {
-            namesSection.style.display = 'none';
-        });
-
-        // --- Optional: Close overlay if clicking outside the content ---
-        namesSection.addEventListener('click', (event) => {
-             if (event.target === namesSection) {
-                 namesSection.style.display = 'none';
-             }
-        });
-
+        // (कोई बदलाव नहीं) बंद करें बटन लिस्नर
+        closeNamesBtn.addEventListener('click', () => { namesSection.style.display = 'none'; });
+        namesSection.addEventListener('click', (event) => { if (event.target === namesSection) namesSection.style.display = 'none'; });
 
         // --- Page Initialization ---
-        setTodayDate(); // Set default date on load
-
-        // --- Automatically fetch names when the page loads ---
-        document.addEventListener('DOMContentLoaded', () => {
-             fetchAndCacheNames();
-        });
-        // If the script is at the end of body, DOMContentLoaded might be redundant,
-        // calling fetchAndCacheNames(); directly might also work. Using DOMContentLoaded is safer.
+        setTodayDate(); // पेज लोड पर डिफ़ॉल्ट तारीख सेट करें
+        document.addEventListener('DOMContentLoaded', () => { fetchAndCacheNames(); }); // पेज लोड पर नाम प्राप्त करें
 
     </script>
 
