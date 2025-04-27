@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>बैंक चैटबॉट</title>
+    <style>
+        :root {
+            --primary-color: #4caf50; /* Green */
+            --secondary-color: #f0f2f5; /* Light grey background */
+            --user-message-bg: #dcf8c6; /* Light green */
+            --bot-message-bg: #ffffff; /* White */
+            --text-dark: #333333;
+            --text-light: #555555;
+            --border-color: #dddddd;
+            --suggestion-bg: #e9f5e9;
+            --suggestion-hover-bg: #c8e6c9;
+            --header-height: 60px;
+            --input-area-height: 60px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background-color: var(--secondary-color);
+            overflow: hidden; /* Prevent body scroll */
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Full height */
+            width: 100%; /* Full width */
+            max-width: 800px; /* Max width for larger screens */
+            margin: 0 auto; /* Center on larger screens */
+            background: var(--bot-message-bg);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 0; /* No radius for full screen */
+        }
+        @media (min-width: 801px) {
+             .chat-container {
+                 height: 90vh; /* Slightly less height on desktop */
+                 max-height: 750px;
+                 margin: 20px auto;
+                 border-radius: 10px;
+             }
+        }
+
+        .chat-header {
+            height: var(--header-height);
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            padding: 0 20px;
+            flex-shrink: 0; /* Prevent header from shrinking */
+            border-top-left-radius: inherit; /* Inherit from container */
+            border-top-right-radius: inherit;
+        }
+        .chat-header .icon {
+            margin-right: 10px;
+            font-size: 1.5em; /* Adjust icon size */
+        }
+
+        .chat-messages {
+            flex-grow: 1; /* Take available space */
+            padding: 15px 10px;
+            overflow-y: auto; /* Enable scrolling ONLY for messages */
+            background-color: var(--secondary-color);
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Space between messages */
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 18px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            max-width: 85%;
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-size: 0.95em;
+        }
+        /* Basic link styling */
+        .message a {
+            color: #0066cc;
+            text-decoration: underline;
+        }
+        .message a:hover {
+             color: #004c99;
+        }
+        /* Paragraphs inside message */
+        .message p {
+            margin-bottom: 8px;
+        }
+        .message p:last-child {
+            margin-bottom: 0;
+        }
+        /* Lists inside message */
+        .message ul, .message ol {
+            margin-left: 20px;
+            margin-bottom: 8px;
+        }
+
+
+        .user {
+            align-self: flex-end;
+            background-color: var(--user-message-bg);
+            color: var(--text-dark);
+            border-bottom-right-radius: 6px;
+        }
+
+        .bot {
+            align-self: flex-start;
+            background-color: var(--bot-message-bg);
+            color: var(--text-dark);
+            border: 1px solid #f0f0f0;
+            border-bottom-left-radius: 6px;
+        }
+        .bot.typing {
+            color: var(--text-light);
+            font-style: italic;
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
+        /* Suggestions IN CHAT */
+         .suggestion-group {
+             background-color: var(--bot-message-bg);
+             border: 1px solid var(--border-color);
+             padding: 15px;
+             margin-top: 5px;
+             border-radius: 15px;
+             align-self: flex-start; /* Align like bot messages */
+             max-width: 85%;
+         }
+         .suggestion-group .group-title {
+             font-weight: bold;
+             margin-bottom: 12px;
+             color: var(--text-light);
+             font-size: 0.9em;
+         }
+         .chat-suggestion {
+             display: block;
+             background-color: var(--suggestion-bg);
+             color: var(--primary-color);
+             padding: 10px 14px;
+             border-radius: 8px;
+             cursor: pointer;
+             font-size: 0.9em;
+             margin-bottom: 6px;
+             border: 1px solid #d0e0d0;
+             transition: background-color 0.2s ease, border-color 0.2s ease;
+             text-align: left;
+             font-weight: 500;
+         }
+         .chat-suggestion:hover {
+             background-color: var(--suggestion-hover-bg);
+             border-color: #b0c0b0;
+         }
+         .chat-suggestion:last-child {
+             margin-bottom: 0;
+         }
+
+        /* Input Area */
+        .chat-input-area { /* Renamed container */
+            height: var(--input-area-height);
+            display: flex;
+            align-items: center; /* Center items vertically */
+            border-top: 1px solid var(--border-color);
+            background-color: #ffffff;
+            padding: 8px 10px; /* Padding around input/button */
+            flex-shrink: 0; /* Prevent input area from shrinking */
+            position: relative; /* For suggestions box positioning */
+        }
+        .chat-input-area input {
+            flex-grow: 1;
+            height: 100%;
+            padding: 0 15px; /* Padding inside input */
+            border: 1px solid var(--border-color);
+            border-radius: 20px; /* Rounded input */
+            font-size: 1em;
+            outline: none;
+            margin-right: 8px; /* Space between input and button */
+        }
+        .chat-input-area input:focus {
+             border-color: var(--primary-color);
+             box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+
+        .chat-input-area button {
+            height: 100%;
+            padding: 0 20px;
+            border: none;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 20px; /* Rounded button */
+            transition: background-color 0.2s ease;
+        }
+        .chat-input-area button:hover {
+            background: #45a049; /* Darker green */
+        }
+
+        /* Suggestions ABOVE input */
+        .suggestions {
+            position: absolute;
+            bottom: calc(var(--input-area-height) + 5px); /* Position above input area */
+            left: 10px; /* Align with input area padding */
+            right: 10px; /* Align with input area padding */
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 10px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            max-height: 200px; /* More height for suggestions */
+            overflow-y: auto;
+            z-index: 100; /* Ensure suggestions are on top */
+            box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .suggestion {
+            background: #f1f1f1;
+            color: var(--text-dark);
+            padding: 10px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            text-align: left;
+            border: 1px solid transparent;
+            transition: background-color 0.2s ease;
+        }
+        .suggestion:hover {
+           background: #e0e0e0;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-header">
+        <span class="icon">🏦</span> बैंक चैटबॉट
+    </div>
+    <div class="chat-messages" id="chat">
+        <div class="message bot">
+            नमस्ते! मैं बैंक कम्युनिटी लोन योजना के बारे में आपके सवालों का जवाब देने के लिए यहाँ हूँ। आप अपना सवाल नीचे टाइप कर सकते हैं।
+        </div>
+    </div>
+    <div class="suggestions" id="suggestions" style="display:none;"></div>
+    <div class="chat-input-area">
+        <input id="input" type="text" placeholder="अपना सवाल यहाँ लिखें..." oninput="showSuggestions(this.value)" onkeyup="handleKey(event)" autocomplete="off">
+        <button onclick="send()" aria-label="भेजें">भेजें</button>
+    </div>
+</div>
+
+<script>
+    // --- API Key ---
+    // !!! अत्यंत महत्वपूर्ण सुरक्षा चेतावनी !!!
+    // यह API कुंजी सार्वजनिक रूप से ज्ञात है। कृपया इसे तुरंत Google Cloud Console में
+    // निष्क्रिय करें और एक नई, सुरक्षित कुंजी बनाएं। इस कुंजी का उपयोग जारी रखने से
+    // आपके खाते का दुरुपयोग हो सकता है और अनपेक्षित शुल्क लग सकते हैं।
+    // इस डेमो के लिए उपयोग किया जा रहा है, लेकिन यह उत्पादन के लिए अत्यंत असुरक्षित है।
+    const API_KEY = "AIzaSyBwhJNl7Rw4Xwb8esmsIes5uVX2fWlRnSE";
+
+    // 1. Hardcoded data segments (Knowledge Base for Context)
+    const dataSegments = [
+  {
+    "question": "bank community loan kya hai?",
+    "answer": "बैंक कम्युनिटी लोन एक बचत और ऋण योजना है, जो छोटे समुदाय के सदस्यों के बीच विश्वास और सहयोग पर आधारित आर्थिक मदद पहुंचाती है।"
+  },
+  {
+    "question": "ye yojana kaise kaam karti hai?",
+    "answer": "सदस्यता लेकर आप हर महीने एक निश्चित राशि SIP (पहले EMI) के रूप में जमा करते हैं। जब आपको जरूरत होती है, आप जमा राशि के अनुपात में लोन प्राप्त कर सकते हैं। निर्णय सभी सदस्यों के सहयोग से लिए जाते हैं।"
+  },
+  {
+    "question": "sip monthly emi ki rashi aur samay seema kya hai?",
+    "answer": "हर महीने की 1 से 10 तारीख के बीच ₹500 SIP जमा करना अनिवार्य है।"
+  },
+  {
+    "question": "sip bounce hone par kya hota hai?",
+    "answer": "यदि SIP 2–3 बार बाउंस होती है, तो सदस्यता 1 वर्ष के लिए रद्द हो सकती है।"
+  },
+  {
+    "question": "sadasyata radd hone par kya milega?",
+    "answer": "सदस्यता रद्द होने पर आपकी जमा राशि लौटाई जाएगी, लेकिन ब्याज नहीं मिलेगा।"
+  },
+  {
+    "question": "loan lene ke liye kya zaruri hai?",
+    "answer": "लोन लेने के लिए आपको लोन फॉर्म भरना होगा और यह सुनिश्चित करना होगा कि आपका कोई बकाया न हो।"
+  },
+  {
+    "question": "loan ki kist aur avadhi kaisi hogi?",
+    "answer": "लोन की किस्त 31 दिनों की होगी; देरी से भुगतान पर अगली किस्त में जुड़ जाएगा।"
+  },
+  {
+    "question": "free loan kya hai?",
+    "answer": "Free Loan: महीने में एक बार ₹1000 तक 5 दिनों के लिए लोन लिया जा सकता है। लेट फाइन ₹10 प्रति दिन।"
+  },
+  {
+    "question": "aap kitna loan le sakte hain?",
+    "answer": "आप जमा राशि का 1.5× तक लोन ले सकते हैं। यदि दोगुना लोन लेना हो, तो 2% अतिरिक्त ब्याज देना होगा।"
+  },
+  {
+    "question": "late fine par byaj kaise lagu hoga?",
+    "answer": "यदि लोन 31 दिन से अधिक रहता है, तो ब्याज अगले महीने में लागू होगा।"
+  },
+  {
+    "question": "loan kist der se hone par kya suchna deni hogi?",
+    "answer": "लोन किस्त देर से करने पर SMS द्वारा सूचित करना अनिवार्य है; नहीं तो ₹10 पेनल्टी लगेगी।"
+  },
+  {
+    "question": "kist bounce hone par kya hoga?",
+    "answer": "किस्त बाउंस होने और सूचना नहीं देने पर 60 दिन तक लोन नहीं मिलेगा (दो बार बाउंस पर)।"
+  },
+  {
+    "question": "emi par loan lene par kya sharten hain?",
+    "answer": "EMI विकल्प पर लोन पर 8% अतिरिक्त ब्याज लगेगा और अधिकतम अवधि 3 महीने होगी (न्यूनतम राशि ₹2500)।"
+  },
+  {
+    "question": "naya sadasya kaise judta hai?",
+    "answer": "नया सदस्य बनने के लिए महीने की शुरुआत (1–5 तारीख) में ₹500 जमा करना होता है; लोन केवल 60 दिन बाद उपलब्ध होगा।"
+  },
+  {
+    "question": "ek mahine ke loan par charge kya hai?",
+    "answer": "1–31 दिन तक के लोन पर 1% चार्ज होगा।"
+  },
+  {
+    "question": "do mahine ke loan par penalty kya hai?",
+    "answer": "32–60 दिन तक के लोन पर 3% पेनल्टी लगेगी।"
+  },
+  {
+    "question": "teen mahine ke loan par penalty kya hogi?",
+    "answer": "61+ दिनों के लिए 5% पेनल्टी (RED MEMBER) लागू होगी।"
+  },
+  {
+    "question": "civil score kya hai?",
+    "answer": "₹100 जमा करने पर 10 पॉइंट्स सिविल स्कोर में जुड़ते हैं।"
+  },
+  {
+    "question": "loan payment aur punah loan lene ki shart?",
+    "answer": "जिस दिन आप लोन का भुगतान करेंगे, उस दिन फिर लोन नहीं मिलेगा; अगले दिन आप फिर से लोन ले सकते हैं।"
+  },
+  {
+    "question": " member exit kaise hoga?",
+    "answer": "Exit के लिए 60 दिन पूर्ण सदस्यता होनी चाहिए और फॉर्म भरना अनिवार्य है; 1–10 तारीख में कुल राशि एवं ब्याज प्राप्त होगा। 60 दिन से पहले निकले पर 10% कटौती।"
+  },
+  {
+    "question": "board member kaun-kaun hain?",
+    "answer": "Prime Members: Amit Kumar, Mithilesh Sahni, Prince Kumar. इन्हें समय पर जमा और जिम्मेदार व्यवहार के आधार पर चुना गया है।"
+  },
+  {
+    "question": "board member ki jimmedariyan kya hain?",
+    "answer": "सभी आर्थिक निर्णयों में भाग, लोन वितरण, फंड मॉनिटरिंग, नए सदस्यों के लिए गारंटी, नियमित मीटिंग्स।"
+  },
+  {
+    "question": "board member banne ke niyam kya hain?",
+    "answer": "समय पर जमा, गारंटी क्षमता, 70% सहमति से निर्णय, सिविल स्कोर नेगेटिव नहीं होना चाहिए।"
+  },
+  {
+    "question": "guarantor banne ke liye kya avashyaktaen hain?",
+    "answer": "6 महीने से सदस्य, सिविल स्कोर ≥200, लिखित समझौता, तय शर्तों का पालन।"
+  },
+  {
+    "question": "naye member jodne ki sharten kya hain?",
+    "answer": "गारंटर की गारंटी, 1 महीने अग्रिम जमा, पृष्ठभूमि जाँच अनिवार्य।"
+  },
+  {
+    "question": "meeting aur paradarshita kaise sunishchit hoti hai?",
+    "answer": "हर महीने मीटिंग में जमा/लोन रिकॉर्ड, मेंबर एवं गारंटर स्थिति, संस्था की प्रगति पर चर्चा।"
+  },
+  {
+    "question": "loan website aur sthaapna ki jankari?",
+    "answer": "Website: https://bank-community.github.io/Loan-from -- Estd: 23 June 2024"
+  },
+  {
+    "question": "kya ek vyakti ek saath do loan le sakta hai?",
+    "answer": "यदि कोई सदस्य जमा राशि का 1.5 गुना लोन ले चुका है और ₹1000 से अधिक राशि शेष है, तो वह ₹1000 तक का अतिरिक्त लोन ले सकता है।"
+  },
+  {
+    "question": "loan chukane ke baad turant exit lena sambhav hai kya?",
+    "answer": "नहीं, सदस्य को पहले पूरा लोन चुकाना अनिवार्य है। लोन चुकाए बिना Exit की अनुमति नहीं है।"
+  },
+  {
+    "question": "bank community mein prime members kaun hain aur sanstha kaise chalti hai?",
+    "answer": "Prime Members: Amit Kumar, Prince Kumar, Mithilesh Sahni. संस्था WhatsApp Group और Website के माध्यम से संचालित होती है। WhatsApp Group Link: https://chat.whatsapp.com/G39I0hP55WIDHMu5YkAjDZ"
+  },
+  {
+    "question": "main bank community mein kaise join kar sakta hoon?",
+    "answer": "आप नीचे दिए गए लिंक पर जाकर सदस्यता ले सकते हैं: https://bank-community.github.io/Loan-from/newbank.html"
+  }
+]; // Ensure the full array is here
+
+    const chatBox = document.getElementById("chat");
+    const inputBox = document.getElementById("input");
+    const suggestionsBox = document.getElementById("suggestions");
+
+    /**
+     * Appends a message to the chat box.
+     * @param {string} text - The message text or HTML.
+     * @param {string} cls - CSS class for the message bubble (e.g., 'user', 'bot').
+     * @param {boolean} isHtml - Set to true if 'text' contains HTML to be rendered. Defaults to false.
+     * @returns {HTMLElement} The created message element.
+     */
+    function appendMessage(text, cls, isHtml = false) {
+        const d = document.createElement("div");
+        d.className = "message " + cls;
+        if (isHtml) {
+            // Sanitize potentially harmful HTML here if needed in a real application
+            d.innerHTML = text; // Use innerHTML only if flag is true
+        } else {
+            d.textContent = text; // Safer default
+        }
+        chatBox.appendChild(d);
+        // Scroll smoothly to the bottom
+        chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+        return d;
+    }
+
+    /**
+     * Finds URLs in text and converts them to clickable HTML links.
+     * @param {string} text - The input text.
+     * @returns {string} Text with URLs converted to <a> tags.
+     */
+    function linkify(text) {
+        // More robust regex for URLs (handles various protocols and paths)
+        const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])|(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        return text.replace(urlRegex, function(url) {
+            let fullUrl = url;
+            if (!fullUrl.match(/^https?:\/\//i)) {
+                 fullUrl = 'http://' + fullUrl; // Add http if missing (for www links)
+            }
+            // Ensure link text itself doesn't contain HTML tags to prevent breaking
+            const linkText = url.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            return `<a href="${fullUrl}" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
+        });
+    }
+
+     /**
+     * Appends a group of clickable question suggestions within the chat.
+     * @param {string} title - The title for the suggestion group.
+     * @param {string[]} questions - An array of question strings to suggest.
+     */
+     function appendSuggestionGroup(title, questions) {
+        const groupDiv = document.createElement("div");
+        groupDiv.className = "message bot suggestion-group"; // Use bot style + suggestion group
+
+        const titleDiv = document.createElement("div");
+        titleDiv.className = "group-title";
+        titleDiv.textContent = title;
+        groupDiv.appendChild(titleDiv);
+
+        questions.forEach(q_text => {
+            const suggestionEl = document.createElement("div");
+            suggestionEl.className = "chat-suggestion";
+            suggestionEl.textContent = q_text;
+            suggestionEl.onclick = () => {
+                inputBox.value = q_text; // Fill input
+                suggestionsBox.style.display = 'none'; // Hide suggestions above input
+                 // Remove suggestion group from chat maybe? Or leave it for history. Let's leave it.
+                send(); // Send the selected question
+            };
+            groupDiv.appendChild(suggestionEl);
+        });
+
+        chatBox.appendChild(groupDiv);
+        chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+    }
+
+
+    /**
+     * Shows relevant question suggestions above the input field based on user typing.
+     * @param {string} text - The text currently in the input field.
+     */
+    function showSuggestions(text) {
+        // console.log("Input:", text); // Uncomment for debugging
+        suggestionsBox.innerHTML = '';
+        const lowInput = text.toLowerCase().trim();
+
+        if (lowInput.length < 2) { // Don't show suggestions for very short input
+            suggestionsBox.style.display = 'none';
+            return;
+        }
+
+        const matches = new Set();
+        dataSegments.forEach(seg => {
+            if (seg.question.toLowerCase().includes(lowInput)) {
+                matches.add(seg.question);
+            }
+        });
+
+        // console.log("Matches:", matches.size); // Uncomment for debugging
+
+        if (matches.size === 0) {
+            suggestionsBox.style.display = 'none';
+            return;
+        }
+
+        // Limit to 5 suggestions and create elements
+        Array.from(matches).slice(0, 5).forEach(q_text => {
+            const div = document.createElement('div');
+            div.className = 'suggestion';
+            div.textContent = q_text;
+            div.onclick = () => {
+                inputBox.value = q_text;
+                suggestionsBox.style.display = 'none';
+                send();
+            };
+            suggestionsBox.appendChild(div);
+        });
+        suggestionsBox.style.display = 'flex';
+    }
+
+    /**
+     * Handles the Enter key press in the input field.
+     * @param {Event} event - The keyup event object.
+     */
+    function handleKey(event) {
+        if (event.key === 'Enter') {
+            send();
+        }
+    }
+
+   /**
+    * Displays relevant question suggestions within the chat interface, typically after an unclear query.
+    * @param {string} failedQuery - The user's query that didn't match local context well.
+    */
+   function displayErrorSuggestions(failedQuery = "") {
+        const lowerFailedQuery = failedQuery.toLowerCase().trim();
+        let potentialMatches = [];
+
+        // Try to find questions partially related to the failed query
+        if(lowerFailedQuery){
+             potentialMatches = dataSegments.filter(seg =>
+                seg.question.toLowerCase().includes(lowerFailedQuery) ||
+                lowerFailedQuery.split(' ').some(word => word.length > 2 && seg.question.toLowerCase().includes(word)) // Check word overlap
+            ).map(seg => seg.question);
+        }
+
+        // If not enough matches, add generic ones from the start
+        const needed = 5 - potentialMatches.length;
+        if (needed > 0) {
+            const existing = new Set(potentialMatches);
+            for (let i = 0; i < dataSegments.length && potentialMatches.length < 5; i++) {
+                if (!existing.has(dataSegments[i].question)) {
+                    potentialMatches.push(dataSegments[i].question);
+                    existing.add(dataSegments[i].question);
+                }
+            }
+        }
+
+        const suggestionsToShow = potentialMatches.slice(0, 5);
+
+        if (suggestionsToShow.length > 0) {
+            // Use setTimeout to ensure suggestions appear after the main response animation might finish
+            setTimeout(() => {
+                appendSuggestionGroup("आप शायद बैंक कम्युनिटी योजना के बारे में इनमें से कोई सवाल पूछना चाहते हैं:", suggestionsToShow);
+            }, 200); // Small delay
+        }
+   }
+
+
+    /**
+     * Sends the user's query to the backend (API) and displays the response.
+     */
+    async function send() {
+        const q = inputBox.value.trim();
+        if (!q) return;
+
+        if (!API_KEY || API_KEY === "YOUR_API_KEY" || API_KEY.length < 30) {
+            appendMessage("त्रुटि: API कुंजी कॉन्फ़िगर नहीं है या अमान्य है।", "bot");
+            console.error("API Key is missing or invalid.");
+            return;
+        }
+
+        appendMessage(q, "user");
+        const currentQuery = q;
+        inputBox.value = '';
+        suggestionsBox.style.display = 'none';
+
+        const typingIndicator = appendMessage("सोच रहा हूँ...", "bot typing");
+
+        // --- Determine Context and Prepare Prompt ---
+        let context = "";
+        let prompt = "";
+        let useGeneralApi = false;
+
+        const lowerQ = currentQuery.toLowerCase();
+        // Slightly stricter matching for deciding context relevance
+        const relevantSegments = dataSegments.filter(seg =>
+            seg.question.toLowerCase().includes(lowerQ) ||
+            (lowerQ.includes("bank") && seg.question.toLowerCase().includes(lowerQ.replace("bank",""))) // Simple attempt if 'bank' is generic
+            // Add more sophisticated relevance logic if needed
+        );
+
+        if (relevantSegments.length > 0) {
+            // --- CONTEXT FOUND ---
+            context = "प्रासंगिक बैंक कम्युनिटी योजना जानकारी:\n";
+            relevantSegments.slice(0, 5).forEach(seg => { // Limit context size
+                context += `प्रश्न: ${seg.question}\nउत्तर: ${seg.answer}\n\n`;
+            });
+
+            prompt = `आप 'बैंक कम्युनिटी चैटबॉट' हैं, एक पेशेवर और सहायक AI। आपका काम बैंक कम्युनिटी लोन योजना के बारे में सवालों के जवाब देना है।
+            निर्देश:
+            1.  नीचे दिए गए 'प्रासंगिक बैंक कम्युनिटी योजना जानकारी' का उपयोग करके उपयोगकर्ता के प्रश्न का सटीक और स्पष्ट उत्तर दें।
+            2.  उत्तर केवल प्रदान किए गए संदर्भ पर आधारित होना चाहिए। यदि संदर्भ में जानकारी नहीं है, तो बताएं कि उस विशेष विवरण की जानकारी उपलब्ध नहीं है, लेकिन संदर्भ से संबंधित उत्तर दें।
+            3.  पेशेवर और विनम्र लहजे का प्रयोग करें।
+            4.  यदि उत्तर लंबा है, तो उसे छोटे पैराग्राफ या बुलेट पॉइंट्स में तोड़ें।
+            5.  सीधे तौर पर यह न कहें कि "मेरे पास जवाब नहीं है"।
+            6.  मान लें कि 'बैंक' शब्द बैंक कम्युनिटी योजना को संदर्भित करता है जब तक कि स्पष्ट रूप से अन्यथा न कहा गया हो।
+
+            प्रासंगिक बैंक कम्युनिटी योजना जानकारी:
+            ${context}
+            ---
+            उपयोगकर्ता का प्रश्न: ${currentQuery}
+
+            उत्तर (स्पष्ट, संक्षिप्त और मददगार):`;
+            useGeneralApi = false;
+
+        } else {
+            // --- NO CONTEXT FOUND ---
+            useGeneralApi = true;
+            prompt = `आप 'बैंक कम्युनिटी चैटबॉट' हैं, एक पेशेवर और सहायक AI। उपयोगकर्ता ने एक प्रश्न पूछा है जो सीधे तौर पर प्रदान किए गए बैंक कम्युनिटी योजना डेटा से संबंधित नहीं है।
+            निर्देश:
+            1.  उपयोगकर्ता के प्रश्न का सामान्य जानकारी के आधार पर, यदि संभव हो तो, संक्षेप में उत्तर दें।
+            2.  पेशेवर और विनम्र लहजे का प्रयोग करें।
+            3.  उत्तर के अंत में, स्पष्ट रूप से बताएं कि आपका मुख्य फोकस बैंक कम्युनिटी लोन योजना पर है।
+            4.  सीधे तौर पर यह न कहें कि "मेरे पास जवाब नहीं है"। यदि आप उत्तर नहीं दे सकते, तो बताएं कि यह आपके विशेषज्ञता क्षेत्र से बाहर है और आप बैंक कम्युनिटी योजना पर जानकारी प्रदान कर सकते हैं।
+            5.  मान लें कि 'बैंक' शब्द बैंक कम्युनिटी योजना को संदर्भित करता है जब तक कि स्पष्ट रूप से अन्यथा न कहा गया हो।
+
+            उपयोगकर्ता का प्रश्न: ${currentQuery}
+
+            उत्तर (संक्षिप्त और मददगार, बैंक कम्युनिटी फोकस का उल्लेख करें):`;
+        }
+
+        // --- API Call ---
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { temperature: 0.65, maxOutputTokens: 500 } // Slightly adjusted temp
+                    // safetySettings: [...] // Add if needed
+                }),
+            });
+
+            typingIndicator.remove();
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("API Error:", response.status, errorData);
+                appendMessage(`क्षमा करें, API से संपर्क करने में समस्या आ रही है। (Code: ${response.status})`, "bot");
+                displayErrorSuggestions(currentQuery); // Suggest questions on error
+                return;
+            }
+
+            const js = await response.json();
+
+            if (js.candidates && js.candidates[0]?.content?.parts?.[0]?.text) {
+                const rawAnswer = js.candidates[0].content.parts[0].text.trim();
+                // Create the message element first
+                const messageElement = appendMessage("", "bot"); // Append empty div first
+                // Use typeEffect, passing the element and the callback
+                typeEffect(rawAnswer, messageElement, useGeneralApi ? () => displayErrorSuggestions(currentQuery) : null);
+
+            } else {
+                 // Handle blocked content or other issues
+                 let reason = "अज्ञात कारण";
+                 if(js.promptFeedback?.blockReason) { reason = `सामग्री ब्लॉक (${js.promptFeedback.blockReason})`; }
+                 else if (!js.candidates || js.candidates.length === 0) { reason = "API से कोई प्रतिक्रिया नहीं मिली"; }
+                 console.warn("API Response Issue:", reason, js);
+                 appendMessage(`क्षमा करें, मैं इस समय प्रतिक्रिया उत्पन्न नहीं कर पा रहा हूँ। (${reason})`, "bot");
+                 displayErrorSuggestions(currentQuery); // Suggest questions on failure
+            }
+
+        } catch (error) {
+            typingIndicator.remove();
+            console.error("Network/Fetch Error:", error);
+            appendMessage("क्षमा करें, नेटवर्क कनेक्शन में त्रुटि है। कृपया बाद में प्रयास करें।", "bot");
+            // Suggest questions even on network error
+            displayErrorSuggestions(currentQuery);
+        }
+    }
+
+    /**
+     * Animates text typing effect in a target HTML element and handles linkification.
+     * @param {string} text - The plain text to type out.
+     * @param {HTMLElement} targetElement - The HTML element where the text should be typed.
+     * @param {Function | null} callback - Optional callback function to execute when typing is complete.
+     */
+    function typeEffect(text, targetElement, callback = null) {
+        let i = 0;
+        targetElement.innerHTML = '&nbsp;'; // Initial content for layout
+        const interval = setInterval(() => {
+            if (i < text.length) {
+                // Append character by character using textContent to avoid HTML interpretation during typing
+                targetElement.textContent = text.substring(0, i + 1);
+                // Ensure scroll stays at bottom
+                chatBox.scrollTop = chatBox.scrollHeight;
+                i++;
+            } else {
+                clearInterval(interval);
+                // ---- Linkify and finalize content ----
+                const linkifiedHtml = linkify(text);
+                targetElement.innerHTML = linkifiedHtml; // Set final HTML content with links
+                // ---- Execute Callback ----
+                if (typeof callback === 'function') {
+                    // Slight delay for visual separation before callback action (like showing suggestions)
+                    setTimeout(callback, 150);
+                }
+                 // Ensure scroll stays at bottom after final render
+                 chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+            }
+        }, 25); // Typing speed (adjust as needed)
+    }
+
+
+    // Hide suggestions above input if user clicks outside
+    document.addEventListener('click', function(event) {
+        const isClickInsideInput = inputBox.contains(event.target);
+        const isClickInsideSuggestions = suggestionsBox.contains(event.target);
+        if (!isClickInsideInput && !isClickInsideSuggestions) {
+            suggestionsBox.style.display = 'none';
+        }
+    });
+
+    // Initial focus on input field
+    // inputBox.focus(); // Consider if this is good UX on mobile
+
+</script>
+
+</body>
+</html>
