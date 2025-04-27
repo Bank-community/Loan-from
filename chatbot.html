@@ -5,262 +5,138 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>बैंक चैटबॉट</title>
     <style>
-        :root {
-            --primary-color: #4caf50; /* Green */
-            --secondary-color: #f0f2f5; /* Light grey background */
-            --user-message-bg: #dcf8c6; /* Light green */
-            --bot-message-bg: #ffffff; /* White */
-            --text-dark: #333333;
-            --text-light: #555555;
-            --border-color: #dddddd;
-            --suggestion-bg: #e9f5e9;
-            --suggestion-hover-bg: #c8e6c9;
-            --header-height: 60px;
-            --input-area-height: 60px;
-        }
+        /* --- Styles --- */
+:root {
+    --primary-color: #4caf50; /* Green */
+    --secondary-color: #f0f2f5; /* Light grey background */
+    --user-message-bg: #dcf8c6; /* Light green */
+    --bot-message-bg: #ffffff; /* White */
+    --text-dark: #333333;
+    --text-light: #555555;
+    --border-color: #dddddd;
+    --suggestion-bg: #e9f5e9;
+    --suggestion-hover-bg: #c8e6c9;
+    --prime-member-bg: #ffc107; /* Yellow for Prime tag BG */
+    --prime-member-text: #000000; /* Black for Prime tag text */
+    --loan-highlight-color: #dc3545; /* Red for loan highlight */
+    --header-height: 60px;
+    --input-area-height: 60px; /* ** Crucial for input area height ** */
+    --border-radius: 8px; /* Consistent border radius */
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--secondary-color); overflow: hidden; font-size: 16px; }
+.chat-container { display: flex; flex-direction: column; height: 100%; width: 100%; max-width: 800px; margin: 0 auto; background: var(--bot-message-bg); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); border-radius: 0; }
+@media (min-width: 801px) { .chat-container { height: 90vh; max-height: 750px; margin: 20px auto; border-radius: var(--border-radius); } }
+.chat-header { height: var(--header-height); background: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.25em; font-weight: 600; padding: 0 20px; flex-shrink: 0; border-top-left-radius: inherit; border-top-right-radius: inherit; }
+.chat-header .icon { margin-right: 10px; font-size: 1.5em; }
+.chat-messages { flex-grow: 1; padding: 15px 10px; overflow-y: auto; background-color: var(--secondary-color); display: flex; flex-direction: column; gap: 12px; }
+.message { padding: 12px 18px; border-radius: 18px; line-height: 1.6; word-wrap: break-word; max-width: 85%; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.08); font-size: 0.98em; }
+.message a { color: #0066cc; text-decoration: underline; } .message a:hover { color: #004c99; }
+.message p { margin-bottom: 10px; } .message p:last-child { margin-bottom: 0; }
+.message ul, .message ol { margin-left: 20px; margin-bottom: 10px; padding-left: 15px; } .message ul li { margin-bottom: 6px; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+/* User & Bot Bubble Styles */
+.user { align-self: flex-end; background-color: var(--user-message-bg); color: var(--text-dark); border-bottom-right-radius: 6px; }
+.bot { align-self: flex-start; background-color: var(--bot-message-bg); color: var(--text-dark); border: 1px solid #f0f0f0; border-bottom-left-radius: 6px; }
+.bot.typing { color: var(--text-light); font-style: italic; background-color: transparent; border: none; box-shadow: none; padding-left: 0; }
 
-        html, body {
-            height: 100%;
-            font-family: Arial, sans-serif;
-            background-color: var(--secondary-color);
-            overflow: hidden; /* Prevent body scroll */
-        }
+/* User Details Card Styling */
+.user-details-card { padding: 15px; border: 1px solid var(--border-color); border-radius: var(--border-radius); background-color: #f9f9f9; margin-top: 5px; } /* Added margin-top */
+.user-details-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+.profile-pic-container { position: relative; flex-shrink: 0; width: 75px; height: 75px; }
+.profile-pic { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; cursor: pointer; border: 2px solid var(--border-color); background-color: #eee; }
+.prime-tag-on-photo {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--prime-member-bg);
+    color: var(--prime-member-text);
+    font-size: 0.7em;
+    font-weight: bold;
+    padding: 3px 6px;
+    border-radius: 4px;
+    line-height: 1;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    z-index: 1; /* Ensure tag is above image */
+}
+.user-info h3 { margin: 0; font-size: 1.2em; color: var(--text-dark); }
+.user-info p { margin: 4px 0 0; font-size: 0.9em; color: var(--text-light); }
+.user-stats { border-top: 1px solid var(--border-color); padding-top: 15px; }
+.user-stats p { margin-bottom: 8px; font-size: 0.95em; display: flex; justify-content: space-between; flex-wrap: wrap; } /* Added flex-wrap */
+.user-stats .label { color: var(--text-light); margin-right: 5px; }
+.user-stats .value { font-weight: 600; text-align: right; }
+.loan-highlight { color: var(--loan-highlight-color); }
+.sip-status { font-weight: bold; padding: 2px 5px; border-radius: 4px; font-size: 0.9em; }
+.sip-status.paid { color: #fff; background-color: #28a745; } /* Green */
+.sip-status.pending { color: #fff; background-color: var(--loan-highlight-color); } /* Red */
+.sip-status.due { color: #212529; background-color: #ffc107; } /* Yellow/Orange */
 
-        .chat-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%; /* Full height */
-            width: 100%; /* Full width */
-            max-width: 800px; /* Max width for larger screens */
-            margin: 0 auto; /* Center on larger screens */
-            background: var(--bot-message-bg);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 0; /* No radius for full screen */
-        }
-        @media (min-width: 801px) {
-             .chat-container {
-                 height: 90vh; /* Slightly less height on desktop */
-                 max-height: 750px;
-                 margin: 20px auto;
-                 border-radius: 10px;
-             }
-        }
+/* Clickable Member List */
+.member-list-container { padding: 10px 0; max-height: 200px; overflow-y: auto; /* Add scroll if list is long */ }
+.clickable-member {
+     display: block; padding: 8px 12px; margin-bottom: 4px; background-color: #f1f1f1;
+     border-radius: 5px; cursor: pointer; color: var(--text-dark); text-decoration: none;
+     transition: background-color 0.2s ease;
+     font-size: 0.95em;
+}
+.clickable-member:hover { background-color: #e0e0e0; }
 
-        .chat-header {
-            height: var(--header-height);
-            background: var(--primary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3em;
-            font-weight: bold;
-            padding: 0 20px;
-            flex-shrink: 0; /* Prevent header from shrinking */
-            border-top-left-radius: inherit; /* Inherit from container */
-            border-top-right-radius: inherit;
-        }
-        .chat-header .icon {
-            margin-right: 10px;
-            font-size: 1.5em; /* Adjust icon size */
-        }
+/* Suggestions IN CHAT */
+.suggestion-group { background-color: var(--bot-message-bg); border: 1px solid var(--border-color); padding: 15px; margin-top: 5px; border-radius: 15px; align-self: flex-start; max-width: 85%; }
+.suggestion-group .group-title { font-weight: bold; margin-bottom: 12px; color: var(--text-light); font-size: 0.9em; }
+.chat-suggestion { display: block; background-color: var(--suggestion-bg); color: var(--primary-color); padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 0.9em; margin-bottom: 6px; border: 1px solid #d0e0d0; transition: background-color 0.2s ease, border-color 0.2s ease; text-align: left; font-weight: 500; }
+.chat-suggestion:hover { background-color: var(--suggestion-hover-bg); border-color: #b0c0b0; } .chat-suggestion:last-child { margin-bottom: 0; }
 
-        .chat-messages {
-            flex-grow: 1; /* Take available space */
-            padding: 15px 10px;
-            overflow-y: auto; /* Enable scrolling ONLY for messages */
-            background-color: var(--secondary-color);
-            display: flex;
-            flex-direction: column;
-            gap: 10px; /* Space between messages */
-        }
+/* --- Input Area --- */
+.chat-input-area {
+    height: var(--input-area-height); /* Use the variable */
+    display: flex;
+    align-items: center; /* Center items vertically */
+    border-top: 1px solid var(--border-color);
+    background-color: #ffffff;
+    padding: 8px 10px; /* Padding around input/button */
+    flex-shrink: 0; /* Prevent input area from shrinking */
+    position: relative;
+}
+.chat-input-area input {
+    flex-grow: 1;
+    height: 100%; /* Make input fill the container height */
+    padding: 0 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 1em; /* Ensure font size is appropriate */
+    outline: none;
+    margin-right: 8px;
+}
+.chat-input-area input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+.chat-input-area button {
+    height: 100%; /* Make button fill the container height */
+    padding: 0 20px;
+    border: none;
+    background: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 20px;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0; /* Prevent button from shrinking */
+}
+.chat-input-area button:hover { background: #45a049; }
 
-        .message {
-            padding: 10px 15px;
-            border-radius: 18px;
-            line-height: 1.5;
-            word-wrap: break-word;
-            max-width: 85%;
-            position: relative;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            font-size: 0.95em;
-        }
-        /* Basic link styling */
-        .message a {
-            color: #0066cc;
-            text-decoration: underline;
-        }
-        .message a:hover {
-             color: #004c99;
-        }
-        /* Paragraphs inside message */
-        .message p {
-            margin-bottom: 8px;
-        }
-        .message p:last-child {
-            margin-bottom: 0;
-        }
-        /* Lists inside message */
-        .message ul, .message ol {
-            margin-left: 20px; /* Indent lists */
-            margin-bottom: 8px;
-            padding-left: 10px; /* Add padding for list markers */
-        }
-        .message ul li {
-            margin-bottom: 5px; /* Space between list items */
-        }
-        /* Image styling */
-        .message img {
-            max-width: 100%; /* Ensure image fits bubble */
-            height: auto; /* Maintain aspect ratio */
-            max-height: 200px; /* Limit image height */
-            display: block; /* Prevent extra space below image */
-            margin-top: 8px; /* Space above image */
-            border-radius: 8px; /* Rounded corners */
-        }
+/* Suggestions ABOVE input */
+.suggestions { position: absolute; bottom: calc(var(--input-area-height) + 5px); left: 10px; right: 10px; display: flex; flex-direction: column; gap: 5px; padding: 10px; background: #ffffff; border: 1px solid var(--border-color); max-height: 200px; overflow-y: auto; z-index: 100; box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.1); border-radius: 8px; }
+.suggestion { background: #f1f1f1; color: var(--text-dark); padding: 10px 12px; border-radius: 5px; cursor: pointer; font-size: 0.9em; text-align: left; border: 1px solid transparent; transition: background-color 0.2s ease; }
+.suggestion:hover { background: #e0e0e0; }
 
-
-        .user {
-            align-self: flex-end;
-            background-color: var(--user-message-bg);
-            color: var(--text-dark);
-            border-bottom-right-radius: 6px;
-        }
-
-        .bot {
-            align-self: flex-start;
-            background-color: var(--bot-message-bg);
-            color: var(--text-dark);
-            border: 1px solid #f0f0f0;
-            border-bottom-left-radius: 6px;
-        }
-        .bot.typing {
-            color: var(--text-light);
-            font-style: italic;
-            background-color: transparent;
-            border: none;
-            box-shadow: none;
-        }
-
-        /* Suggestions IN CHAT */
-         .suggestion-group {
-             background-color: var(--bot-message-bg);
-             border: 1px solid var(--border-color);
-             padding: 15px;
-             margin-top: 5px;
-             border-radius: 15px;
-             align-self: flex-start; /* Align like bot messages */
-             max-width: 85%;
-         }
-         .suggestion-group .group-title {
-             font-weight: bold;
-             margin-bottom: 12px;
-             color: var(--text-light);
-             font-size: 0.9em;
-         }
-         .chat-suggestion {
-             display: block;
-             background-color: var(--suggestion-bg);
-             color: var(--primary-color);
-             padding: 10px 14px;
-             border-radius: 8px;
-             cursor: pointer;
-             font-size: 0.9em;
-             margin-bottom: 6px;
-             border: 1px solid #d0e0d0;
-             transition: background-color 0.2s ease, border-color 0.2s ease;
-             text-align: left;
-             font-weight: 500;
-         }
-         .chat-suggestion:hover {
-             background-color: var(--suggestion-hover-bg);
-             border-color: #b0c0b0;
-         }
-         .chat-suggestion:last-child {
-             margin-bottom: 0;
-         }
-
-        /* Input Area */
-        .chat-input-area { /* Renamed container */
-            height: var(--input-area-height);
-            display: flex;
-            align-items: center; /* Center items vertically */
-            border-top: 1px solid var(--border-color);
-            background-color: #ffffff;
-            padding: 8px 10px; /* Padding around input/button */
-            flex-shrink: 0; /* Prevent input area from shrinking */
-            position: relative; /* For suggestions box positioning */
-        }
-        .chat-input-area input {
-            flex-grow: 1;
-            height: 100%;
-            padding: 0 15px; /* Padding inside input */
-            border: 1px solid var(--border-color);
-            border-radius: 20px; /* Rounded input */
-            font-size: 1em;
-            outline: none;
-            margin-right: 8px; /* Space between input and button */
-        }
-        .chat-input-area input:focus {
-             border-color: var(--primary-color);
-             box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
-        }
-
-        .chat-input-area button {
-            height: 100%;
-            padding: 0 20px;
-            border: none;
-            background: var(--primary-color);
-            color: white;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: bold;
-            border-radius: 20px; /* Rounded button */
-            transition: background-color 0.2s ease;
-        }
-        .chat-input-area button:hover {
-            background: #45a049; /* Darker green */
-        }
-
-        /* Suggestions ABOVE input */
-        .suggestions {
-            position: absolute;
-            bottom: calc(var(--input-area-height) + 5px); /* Position above input area */
-            left: 10px; /* Align with input area padding */
-            right: 10px; /* Align with input area padding */
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            padding: 10px;
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            max-height: 200px; /* More height for suggestions */
-            overflow-y: auto;
-            z-index: 100; /* Ensure suggestions are on top */
-            box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-        .suggestion {
-            background: #f1f1f1;
-            color: var(--text-dark);
-            padding: 10px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-            text-align: left;
-            border: 1px solid transparent;
-            transition: background-color 0.2s ease;
-        }
-        .suggestion:hover {
-           background: #e0e0e0;
-        }
-
+/* Image Modal Styles */
+.modal-overlay { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.85); justify-content: center; align-items: center; /* Use flex for centering */ }
+.modal-content { margin: auto; display: block; max-width: 85%; max-height: 85%; }
+.modal-close { position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; transition: 0.3s; cursor: pointer; line-height: 1; /* Better vertical alignment */ }
+.modal-close:hover, .modal-close:focus { color: #bbb; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -271,649 +147,955 @@
     </div>
     <div class="chat-messages" id="chat">
         <div class="message bot">
-            नमस्ते! मैं बैंक कम्युनिटी लोन योजना और सदस्य विवरण के बारे में आपके सवालों का जवाब देने के लिए यहाँ हूँ। आप अपना सवाल नीचे टाइप कर सकते हैं।
+            नमस्ते! मैं बैंक कम्युनिटी लोन योजना, सदस्य विवरण, पात्रता और अन्य संबंधित प्रश्नों में आपकी सहायता कर सकता हूँ। आप सामान्य ज्ञान के प्रश्न भी पूछ सकते हैं। आप किसी भी तरह से सवाल पूछ सकते हैं, मैं समझने की कोशिश करूँगा।
         </div>
     </div>
     <div class="suggestions" id="suggestions" style="display:none;"></div>
     <div class="chat-input-area">
-        <input id="input" type="text" placeholder="अपना सवाल यहाँ लिखें (जैसे 'अमित कुमार का बैलेंस')..." oninput="showSuggestions(this.value)" onkeyup="handleKey(event)" autocomplete="off">
+        <input id="input" type="text" placeholder="सवाल पूछें (जैसे 'मेरा बैलेंस', 'SIP कब देना है?')..." oninput="showSuggestions(this.value)" onkeyup="handleKey(event)" autocomplete="off">
         <button onclick="send()" aria-label="भेजें">भेजें</button>
     </div>
 </div>
 
+<div id="imageModal" class="modal-overlay">
+    <span class="modal-close" onclick="closeImageModal()">&times;</span>
+    <img class="modal-content" id="modalImageContent">
+</div>
+
 <script>
-    // --- API Keys and URLs ---
-    // !!! सुरक्षा चेतावनी: यह जेमिनी API कुंजी सार्वजनिक है और असुरक्षित है। उत्पादन में प्रयोग न करें। !!!
-    const API_KEY = "AIzaSyBwhJNl7Rw4Xwb8esmsIes5uVX2fWlRnSE"; // Replace with your SECURE Gemini API Key
-    const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz9LCkPR8L3-i7F1KG2KUJ6It2l_p55murljRJ_4108nFysOXUOpG5WEs1sdEaGHq1L7w/exec"; // Google Sheet API URL
+// --- Configuration, Global State, dataSegments ---
+const API_KEY = "AIzaSyBwhJNl7Rw4Xwb8esmsIes5uVX2fWlRnSE"; // <<<--- *** अपनी Gemini API कुंजी यहाँ डालें ***
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz9LCkPR8L3-i7F1KG2KUJ6It2l_p55murljRJ_4108nFysOXUOpG5WEs1sdEaGHq1L7w/exec"; // <<<--- *** अपना Apps Script URL यहाँ डालें ***
+const defaultProfilePic = 'https://via.placeholder.com/100/CCCCCC/FFFFFF?text=👤';
+const primeMembers = ["Amit Kumar", "Mithilesh Sahni", "Prince Rama"]; // यदि आवश्यक हो तो अपडेट करें
 
-    // 1. Hardcoded data segments (Knowledge Base for General Rules)
-    const dataSegments = [
-      // ... (आपका पूरा dataSegments ऐरे यहाँ रखें) ...
-      // Example structure:
-      {
-        "question": "bank community loan kya hai?",
-        "answer": "बैंक कम्युनिटी लोन एक बचत और ऋण योजना है, जो छोटे समुदाय के सदस्यों के बीच विश्वास और सहयोग पर आधारित आर्थिक मदद पहुंचाती है।"
-      },
-      {
-        "question": "ye yojana kaise kaam karti hai?",
-        "answer": "सदस्यता लेकर आप हर महीने एक निश्चित राशि SIP (पहले EMI) के रूप में जमा करते हैं। जब आपको जरूरत होती है, आप जमा राशि के अनुपात में लोन प्राप्त कर सकते हैं। निर्णय सभी सदस्यों के सहयोग से लिए जाते हैं।"
-      },
-       {
-        "question": "sip monthly emi ki rashi aur samay seema kya hai?",
-        "answer": "हर महीने की 1 से 10 तारीख के बीच ₹500 SIP जमा करना अनिवार्य है।"
-      },
-      {
-        "question": "sip bounce hone par kya hota hai?",
-        "answer": "यदि SIP 2–3 बार बाउंस होती है, तो सदस्यता 1 वर्ष के लिए रद्द हो सकती है।"
-      },
-      {
-        "question": "sadasyata radd hone par kya milega?",
-        "answer": "सदस्यता रद्द होने पर आपकी जमा राशि लौटाई जाएगी, लेकिन ब्याज नहीं मिलेगा।"
-      },
-      {
-        "question": "loan lene ke liye kya zaruri hai?",
-        "answer": "लोन लेने के लिए आपको लोन फॉर्म भरना होगा और यह सुनिश्चित करना होगा कि आपका कोई बकाया न हो।"
-      },
-      {
-        "question": "loan ki kist aur avadhi kaisi hogi?",
-        "answer": "लोन की किस्त 31 दिनों की होगी; देरी से भुगतान पर अगली किस्त में जुड़ जाएगा।"
-      },
-      {
-        "question": "free loan kya hai?",
-        "answer": "Free Loan: महीने में एक बार ₹1000 तक 5 दिनों के लिए लोन लिया जा सकता है। लेट फाइन ₹10 प्रति दिन।"
-      },
-      {
-        "question": "aap kitna loan le sakte hain?",
-        "answer": "आप जमा राशि का 1.5× तक लोन ले सकते हैं। यदि दोगुना लोन लेना हो, तो 2% अतिरिक्त ब्याज देना होगा।"
-      },
-      {
-        "question": "late fine par byaj kaise lagu hoga?",
-        "answer": "यदि लोन 31 दिन से अधिक रहता है, तो ब्याज अगले महीने में लागू होगा।"
-      },
-      {
-        "question": "loan kist der se hone par kya suchna deni hogi?",
-        "answer": "लोन किस्त देर से करने पर SMS द्वारा सूचित करना अनिवार्य है; नहीं तो ₹10 पेनल्टी लगेगी।"
-      },
-      {
-        "question": "kist bounce hone par kya hoga?",
-        "answer": "किस्त बाउंस होने और सूचना नहीं देने पर 60 दिन तक लोन नहीं मिलेगा (दो बार बाउंस पर)।"
-      },
-      {
-        "question": "emi par loan lene par kya sharten hain?",
-        "answer": "EMI विकल्प पर लोन पर 8% अतिरिक्त ब्याज लगेगा और अधिकतम अवधि 3 महीने होगी (न्यूनतम राशि ₹2500)।"
-      },
-      {
-        "question": "naya sadasya kaise judta hai?",
-        "answer": "नया सदस्य बनने के लिए महीने की शुरुआत (1–5 तारीख) में ₹500 जमा करना होता है; लोन केवल 60 दिन बाद उपलब्ध होगा।"
-      },
-      {
-        "question": "ek mahine ke loan par charge kya hai?",
-        "answer": "1–31 दिन तक के लोन पर 1% चार्ज होगा।"
-      },
-      {
-        "question": "do mahine ke loan par penalty kya hai?",
-        "answer": "32–60 दिन तक के लोन पर 3% पेनल्टी लगेगी।"
-      },
-      {
-        "question": "teen mahine ke loan par penalty kya hogi?",
-        "answer": "61+ दिनों के लिए 5% पेनल्टी (RED MEMBER) लागू होगी।"
-      },
-      {
-        "question": "civil score kya hai?",
-        "answer": "₹100 जमा करने पर 10 पॉइंट्स सिविल स्कोर में जुड़ते हैं।"
-      },
-      {
-        "question": "loan payment aur punah loan lene ki shart?",
-        "answer": "जिस दिन आप लोन का भुगतान करेंगे, उस दिन फिर लोन नहीं मिलेगा; अगले दिन आप फिर से लोन ले सकते हैं।"
-      },
-      {
-        "question": " member exit kaise hoga?",
-        "answer": "Exit के लिए 60 दिन पूर्ण सदस्यता होनी चाहिए और फॉर्म भरना अनिवार्य है; 1–10 तारीख में कुल राशि एवं ब्याज प्राप्त होगा। 60 दिन से पहले निकले पर 10% कटौती।"
-      },
-      {
-        "question": "board member kaun-kaun hain?",
-        "answer": "Prime Members: Amit Kumar, Mithilesh Sahni, Prince Kumar. इन्हें समय पर जमा और जिम्मेदार व्यवहार के आधार पर चुना गया है।"
-      },
-      {
-        "question": "board member ki jimmedariyan kya hain?",
-        "answer": "सभी आर्थिक निर्णयों में भाग, लोन वितरण, फंड मॉनिटरिंग, नए सदस्यों के लिए गारंटी, नियमित मीटिंग्स।"
-      },
-      {
-        "question": "board member banne ke niyam kya hain?",
-        "answer": "समय पर जमा, गारंटी क्षमता, 70% सहमति से निर्णय, सिविल स्कोर नेगेटिव नहीं होना चाहिए।"
-      },
-      {
-        "question": "guarantor banne ke liye kya avashyaktaen hain?",
-        "answer": "6 महीने से सदस्य, सिविल स्कोर ≥200, लिखित समझौता, तय शर्तों का पालन।"
-      },
-      {
-        "question": "naye member jodne ki sharten kya hain?",
-        "answer": "गारंटर की गारंटी, 1 महीने अग्रिम जमा, पृष्ठभूमि जाँच अनिवार्य।"
-      },
-      {
-        "question": "meeting aur paradarshita kaise sunishchit hoti hai?",
-        "answer": "हर महीने मीटिंग में जमा/लोन रिकॉर्ड, मेंबर एवं गारंटर स्थिति, संस्था की प्रगति पर चर्चा।"
-      },
-      {
-        "question": "loan website aur sthaapna ki jankari?",
-        "answer": "Website: https://bank-community.github.io/Loan-from -- Estd: 23 June 2024"
-      },
-      {
-        "question": "kya ek vyakti ek saath do loan le sakta hai?",
-        "answer": "यदि कोई सदस्य जमा राशि का 1.5 गुना लोन ले चुका है और ₹1000 से अधिक राशि शेष है, तो वह ₹1000 तक का अतिरिक्त लोन ले सकता है।"
-      },
-      {
-        "question": "loan chukane ke baad turant exit lena sambhav hai kya?",
-        "answer": "नहीं, सदस्य को पहले पूरा लोन चुकाना अनिवार्य है। लोन चुकाए बिना Exit की अनुमति नहीं है।"
-      },
-      {
-        "question": "bank community mein prime members kaun hain aur sanstha kaise chalti hai?",
-        "answer": "Prime Members: Amit Kumar, Prince Kumar, Mithilesh Sahni. संस्था WhatsApp Group और Website के माध्यम से संचालित होती है। WhatsApp Group Link: https://chat.whatsapp.com/G39I0hP55WIDHMu5YkAjDZ"
-      },
-      {
-        "question": "main bank community mein kaise join kar sakta hoon?",
-        "answer": "आप नीचे दिए गए लिंक पर जाकर सदस्यता ले सकते हैं: https://bank-community.github.io/Loan-from/newbank.html"
-      }
-    ];
+let cachedSheetData = null;
+let communityBalance = 0;
+let isFetchingData = false;
 
-    const chatBox = document.getElementById("chat");
-    const inputBox = document.getElementById("input");
-    const suggestionsBox = document.getElementById("suggestions");
+// Rules/FAQ Data Store
+const dataSegments = [
+  // ... (सारा dataSegments वाला JSON यहाँ पेस्ट करें जैसा पहले था) ...
+  {
+    "question": "Bank community loan kya hai?",
+    "answer": "बैंक कम्युनिटी लोन एक आपसी सहयोग पर आधारित बचत और ऋण योजना है, जो समुदाय के सदस्यों को जरूरत पड़ने पर आर्थिक सहायता प्रदान करती है।"
+  },
+  {
+    "question": "Scheme kaise work karti hai?",
+    "answer": "सदस्य हर महीने एक निश्चित राशि (₹500) SIP के रूप में जमा करते हैं। जब किसी सदस्य को पैसे की जरूरत होती है, तो वह अपनी जमा राशि के आधार पर लोन ले सकता है। लोन की मंजूरी और अन्य निर्णय समुदाय के सदस्यों द्वारा मिलकर लिए जाते हैं।"
+  },
+  {
+    "question": "Monthly SIP amount aur deadline kya hai?",
+    "answer": "हर महीने की 1 से 10 तारीख के बीच ₹500 SIP जमा करना अनिवार्य है।"
+  },
+  {
+    "question": "SIP bounce hone par kya hota hai?",
+    "answer": "यदि किसी सदस्य की SIP लगातार 2-3 बार बाउंस होती है, तो उसकी सदस्यता 1 वर्ष के लिए रद्द की जा सकती है।"
+  },
+  {
+    "question": "Cancellation par deposit refund hoga?",
+    "answer": "हाँ, सदस्यता रद्द होने पर आपकी कुल जमा राशि लौटाई जाएगी, लेकिन उस पर कोई ब्याज नहीं मिलेगा।"
+  },
+  {
+    "question": "Loan lene ke liye requirements kya hain?",
+    "answer": "लोन लेने के लिए आपको पहले यह सुनिश्चित करना होगा कि आपका कोई पिछला बकाया नहीं है और फिर लोन फॉर्म भरना होगा। लोन फॉर्म का लिंक है: https://bank-community.github.io/Loan-from/loan.html"
+  },
+   {
+    "question": "Loan form link",
+    "answer": "आप लोन फॉर्म इस लिंक से प्राप्त कर सकते हैं: https://bank-community.github.io/Loan-from/loan.html"
+  },
+  {
+    "question": "Loan installment duration kya hai?",
+    "answer": "लोन की प्रत्येक किस्त की अवधि 31 दिन होती है। यदि आप समय पर भुगतान नहीं करते हैं, तो बकाया राशि अगली किस्त में जुड़ जाएगी।"
+  },
+  {
+    "question": "Free loan kya hai?",
+    "answer": "फ्री लोन एक सुविधा है जिसके तहत सदस्य महीने में एक बार ₹1000 तक का लोन अधिकतम 5 दिनों के लिए बिना किसी ब्याज के ले सकते हैं। 5 दिन के बाद भुगतान करने पर ₹10 प्रति दिन का लेट फाइन लगता है।"
+  },
+  {
+    "question": "Maximum loan kitna le sakte hain?",
+    "answer": "आप अपनी कुल जमा राशि का 1.5 गुना तक लोन ले सकते हैं। यदि आपको जमा राशि का दोगुना लोन चाहिए, तो आपको 2% अतिरिक्त ब्याज देना होगा।"
+  },
+  {
+    "question": "Loan par late fine rules kya hain?",
+    "answer": "यदि लोन 31 दिन से अधिक बकाया रहता है, तो उस पर ब्याज/पेनल्टी अगले महीने से लागू होगी। 32-60 दिनों के लिए 3% और 61+ दिनों के लिए 5% पेनल्टी (RED MEMBER) लगती है।"
+  },
+  {
+    "question": "Late installment ka notification compulsory hai?",
+    "answer": "हाँ, यदि आपकी लोन किस्त देर से होने वाली है, तो आपको SMS द्वारा सूचित करना अनिवार्य है। ऐसा न करने पर ₹10 की पेनल्टी लग सकती है।"
+  },
+  {
+    "question": "Installment bounce ka consequence kya hai?",
+    "answer": "यदि आपकी किस्त दो बार बाउंस होती है और आप सूचित नहीं करते हैं, तो आपको 60 दिनों तक कोई नया लोन नहीं मिल पाएगा।"
+  },
+  {
+    "question": "EMI loan ki conditions kya hain?",
+    "answer": "EMI विकल्प पर लोन लेने पर 8% अतिरिक्त ब्याज लगता है। लोन की न्यूनतम राशि ₹2500 होनी चाहिए और भुगतान की अधिकतम अवधि 3 महीने होगी।"
+  },
+  {
+    "question": "New member join kaise karein?",
+    "answer": "नया सदस्य बनने के लिए महीने की 1 से 5 तारीख के बीच ₹500 जमा करना होता है। नए सदस्य शामिल होने के 60 दिन बाद ही लोन लेने के पात्र होंगे।"
+  },
+  {
+    "question": "New member joining conditions kya hain?",
+    "answer": "नए सदस्य को शामिल करने के लिए एक मौजूदा सदस्य (गारंटर) की गारंटी, 1 महीने की अग्रिम SIP जमा और पृष्ठभूमि की जाँच अनिवार्य है।"
+  },
+  {
+    "question": "Payment method aur QR code?",
+    "answer": "आप SIP या लोन का भुगतान करने के लिए इस QR कोड का उपयोग कर सकते हैं: https://i.ibb.co/0yLtTKTS/20250410-080021.png (भुगतान के बाद व्यवस्थापक को सूचित करें)।"
+  },
+  {
+    "question": "1 month loan par charge kitna hai?",
+    "answer": "1 से 31 दिन तक के लोन पर 1% चार्ज लगता है।"
+  },
+  {
+    "question": "2 month loan par penalty kitni hai?",
+    "answer": "32 से 60 दिन तक के लोन पर 3% पेनल्टी लगती है।"
+  },
+  {
+    "question": "3 month se zyada loan par penalty kitni hai?",
+    "answer": "61 दिनों से अधिक लोन रखने पर 5% पेनल्टी लगती है और सदस्य को 'RED MEMBER' के रूप में चिह्नित किया जा सकता है।"
+  },
+   {
+    "question": "Civil score kaise improve hota hai?",
+    "answer": "प्रत्येक ₹100 समय पर जमा करने पर आपके सिविल स्कोर में 10 पॉइंट्स जुड़ते हैं। अच्छा सिविल स्कोर लोन पात्रता में मदद करता है।"
+  },
+  {
+    "question": "Repayment ke baad re-loan rule kya hai?",
+    "answer": "नहीं, जिस दिन आप लोन का पूरा भुगतान करते हैं, उस दिन आप दोबारा लोन नहीं ले सकते। आप अगले दिन से पुनः लोन के लिए आवेदन कर सकते हैं।"
+  },
+  {
+    "question": "Member exit rules kya hain?",
+    "answer": "योजना से बाहर निकलने (Exit) के लिए आपकी सदस्यता कम से कम 60 दिन पुरानी होनी चाहिए, कोई बकाया लोन नहीं होना चाहिए और आपको Exit फॉर्म भरना होगा। आपकी कुल जमा राशि और अर्जित ब्याज (यदि लागू हो) महीने की 1 से 10 तारीख के बीच लौटा दिया जाएगा। 60 दिन से पहले निकलने पर 10% की कटौती हो सकती है।"
+  },
+  {
+    "question": "Prime members kaun hain?",
+    "answer": `वर्तमान प्राइम सदस्य ${primeMembers.join(', ')} हैं। इन्हें उनके समय पर भुगतान और जिम्मेदार व्यवहार के आधार पर चुना गया है।`
+  },
+   {
+    "question": "Board members kaun hain?",
+    "answer": `बोर्ड सदस्य ही प्राइम सदस्य हैं: ${primeMembers.join(', ')}।`
+  },
+  {
+    "question": "Prime member responsibilities kya hain?",
+    "answer": "उनकी जिम्मेदारियों में सभी आर्थिक निर्णयों में भाग लेना, लोन वितरण की निगरानी करना, फंड की स्थिति पर नजर रखना, नए सदस्यों के लिए गारंटी देना और नियमित मीटिंग्स आयोजित करना शामिल है।"
+  },
+  {
+    "question": "Prime member banne ke rules kya hain?",
+    "answer": "इसके लिए सदस्य का समय पर भुगतान का रिकॉर्ड अच्छा होना चाहिए, गारंटी देने की क्षमता होनी चाहिए, निर्णय लेने में 70% सहमति होनी चाहिए और सिविल स्कोर नेगेटिव नहीं होना चाहिए।"
+  },
+  {
+    "question": "Guarantor requirements kya hain?",
+    "answer": "गारंटर बनने के लिए सदस्य को कम से कम 6 महीने पुराना होना चाहिए, सिविल स्कोर 200 या उससे अधिक होना चाहिए, एक लिखित समझौता करना होगा और तय शर्तों का पालन करना होगा।"
+  },
+  {
+    "question": "Meeting aur transparency details?",
+    "answer": "हर महीने मीटिंग होती है जिसमें जमा/लोन रिकॉर्ड, सदस्यों और गारंटरों की स्थिति और संस्था की प्रगति पर चर्चा की जाती है, जिससे पारदर्शिता बनी रहती है।"
+  },
+  {
+    "question": "Bank community website link",
+    "answer": "हमारी वेबसाइट है: https://bank-community.github.io/Loan-from"
+  },
+  {
+    "question": "Scheme start date?",
+    "answer": "यह योजना 23 जून 2024 को स्थापित की गई थी।"
+  },
+  {
+    "question": "Concurrent loan rule kya hai?",
+    "answer": "हाँ, यदि किसी सदस्य ने अपनी जमा राशि का 1.5 गुना लोन ले लिया है और उसके खाते में ₹1000 से अधिक की राशि शेष है, तो वह ₹1000 तक का अतिरिक्त लोन ले सकता है।"
+  },
+  {
+    "question": "Organisation kaise operate hoti hai?",
+    "answer": "संस्था मुख्य रूप से WhatsApp ग्रुप और वेबसाइट के माध्यम से संचालित होती है। WhatsApp ग्रुप लिंक: https://chat.whatsapp.com/G39I0hP55WIDHMu5YkAjDZ"
+  },
+  {
+    "question": "Joining link",
+    "answer": "आप इस लिंक पर जाकर सदस्यता फॉर्म भर सकते हैं और प्रक्रिया शुरू कर सकते हैं: https://bank-community.github.io/Loan-from/newbank.html"
+  },
+  {
+      "question": "Total members count?",
+      "answer": "आप मुझसे पूछ सकते हैं 'कुल सदस्य कितने हैं?' या 'Total members?' और मैं आपको वर्तमान संख्या बता दूँगा।"
+  },
+  {
+      "question": "All members ke naam?",
+      "answer": "कृपया मुझसे पूछें 'सभी सदस्यों की सूची दिखाओ' ताकि मैं आपको पूरी सूची दे सकूँ।" // Modified for clarity
+  },
+  {
+      "question": "Show all members list",
+      "answer": "ज़रूर, आप मुझसे पूछें 'सभी सदस्यों की सूची दिखाओ' और मैं आपको सभी सदस्यों के नाम दिखा दूँगा, जिन पर क्लिक करके आप उनका विवरण देख सकते हैं।"
+  },
+   {
+      "question": "Balance kaise check karein?",
+      "answer": "आप अपना बैलेंस और अन्य विवरण जानने के लिए पूछ सकते हैं '[आपका नाम] का विवरण'। उदाहरण: 'अमित कुमार का विवरण'।"
+  },
+  {
+      "question": "Loan eligibility kaise check karein?",
+      "answer": "आप अपनी लोन पात्रता जानने के लिए पूछ सकते हैं '[आपका नाम] की लोन पात्रता'। उदाहरण: 'अमित कुमार की लोन पात्रता'।"
+  },
+   {
+      "question": "Outstanding loan amount meaning?",
+      "answer": "बकाया लोन राशि वह रकम है जो आपने कुल लोन लिया है उसमें से आपके द्वारा किए गए कुल *नियमित भुगतान* (SIP को छोड़कर) को घटाने के बाद बचती है।"
+   },
+   {
+       "question": "Recent uncleared loan meaning?",
+       "answer": "यदि सदस्य विवरण में 'हालिया बकाया लोन' दिखाया जा रहा है, तो इसका मतलब है कि सदस्य ने हाल ही में एक लोन लिया था और उस लोन लेने के बाद से अभी तक कोई *नियमित भुगतान* (SIP नहीं) नहीं किया है। यह उस अंतिम लोन की राशि दिखाता है।"
+   }
+];
 
-    /**
-     * Appends a message to the chat box. Handles both text and HTML.
-     */
-    function appendMessage(content, cls, isHtml = false) {
-        const d = document.createElement("div");
-        d.className = "message " + cls;
-        if (isHtml) {
-            // Basic sanitization attempt (replace potential script tags)
-            // For robust security, use a proper sanitization library (like DOMPurify) if content isn't fully trusted
-            const sanitizedContent = content.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-            d.innerHTML = sanitizedContent;
-        } else {
-            d.textContent = content; // Safer default for plain text
+// --- DOM Elements ---
+const chatBox = document.getElementById("chat");
+const inputBox = document.getElementById("input");
+const suggestionsBox = document.getElementById("suggestions");
+const imageModal = document.getElementById("imageModal");
+const modalImageContent = document.getElementById("modalImageContent");
+
+// --- Utility Functions ---
+// formatDate, calculateEligibility, getSipStatus, appendMessage, linkify,
+// appendSuggestionGroup, displayFallbackSuggestions, typeEffect, openImageModal, closeImageModal
+// (ये सभी फ़ंक्शन पहले जैसे ही रहेंगे)
+ function formatDate(date, options = {}) {
+        if (!(date instanceof Date) || isNaN(date)) return "--";
+        const defaultOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+        const mergedOptions = { ...defaultOptions, ...options };
+        try { return date.toLocaleDateString('en-GB', mergedOptions); }
+        catch (e) {
+            try { const y = date.getFullYear(), m = String(date.getMonth() + 1).padStart(2, '0'), d = String(date.getDate()).padStart(2, '0'); return `${y}-${m}-${d}`; }
+            catch { return "--"; }
         }
-        chatBox.appendChild(d);
-        chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
-        return d;
     }
-
-    /**
-     * Finds URLs in text and converts them to clickable HTML links.
-     */
+    function calculateEligibility(userName, userBalance, currentCommunityBalance) {
+        if (!userName || userName === 'all') return { isEligible: false, approvedAmount: 0, reason: "सभी के लिए लागू नहीं" };
+        const isEligible = userBalance > 0 && currentCommunityBalance > 0;
+        let approvedAmount = 0, reason = "";
+        if (isEligible) {
+            const potentialAmount = userBalance * 1.5;
+            approvedAmount = Math.floor(Math.min(potentialAmount, currentCommunityBalance));
+            reason = approvedAmount > 0 ? "" : "(फंड कम है)";
+        } else {
+            if (userBalance <= 0) reason = `(बैलेंस: ₹${userBalance.toFixed(0)})`;
+            else if (currentCommunityBalance <= 0) reason = "(कम्युनिटी फंड कम है)";
+            else reason = "(अपात्र)";
+        }
+        return { isEligible: isEligible && approvedAmount > 0, approvedAmount: approvedAmount, reason: reason };
+    }
+    function getSipStatus(userData) {
+        if (!userData || userData.length === 0) return { statusText: "N/A", statusClass: "" };
+        const now = new Date(), currentMonth = now.getMonth(), currentYear = now.getFullYear(), currentDay = now.getDate();
+        const paidThisMonth = userData.some(r => r.SipPayment > 0 && r.Date instanceof Date && !isNaN(r.Date) && r.Date.getMonth() === currentMonth && r.Date.getFullYear() === currentYear);
+        if (paidThisMonth) return { statusText: "✅ Paid", statusClass: "paid" };
+        else if (currentDay > 10) return { statusText: "❌ Pending", statusClass: "pending" };
+        else return { statusText: "⚠️ Due", statusClass: "due" };
+    }
+    function appendMessage(content, cls, isHtml = false) {
+        const d = document.createElement("div"); d.className = "message " + cls;
+        if (isHtml) {
+             // Basic sanitation (remove script tags) - Consider a more robust library if needed
+             const sanitizedContent = content.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+             // Make sure onclick handlers added dynamically are safe
+             d.innerHTML = sanitizedContent;
+        } else { d.textContent = content; }
+        chatBox.appendChild(d); chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' }); return d;
+    }
     function linkify(text) {
         const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])|(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-        return text.replace(urlRegex, function(url) {
-            let fullUrl = url;
-            if (!fullUrl.match(/^https?:\/\//i)) {
-                 fullUrl = 'http://' + fullUrl;
-            }
-            const linkText = url.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            return `<a href="${fullUrl}" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
-        });
+        return text.replace(urlRegex, function(url) { let fullUrl = url; if (!fullUrl.match(/^https?:\/\//i)) fullUrl = 'http://' + fullUrl; const linkText = url.replace(/</g, "&lt;").replace(/>/g, "&gt;"); return `<a href="${fullUrl}" target="_blank" rel="noopener noreferrer">${linkText}</a>`; });
     }
-
-     /**
-     * Appends a group of clickable question suggestions within the chat.
-     */
-     function appendSuggestionGroup(title, questions) {
-        const groupDiv = document.createElement("div");
-        groupDiv.className = "message bot suggestion-group";
-
-        const titleDiv = document.createElement("div");
-        titleDiv.className = "group-title";
-        titleDiv.textContent = title;
-        groupDiv.appendChild(titleDiv);
-
-        questions.forEach(q_text => {
-            const suggestionEl = document.createElement("div");
-            suggestionEl.className = "chat-suggestion";
-            suggestionEl.textContent = q_text;
-            suggestionEl.onclick = () => {
-                inputBox.value = q_text;
-                suggestionsBox.style.display = 'none';
-                send();
-            };
+    function appendSuggestionGroup(title, questions) {
+        const groupDiv = document.createElement("div"); groupDiv.className = "message bot suggestion-group";
+        const titleDiv = document.createElement("div"); titleDiv.className = "group-title"; titleDiv.textContent = title; groupDiv.appendChild(titleDiv);
+        if (!Array.isArray(questions)) questions = [];
+        const shuffledQuestions = [...questions].sort(() => 0.5 - Math.random()).slice(0, 5); // Show up to 5 random suggestions
+        shuffledQuestions.forEach(q_text => {
+            if (!q_text) return;
+            const suggestionEl = document.createElement("div"); suggestionEl.className = "chat-suggestion"; suggestionEl.textContent = q_text;
+            // Sanitize text before setting it in onclick
+            const sanitizedQText = q_text.replace(/'/g, "\\'").replace(/"/g, '\\"');
+            suggestionEl.onclick = () => { inputBox.value = sanitizedQText; suggestionsBox.style.display = 'none'; send(); };
             groupDiv.appendChild(suggestionEl);
         });
-
-        chatBox.appendChild(groupDiv);
-        chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+        if (shuffledQuestions.length > 0) { chatBox.appendChild(groupDiv); chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' }); }
     }
-
-    /**
-     * Shows relevant question suggestions above the input field based on user typing.
-     */
-    function showSuggestions(text) {
-        suggestionsBox.innerHTML = '';
-        const lowInput = text.toLowerCase().trim();
-
-        if (lowInput.length < 2) {
-            suggestionsBox.style.display = 'none';
-            return;
-        }
-
-        const matches = new Set();
-         // Include suggestions for specific people if input matches partially
-         const nameKeywords = ['amit', 'prince', 'mithilesh']; // Add other common names if needed
-         if (nameKeywords.some(kw => lowInput.includes(kw))) {
-             matches.add(lowInput.split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ') + ' का विवरण');
-         }
-
-        dataSegments.forEach(seg => {
-            if (seg.question.toLowerCase().includes(lowInput)) {
-                matches.add(seg.question);
-            }
-        });
-
-        if (matches.size === 0) {
-            suggestionsBox.style.display = 'none';
-            return;
-        }
-
-        Array.from(matches).slice(0, 5).forEach(q_text => {
-            const div = document.createElement('div');
-            div.className = 'suggestion';
-            div.textContent = q_text;
-            div.onclick = () => {
-                inputBox.value = q_text;
-                suggestionsBox.style.display = 'none';
-                send();
-            };
-            suggestionsBox.appendChild(div);
-        });
-        suggestionsBox.style.display = 'flex';
-    }
-
-    /**
-     * Handles the Enter key press in the input field.
-     */
-    function handleKey(event) {
-        if (event.key === 'Enter') {
-            send();
+    function displayFallbackSuggestions(customTitle = "आप यह भी पूछ सकते हैं:") {
+        const fallbackQuestions = dataSegments.map(s => s.question);
+        if (fallbackQuestions.length > 0) {
+             // Add specific actions/common queries to suggestions
+             const commonQueries = ["सभी सदस्यों की सूची दिखाओ", "कुल सदस्य कितने हैं?", "मेरा बैलेंस कितना है?", "क्या मैं लोन ले सकता हूँ?"];
+             const combinedSuggestions = [...new Set([...commonQueries, ...fallbackQuestions])]; // Combine and remove duplicates
+             setTimeout(() => { appendSuggestionGroup(customTitle, combinedSuggestions); }, 200);
         }
     }
-
-   /**
-    * Displays relevant question suggestions within the chat interface.
-    */
-   function displayErrorSuggestions(failedQuery = "") {
-        // Suggest general questions from dataSegments
-        let potentialMatches = [];
-        if(failedQuery){
-             potentialMatches = dataSegments.filter(seg =>
-                seg.question.toLowerCase().includes(failedQuery.toLowerCase()) ||
-                failedQuery.toLowerCase().split(' ').some(word => word.length > 2 && seg.question.toLowerCase().includes(word))
-            ).map(seg => seg.question);
-        }
-
-        const needed = 5 - potentialMatches.length;
-        if (needed > 0) {
-            const existing = new Set(potentialMatches);
-            for (let i = 0; i < dataSegments.length && potentialMatches.length < 5; i++) {
-                if (!existing.has(dataSegments[i].question)) {
-                    potentialMatches.push(dataSegments[i].question);
-                    existing.add(dataSegments[i].question);
-                }
-            }
-        }
-        const suggestionsToShow = potentialMatches.slice(0, 5);
-        if (suggestionsToShow.length > 0) {
-            setTimeout(() => {
-                appendSuggestionGroup("आप शायद बैंक कम्युनिटी योजना के बारे में इनमें से कोई सवाल पूछना चाहते हैं:", suggestionsToShow);
-            }, 200);
-        }
-   }
-
-    /**
-     * Extracts a potential name from the user query. Very basic implementation.
-     * @param {string} query - The user's input query.
-     * @returns {string|null} Extracted name or null.
-     */
-    function extractNameFromQuery(query) {
-        // Simple logic: remove common question words/keywords and assume remaining is name
-        const keywords = ['details for', 'status of', 'balance of', 'account of', 'record of', 'ka balance', 'ki details', 'ka status', 'ka record', 'ka hisab', 'ka data', 'ki photo', 'details', 'balance', 'status', 'account', 'loan', 'sip', 'जमा', 'लोन', 'बकाया', 'हिसाब', 'डाटा', 'विवरण', 'फोटो', 'बताओ', 'दिखाओ', 'check', 'show', 'get', 'for', 'of', 'ka', 'ki', 'ke'];
-        let potentialName = query.toLowerCase();
-        keywords.forEach(kw => {
-            // Remove whole word keywords
-            const regex = new RegExp(`\\b${kw}\\b`, 'gi');
-            potentialName = potentialName.replace(regex, '');
-        });
-        potentialName = potentialName.replace(/[?।.,]/g, '').trim(); // Remove punctuation
-
-        // Basic sanity check: return only if it's not empty and seems reasonable length
-        if (potentialName && potentialName.length > 2 && potentialName.length < 35) {
-             // Attempt to capitalize (Title Case) - API might need exact case match, adjust if needed
-             return potentialName.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-        }
-        return null;
-    }
-
-    /**
-     * Fetches data from Google Sheet API, processes it, and returns structured info.
-     * @param {string} name - The name to query the sheet API for.
-     * @returns {Promise<object>} - Promise resolving to an object {success: boolean, ...data} or {success: false, message: string}
-     */
-    async function fetchSheetData(name) {
-        // Important: Ensure your Google Apps Script is deployed to handle the 'name' parameter in doGet(e)
-        const apiUrl = `${SHEET_API_URL}?name=${encodeURIComponent(name)}`;
-        console.log(`Workspaceing sheet data for: ${name} from ${apiUrl}`); // Log API call
-
-        try {
-            const response = await fetch(apiUrl);
-
-            if (!response.ok) {
-                 console.error("Sheet API Error Status:", response.status, await response.text()); // Log error response text
-                 let errorMsg = `"${name}" के लिए शीट से डेटा प्राप्त करने में त्रुटि हुई (Status: ${response.status}). कृपया सुनिश्चित करें कि नाम सही है और API ठीक से काम कर रहा है।`;
-                  if (response.status === 404) { // Not Found likely means name doesn't exist or script error
-                     errorMsg = `माफ़ कीजिए, "${name}" नाम का कोई रिकॉर्ड शीट में नहीं मिला या API में कोई समस्या है।`;
-                  }
-                 return { success: false, message: errorMsg };
-            }
-
-            // Check content type before parsing JSON
-             const contentType = response.headers.get("content-type");
-             if (!contentType || !contentType.includes("application/json")) {
-                const responseText = await response.text();
-                console.error("Sheet API did not return JSON. Response:", responseText);
-                // Check if it's the common "ScriptError" HTML page from Apps Script errors
-                 if (responseText.includes("ScriptError")) {
-                     return { success: false, message: `"${name}" के लिए डेटा लाते समय शीट API स्क्रिप्ट में त्रुटि हुई। कृपया व्यवस्थापक से संपर्क करें।` };
-                 }
-                return { success: false, message: "शीट API से अप्रत्याशित डेटा प्रारूप प्राप्त हुआ (JSON अपेक्षित था)।" };
-            }
-
-
-            const data = await response.json();
-            console.log("Sheet API Raw Response:", data); // Log raw data
-
-            // Check if the API returns an object with a 'data' array or just the array directly
-            let records = [];
-            if (Array.isArray(data)) {
-                records = data;
-            } else if (data && Array.isArray(data.data)) { // Handle cases where API wraps array in {data: [...]}
-                records = data.data;
-            } else {
-                console.error("Sheet API JSON is not an array:", data);
-                return { success: false, message: "शीट API से प्राप्त JSON डेटा एक ऐरे (सूची) नहीं है।" };
-            }
-
-
-            // Filter again client-side for safety, ensure case-insensitivity
-             const relevantRecords = records.filter(record => record.Name && record.Name.toLowerCase() === name.toLowerCase());
-
-            if (relevantRecords.length === 0) {
-                 console.log(`No records found for name "${name}" after filtering.`);
-                return { success: false, message: `माफ़ कीजिए, "${name}" नाम का कोई रिकॉर्ड शीट में नहीं मिला।` };
-            }
-
-            // Process the records for this person
-            let totalSIP = 0;
-            let totalLoan = 0;
-            let totalPayment = 0;
-            let latestImageUrl = "";
-            let latestDate = ""; // Store the latest date found
-             let firstDate = ""; // Store the first date found
-            let displayName = relevantRecords[0].Name || name; // Use name from sheet if available
-
-            // Sort records by date if possible to reliably get latest image/date
-             // Assuming Date format is "DD Month YYYY" - needs careful parsing
-             // Simple approach: iterate and overwrite if a later date/image is found.
-             // For robust date comparison, use a library or parse carefully.
-             // Let's just take the last entry's image/date for simplicity now.
-
-            relevantRecords.forEach((record, index) => {
-                totalSIP += Number(record["SIP Payment"] || 0);
-                totalLoan += Number(record["Loan"] || 0);
-                totalPayment += Number(record["Payment"] || 0);
-
-                // Get image from the last record that has one
-                if (record.imageUrl) {
-                    latestImageUrl = record.imageUrl;
-                }
-
-                // Get date from the last record
-                if (record.Date) {
-                     latestDate = record.Date;
-                 }
-                 // Get date from the first record
-                 if (record.Date && index === 0) {
-                     firstDate = record.Date;
-                 }
-
-                // Update display name to match sheet capitalization
-                displayName = record.Name || displayName;
-            });
-
-            const netLoanOutstanding = totalLoan - totalPayment;
-
-            console.log(`Processed Data for ${displayName}: SIP=${totalSIP}, Loan=${totalLoan}, Payment=${totalPayment}, Outstanding=${netLoanOutstanding}, Image=${latestImageUrl}, Date=${latestDate}`);
-
-            return {
-                success: true,
-                name: displayName,
-                totalSIP: totalSIP,
-                totalLoan: totalLoan,
-                totalPayment: totalPayment,
-                netLoanOutstanding: netLoanOutstanding,
-                imageUrl: latestImageUrl,
-                latestDate: latestDate,
-                 firstDate: firstDate // Optionally include first transaction date
-            };
-
-        } catch (error) {
-            console.error("Error fetching or processing sheet data:", error);
-            // Check for network errors vs parsing errors
-             if (error instanceof SyntaxError) {
-                return { success: false, message: `"${name}" के लिए शीट API से प्राप्त डेटा को पढ़ने में त्रुटि हुई (JSON पार्सिंग विफल)।`};
-             }
-            return { success: false, message: `"${name}" के लिए शीट डेटा लाते समय नेटवर्क या अन्य त्रुटि हुई। कृपया अपना कनेक्शन जांचें।` };
-        }
-    }
-
-    /**
-     * Main function to handle user input and orchestrate responses.
-     */
-    async function send() {
-        const q = inputBox.value.trim();
-        if (!q) return;
-
-        appendMessage(q, "user");
-        const currentQuery = q;
-        inputBox.value = '';
-        suggestionsBox.style.display = 'none';
-
-        // --- Check for Person Data Query Intent ---
-        const personDataKeywords = ['details', 'detail', 'balance', 'status', 'account', 'record', ' जमा', ' लोन', ' बकाया', ' हिसाब', 'फोटो', 'picture', 'image', 'डाटा', 'डिटेल', 'विवरण'];
-        // Also check if the query *might* be just a name
-        const isPotentialNameQuery = currentQuery.split(' ').length <= 3; // Simple check: 1-3 words could be a name
-        const containsPersonKeyword = personDataKeywords.some(kw => currentQuery.toLowerCase().includes(kw));
-
-        let potentialName = null;
-        if (containsPersonKeyword || isPotentialNameQuery) {
-            // Try extracting name only if keywords are present or it looks like just a name
-            potentialName = extractNameFromQuery(currentQuery);
-        }
-
-        let sheetLookupAttempted = false;
-        let sheetLookupSuccess = false;
-
-        if (potentialName) {
-            sheetLookupAttempted = true;
-            const typingIndicator = appendMessage(`"${potentialName}" के लिए शीट से विवरण खोज रहा हूँ...`, "bot typing");
-            try {
-                const sheetResult = await fetchSheetData(potentialName);
-                typingIndicator.remove(); // Remove typing indicator regardless of success/failure
-
-                if (sheetResult.success) {
-                    sheetLookupSuccess = true;
-                    // --- Display Formatted Sheet Data ---
-                    let htmlResponse = `
-                        <p><strong>${sheetResult.name} का सदस्य विवरण:</strong></p>
-                        ${sheetResult.imageUrl ? `<p><img src="${sheetResult.imageUrl}" alt="${sheetResult.name}"></p>` : '<p><small>(कोई फोटो उपलब्ध नहीं)</small></p>'}
-                        <ul>
-                            <li>कुल जमा (Available Balance): ₹${sheetResult.totalSIP.toLocaleString('en-IN')}</li>
-                            <li>कुल लोन लिया गया: ₹${sheetResult.totalLoan.toLocaleString('en-IN')}</li>
-                            <li>कुल लोन चुकाया गया: ₹${sheetResult.totalPayment.toLocaleString('en-IN')}</li>
-                            <li><strong>बकाया लोन राशि: ₹${sheetResult.netLoanOutstanding.toLocaleString('en-IN')}</strong></li>
-                            ${sheetResult.latestDate ? `<li>नवीनतम गतिविधि: ${sheetResult.latestDate}</li>` : ''}
-                        </ul>
-                    `;
-                    appendMessage(htmlResponse, "bot", true);
-                    return; // Handled by Sheet API
-                } else {
-                    // Sheet API call failed or name not found, display the specific error message from fetchSheetData
-                    appendMessage(sheetResult.message, "bot");
-                    // Proceed to Gemini fallback below
-                }
-            } catch (error) {
-                 // Catch unexpected errors during the fetch/display process itself
-                 typingIndicator?.remove(); // Ensure indicator is removed
-                 console.error("Unexpected error during sheet data handling:", error);
-                 appendMessage(`"${potentialName}" का विवरण लाते समय एक अप्रत्याशित त्रुटि हुई।`, "bot");
-                 // Proceed to Gemini fallback below
-            }
-        }
-
-        // --- If it wasn't a person query, or sheet lookup failed, use Gemini API ---
-        if (!sheetLookupSuccess) {
-             // Only show Gemini typing if we didn't already show sheet typing or if sheet failed
-             let typingIndicator;
-             if (!sheetLookupAttempted) {
-                 typingIndicator = appendMessage("सोच रहा हूँ...", "bot typing");
-             }
-
-             // Gemini API Key Check
-             if (!API_KEY || API_KEY === "YOUR_API_KEY" || API_KEY.length < 30) {
-                 typingIndicator?.remove(); // Use optional chaining as indicator might not exist if sheet lookup was attempted
-                 appendMessage("त्रुटि: जेमिनी API कुंजी कॉन्फ़िगर नहीं है या अमान्य है।", "bot");
-                 console.error("Gemini API Key is missing or invalid.");
-                 return;
-             }
-
-             // Prepare Context and Prompt for Gemini
-             let context = "";
-             let prompt = "";
-             let useGeneralApiContext = false; // Flag if context comes from general knowledge
-
-             const lowerQ = currentQuery.toLowerCase();
-             const relevantSegments = dataSegments.filter(seg =>
-                 seg.question.toLowerCase().includes(lowerQ) ||
-                 lowerQ.split(' ').some(word => word.length > 3 && seg.question.toLowerCase().includes(word)) // More word matching
-             );
-
-             if (relevantSegments.length > 0) {
-                 context = "प्रासंगिक बैंक कम्युनिटी योजना नियम:\n";
-                 relevantSegments.slice(0, 5).forEach(seg => {
-                     context += `प्रश्न: ${seg.question}\nउत्तर: ${seg.answer}\n\n`;
-                 });
-                 prompt = `आप 'बैंक कम्युनिटी चैटबॉट' हैं। नीचे दिए गए 'प्रासंगिक बैंक कम्युनिटी योजना नियम' का उपयोग करके उपयोगकर्ता के प्रश्न का उत्तर दें। यदि प्रश्न नियमों में शामिल नहीं है, तो विनम्रतापूर्वक कहें कि यह जानकारी नियमों में नहीं है, लेकिन आप सामान्य नियमों पर आधारित जानकारी दे सकते हैं। सीधे तौर पर यह न कहें कि 'मेरे पास जवाब नहीं है'। यदि शीट डेटा लुकअप विफल रहा है (जैसे नाम नहीं मिला), तो उस विफलता का उल्लेख न करें, बस सामान्य नियमों के आधार पर उत्तर दें।
-
-                    प्रासंगिक बैंक कम्युनिटी योजना नियम:
-                    ${context}
-                    ---
-                    उपयोगकर्ता का प्रश्न: ${currentQuery}
-
-                    उत्तर (स्पष्ट, संक्षिप्त और नियमों पर आधारित):`;
-             } else {
-                 useGeneralApiContext = true; // No specific local rule context found
-                 prompt = `आप 'बैंक कम्युनिटी चैटबॉट' हैं। उपयोगकर्ता ने एक प्रश्न पूछा है। यदि यह बैंक कम्युनिटी लोन योजना से संबंधित लगता है, तो सामान्य जानकारी के आधार पर उत्तर दें। यदि यह पूरी तरह से असंबंधित है, तो विनम्रतापूर्वक बताएं कि आपका ध्यान बैंक कम्युनिटी लोन योजना पर है। यदि शीट डेटा लुकअप विफल रहा है (जैसे नाम नहीं मिला), तो उस विफलता का उल्लेख न करें, बस सामान्य रूप से उत्तर दें।
-
-                    उपयोगकर्ता का प्रश्न: ${currentQuery}
-
-                    उत्तर (संक्षिप्त, सहायक और बैंक कम्युनिटी योजना पर केंद्रित):`;
-             }
-
-             // Call Gemini API
-             const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-             try {
-                 const response = await fetch(GEMINI_API_URL, {
-                     method: "POST",
-                     headers: { "Content-Type": "application/json" },
-                     body: JSON.stringify({
-                         contents: [{ parts: [{ text: prompt }] }],
-                         generationConfig: { temperature: 0.6, maxOutputTokens: 500 },
-                         // Consider adding safety settings if needed
-                     }),
-                 });
-
-                 typingIndicator?.remove();
-
-                 if (!response.ok) {
-                     const errorData = await response.json();
-                     console.error("Gemini API Error:", response.status, errorData);
-                     appendMessage(`क्षमा करें, जेमिनी API से संपर्क करने में समस्या आ रही है। (Code: ${response.status})`, "bot");
-                     displayErrorSuggestions(currentQuery);
-                     return;
-                 }
-
-                 const js = await response.json();
-
-                 if (js.candidates && js.candidates[0]?.content?.parts?.[0]?.text) {
-                     const rawAnswer = js.candidates[0].content.parts[0].text.trim();
-                     const messageElement = appendMessage("", "bot"); // Append empty div first
-                      // Display suggestions only if context wasn't found OR if sheet lookup was attempted but failed
-                     const showSuggestionsCallback = (useGeneralApiContext || (sheetLookupAttempted && !sheetLookupSuccess)) ? () => displayErrorSuggestions(currentQuery) : null;
-                     typeEffect(rawAnswer, messageElement, showSuggestionsCallback);
-
-                 } else {
-                      let reason = "अज्ञात कारण";
-                      if(js.promptFeedback?.blockReason) { reason = `सामग्री ब्लॉक (${js.promptFeedback.blockReason})`; }
-                      else if (!js.candidates || js.candidates.length === 0) { reason = "API से कोई प्रतिक्रिया नहीं मिली"; }
-                      console.warn("Gemini API Response Issue:", reason, js);
-                      appendMessage(`क्षमा करें, मैं इस समय प्रतिक्रिया उत्पन्न नहीं कर पा रहा हूँ। (${reason})`, "bot");
-                      displayErrorSuggestions(currentQuery);
-                 }
-
-             } catch (error) {
-                 typingIndicator?.remove();
-                 console.error("Gemini Network/Fetch Error:", error);
-                 appendMessage("क्षमा करें, नेटवर्क कनेक्शन में त्रुटि है। कृपया बाद में प्रयास करें।", "bot");
-                 displayErrorSuggestions(currentQuery);
-             } // End Gemini API try-catch
-        } // End Gemini fallback block
-    }
-
-    /**
-     * Animates text typing effect and handles linkification.
-     */
-     function typeEffect(text, targetElement, callback = null) {
-        let i = 0;
-        targetElement.innerHTML = '&nbsp;'; // Initial placeholder
+    function typeEffect(text, targetElement, callback = null) {
+        let i = 0; targetElement.innerHTML = '&nbsp;'; // Start with non-breaking space
         const interval = setInterval(() => {
             if (i < text.length) {
-                // Append char by char using textContent for safety during typing
                 targetElement.textContent = text.substring(0, i + 1);
-                chatBox.scrollTop = chatBox.scrollHeight;
+                chatBox.scrollTop = chatBox.scrollHeight; // Scroll as text types
                 i++;
             } else {
                 clearInterval(interval);
-                // Finalize with HTML interpretation for links etc.
-                const linkifiedHtml = linkify(text); // Apply linkify
-                targetElement.innerHTML = linkifiedHtml; // Set final HTML
-                 chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' }); // Ensure scroll is final
-                // Execute callback if provided
+                // Linkify only after typing is complete
+                const linkifiedHtml = linkify(text);
+                targetElement.innerHTML = linkifiedHtml;
+                chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' }); // Final scroll adjustment
                 if (typeof callback === 'function') {
-                    setTimeout(callback, 150); // Slight delay
+                     // Slight delay before triggering callback (e.g., suggestions)
+                     setTimeout(callback, 150);
                 }
             }
-        }, 20); // Typing speed
+        }, 20); // Typing speed (milliseconds)
+    }
+
+    function openImageModal(imageUrl) {
+        if (imageUrl && imageModal && modalImageContent) {
+            // Basic check for placeholder image
+            if (imageUrl.includes('via.placeholder.com')) return;
+            modalImageContent.src = imageUrl;
+            imageModal.style.display = "flex";
+        }
+    }
+    function closeImageModal() {
+        if (imageModal) {
+            imageModal.style.display = "none";
+            modalImageContent.src = ""; // Clear src
+        }
     }
 
 
-    // Hide suggestions above input if user clicks outside
-    document.addEventListener('click', function(event) {
-        const isClickInsideInput = inputBox.contains(event.target);
-        const isClickInsideSuggestions = suggestionsBox.contains(event.target);
-        if (!isClickInsideInput && !isClickInsideSuggestions) {
-            suggestionsBox.style.display = 'none';
+// --- Data Fetching & Processing ---
+async function fetchAndProcessSheetData() {
+    // This function remains the same as before
+    if (isFetchingData) {
+        console.log("Already fetching data, waiting...");
+        await new Promise(resolve => {
+            const interval = setInterval(() => {
+                if (!isFetchingData) { clearInterval(interval); resolve(); }
+            }, 300);
+        });
+        return cachedSheetData !== null;
+    }
+    if (cachedSheetData) return true;
+
+    isFetchingData = true;
+    console.log("Fetching fresh sheet data...");
+    const loadingMsg = appendMessage("सदस्य डेटा प्राप्त किया जा रहा है...", "bot typing");
+
+    try {
+        const response = await fetch(SHEET_API_URL);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const rawData = await response.json();
+
+        // Process data (same logic as before)
+        cachedSheetData = rawData.map(row => {
+             let parsedDate = new Date(NaN);
+             if (row.Date) {
+                 // Try parsing common date formats if direct parsing fails
+                 parsedDate = new Date(row.Date);
+                 if (isNaN(parsedDate)) {
+                     // Attempt DD Mon YYYY format (e.g., "10 Apr 2024")
+                     const dateParts = String(row.Date).match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);
+                     if (dateParts) {
+                         parsedDate = new Date(`${dateParts[2]} ${dateParts[1]}, ${dateParts[3]}`);
+                     }
+                     // Add more specific date format parsing if needed
+                 }
+             }
+             // If still invalid, set to a known invalid date or handle as error
+             if (isNaN(parsedDate)) {
+                 // console.warn(`Invalid date format encountered for row:`, row);
+                 parsedDate = new Date(0); // Use Epoch as a fallback invalid date
+             }
+
+             return {
+                 Name: row.Name ? String(row.Name).trim() : 'Unknown',
+                 Date: parsedDate,
+                 Loan: parseFloat(row.Loan) || 0,
+                 Payment: parseFloat(row.Payment) || 0,
+                 SipPayment: parseFloat(row["SIP Payment"]) || 0, // Check exact column name in Sheet
+                 ImageUrl: row.imageUrl || null // Check exact column name
+             };
+        }).filter(r => r.Name !== 'Unknown' && r.Name.trim() !== ''); // Filter out rows with no name
+
+        // Sort by date
+        cachedSheetData.sort((a, b) => a.Date - b.Date);
+
+        // Calculate community balance
+        communityBalance = cachedSheetData.reduce((acc, r) => acc + r.Payment + r.SipPayment - r.Loan, 0);
+
+        console.log(`Sheet data processed. Members: ${new Set(cachedSheetData.map(r=>r.Name)).size}, Community Balance: ${communityBalance.toFixed(2)}`);
+        loadingMsg?.remove();
+        isFetchingData = false;
+        return true;
+    } catch (error) {
+        console.error("Error fetching/processing sheet data:", error);
+        cachedSheetData = null; // Reset cache on error
+        communityBalance = 0;
+        loadingMsg?.remove();
+        isFetchingData = false;
+        appendMessage(`त्रुटि: सदस्य डेटा लोड करने में विफल रहा। (${error.message})`, "bot");
+        return false;
+    } finally {
+        isFetchingData = false; // Ensure flag is reset even if await hangs
+    }
+}
+
+function getUserDataAggregated(name) {
+    // This function remains the same as before
+    if (!cachedSheetData) {
+        console.warn("Cannot get user data, cache is empty.");
+        return null;
+    }
+    const lowerName = name.toLowerCase().trim();
+    // Find the canonical name matching case-insensitively
+    const canonicalNameEntry = cachedSheetData.find(r => r.Name.toLowerCase() === lowerName);
+    if (!canonicalNameEntry) return null; // No matching name found at all
+
+    const canonicalName = canonicalNameEntry.Name; // Use the exact name from the sheet
+    const userData = cachedSheetData.filter(r => r.Name === canonicalName); // Filter using the exact name
+
+    if (userData.length === 0) return null; // Should not happen if canonicalNameEntry was found, but safety check
+
+    let totalSIP = 0, totalLoan = 0, totalPayment = 0, latestImageUrl = "", joinDate = null;
+    let lastLoanDate = null, latestLoanAmount = 0;
+
+    // Find the earliest non-epoch date as join date
+    const validDates = userData.map(r => r.Date).filter(d => d.getTime() !== 0);
+    joinDate = validDates.length > 0 ? new Date(Math.min(...validDates)) : new Date(NaN);
+
+
+    userData.forEach((record) => {
+        totalSIP += record.SipPayment;
+        totalLoan += record.Loan;
+        totalPayment += record.Payment; // Regular payments towards loan
+        if (record.ImageUrl) { latestImageUrl = record.ImageUrl; }
+
+        // Track the date of the last loan taken
+        if (record.Loan > 0 && record.Date instanceof Date && !isNaN(record.Date) && record.Date.getTime() !== 0) {
+            if (!lastLoanDate || record.Date > lastLoanDate) {
+                lastLoanDate = record.Date;
+                latestLoanAmount = record.Loan; // Store the amount of the latest loan transaction
+            }
         }
     });
 
-    // Optional: Initial focus on input field
-    // inputBox.focus();
+     // Determine if the latest loan is uncleared (no regular payment *after* the last loan date)
+     let hasUnclearedLoan = false;
+     if (lastLoanDate) {
+         // Check if there's *any* Payment > 0 record with a date *strictly after* the lastLoanDate
+         const paymentExistsAfterLoan = userData.some(r =>
+             r.Payment > 0 &&
+             r.Date instanceof Date && !isNaN(r.Date) && r.Date.getTime() !== 0 &&
+             r.Date > lastLoanDate
+         );
+         hasUnclearedLoan = !paymentExistsAfterLoan;
+     }
+
+    // If the latest loan is considered cleared, reset the 'latest uncleared' amount
+    if (!hasUnclearedLoan) {
+        latestLoanAmount = 0;
+    }
+
+    const overallBalance = (totalSIP + totalPayment) - totalLoan; // User's net balance (deposit - withdrawal)
+    const netLoanOutstanding = Math.max(0, totalLoan - totalPayment); // How much loan principal is remaining
+
+    const sipStatusInfo = getSipStatus(userData); // Check SIP status based on records
+    const isPrime = primeMembers.some(pm => pm.toLowerCase() === canonicalName.toLowerCase()); // Case-insensitive prime check
+
+    return {
+        name: canonicalName,
+        totalSIP: totalSIP,
+        totalLoan: totalLoan,
+        totalPayment: totalPayment,
+        overallBalance: overallBalance,
+        netLoanOutstanding: netLoanOutstanding,
+        imageUrl: latestImageUrl || defaultProfilePic,
+        joinDate: formatDate(joinDate),
+        sipStatusText: sipStatusInfo.statusText,
+        sipStatusClass: sipStatusInfo.statusClass,
+        hasUnclearedLoan: hasUnclearedLoan, // Flag if the very last loan taken hasn't seen a payment yet
+        latestUnclearedLoanAmount: hasUnclearedLoan ? latestLoanAmount : 0, // Show the amount only if uncleared
+        isPrimeMember: isPrime
+    };
+}
+
+function extractNameFromQuery(query, knownNames) {
+    // Basic name extraction, can be improved or potentially replaced by API entity extraction
+     const lowerQuery = query.toLowerCase();
+     // Try to find a known name directly in the query
+     for (const name of knownNames) {
+         if (lowerQuery.includes(name.toLowerCase())) {
+             return name; // Return the canonical name
+         }
+     }
+
+     // Fallback: remove common keywords and see if what's left looks like a name
+     // This is less reliable and might be removed if API entity extraction works well
+     const keywords = ['details for', 'status of', 'balance of', 'account of', 'record of', 'ka balance', 'ki details', 'ka status', 'ka record', 'ka hisab', 'ka data', 'ki photo', 'details', 'balance', 'status', 'account', 'loan amount', 'loan', 'sip', 'जमा', 'लोन', 'बकाया', 'हिसाब', 'डाटा', 'विवरण', 'फोटो', 'बताओ', 'दिखाओ', 'check', 'show', 'get', 'for', 'of', 'ka', 'ki', 'ke', 'eligibility', 'eligible'];
+     let potentialName = lowerQuery;
+     keywords.forEach(kw => {
+         const regex = new RegExp(`\\b${kw}\\b`, 'gi');
+         potentialName = potentialName.replace(regex, '');
+     });
+     potentialName = potentialName.replace(/[?।.,]/g, '').trim();
+
+     // Basic check if the remaining string could be a name (e.g., contains space or matches start of known names)
+     if (potentialName && potentialName.length > 2 && potentialName.length < 35) {
+         // Check against known names again after cleaning
+         for (const name of knownNames) {
+             if (name.toLowerCase().startsWith(potentialName)) {
+                 return name;
+             }
+         }
+         // If it contains a space, assume it's a multi-part name
+         if (potentialName.includes(' ')) {
+              // Capitalize each part
+              return potentialName.split(' ')
+                  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(' ');
+         }
+     }
+     return null; // No confident name found
+}
+
+
+function showSuggestions(text) {
+    // Suggestions logic can remain similar, potentially add more dynamic suggestions based on context
+    suggestionsBox.innerHTML = '';
+    const lowInput = text.toLowerCase().trim();
+
+    if (lowInput.length < 2) {
+        suggestionsBox.style.display = 'none';
+        return;
+    }
+
+    const matches = new Set();
+    const nameCheck = lowInput.split(' ')[0]; // First word for potential name start
+
+    // Suggest known members if input matches start
+    if (cachedSheetData) {
+        const memberNames = [...new Set(cachedSheetData.map(r => r.Name))];
+        memberNames.forEach(name => {
+            if (name.toLowerCase().includes(lowInput) || name.toLowerCase().startsWith(nameCheck)) {
+                matches.add(`${name} का विवरण`);
+            }
+        });
+    } else {
+        // Suggest prime members if data not loaded yet
+        primeMembers.forEach(name => {
+            if (name.toLowerCase().includes(lowInput) || name.toLowerCase().startsWith(nameCheck)) {
+                matches.add(`${name} का विवरण`);
+            }
+        });
+    }
+
+
+    // Suggest rules/FAQs
+    dataSegments.forEach(seg => {
+        if (seg.question.toLowerCase().includes(lowInput)) {
+            matches.add(seg.question);
+        }
+    });
+
+    // Suggest common actions
+    if ("member".includes(lowInput) || "list".includes(lowInput) || "सभी".includes(lowInput)) {
+        matches.add("सभी सदस्यों की सूची दिखाओ");
+        matches.add("कुल सदस्य कितने हैं?");
+    }
+    if ("eligible".includes(lowInput) || "loan".includes(lowInput) || "लोन".includes(lowInput) || "पात्र".includes(lowInput)) {
+         matches.add("क्या मैं लोन के लिए पात्र हूँ?");
+         matches.add("Maximum loan kitna le sakte hain?");
+    }
+     if ("balance".includes(lowInput) || "बैलेंस".includes(lowInput) ) {
+         matches.add("मेरा बैलेंस कितना है?");
+     }
+
+
+    if (matches.size === 0) {
+        suggestionsBox.style.display = 'none';
+        return;
+    }
+
+    // Display suggestions
+    Array.from(matches).slice(0, 6).forEach(q_text => { // Show up to 6 suggestions
+        const div = document.createElement('div');
+        div.className = 'suggestion';
+        div.textContent = q_text;
+        // Sanitize text for onclick handler
+        const sanitizedQText = q_text.replace(/'/g, "\\'").replace(/"/g, '\\"');
+        div.onclick = () => {
+            inputBox.value = sanitizedQText;
+            suggestionsBox.style.display = 'none';
+            send();
+        };
+        suggestionsBox.appendChild(div);
+    });
+    suggestionsBox.style.display = 'flex';
+}
+
+
+// --- *** NEW Smart Send Function *** ---
+async function send() {
+    const query = inputBox.value.trim();
+    if (!query) return;
+
+    appendMessage(query, "user");
+    inputBox.value = '';
+    suggestionsBox.style.display = 'none';
+    const typingIndicator = appendMessage("सोच रहा हूँ...", "bot typing");
+
+    // Ensure API Key is set
+    if (!API_KEY || API_KEY === "YOUR_GEMINI_API_KEY" || API_KEY.length < 30) {
+        typingIndicator?.remove();
+        appendMessage("त्रुटि: Gemini API कुंजी सेट नहीं है। कृपया कोड में अपनी कुंजी डालें।", "bot");
+        return;
+    }
+     // Ensure Sheet URL is set
+    if (!SHEET_API_URL || SHEET_API_URL === "YOUR_GOOGLE_SHEET_APPS_SCRIPT_URL" || !SHEET_API_URL.startsWith("https://script.google.com/")) {
+       typingIndicator?.remove();
+       appendMessage("त्रुटि: Google Sheet URL सेट नहीं है। कृपया कोड में अपना Apps Script URL डालें।", "bot");
+       return;
+   }
+
+    // --- Step 1: Prepare data needed for API context ---
+    let memberNamesList = [];
+    let sheetDataReady = cachedSheetData !== null;
+    if (!sheetDataReady) {
+        sheetDataReady = await fetchAndProcessSheetData();
+        // If fetching failed, we might still proceed but member-specific queries will fail
+    }
+    if (sheetDataReady) {
+        memberNamesList = [...new Set(cachedSheetData.map(r => r.Name))];
+    }
+
+    // Prepare rules context for the API
+    const rulesContext = dataSegments.map((seg, index) => `Rule ${index + 1}: Q: ${seg.question}\nA: ${seg.answer}`).join('\n\n');
+    const knownNamesString = memberNamesList.length > 0 ? memberNamesList.join(', ') : "अभी उपलब्ध नहीं";
+
+    // --- Step 2: Define Intents and Prompt for Gemini ---
+    // Define the possible intents your bot should recognize
+    const possibleIntents = [
+        "get_rule", // Asking about a specific rule/FAQ
+        "get_member_details", // Asking for full details of a member
+        "check_balance", // Asking for just the balance of a member
+        "check_loan_eligibility", // Asking if a member is eligible for a loan
+        "list_all_members", // Asking for the list of all members
+        "get_member_count", // Asking for the total number of members
+        "general_query" // Question not covered above, potentially general knowledge or requires basic generation
+    ];
+
+    // Construct the prompt for Gemini API
+    // This prompt asks Gemini to analyze the query, determine intent, extract entities (name),
+    // and potentially answer directly if it's a rule query.
+    // ** IMPORTANT: This prompt needs testing and refinement! **
+    const prompt = `
+आप 'बैंक कम्युनिटी चैटबॉट' हैं। आपका काम उपयोगकर्ता के सवालों का विश्लेषण करना और जवाब देना है।
+
+यहाँ बैंक कम्युनिटी योजना के नियम और अक्सर पूछे जाने वाले प्रश्न (FAQs) हैं:
+--- RULES START ---
+${rulesContext}
+--- RULES END ---
+
+यहाँ समुदाय के सदस्यों की सूची है: ${knownNamesString}
+
+उपयोगकर्ता का प्रश्न है: "${query}"
+
+कृपया निम्नलिखित कार्य करें:
+1.  उपयोगकर्ता के प्रश्न का विश्लेषण करें।
+2.  नीचे दी गई सूची में से सबसे उपयुक्त इरादा (intent) पहचानें:
+    ${possibleIntents.join(', ')}
+3.  यदि प्रश्न किसी विशिष्ट सदस्य से संबंधित है, तो सदस्य का नाम (member_name) निकालें। यदि सदस्य का नाम प्रश्न में नहीं है, लेकिन आवश्यक है (जैसे बैलेंस या पात्रता के लिए), तो member_name को "unknown" पर सेट करें। यदि सदस्य का उल्लेख नहीं है, तो member_name को null पर सेट करें।
+4.  यदि इरादा 'get_rule' है, तो ऊपर दिए गए नियमों में से सबसे प्रासंगिक नियम ढूंढें और उसका उत्तर (answer) प्रदान करें। नियम न मिलने पर, answer को null पर सेट करें।
+5.  एक JSON ऑब्जेक्ट लौटाएं जिसमें निम्नलिखित कुंजियाँ हों:
+    - "intent": पहचाना गया इरादा (ऊपर दी गई सूची में से एक)।
+    - "member_name": निकाला गया सदस्य का नाम, "unknown", या null।
+    - "answer": यदि इरादा 'get_rule' है और नियम मिला है तो नियम का उत्तर, अन्यथा null।
+    - "confidence": (वैकल्पिक) आपके विश्लेषण की विश्वसनीयता (low, medium, high)।
+
+उदाहरण:
+- प्रश्न: "Amit Kumar ka balance kitna hai?" -> {"intent": "check_balance", "member_name": "Amit Kumar", "answer": null}
+- प्रश्न: "SIP deadline kya hai?" -> {"intent": "get_rule", "member_name": null, "answer": "हर महीने की 1 से 10 तारीख के बीच ₹500 SIP जमा करना अनिवार्य है।"}
+- प्रश्न: "Kitne members hain?" -> {"intent": "get_member_count", "member_name": null, "answer": null}
+- प्रश्न: "Kya main loan le sakta hoon?" -> {"intent": "check_loan_eligibility", "member_name": "unknown", "answer": null}
+- प्रश्न: "Duniya gol kyu hai?" -> {"intent": "general_query", "member_name": null, "answer": null}
+
+JSON ऑब्जेक्ट प्रदान करें:
+`;
+
+    // --- Step 3: Call Gemini API ---
+    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    let analysisResult = null;
+
+    try {
+        console.log("Sending query to Gemini for analysis...");
+        const response = await fetch(GEMINI_API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    temperature: 0.2, // Lower temperature for more predictable JSON output
+                    maxOutputTokens: 300,
+                    responseMimeType: "application/json", // Request JSON output
+                },
+                safetySettings: [ // Standard safety settings
+                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                ]
+            }),
+        });
+
+        typingIndicator?.remove(); // Remove typing indicator once response starts processing
+
+        if (!response.ok) {
+            const errorBody = await response.text();
+            console.error("Gemini API Error Response:", errorBody);
+            throw new Error(`API Error ${response.status}: ${response.statusText}`);
+        }
+
+        const js = await response.json();
+
+        if (!js.candidates || js.candidates.length === 0 || !js.candidates[0].content?.parts?.[0]?.text) {
+             if (js.promptFeedback?.blockReason) {
+                 throw new Error(`Content Blocked (${js.promptFeedback.blockReason})`);
+             }
+            console.error("Unexpected API response structure:", js);
+            throw new Error("API से कोई मान्य प्रतिक्रिया नहीं मिली।");
+        }
+
+        // Attempt to parse the JSON response from Gemini
+        const rawJsonText = js.candidates[0].content.parts[0].text;
+         console.log("Raw JSON from Gemini:", rawJsonText); // Log raw response for debugging
+        try {
+             // Clean potential markdown ```json ... ``` markers if present
+             const cleanedJsonText = rawJsonText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+            analysisResult = JSON.parse(cleanedJsonText);
+            console.log("Parsed Analysis Result:", analysisResult);
+        } catch (parseError) {
+            console.error("Failed to parse JSON response from Gemini:", parseError, "\nRaw Text:", rawJsonText);
+            // If JSON parsing fails, treat as general query and let Gemini answer directly
+             analysisResult = { intent: "general_query", member_name: null, answer: rawJsonText }; // Fallback using raw text
+             // Optionally, make a second simpler call to Gemini just to answer the original query
+             // throw new Error("API से JSON प्रतिक्रिया को पार्स करने में विफल रहा।");
+        }
+
+
+    } catch (error) {
+        typingIndicator?.remove();
+        console.error("Gemini Processing Error:", error);
+        appendMessage(`क्षमा करें, आपके प्रश्न का विश्लेषण करने में त्रुटि हुई। (${error.message})`, "bot");
+        displayFallbackSuggestions(); // Show fallback suggestions on error
+        return;
+    }
+
+    // --- Step 4: Handle Based on Intent ---
+    if (!analysisResult || !analysisResult.intent) {
+         console.error("Analysis result or intent is missing:", analysisResult);
+         appendMessage("क्षमा करें, मैं आपके अनुरोध को समझ नहीं पाया।", "bot");
+         displayFallbackSuggestions();
+         return;
+    }
+
+    const intent = analysisResult.intent;
+    let memberName = analysisResult.member_name; // Can be name, "unknown", or null
+
+     // Normalize "unknown" or empty string from API to null for easier handling later
+     if (memberName === "unknown" || (typeof memberName === 'string' && memberName.trim() === '')) {
+         memberName = null;
+     }
+
+
+    try {
+         // Fetch data again if needed and wasn't ready initially
+         if (!sheetDataReady && (intent.startsWith("get_member") || intent.startsWith("check_") || intent === "list_all_members")) {
+             sheetDataReady = await fetchAndProcessSheetData();
+             if (!sheetDataReady) {
+                 // If data still not available after trying, inform user for relevant intents
+                 appendMessage("क्षमा करें, सदस्य डेटा तक पहुंचने में असमर्थ। कृपया बाद में पुनः प्रयास करें।", "bot");
+                 return;
+             }
+              memberNamesList = [...new Set(cachedSheetData.map(r => r.Name))]; // Update names list if fetched now
+         }
+
+
+        switch (intent) {
+            case "get_rule":
+                if (analysisResult.answer) {
+                    const messageElement = appendMessage("", "bot");
+                    typeEffect(analysisResult.answer, messageElement, () => displayFallbackSuggestions("अन्य प्रश्न पूछें:"));
+                } else {
+                    // If API couldn't find a rule, maybe try basic Gemini response or say rule not found
+                     appendMessage(`क्षमा करें, मुझे आपके प्रश्न "${query}" से संबंधित कोई विशिष्ट नियम नहीं मिला।`, "bot");
+                     displayFallbackSuggestions(); // Suggest other things
+                }
+                break;
+
+            case "get_member_details":
+            case "check_balance":
+            case "check_loan_eligibility":
+                 if (!memberName) {
+                    // If API identified intent needs a name but didn't find one
+                     appendMessage("कृपया सदस्य का नाम बताएं जिसके बारे में आप जानना चाहते हैं। (उदाहरण: 'अमित कुमार का विवरण')", "bot");
+                     // Optionally show member list suggestion here
+                     const memberNames = sheetDataReady ? [...new Set(cachedSheetData.map(r => r.Name))] : primeMembers;
+                      appendSuggestionGroup("आप इनमें से किसी सदस्य के बारे में पूछ सकते हैं:", memberNames.slice(0,5));
+                 } else if (!sheetDataReady) {
+                      appendMessage("सदस्य डेटा अभी लोड नहीं हुआ है, कृपया कुछ क्षण प्रतीक्षा करें और पुनः प्रयास करें।", "bot");
+                 }
+                 else {
+                    const userData = getUserDataAggregated(memberName);
+                    if (userData) {
+                        if (intent === "get_member_details") {
+                            // Display full card (reuse existing logic/HTML structure)
+                             const primeTagHtml = userData.isPrimeMember ? `<span class='prime-tag-on-photo'>⭐ Prime</span>` : '';
+                             const unclearedLoanHtml = userData.hasUnclearedLoan ? `<p><span class="label">हालिया बकाया लोन:</span> <span class='value loan-highlight'>₹${userData.latestUnclearedLoanAmount.toLocaleString('en-IN')}</span></p>` : '';
+                             let htmlResponse = `
+                                 <div class='user-details-card'>
+                                     <div class="user-details-header">
+                                         <div class="profile-pic-container">
+                                             <img src="${userData.imageUrl}" alt="${userData.name}" class="profile-pic" onclick="openImageModal('${userData.imageUrl}')">
+                                             ${primeTagHtml}
+                                         </div>
+                                         <div class="user-info">
+                                             <h3>${userData.name}</h3>
+                                             <p><span class="label">ज्वाइन तिथि:</span> ${userData.joinDate}</p>
+                                         </div>
+                                     </div>
+                                     <div class="user-stats">
+                                         <p><span class="label">कुल SIP जमा:</span> <span class="value">₹${userData.totalSIP.toLocaleString('en-IN')}</span></p>
+                                         <p><span class="label">कुल लोन लिया:</span> <span class="value">₹${userData.totalLoan.toLocaleString('en-IN')}</span></p>
+                                         <p><span class="label">कुल नियमित भुगतान:</span> <span class="value">₹${userData.totalPayment.toLocaleString('en-IN')}</span></p>
+                                         <p><span class="label">वर्तमान बैलेंस:</span> <strong class="value">₹${userData.overallBalance.toLocaleString('en-IN')}</strong></p>
+                                         <p><span class="label">बकाया लोन राशि:</span> <span class="value ${userData.netLoanOutstanding > 0 ? 'loan-highlight' : ''}">₹${userData.netLoanOutstanding.toLocaleString('en-IN')}</span></p>
+                                         ${unclearedLoanHtml}
+                                         <p><span class="label">मासिक SIP स्थिति:</span> <span class="value"><span class="sip-status ${userData.sipStatusClass}">${userData.sipStatusText}</span></span></p>
+                                     </div>
+                                 </div>`;
+                             appendMessage(htmlResponse, "bot", true);
+                        } else if (intent === "check_balance") {
+                            appendMessage(`${userData.name} का वर्तमान बैलेंस ₹${userData.overallBalance.toLocaleString('en-IN')} है।`, 'bot');
+                             const suggestions = [`${userData.name} का पूरा विवरण देखें`, `${userData.name} की पात्रता देखें`, "सभी सदस्यों की सूची दिखाओ"];
+                             appendSuggestionGroup("और क्या जानना चाहेंगे?", suggestions);
+                        } else { // check_loan_eligibility
+                             const eligibilityResult = calculateEligibility(userData.name, userData.overallBalance, communityBalance);
+                             let eligibilityResponse = eligibilityResult.isEligible
+                                ? `✅ हाँ, ${userData.name} लोन के लिए पात्र हैं। वे अधिकतम ₹${eligibilityResult.approvedAmount.toLocaleString('en-IN')} तक का लोन ले सकते हैं।`
+                                : `❌ नहीं, ${userData.name} वर्तमान में लोन के लिए पात्र नहीं हैं। ${eligibilityResult.reason || ''}`;
+                             appendMessage(eligibilityResponse, "bot");
+                             const suggestions = [`${userData.name} का बैलेंस देखें`, `${userData.name} का पूरा विवरण देखें`, "Loan lene ke liye requirements kya hain?"];
+                             appendSuggestionGroup("और क्या जानना चाहेंगे?", suggestions);
+                        }
+                    } else {
+                        appendMessage(`माफ़ कीजिए, "${memberName}" नाम का कोई सदस्य रिकॉर्ड नहीं मिला।`, "bot");
+                        // Suggest similar names or list members if available
+                         if (sheetDataReady) {
+                            const memberNames = [...new Set(cachedSheetData.map(r => r.Name))];
+                             appendSuggestionGroup("क्या आप इनमें से किसी सदस्य के बारे में पूछ रहे थे?", memberNames.slice(0,5));
+                         } else { displayFallbackSuggestions();}
+                    }
+                }
+                break;
+
+            case "list_all_members":
+                 if (!sheetDataReady) { appendMessage("सदस्य डेटा अभी लोड नहीं हुआ है, कृपया कुछ क्षण प्रतीक्षा करें और पुनः प्रयास करें।", "bot"); }
+                 else {
+                     const uniqueNamesList = [...new Set(cachedSheetData.map(r => r.Name))].sort((a, b) => a.localeCompare(b));
+                     if (uniqueNamesList.length > 0) {
+                         let html = `<p><strong>सभी सदस्य (${uniqueNamesList.length}):</strong></p><div class='member-list-container'>`;
+                         uniqueNamesList.forEach(name => {
+                             const sanitizedName = name.replace(/'/g, "\\'").replace(/"/g, '\\"');
+                             // Update onclick to use the new send() logic which understands context
+                             html += `<div class='clickable-member' onclick="inputBox.value='${sanitizedName} का विवरण'; send();">${name}</div>`;
+                         });
+                         html += "</div>";
+                         appendMessage(html, 'bot', true);
+                     } else { appendMessage("अभी कोई सदस्य डेटा उपलब्ध नहीं है।", "bot"); }
+                 }
+                break;
+
+            case "get_member_count":
+                 if (!sheetDataReady) { appendMessage("सदस्य डेटा अभी लोड नहीं हुआ है, कृपया कुछ क्षण प्रतीक्षा करें और पुनः प्रयास करें।", "bot"); }
+                 else {
+                     const uniqueNamesCount = new Set(cachedSheetData.map(r => r.Name)).size;
+                     appendMessage(`वर्तमान में समुदाय में कुल ${uniqueNamesCount} सदस्य हैं।`, "bot");
+                 }
+                break;
+
+            case "general_query":
+            default: // Fallback for unknown intents or general queries
+                console.log("Handling as general query with Gemini:", query);
+                // Use Gemini for a direct answer to the original query, without the complex analysis prompt
+                 const simplePrompt = `आप 'बैंक कम्युनिटी चैटबॉट' हैं। उपयोगकर्ता ने पूछा है: "${query}".
+                 संक्षिप्त और सहायक उत्तर दें। यदि प्रश्न बैंक कम्युनिटी योजना से असंबंधित है, तो उत्तर देने के बाद बताएं कि आपका मुख्य फोकस बैंक कम्युनिटी पर है।
+                 उत्तर:`;
+                try {
+                    const fallbackTyping = appendMessage("...", "bot typing"); // New typing indicator for this call
+                    const fallbackResponse = await fetch(GEMINI_API_URL, {
+                        method: "POST", headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: simplePrompt }] }],
+                            generationConfig: { temperature: 0.7, maxOutputTokens: 500 }, // Standard generation config
+                            safetySettings: [ { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" }, { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_MEDIUM_AND_ABOVE" }, { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" }, { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" }, ]
+                        }),
+                    });
+                    fallbackTyping?.remove();
+                    if (!fallbackResponse.ok) throw new Error(`Fallback API Error ${fallbackResponse.status}`);
+                    const fallbackJs = await fallbackResponse.json();
+                    if (!fallbackJs.candidates || fallbackJs.candidates.length === 0) { throw new Error(fallbackJs.promptFeedback?.blockReason ? `Content Blocked (${fallbackJs.promptFeedback.blockReason})` : "Fallback API से कोई प्रतिक्रिया नहीं मिली"); }
+
+                    if (fallbackJs.candidates[0]?.content?.parts?.[0]?.text) {
+                        const rawAnswer = fallbackJs.candidates[0].content.parts[0].text.trim();
+                        const messageElement = appendMessage("", "bot");
+                        typeEffect(rawAnswer, messageElement, () => displayFallbackSuggestions("संबंधित प्रश्न पूछें:"));
+                    } else { throw new Error("Fallback API प्रतिक्रिया संरचना अप्रत्याशित है"); }
+                } catch (fallbackError) {
+                     fallbackTyping?.remove();
+                     console.error("Gemini Fallback Error:", fallbackError);
+                     appendMessage(`क्षमा करें, प्रतिक्रिया प्राप्त करने में त्रुटि हुई। ${fallbackError.message || ''}`, "bot");
+                     displayFallbackSuggestions();
+                }
+                break;
+        } // End Switch
+
+    } catch (error) {
+        console.error("Error handling intent:", intent, error);
+        appendMessage("क्षमा करें, आपके अनुरोध को संसाधित करने में एक अप्रत्याशित त्रुटि हुई।", "bot");
+        displayFallbackSuggestions();
+    }
+}
+
+
+// --- Event Listeners & Initialization ---
+// (Event listeners remain the same)
+document.addEventListener('click', function(event) { // Hide suggestions on outside click
+    if (inputBox && suggestionsBox && !inputBox.contains(event.target) && !suggestionsBox.contains(event.target)) {
+        suggestionsBox.style.display = 'none';
+    }
+});
+if (imageModal) { // Ensure modal exists before adding listener
+    imageModal.addEventListener('click', function(event) { // Close modal on overlay click
+         if (event.target === imageModal) { closeImageModal(); }
+    });
+}
+
+// Initial data fetch on load (optional, can fetch on first query needing it)
+// fetchAndProcessSheetData(); // आप इसे पेज लोड पर कॉल कर सकते हैं या पहले आवश्यक प्रश्न पर
+
+
+// --- Helper function to handle Enter key in input ---
+function handleKey(event) {
+    if (event.key === 'Enter') {
+        send();
+    }
+}
+
+// Initialize - maybe fetch data on load
+document.addEventListener('DOMContentLoaded', () => {
+     // fetchAndProcessSheetData(); // Fetch data when the page is ready
+     // OR: Let the send function fetch when needed
+});
 
 </script>
 
