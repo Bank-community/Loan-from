@@ -234,7 +234,7 @@ html, body { height: 100%; font-family: 'Segoe UI', 'Roboto', Tahoma, Geneva, Ve
              <div class="group-title">आप इस तरह पूछ सकते हैं:</div>
              <div class="chat-suggestion" onclick="inputBox.value='मेरा बैलेंस कितना है?'; send();">मेरा बैलेंस कितना है?</div>
              <div class="chat-suggestion" onclick="inputBox.value='SIP भरने की आखिरी तारीख क्या है?'; send();">SIP भरने की आखिरी तारीख क्या है?</div>
-             <div class="chat-suggestion" onclick="inputBox.value='Mithilesh Sahni का विवरण दिखाओ'; send();">Mithilesh Sahni का विवरण दिखाओ</div>
+             <div class="chat-suggestion" onclick="inputBox.value='Mithlesh Sahni का विवरण दिखाओ'; send();">Mithlesh Sahni का विवरण दिखाओ</div>
              <div class="chat-suggestion" onclick="inputBox.value='सभी सदस्यों की सूची दिखाओ'; send();">सभी सदस्यों की सूची दिखाओ</div>
         </div>
     </div>
@@ -255,8 +255,8 @@ html, body { height: 100%; font-family: 'Segoe UI', 'Roboto', Tahoma, Geneva, Ve
 const API_KEY = "AIzaSyBwhJNl7Rw4Xwb8esmsIes5uVX2fWlRnSE"; // <<<--- *** अपनी Gemini API कुंजी यहाँ डालें ***
 const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz9LCkPR8L3-i7F1KG2KUJ6It2l_p55murljRJ_4108nFysOXUOpG5WEs1sdEaGHq1L7w/exec"; // <<<--- *** अपना Apps Script URL यहाँ डालें ***
 const defaultProfilePic = 'https://via.placeholder.com/100/CCCCCC/FFFFFF?text=👤';
-// Corrected name: Mithilesh Sahni
-const primeMembers = ["Amit Kumar", "Mithilesh Sahni", "Prince Rama"]; // यदि आवश्यक हो तो अपडेट करें
+// Corrected name: Mithlesh Sahni
+const primeMembers = ["Amit Kumar", "Mithlesh Sahni", "Prince Rama"]; // यदि आवश्यक हो तो अपडेट करें
 
 let cachedSheetData = null;
 let communityBalance = 0;
@@ -914,7 +914,7 @@ ${rulesContext}
    }
 
 उदाहरण:
-- प्रश्न: "Mithilesh Sahni का बैलेंस?" -> {"intent": "check_balance", "member_name": "Mithilesh Sahni", "answer": null, "confidence": "high"}
+- प्रश्न: "Mithlesh Sahni का बैलेंस?" -> {"intent": "check_balance", "member_name": "Mithlesh Sahni", "answer": null, "confidence": "high"}
 - प्रश्न: "लोन पर पेनल्टी नियम क्या हैं?" -> {"intent": "get_rule", "member_name": null, "answer": "यदि लोन 31 दिन से अधिक बकाया रहता है, तो...5% पेनल्टी (RED MEMBER) लगती है।", "confidence": "high"}
 - प्रश्न: "नमस्ते" -> {"intent": "greet", "member_name": null, "answer": null, "confidence": "high"}
 - प्रश्न: "क्या मैं लोन ले सकता हूँ?" -> {"intent": "check_loan_eligibility", "member_name": "self", "answer": null, "confidence": "medium"}
