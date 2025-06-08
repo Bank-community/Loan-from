@@ -376,7 +376,7 @@
     
     <div id="toast" class="toast"></div>
 
-    <script>
+        <script>
         // --- Configuration ---
         const firebaseConfig = {
             apiKey: "AIzaSyDvJPTz3O4zZUvWNIv7vHiLCStxw69ihTY",
@@ -428,6 +428,21 @@
         const lightboxPrevBtn = document.getElementById('lightboxPrevBtn');
         const lightboxNextBtn = document.getElementById('lightboxNextBtn');
 
+        // --- JS-APPLIED STYLING FIX FOR LIGHTBOX CONTROLS ---
+        // This ensures the lightbox controls are properly layered and have adequate tap areas.
+        if (lightboxCloseBtn) {
+            lightboxCloseBtn.style.zIndex = "10"; // Ensure it's above lightbox-content within the modal
+            lightboxCloseBtn.style.padding = "10px"; // Increase tappable area
+        }
+        if (lightboxPrevBtn) {
+            // The .lightbox-nav CSS class already includes padding, so only z-index might be beneficial
+            lightboxPrevBtn.style.zIndex = "10";
+        }
+        if (lightboxNextBtn) {
+            // The .lightbox-nav CSS class already includes padding, so only z-index might be beneficial
+            lightboxNextBtn.style.zIndex = "10";
+        }
+        // --- END OF JS-APPLIED STYLING FIX ---
 
         // --- Toast Notification ---
         function showToast(message, type = 'success') {
@@ -503,6 +518,7 @@
                 }
             } catch (error) {
                 showToast(`Upload failed: ${error.message}`, 'error');
+                console.error("Upload error:", error); // Added for more detailed error logging
             }
         }
 
@@ -517,9 +533,10 @@
             try {
                 await database.ref('images/' + imageId).remove();
                 showToast('Photo deleted successfully.', 'success');
-                loadImages();
+                loadImages(); // This will re-render and potentially close lightbox if current image deleted
             } catch (error) {
                 showToast(`Failed to delete: ${error.message}`, 'error');
+                console.error("Delete error:", error); // Added for more detailed error logging
             }
         }
         
@@ -528,27 +545,52 @@
             try {
                 const snapshot = await database.ref('images').orderByChild('timestamp').once('value');
                 const imageData = snapshot.val() || {};
-                allImages = Object.entries(imageData).sort((a, b) => b[1].timestamp - a[1].timestamp);
+                allImages = Object.entries(imageData).sort((a, b) => b[1].timestamp - a[1].timestamp); // Newest first
+                
+                // Check if currently viewed image in lightbox was deleted
+                if (lightboxModal.classList.contains('show')) {
+                    const currentImageStillExists = currentlyVisibleImages[lightboxCurrentIndex] && 
+                                                    allImages.some(([id]) => id === currentlyVisibleImages[lightboxCurrentIndex][0]);
+                    if (!currentImageStillExists) {
+                        closeLightbox(); // Close lightbox if the current image is gone
+                    }
+                }
+
                 displayNames();
-                displayPhotos();
+                // Determine if a filter is active to re-apply it
+                const activeNameItem = document.querySelector('.name-item.active .name-label');
+                if (activeNameItem) {
+                    displayPhotos(activeNameItem.textContent);
+                } else {
+                    displayPhotos();
+                }
+
             } catch (error) {
                 showToast('Failed to load data.', 'error');
+                console.error("Load images error:", error); // Added for more detailed error logging
             }
         }
 
         function displayNames() {
             const namesMap = new Map();
+            // Iterate through allImages to get the latest image URL for each name
+            // (allImages is already sorted newest first)
             for (const [id, image] of allImages) {
                 if (!namesMap.has(image.personName)) {
                     namesMap.set(image.personName, image.url);
                 }
             }
-            nameGrid.innerHTML = '';
+            
+            nameGrid.innerHTML = ''; // Clear previous names
             if (namesMap.size === 0) {
                 nameGrid.innerHTML = '<div class="status-message">No photos yet</div>';
                 return;
             }
-            namesMap.forEach((url, name) => {
+
+            const sortedNames = Array.from(namesMap.keys()).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+
+            sortedNames.forEach(name => {
+                const url = namesMap.get(name);
                 const nameDiv = document.createElement('div');
                 nameDiv.className = 'name-item';
                 nameDiv.onclick = () => filterByName(name);
@@ -558,17 +600,24 @@
         }
         
         function displayPhotos(filterName = null) {
+            const previouslyVisibleImageId = lightboxModal.classList.contains('show') && currentlyVisibleImages.length > 0 
+                                            ? currentlyVisibleImages[lightboxCurrentIndex][0] 
+                                            : null;
+
             currentlyVisibleImages = filterName 
                 ? allImages.filter(([, img]) => img.personName === filterName)
                 : allImages;
 
-            albumsGrid.innerHTML = '';
+            albumsGrid.innerHTML = ''; // Clear previous photos
             if (currentlyVisibleImages.length === 0) {
                 albumsGrid.innerHTML = '<div class="status-message">No photos found</div>';
                 photoCount.textContent = '0 photos';
+                if (lightboxModal.classList.contains('show')) { // If lightbox was open and now no images
+                    closeLightbox();
+                }
                 return;
             }
-            photoCount.textContent = `${currentlyVisibleImages.length} photos`;
+            photoCount.textContent = `${currentlyVisibleImages.length} photo${currentlyVisibleImages.length === 1 ? '' : 's'}`;
             albumsTitle.textContent = filterName ? `${filterName}'s Photos` : 'All Photos';
 
             currentlyVisibleImages.forEach(([id, image], index) => {
@@ -579,7 +628,7 @@
                 
                 const deleteButton = document.createElement('button');
                 deleteButton.className = 'delete-btn';
-                deleteButton.innerHTML = '🗑️';
+                deleteButton.innerHTML = '🗑️'; // Using actual emoji for delete
                 deleteButton.onclick = (e) => {
                     e.stopPropagation(); // Prevent opening lightbox
                     requestDelete(id);
@@ -588,26 +637,48 @@
                 photoDiv.appendChild(deleteButton);
                 albumsGrid.appendChild(photoDiv);
             });
+
+            // If lightbox was open, try to find the same image in the new list and update index
+            if (previouslyVisibleImageId && lightboxModal.classList.contains('show')) {
+                const newIndexOfOldImage = currentlyVisibleImages.findIndex(([id]) => id === previouslyVisibleImageId);
+                if (newIndexOfOldImage !== -1) {
+                    lightboxCurrentIndex = newIndexOfOldImage;
+                    updateLightboxImage(); // Refresh image in case URL changed (unlikely) or just to be safe
+                } else {
+                    // The image that was in lightbox is no longer in the filtered list
+                    closeLightbox(); 
+                }
+            }
         }
         
         // --- Filtering and Navigation ---
         function filterByName(name) {
-            document.querySelectorAll('.name-item').forEach(item => {
-                item.classList.toggle('active', item.querySelector('.name-label').textContent === name);
-            });
+            // Remove 'active' from all, then add to the clicked one
+            document.querySelectorAll('.name-item').forEach(item => item.classList.remove('active'));
+            const nameItems = nameGrid.querySelectorAll('.name-item');
+            for (let item of nameItems) {
+                if (item.querySelector('.name-label').textContent === name) {
+                    item.classList.add('active');
+                    break;
+                }
+            }
             displayPhotos(name);
         }
 
         function showAllPhotos() {
             document.querySelectorAll('.name-item').forEach(item => item.classList.remove('active'));
-            displayPhotos();
+            displayPhotos(); // Display all photos without a filter
         }
 
         // --- Lightbox (Slider) Logic ---
         function openLightbox(index) {
-            lightboxCurrentIndex = index;
-            updateLightboxImage();
-            lightboxModal.classList.add('show');
+            if (index >= 0 && index < currentlyVisibleImages.length) {
+                lightboxCurrentIndex = index;
+                updateLightboxImage();
+                lightboxModal.classList.add('show');
+            } else {
+                console.error("Attempted to open lightbox with invalid index:", index);
+            }
         }
 
         function closeLightbox() {
@@ -615,20 +686,29 @@
         }
         
         function updateLightboxImage() {
-            if (currentlyVisibleImages.length === 0) {
-                closeLightbox();
+            if (currentlyVisibleImages.length === 0 || lightboxCurrentIndex < 0 || lightboxCurrentIndex >= currentlyVisibleImages.length) {
+                // If no images or index is out of bounds (e.g., after deletion), close lightbox
+                if (lightboxModal.classList.contains('show')) {
+                    closeLightbox();
+                }
                 return;
             }
             const [, image] = currentlyVisibleImages[lightboxCurrentIndex];
             lightboxImage.src = image.url;
+
+            // Show/hide nav buttons based on position
+            lightboxPrevBtn.style.display = currentlyVisibleImages.length > 1 ? 'block' : 'none';
+            lightboxNextBtn.style.display = currentlyVisibleImages.length > 1 ? 'block' : 'none';
         }
         
         function showNextImage() {
+            if (currentlyVisibleImages.length === 0) return;
             lightboxCurrentIndex = (lightboxCurrentIndex + 1) % currentlyVisibleImages.length;
             updateLightboxImage();
         }
         
         function showPrevImage() {
+            if (currentlyVisibleImages.length === 0) return;
             lightboxCurrentIndex = (lightboxCurrentIndex - 1 + currentlyVisibleImages.length) % currentlyVisibleImages.length;
             updateLightboxImage();
         }
@@ -640,35 +720,47 @@
             const file = e.target.files[0];
             if (file) {
                 selectedFile = file;
-                fileLabel.textContent = `✅ ${file.name.substring(0, 25)}`;
+                // Truncate file name if too long for the label
+                const maxLabelLength = 20;
+                const fileName = file.name.length > maxLabelLength ? file.name.substring(0, maxLabelLength) + "..." : file.name;
+                fileLabel.textContent = `✅ ${fileName}`;
                 previewImage.src = URL.createObjectURL(file);
                 previewImage.style.display = 'block';
-                personNameInput.value.trim() !== '' ? uploadBtn.disabled = false : uploadBtn.disabled = true;
+                uploadBtn.disabled = personNameInput.value.trim() === '';
+            } else { // No file selected or selection cancelled
+                resetUploadForm(); // Or just reset parts related to file
             }
         });
         personNameInput.addEventListener('input', () => {
-             selectedFile && personNameInput.value.trim() !== '' ? uploadBtn.disabled = false : uploadBtn.disabled = true;
+             uploadBtn.disabled = !(selectedFile && personNameInput.value.trim() !== '');
         });
         uploadBtn.addEventListener('click', () => {
-            currentAction = 'upload';
-            passwordModalTitle.textContent = 'Enter Password to Upload';
-            openPasswordModal();
+            if (!uploadBtn.disabled) { // Proceed only if not disabled
+                currentAction = 'upload';
+                passwordModalTitle.textContent = 'Enter Password to Upload';
+                openPasswordModal();
+            }
         });
         
         // Lightbox
-        lightboxCloseBtn.addEventListener('click', closeLightbox);
+        lightboxCloseBtn.addEventListener('click', closeLightbox); // This listener should now work better
         lightboxPrevBtn.addEventListener('click', showPrevImage);
         lightboxNextBtn.addEventListener('click', showNextImage);
         
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (lightboxModal.classList.contains('show')) {
-                if (e.key === 'ArrowRight') showNextImage();
+                if (e.key === 'ArrowRight' || e.key === ' ') showNextImage(); // Space for next
                 if (e.key === 'ArrowLeft') showPrevImage();
                 if (e.key === 'Escape') closeLightbox();
             }
             if(passwordModal.classList.contains('show') && e.key === 'Enter'){
-                verifyPassword();
+                // Trigger click on confirm button instead of calling verifyPassword directly
+                // to respect any disabled state or other logic on the button itself.
+                const confirmButton = passwordModal.querySelector('.modal-btn.primary');
+                if (confirmButton) {
+                    confirmButton.click();
+                }
             }
         });
 
