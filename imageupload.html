@@ -49,19 +49,24 @@
             border-bottom: 1px solid var(--border-color);
         }
         
-        .header-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-        }
+.header-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
 
-        .header-icon.left {
-            background-color: #E0E0E0;
-        }
+.header-icon.left {
+    background-color: #E0E0E0;
+    background-image: url('https://i.ibb.co/v4zt0f30/20241030-065157.png');
+}
 
-        .header-icon.right {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-        }
+.header-icon.right {
+    background: linear-gradient(45deg, #667eea, #764ba2) url('https://i.ibb.co/v4zt0f30/20241030-065157.png') no-repeat center;
+    background-size: contain, contain;
+}
         
         .title {
             font-size: 22px;
@@ -308,7 +313,7 @@
     <div class="container">
         <div class="header">
             <div class="header-icon left"></div>
-            <div class="title">Photo Gallery</div>
+            <div class="title">Bank Gallery</div>
             <div class="header-icon right"></div>
         </div>
 
