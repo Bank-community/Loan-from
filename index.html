@@ -998,16 +998,86 @@ footer p {
      h2 { font-size: 2.2em; }
 }
 
+<style>
+/* --- Header --- /
+header {
+background: linear-gradient(135deg, var(--primary-color), var(--primary-darker)); / Gradient background /
+color: white;
+padding: 20px 0;
+text-align: center;
+border-bottom: 5px solid var(--prime-color); / Prime color accent /
+display: flex; / Add flex container /
+flex-direction: column; / Stack elements vertically by default /
+align-items: center; / Center items horizontally */
+}
+.slider {
+width: 100%;
+max-width: 500px; /* Slightly smaller max-width /
+margin: 0 auto 15px auto; / Add bottom margin */
+overflow: hidden;
+border-radius: 8px;
+box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.slider img {
+width: 100%;
+height: auto;
+display: block;
+}
+header h1 {
+color: white;
+font-size: 2.2em;
+margin: 15px 0 5px 0;
+text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+font-weight: 700;
+}
+header h4 {
+color: rgba(255, 255, 255, 0.9);
+margin: 0 0 10px 0; /* Adjust bottom margin /
+font-weight: 400; / Lighter weight */
+font-size: 1em;
+}
+.header-actions {
+    display: flex;
+    justify-content: center; /* Buttons ko center me laane ke liye */
+    gap: 20px; /* Dono buttons ke beech me gap badhane ke liye */
+    width: 100%;
+    margin-top: 15px;
+    box-sizing: border-box;
+}
+
+/* --- Civil Button / Header Button --- /
+.civil-button {
+background: var(--prime-color); / Use prime color /
+border-radius: 25px; / Pill shape /
+border: none;
+text-shadow: none; / Remove text shadow /
+box-shadow: 0 4px 10px 0px rgba(0,0,0,0.2);
+padding: 12px 30px; / More padding /
+cursor: pointer;
+transition: all 0.3s ease;
+color: var(--text-color); / Dark text on gold /
+font-size: 1em;
+font-weight: 600; / Bolder */
+display: inline-block;
+text-decoration: none;
+}
+.civil-button:hover {
+box-shadow: 0 6px 15px 0px rgba(0,0,0,0.3);
+transform: translateY(-2px);
+background-color: #ffcd39; /* Lighter gold on hover */
+color: var(--text-color);
+}
 </style>
 <header class="animate-on-scroll">
-    <div class="slider">
-        <img id="sliderImage" src="https://i.imgur.com/jy7gXWz.png" alt="Community Loan Banner">
-    </div>
-    <h1>Bank Community Loan</h1>
-    <h4>ESTD: 23 June 2024</h4>
-    <div class="header-action">
-        <a href="chatbot.html" class="civil-button">Bank AI 💻</a>
-    </div>
+<div class="slider">
+<img id="sliderImage" src="https://i.imgur.com/jy7gXWz.png" alt="Community Loan Banner">
+</div>
+<h1>Bank Community Loan</h1>
+<h4>ESTD: 23 June 2024</h4>
+<div class="header-actions">
+<a href="https://bank-community.github.io/Loan-from/chatbot.html" class="civil-button">Bank AI 💻</a>
+<a href="imageupload.html" class="civil-button">Gallery 🖼️</a>
+</div>
 </header>
 
 <section class="bank-members animate-on-scroll">
