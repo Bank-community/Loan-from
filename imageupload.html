@@ -14,6 +14,7 @@
             --light-text-color: #888888;
             --card-bg-color: #FFFFFF;
             --border-color: #EAEAEA;
+            --danger-color: #e74c3c;
         }
 
         * {
@@ -37,6 +38,7 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.08);
             overflow: hidden;
             min-height: calc(100vh - 20px);
+            position: relative;
         }
 
         .header {
@@ -119,10 +121,6 @@
             margin-bottom: 8px;
             transition: transform 0.3s ease;
         }
-
-        .name-item:hover .name-avatar {
-            transform: scale(1.08);
-        }
         
         .name-item.active .name-avatar {
             border-color: var(--primary-color);
@@ -148,11 +146,42 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
         }
 
         .album-card:hover {
             transform: scale(1.05);
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(231, 76, 60, 0.8);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+        }
+        
+        .album-card:hover .delete-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .delete-btn:hover {
+            background-color: var(--danger-color);
         }
 
         .status-message {
@@ -163,11 +192,10 @@
             grid-column: 1 / -1;
         }
 
-        /* Floating Action Button (Upload) */
         .fab {
             position: fixed;
             bottom: 30px;
-            right: 30px;
+            right: calc(50% - 150px); /* Adjust to stay within container on larger screens */
             width: 60px;
             height: 60px;
             background: var(--primary-color);
@@ -186,10 +214,9 @@
 
         .fab:hover {
             transform: scale(1.1);
-            background: #357ABD;
         }
         
-        /* Modal */
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -199,9 +226,11 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0,0,0,0.6);
             align-items: center;
             justify-content: center;
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
         }
 
         .modal.show {
@@ -224,99 +253,54 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        .modal-content h3 {
-            margin-bottom: 20px;
-            font-size: 20px;
-        }
-
-        .preview-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            background-color: var(--border-color);
-            display: none;
-        }
-        
-        .file-input-label {
-            display: block;
-            padding: 15px;
-            background: #E8F0FE;
-            color: var(--primary-color);
-            border-radius: 12px;
-            text-align: center;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            margin-bottom: 15px;
-        }
-        
-        .file-input-label:hover {
-            background: #DCE7FD;
-        }
-        
+        .modal-content h3 { margin-bottom: 20px; font-size: 20px; }
+        .preview-image { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-bottom: 20px; background-color: var(--border-color); display: none; }
+        .file-input-label { display: block; padding: 15px; background: #E8F0FE; color: var(--primary-color); border-radius: 12px; text-align: center; font-weight: 600; cursor: pointer; transition: background 0.3s ease; margin-bottom: 15px; }
         .file-input { display: none; }
+        .modal-input { width: 100%; padding: 15px; border: 1px solid var(--border-color); border-radius: 12px; font-size: 16px; margin-bottom: 20px; text-align: center;}
+        .modal-buttons { display: flex; gap: 10px; }
+        .modal-btn { flex-grow: 1; padding: 15px; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.3s ease; }
+        .modal-btn.primary { background-color: var(--primary-color); color: white; }
+        .modal-btn.primary:disabled { background-color: #B0C4DE; cursor: not-allowed; }
+        .modal-btn.secondary { background-color: #F1F3F5; color: #555; }
         
-        .modal-input {
+        /* Lightbox (Image Slider) Styles */
+        #lightboxModal {
+            background-color: rgba(0,0,0,0.85);
+        }
+        .lightbox-content {
+            position: relative;
             width: 100%;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
-        
-        .modal-buttons {
+            height: 100%;
             display: flex;
-            gap: 10px;
+            align-items: center;
+            justify-content: center;
         }
-        
-        .modal-btn {
-            flex-grow: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .modal-btn.primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .modal-btn.primary:disabled {
-            background-color: #B0C4DE;
-            cursor: not-allowed;
-        }
-
-        .modal-btn.secondary {
-            background-color: #F1F3F5;
-            color: #555;
-        }
-        
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: -100px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 25px;
+        .lightbox-image {
+            max-width: 90vw;
+            max-height: 80vh;
             border-radius: 10px;
+        }
+        .lightbox-close, .lightbox-nav {
+            position: absolute;
             color: white;
-            font-weight: 500;
-            transition: bottom 0.5s ease;
-            z-index: 2000;
+            cursor: pointer;
+            font-size: 40px;
+            font-weight: bold;
+            user-select: none;
+            transition: opacity 0.2s ease;
         }
-        .toast.show {
-            bottom: 80px;
-        }
-        .toast.success { background: #28a745; }
-        .toast.error { background: #dc3545; }
+        .lightbox-close { top: 20px; right: 35px; }
+        .lightbox-nav { top: 50%; transform: translateY(-50%); padding: 10px; }
+        .lightbox-nav.prev { left: 10px; }
+        .lightbox-nav.next { right: 10px; }
+        .lightbox-close:hover, .lightbox-nav:hover { opacity: 0.7; }
 
+        /* Toast Notification */
+        .toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 10px; color: white; font-weight: 500; transition: bottom 0.5s ease; z-index: 2000; }
+        .toast.show { bottom: 80px; }
+        .toast.success { background: #28a745; }
+        .toast.error { background: var(--danger-color); }
     </style>
 </head>
 <body>
@@ -354,25 +338,41 @@
     <div id="uploadModal" class="modal">
         <div class="modal-content">
             <h3>Upload New Photo</h3>
-            
             <img id="previewImage" class="preview-image">
-            
             <input type="file" id="fileInput" class="file-input" accept="image/*">
             <label for="fileInput" id="fileLabel" class="file-input-label">Choose Image File</label>
-            
             <input type="text" id="personName" class="modal-input" placeholder="Enter person's name">
-            
             <div class="modal-buttons">
-                <button class="modal-btn secondary" id="cancelUploadBtn">Cancel</button>
+                <button class="modal-btn secondary" onclick="closeUploadModal()">Cancel</button>
                 <button class="modal-btn primary" id="uploadBtn" disabled>Upload</button>
             </div>
+        </div>
+    </div>
+
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <h3 id="passwordModalTitle">Enter Password</h3>
+            <input type="password" id="passwordInput" class="modal-input" placeholder="****" maxlength="4" autocomplete="off">
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="closePasswordModal()">Cancel</button>
+                <button class="modal-btn primary" onclick="verifyPassword()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="lightboxModal" class="modal">
+        <span class="lightbox-close" id="lightboxCloseBtn">&times;</span>
+        <span class="lightbox-nav prev" id="lightboxPrevBtn">&#10094;</span>
+        <span class="lightbox-nav next" id="lightboxNextBtn">&#10095;</span>
+        <div class="lightbox-content">
+            <img id="lightboxImage" class="lightbox-image">
         </div>
     </div>
     
     <div id="toast" class="toast"></div>
 
     <script>
-        // --- Firebase & API Configuration ---
+        // --- Configuration ---
         const firebaseConfig = {
             apiKey: "AIzaSyDvJPTz3O4zZUvWNIv7vHiLCStxw69ihTY",
             authDomain: "bank-gallery-6213f.firebaseapp.com",
@@ -383,57 +383,60 @@
             appId: "1:888354031561:web:f7abdb798121c047ea8a18"
         };
         const IMGBB_API_KEY = '7a1be8401cccf5271ff787e57c3035bc';
+        const CORRECT_PASSWORD = '7536';
 
         // --- Initialize Firebase ---
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         // --- Global State ---
-        let allImages = {};
+        let allImages = [];
+        let currentlyVisibleImages = [];
         let selectedFile = null;
+        let currentAction = null; // 'upload' or 'delete'
+        let actionItemId = null; // ID of the image to be deleted
+        let lightboxCurrentIndex = 0;
 
         // --- DOM Elements ---
         const nameGrid = document.getElementById('nameGrid');
         const albumsGrid = document.getElementById('albumsGrid');
         const albumsTitle = document.getElementById('albumsTitle');
         const photoCount = document.getElementById('photoCount');
-        
-        // Modal elements
+        const toast = document.getElementById('toast');
+        // Modals
         const uploadModal = document.getElementById('uploadModal');
+        const passwordModal = document.getElementById('passwordModal');
+        const lightboxModal = document.getElementById('lightboxModal');
+        // Upload Modal
         const openUploadModalBtn = document.getElementById('openUploadModalBtn');
-        const cancelUploadBtn = document.getElementById('cancelUploadBtn');
         const fileInput = document.getElementById('fileInput');
         const fileLabel = document.getElementById('fileLabel');
         const personNameInput = document.getElementById('personName');
         const previewImage = document.getElementById('previewImage');
         const uploadBtn = document.getElementById('uploadBtn');
-        const toast = document.getElementById('toast');
+        // Password Modal
+        const passwordModalTitle = document.getElementById('passwordModalTitle');
+        const passwordInput = document.getElementById('passwordInput');
+        // Lightbox Modal
+        const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxCloseBtn = document.getElementById('lightboxCloseBtn');
+        const lightboxPrevBtn = document.getElementById('lightboxPrevBtn');
+        const lightboxNextBtn = document.getElementById('lightboxNextBtn');
 
-        // --- Toast Notification Function ---
+
+        // --- Toast Notification ---
         function showToast(message, type = 'success') {
             toast.textContent = message;
             toast.className = `toast show ${type}`;
-            setTimeout(() => {
-                toast.className = 'toast';
-            }, 3000);
+            setTimeout(() => { toast.className = 'toast'; }, 3000);
         }
 
-        // --- Form & Modal Logic ---
-        function checkUploadReady() {
-            const hasFile = selectedFile !== null;
-            const hasPersonName = personNameInput.value.trim() !== '';
-            uploadBtn.disabled = !(hasFile && hasPersonName);
-        }
-
-        function openUploadModal() {
-            uploadModal.classList.add('show');
-        }
-
+        // --- Upload Modal Logic ---
+        function openUploadModal() { uploadModal.classList.add('show'); }
         function closeUploadModal() {
             uploadModal.classList.remove('show');
             resetUploadForm();
         }
-
         function resetUploadForm() {
             fileInput.value = '';
             personNameInput.value = '';
@@ -442,38 +445,35 @@
             selectedFile = null;
             fileLabel.textContent = 'Choose Image File';
             uploadBtn.disabled = true;
-            uploadBtn.textContent = 'Upload';
         }
 
-        openUploadModalBtn.addEventListener('click', openUploadModal);
-        cancelUploadBtn.addEventListener('click', closeUploadModal);
-        
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                selectedFile = file;
-                fileLabel.textContent = `✅ ${file.name.substring(0, 25)}...`;
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    previewImage.src = event.target.result;
-                    previewImage.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-                checkUploadReady();
-            }
-        });
-        
-        personNameInput.addEventListener('input', checkUploadReady);
-        uploadBtn.addEventListener('click', handleUpload);
+        // --- Password Modal Logic ---
+        function openPasswordModal() { passwordModal.classList.add('show'); passwordInput.focus(); }
+        function closePasswordModal() {
+            passwordModal.classList.remove('show');
+            passwordInput.value = '';
+            currentAction = null;
+            actionItemId = null;
+        }
 
-        // --- Core Application Logic (Upload & Data Handling) ---
+        // --- Verification & Actions ---
+        function verifyPassword() {
+            if (passwordInput.value === CORRECT_PASSWORD) {
+                if (currentAction === 'upload') {
+                    handleUpload();
+                } else if (currentAction === 'delete') {
+                    deleteImage(actionItemId);
+                }
+                closePasswordModal();
+            } else {
+                showToast('Incorrect Password!', 'error');
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
 
         async function handleUpload() {
-            if (uploadBtn.disabled) return;
-
-            uploadBtn.disabled = true;
-            uploadBtn.textContent = 'Uploading...';
-
+            showToast('Uploading, please wait...', 'success');
             const formData = new FormData();
             formData.append('image', selectedFile);
 
@@ -482,43 +482,52 @@
                     method: 'POST',
                     body: formData,
                 });
-
                 const result = await response.json();
 
                 if (result.success) {
-                    const imageData = {
+                    await database.ref('images').push({
                         personName: personNameInput.value.trim(),
                         url: result.data.url,
                         timestamp: Date.now(),
-                    };
-                    await database.ref('images').push(imageData);
+                    });
                     showToast('Photo uploaded successfully!', 'success');
                     closeUploadModal();
-                    loadImages(); // Refresh data
+                    loadImages();
                 } else {
-                    throw new Error(result.error?.message || 'Failed to upload to ImgBB');
+                    throw new Error(result.error?.message || 'Upload failed');
                 }
             } catch (error) {
-                console.error('Upload Error:', error);
                 showToast(`Upload failed: ${error.message}`, 'error');
-                uploadBtn.disabled = false;
-                uploadBtn.textContent = 'Upload';
+            }
+        }
+
+        function requestDelete(imageId) {
+            currentAction = 'delete';
+            actionItemId = imageId;
+            passwordModalTitle.textContent = 'Enter Password to Delete';
+            openPasswordModal();
+        }
+
+        async function deleteImage(imageId) {
+            try {
+                await database.ref('images/' + imageId).remove();
+                showToast('Photo deleted successfully.', 'success');
+                loadImages();
+            } catch (error) {
+                showToast(`Failed to delete: ${error.message}`, 'error');
             }
         }
         
+        // --- Data Loading & Display ---
         async function loadImages() {
             try {
                 const snapshot = await database.ref('images').orderByChild('timestamp').once('value');
                 const imageData = snapshot.val() || {};
-                
-                // Firebase returns an object, sort it by timestamp descending
                 allImages = Object.entries(imageData).sort((a, b) => b[1].timestamp - a[1].timestamp);
-
                 displayNames();
                 displayPhotos();
             } catch (error) {
-                console.error('Error loading images:', error);
-                showToast('Failed to load data from server.', 'error');
+                showToast('Failed to load data.', 'error');
             }
         }
 
@@ -529,53 +538,54 @@
                     namesMap.set(image.personName, image.url);
                 }
             }
-
             nameGrid.innerHTML = '';
             if (namesMap.size === 0) {
                 nameGrid.innerHTML = '<div class="status-message">No photos yet</div>';
                 return;
             }
-
             namesMap.forEach((url, name) => {
                 const nameDiv = document.createElement('div');
                 nameDiv.className = 'name-item';
                 nameDiv.onclick = () => filterByName(name);
-                
-                nameDiv.innerHTML = `
-                    <div class="name-avatar" style="background-image: url(${url})"></div>
-                    <div class="name-label">${name}</div>
-                `;
+                nameDiv.innerHTML = `<div class="name-avatar" style="background-image: url(${url})"></div><div class="name-label">${name}</div>`;
                 nameGrid.appendChild(nameDiv);
             });
         }
         
         function displayPhotos(filterName = null) {
-            const imagesToShow = filterName ? 
-                allImages.filter(([id, img]) => img.personName === filterName) :
-                allImages;
+            currentlyVisibleImages = filterName 
+                ? allImages.filter(([, img]) => img.personName === filterName)
+                : allImages;
 
             albumsGrid.innerHTML = '';
-            
-            if (imagesToShow.length === 0) {
+            if (currentlyVisibleImages.length === 0) {
                 albumsGrid.innerHTML = '<div class="status-message">No photos found</div>';
                 photoCount.textContent = '0 photos';
                 return;
             }
-
-            photoCount.textContent = `${imagesToShow.length} photos`;
+            photoCount.textContent = `${currentlyVisibleImages.length} photos`;
             albumsTitle.textContent = filterName ? `${filterName}'s Photos` : 'All Photos';
 
-            imagesToShow.forEach(([id, image]) => {
+            currentlyVisibleImages.forEach(([id, image], index) => {
                 const photoDiv = document.createElement('div');
                 photoDiv.className = 'album-card';
                 photoDiv.style.backgroundImage = `url(${image.url})`;
-                photoDiv.onclick = () => {
-                    window.open(image.url, '_blank');
+                photoDiv.onclick = () => openLightbox(index);
+                
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'delete-btn';
+                deleteButton.innerHTML = '🗑️';
+                deleteButton.onclick = (e) => {
+                    e.stopPropagation(); // Prevent opening lightbox
+                    requestDelete(id);
                 };
+                
+                photoDiv.appendChild(deleteButton);
                 albumsGrid.appendChild(photoDiv);
             });
         }
-
+        
+        // --- Filtering and Navigation ---
         function filterByName(name) {
             document.querySelectorAll('.name-item').forEach(item => {
                 item.classList.toggle('active', item.querySelector('.name-label').textContent === name);
@@ -588,9 +598,77 @@
             displayPhotos();
         }
 
+        // --- Lightbox (Slider) Logic ---
+        function openLightbox(index) {
+            lightboxCurrentIndex = index;
+            updateLightboxImage();
+            lightboxModal.classList.add('show');
+        }
+
+        function closeLightbox() {
+            lightboxModal.classList.remove('show');
+        }
+        
+        function updateLightboxImage() {
+            if (currentlyVisibleImages.length === 0) {
+                closeLightbox();
+                return;
+            }
+            const [, image] = currentlyVisibleImages[lightboxCurrentIndex];
+            lightboxImage.src = image.url;
+        }
+        
+        function showNextImage() {
+            lightboxCurrentIndex = (lightboxCurrentIndex + 1) % currentlyVisibleImages.length;
+            updateLightboxImage();
+        }
+        
+        function showPrevImage() {
+            lightboxCurrentIndex = (lightboxCurrentIndex - 1 + currentlyVisibleImages.length) % currentlyVisibleImages.length;
+            updateLightboxImage();
+        }
+
+        // --- Event Listeners ---
+        // Upload
+        openUploadModalBtn.addEventListener('click', openUploadModal);
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                fileLabel.textContent = `✅ ${file.name.substring(0, 25)}`;
+                previewImage.src = URL.createObjectURL(file);
+                previewImage.style.display = 'block';
+                personNameInput.value.trim() !== '' ? uploadBtn.disabled = false : uploadBtn.disabled = true;
+            }
+        });
+        personNameInput.addEventListener('input', () => {
+             selectedFile && personNameInput.value.trim() !== '' ? uploadBtn.disabled = false : uploadBtn.disabled = true;
+        });
+        uploadBtn.addEventListener('click', () => {
+            currentAction = 'upload';
+            passwordModalTitle.textContent = 'Enter Password to Upload';
+            openPasswordModal();
+        });
+        
+        // Lightbox
+        lightboxCloseBtn.addEventListener('click', closeLightbox);
+        lightboxPrevBtn.addEventListener('click', showPrevImage);
+        lightboxNextBtn.addEventListener('click', showNextImage);
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (lightboxModal.classList.contains('show')) {
+                if (e.key === 'ArrowRight') showNextImage();
+                if (e.key === 'ArrowLeft') showPrevImage();
+                if (e.key === 'Escape') closeLightbox();
+            }
+            if(passwordModal.classList.contains('show') && e.key === 'Enter'){
+                verifyPassword();
+            }
+        });
+
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', loadImages);
-
     </script>
 </body>
 </html>
