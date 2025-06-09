@@ -708,16 +708,16 @@ section h2 {
 .member-card {
     position: relative;
     background-color: var(--card-bg);
-    border-radius: 12px; /* More rounded */
-    flex: 0 0 180px; /* Wider cards */
+    border-radius: 12px;
+    flex: 0 0 145px; /* बदला हुआ: कार्ड की चौड़ाई कम कर दी गई है */
     text-align: center;
-    padding: 15px; /* More padding */
+    padding: 12px;   /* बदला हुआ: कार्ड के अंदर की स्पेसिंग थोड़ी कम की गई है */
     box-shadow: 0 5px 10px var(--shadow-color);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
     border: 1px solid var(--border-color);
     box-sizing: border-box;
-    overflow: hidden; /* Hide overflow */
+    overflow: hidden;
 }
 
 .member-card:hover {
@@ -727,13 +727,13 @@ section h2 {
 
 .member-card img {
     width: 100%;
-    height: 150px; /* Taller image */
-    border-radius: 8px; /* Rounded image */
-    object-fit: cover; /* Ensure image covers */
+    height: 125px; /* बदला हुआ: इमेज की ऊंचाई कम की गई है */
+    border-radius: 8px;
+    object-fit: cover;
     margin-bottom: 12px;
     display: block;
     background-color: #f0f0f0;
-    transition: transform 0.3s ease; /* Add zoom effect on hover */
+    transition: transform 0.3s ease;
 }
 .member-card:hover img {
     transform: scale(1.05); /* Zoom image slightly on card hover */
@@ -753,23 +753,24 @@ section h2 {
 .member-balance {
     background-color: var(--primary-color);
     color: white;
-    padding: 6px 28px;
+    padding: 6px 20px; /* बदला हुआ: पैडिंग कम की गई है */
     margin-top: 10px;
     border-radius: 5px;
-    font-size: 0.85em; /* Slightly larger balance */
+    font-size: 0.85em;
     font-weight: bold;
     display: inline-block;
 }
 
+
 .prime-tag {
     position: absolute;
-    top: 146px;
-    right: 15px;
+    top: 120px; /* बदला हुआ: नई इमेज ऊंचाई के अनुसार टॉप पोजीशन एडजस्ट की गई है */
+    right: 12px; /* बदला हुआ: नए पैडिंग के अनुसार राइट पोजीशन एडजस्ट की गई है */
     background-color: var(--prime-color);
     color: var(--text-color);
-    padding: 4px 9px; /* More padding */
-    border-radius: 2px; /* More rounded */
-    font-size: 11px; /* Slightly larger */
+    padding: 4px 9px;
+    border-radius: 4px;
+    font-size: 11px;
     font-weight: bold;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     line-height: 1;
