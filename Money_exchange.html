@@ -3,142 +3,461 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>स्टाइलिश EMI फॉर्म</title>
+    <title>Loan Profit Analytics</title>
     <style>
+        :root {
+            --primary-color: #2c3e50; --secondary-color: #34495e; --light-bg: #ecf0f1;
+            --text-dark: #2c3e50; --positive-color: #27ae60; --negative-color: #c0392b;
+            --card-bg: #ffffff; --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --modal-bg: rgba(0, 0, 0, 0.7);
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: transparent;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0; background-color: var(--light-bg); color: var(--text-dark);
+            line-height: 1.6; padding-top: 80px;
+        }
+        .container {
+            max-width: 1200px; margin: 20px auto; padding: 0 15px;
+        }
+        
+        /* --- Loader & Password --- */
+        #loader, #passwordPromptContainer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 4000; transition: opacity 0.5s ease; }
+        #loader { background-color: var(--light-bg); flex-direction: column; }
+        #loader .spinner { width: 40px; height: 40px; border: 4px solid rgba(0,0,0,0.1); border-left-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #passwordPromptContainer { background-color: var(--modal-bg); }
+        #passwordPromptMessage { padding: 25px 30px; background-color: var(--card-bg); border-radius: 10px; box-shadow: var(--card-shadow); text-align: center; max-width: 320px; width: 85%; }
+        #passwordInput { width: calc(100% - 20px); padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; font-size: 18px; text-align: center; letter-spacing: 5px; }
+        #passwordSubmit { padding: 10px 20px; font-size: 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.2s ease; }
+        #passwordSubmit:hover { background-color: var(--secondary-color); }
+        .hidden { opacity: 0; pointer-events: none; }
+
+        /* --- Header & Filters --- */
+        .header { text-align: center; background-color: var(--primary-color); color: white; padding: 10px 0; position: fixed; top: 0; left: 0; width: 100%; z-index: 1001; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .header h1 { font-size: 1.5em; margin: 0; }
+        .filters { margin-bottom: 25px; text-align: center; }
+        .filters label { font-weight: bold; margin-right: 10px; }
+        .filters select { padding: 8px 12px; font-size: 16px; border-radius: 5px; border: 1px solid #bdc3c7; min-width: 250px; }
+        
+        /* --- Main Content Layout --- */
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+            align-items: flex-start;
         }
 
-        .form-container {
-            background: linear-gradient(145deg, #ffffff, #f1f1f1);
-            padding: 30px;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            
-            border: 3px solid #056fff;
-            animation: borderGlow 2s infinite alternate;
+        /* --- Profile Card --- */
+        .profile-card {
+            background-color: var(--card-bg); border-radius: 10px; box-shadow: var(--card-shadow);
+            padding: 20px; text-align: center; position: sticky; top: 100px; /* Sticks on scroll */
         }
+        .profile-image-container { width: 120px; height: 120px; margin: 0 auto 15px auto; border-radius: 50%; overflow: hidden; border: 4px solid var(--light-bg); box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .profile-image-container img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-card h2 { margin: 10px 0 5px 0; font-size: 1.8em; color: var(--primary-color); }
+        .profile-stats { margin-top: 20px; text-align: left; }
+        .stat-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ecf0f1; font-size: 1em; }
+        .stat-item:last-child { border-bottom: none; }
+        .stat-item .label { font-weight: 500; color: #7f8c8d; }
+        .stat-item .value { font-weight: bold; }
+        .value.positive { color: var(--positive-color); }
+        .value.negative { color: var(--negative-color); }
 
-        @keyframes borderGlow {
-            0% { border-color: #056fff; }
-            100% { border-color: #0274ff; }
+        /* --- Profit Log --- */
+        .profit-log { background-color: var(--card-bg); border-radius: 10px; box-shadow: var(--card-shadow); padding: 20px; }
+        .profit-log h2 { margin-top: 0; text-align: center; color: var(--primary-color); }
+        .table-container { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #ecf0f1; text-align: center; }
+        th { background-color: var(--secondary-color); color: white; font-size: 0.9em; text-transform: uppercase; }
+        td { font-size: 0.95em; }
+        .profit-value { font-weight: bold; color: var(--positive-color); }
+        .details-btn { padding: 6px 12px; font-size: 0.8em; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.2s ease; }
+        .details-btn:hover { background-color: #16a085; }
+        .no-data-row td { text-align: center; padding: 40px; color: #7f8c8d; font-size: 1.1em; }
+
+        /* --- Modal --- */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--modal-bg); display: flex; align-items: center; justify-content: center; z-index: 2500; padding: 15px; }
+        .modal-content { background-color: var(--card-bg); padding: 25px; border-radius: 8px; box-shadow: var(--card-shadow); max-width: 500px; width: 95%; position: relative; }
+        .modal-close { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 28px; color: #95a5a6; cursor: pointer; }
+        .modal h2 { margin-top: 0; text-align: center; color: var(--primary-color); }
+        #distributionDetails { list-style-type: none; padding: 0; max-height: 60vh; overflow-y: auto; }
+        #distributionDetails li { display: flex; justify-content: space-between; padding: 10px; border-radius: 5px; margin-bottom: 8px; background-color: var(--light-bg); }
+        #distributionDetails .name { font-weight: bold; }
+        #distributionDetails .share { font-weight: bold; color: var(--positive-color); }
+
+        /* --- Responsive --- */
+        @media (max-width: 992px) {
+            .main-content { grid-template-columns: 1fr; }
+            .profile-card { position: static; margin-bottom: 25px; }
         }
-
-        h2 {
-            color: #056fff;
-            font-size: 24px;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin: 15px 0 5px;
-            color: #444;
-            text-align: left;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin-top: 5px;
-            margin-bottom: 15px;
-            border: 1px solid #056fff;
-            border-radius: 10px;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
-            font-size: 16px;
-            background: #fff;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #056fff;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .message-above {
-            color: #056fff;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            min-height: 20px; /* Ensures space for text */
+        @media (max-width: 600px) {
+            body { padding-top: 60px; }
+            .container { padding: 0 10px; }
+            .header h1 { font-size: 1.2em; }
+            .filters select { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>नयू मेंबर जॉइन फॉर्म</h2>
-        <form id="emiForm">
-            <label for="name">नाम:</label>
-            <input type="text" id="name" name="name" required placeholder="अपना नाम दर्ज करें">
 
-            <label for="emiAmount">EMI अमाउंट:</label>
-            <select id="emiAmount" name="emiAmount" required>
-                <option value="500">₹500</option>
-                <option value="500+">₹500+</option>
-            </select>
-
-            <!-- Typing message above the button -->
-            <div class="message-above" id="messageText"></div>
-
-            <button type="button" id="submitButton" onclick="submitForm()">फॉर्म सबमिट करें</button>
-        </form>
+    <div id="loader">
+        <div class="spinner"></div>
+        Loading Data...
     </div>
 
-    <script>
-        const messageText = document.getElementById("messageText");
-        const typingMessage = "मेंबर बनने के लिए फॉर्म भरे।";
+    <div id="passwordPromptContainer" class="hidden">
+        <div id="passwordPromptMessage">
+            <p>Enter Access PIN:</p>
+            <input type="password" id="passwordInput" inputmode="numeric" pattern="[0-9]*" maxlength="4">
+            <button id="passwordSubmit">Enter</button>
+        </div>
+    </div>
+
+    <div id="dashboardContent" class="hidden">
+        <header class="header">
+            <h1>Loan Profit Analytics</h1>
+        </header>
+
+        <div class="container">
+            <div class="filters">
+                <label for="memberFilter">Select Member:</label>
+                <select id="memberFilter">
+                    <option value="all">Overall View</option>
+                </select>
+            </div>
+
+            <main class="main-content">
+                <aside class="profile-card" id="profileSection">
+                    <div class="profile-image-container">
+                        <img id="profileImage" src="https://i.postimg.cc/XNpR3cN1/20241030-065157.png" alt="Profile Picture">
+                    </div>
+                    <h2 id="profileName">Community</h2>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="label">Total Loan Taken</span>
+                            <span class="value negative" id="profileTotalLoan">₹0.00</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="label">Total Paid</span>
+                            <span class="value positive" id="profileTotalPayment">₹0.00</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="label">Current Balance</span>
+                            <span class="value" id="profileCurrentBalance">₹0.00</span>
+                        </div>
+                    </div>
+                </aside>
+
+                <section class="profit-log" id="profitLogSection">
+                    <h2>Profit Distribution Events</h2>
+                    <div class="table-container">
+                        <table id="profitLogTable">
+                            <thead>
+                                <tr>
+                                    <th>Payment Date</th>
+                                    <th>Payer</th>
+                                    <th>Loan Amt</th>
+                                    <th>Paid Amt</th>
+                                    <th>Profit</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    
+    <div id="detailsModal" class="modal hidden">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h2>Profit Distribution</h2>
+            <ul id="distributionDetails">
+                </ul>
+        </div>
+    </div>
+
+<script>
+    // --- CONFIGURATION ---
+    const dataUrl = 'https://script.google.com/macros/s/AKfycbz9LCkPR8L3-i7F1KG2KUJ6It2l_p55murljRJ_4108nFysOXUOpG5WEs1sdEaGHq1L7w/exec';
+    const CORRECT_PASSWORD = "7536";
+    const defaultProfilePic = 'https://i.postimg.cc/XNpR3cN1/20241030-065157.png';
+
+    // --- GLOBAL VARIABLES ---
+    let allData = [];
+
+    // --- INITIALIZATION ---
+    document.addEventListener("DOMContentLoaded", () => {
+        setupPasswordPrompt();
+    });
+
+    function setupPasswordPrompt() {
+        const passwordContainer = document.getElementById('passwordPromptContainer');
+        const passwordInput = document.getElementById('passwordInput');
+        const passwordSubmit = document.getElementById('passwordSubmit');
         
-        function typeText() {
-            let i = 0;
-            messageText.innerHTML = ""; // Clear the previous message
+        passwordContainer.classList.remove('hidden');
+        passwordInput.focus();
 
-            // Typing effect
-            const typingInterval = setInterval(() => {
-                if (i < typingMessage.length) {
-                    messageText.innerHTML += typingMessage.charAt(i);
-                    i++;
-                } else {
-                    clearInterval(typingInterval);
+        passwordSubmit.addEventListener('click', checkPassword);
+        passwordInput.addEventListener('keydown', (e) => e.key === 'Enter' && checkPassword());
+
+        function checkPassword() {
+            if (passwordInput.value === CORRECT_PASSWORD) {
+                passwordContainer.classList.add('hidden');
+                document.getElementById('loader').classList.remove('hidden');
+                fetchData();
+            } else {
+                alert("Incorrect PIN");
+                passwordInput.value = "";
+            }
+        }
+    }
+
+    // --- DATA FETCHING AND PROCESSING ---
+    async function fetchData() {
+        try {
+            const response = await fetch(dataUrl);
+            const rawData = await response.json();
+
+            allData = rawData.map(row => ({
+                Date: new Date(row.Date),
+                Name: String(row.Name).trim(),
+                Loan: parseFloat(row.Loan) || 0,
+                Payment: parseFloat(row.Payment) || 0,
+                SipPayment: parseFloat(row["SIP Payment"]) || 0,
+                ImageUrl: row.imageUrl || null
+            })).filter(r => r.Name && !isNaN(r.Date));
+
+            // CRITICAL: Sort all data by date ascending
+            allData.sort((a, b) => a.Date - b.Date);
+
+            initializeDashboard();
+
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            document.body.innerHTML = `<div style="text-align:center; padding:50px; color:red;">Failed to load data. Please check the console.</div>`;
+        } finally {
+            document.getElementById('loader').classList.add('hidden');
+        }
+    }
+
+    // --- DASHBOARD SETUP ---
+    function initializeDashboard() {
+        document.getElementById('dashboardContent').classList.remove('hidden');
+        populateMemberFilter();
+        setupEventListeners();
+        updateDisplay();
+    }
+
+    function setupEventListeners() {
+        document.getElementById('memberFilter').addEventListener('change', updateDisplay);
+        
+        // Modal close events
+        const modal = document.getElementById('detailsModal');
+        modal.querySelector('.modal-close').addEventListener('click', () => modal.classList.add('hidden'));
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    }
+
+    function populateMemberFilter() {
+        const nameFilter = document.getElementById("memberFilter");
+        const memberNames = [...new Set(allData.map(row => row.Name))].sort();
+        
+        memberNames.forEach(name => {
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            nameFilter.appendChild(option);
+        });
+    }
+
+    // --- CORE DISPLAY LOGIC ---
+    function updateDisplay() {
+        const selectedName = document.getElementById('memberFilter').value;
+        updateProfileCard(selectedName);
+        populateProfitLog(selectedName);
+    }
+    
+    function updateProfileCard(name) {
+        const profileImageEl = document.getElementById('profileImage');
+        const profileNameEl = document.getElementById('profileName');
+        const totalLoanEl = document.getElementById('profileTotalLoan');
+        const totalPaymentEl = document.getElementById('profileTotalPayment');
+        const balanceEl = document.getElementById('profileCurrentBalance');
+
+        let dataToShow = name === 'all' ? allData : allData.filter(r => r.Name === name);
+        
+        let totalLoan = 0;
+        let totalPayment = 0;
+        
+        dataToShow.forEach(r => {
+            totalLoan += r.Loan;
+            totalPayment += r.Payment + r.SipPayment;
+        });
+
+        const balance = totalPayment - totalLoan;
+
+        // Set Name and Image
+        if (name === 'all') {
+            profileNameEl.textContent = 'Community Overview';
+            profileImageEl.src = defaultProfilePic;
+        } else {
+            profileNameEl.textContent = name;
+            const lastUserEntryWithImage = [...dataToShow].reverse().find(r => r.ImageUrl);
+            profileImageEl.src = lastUserEntryWithImage ? lastUserEntryWithImage.ImageUrl : defaultProfilePic;
+        }
+        
+        // Set Stats
+        totalLoanEl.textContent = `₹${totalLoan.toFixed(2)}`;
+        totalPaymentEl.textContent = `₹${totalPayment.toFixed(2)}`;
+        balanceEl.textContent = `₹${balance.toFixed(2)}`;
+        balanceEl.className = `value ${balance >= 0 ? 'positive' : 'negative'}`;
+    }
+
+    // --- PROFIT CALCULATION AND DISPLAY ---
+    function populateProfitLog(selectedName) {
+        const tableBody = document.querySelector("#profitLogTable tbody");
+        tableBody.innerHTML = '';
+        
+        // 1. Identify all payment transactions
+        const paymentEvents = allData.filter(r => r.Payment > 0);
+        let profitEventsFound = 0;
+
+        paymentEvents.forEach(paymentRecord => {
+            // 2. For each payment, calculate its profit distribution
+            const result = calculateProfitDistribution(paymentRecord);
+
+            if (result && result.profit > 0) {
+                 // If a filter is applied, only show events related to that person
+                if (selectedName !== 'all' && paymentRecord.Name !== selectedName) {
+                    return;
                 }
-            }, 100); // Each character appears after 100ms
+                
+                profitEventsFound++;
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${formatDate(paymentRecord.Date)}</td>
+                    <td>${paymentRecord.Name}</td>
+                    <td>₹${result.loan.Loan.toFixed(2)}</td>
+                    <td>₹${paymentRecord.Payment.toFixed(2)}</td>
+                    <td class="profit-value">₹${result.profit.toFixed(2)}</td>
+                    <td><button class="details-btn">View Details</button></td>
+                `;
+
+                // Add event listener to the button to show the modal with distribution data
+                row.querySelector('.details-btn').addEventListener('click', () => {
+                    showDistributionModal(result.distribution);
+                });
+                
+                tableBody.appendChild(row);
+            }
+        });
+        
+        if (profitEventsFound === 0) {
+            tableBody.innerHTML = `<tr class="no-data-row"><td colspan="6">No profit events found for this selection.</td></tr>`;
+        }
+    }
+
+    /**
+     * This is the core logic function.
+     * It takes a payment transaction and calculates how the profit is distributed.
+     * @param {object} paymentRecord - The transaction record for a payment.
+     * @returns {object|null} - An object with profit details or null if no profit.
+     */
+    function calculateProfitDistribution(paymentRecord) {
+        // 1. Find the corresponding loan for this payment.
+        // We look for the most recent loan by the same person before this payment date.
+        const correspondingLoan = allData
+            .slice() // Create a copy to not mutate original
+            .filter(r => r.Name === paymentRecord.Name && r.Loan > 0 && r.Date < paymentRecord.Date)
+            .pop(); // .pop() gets the last (most recent) one because data is sorted by date.
+
+        if (!correspondingLoan) {
+            return null; // No previous loan found for this payment
+        }
+        
+        // 2. Check if there's a profit.
+        const profit = paymentRecord.Payment - correspondingLoan.Loan;
+        if (profit <= 0) {
+            return null; // Payment did not exceed loan amount.
         }
 
-        function repeatTyping() {
-            typeText(); // First time
+        // 3. Identify beneficiaries: members who existed *before the loan was given*.
+        const loanDate = correspondingLoan.Date;
+        const transactionsBeforeLoan = allData.filter(r => r.Date < loanDate);
+        
+        // 4. Calculate the balance of each member at the moment the loan was given.
+        const memberBalancesAtLoanTime = {};
+        transactionsBeforeLoan.forEach(r => {
+            if (!memberBalancesAtLoanTime[r.Name]) {
+                memberBalancesAtLoanTime[r.Name] = 0;
+            }
+            memberBalancesAtLoanTime[r.Name] += (r.Payment + r.SipPayment - r.Loan);
+        });
+        
+        // 5. Calculate the total community capital from beneficiaries (only positive balances contribute).
+        let totalCommunityCapital = 0;
+        Object.values(memberBalancesAtLoanTime).forEach(balance => {
+            if (balance > 0) {
+                totalCommunityCapital += balance;
+            }
+        });
 
-            // Repeat typing every 5 seconds
-            setInterval(() => {
-                typeText();
-            }, 5000);
+        if (totalCommunityCapital <= 0) {
+            return null; // No capital to distribute profit against.
         }
 
-        repeatTyping();
-
-        function submitForm() {
-            const name = document.getElementById("name").value;
-            const emiAmount = document.getElementById("emiAmount").value;
-
-            const message = `Hii\nI am *${name}*\nEMI Amount: *₹${emiAmount}*\nमुझे भी *Bank community Loan* का हिस्सा बनना है।\nकृपया मुझे भी *Group* में add करे।`;
-            const whatsappLink = `https://wa.me/917903698180?text=${encodeURIComponent(message)}`;
-            window.open(whatsappLink, "_blank");
+        // 6. Distribute the profit proportionally.
+        const distribution = [];
+        for (const [name, balance] of Object.entries(memberBalancesAtLoanTime)) {
+            if (balance > 0) {
+                const share = (balance / totalCommunityCapital) * profit;
+                distribution.push({ name, share });
+            }
         }
-    </script>
+        
+        return {
+            profit: profit,
+            loan: correspondingLoan,
+            payment: paymentRecord,
+            distribution: distribution.sort((a,b) => b.share - a.share) // Sort by highest share
+        };
+    }
+
+    // --- MODAL AND UTILITY FUNCTIONS ---
+    function showDistributionModal(distributionData) {
+        const modal = document.getElementById('detailsModal');
+        const listEl = document.getElementById('distributionDetails');
+        listEl.innerHTML = '';
+
+        if (distributionData.length === 0) {
+             listEl.innerHTML = '<li>No beneficiaries found with positive balance at the time of loan.</li>';
+        } else {
+            distributionData.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span class="name">${item.name}</span> <span class="share">+ ₹${item.share.toFixed(2)}</span>`;
+                listEl.appendChild(li);
+            });
+        }
+        modal.classList.remove('hidden');
+    }
+
+    function formatDate(date) {
+        if (!(date instanceof Date) || isNaN(date)) return "N/A";
+        return date.toLocaleDateString('en-GB', {
+            day: '2-digit', month: 'short', year: 'numeric'
+        });
+    }
+
+</script>
 </body>
 </html>
