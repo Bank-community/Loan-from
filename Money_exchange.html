@@ -1,4 +1,257 @@
-// --- CONFIGURATION ---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Profit Analytics</title>
+    
+    <!-- Google Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<style>
+/* --- ROOT VARIABLES & FONT IMPORT --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #34495e;
+    --secondary-color: #3498db;
+    --accent-color: #e67e22;
+    --light-bg: #ecf0f1;
+    --text-dark: #2c3e50;
+    --text-light: #7f8c8d;
+    --positive-color: #27ae60;
+    --negative-color: #c0392b;
+    --card-bg: #ffffff;
+    --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+    --border-color: #dfe6e9;
+    --modal-bg: rgba(44, 62, 80, 0.7);
+    --gradient-header: linear-gradient(90deg, #34495e, #2c3e50);
+}
+
+/* --- BASE & UTILITIES --- */
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+    line-height: 1.6;
+    padding-top: 70px;
+}
+.container {
+    max-width: 1300px;
+    margin: 25px auto;
+    padding: 0 20px;
+}
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+/* --- LOADER & PASSWORD PROMPT --- */
+#loader, #passwordPromptContainer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 5000; transition: opacity 0.5s ease; flex-direction: column; }
+#loader { background-color: var(--light-bg); }
+#loader .spinner { width: 50px; height: 50px; border: 5px solid rgba(0,0,0,0.1); border-left-color: var(--secondary-color); border-radius: 50%; animation: spin 1.2s linear infinite; margin-bottom: 20px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#passwordPromptContainer { background-color: var(--modal-bg); backdrop-filter: blur(5px); }
+#passwordPromptMessage { padding: 30px 35px; background-color: var(--card-bg); border-radius: 16px; box-shadow: var(--card-shadow); text-align: center; max-width: 340px; width: 90%; }
+#passwordPromptMessage h3 { margin-top: 0; font-size: 1.3em; }
+#passwordInput { width: calc(100% - 24px); padding: 12px; margin-bottom: 20px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 22px; text-align: center; letter-spacing: 10px; font-family: 'Poppins', sans-serif; }
+#passwordSubmit { width: 100%; padding: 12px 20px; font-size: 1em; font-weight: 600; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+#passwordSubmit:hover { background-color: var(--secondary-color); transform: translateY(-2px); }
+
+/* --- HEADER & FILTERS --- */
+.header { text-align: center; background: var(--gradient-header); color: white; padding: 15px 0; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+.header h1 { font-size: 1.4em; margin: 0; font-weight: 600; }
+.filters { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; background-color: var(--card-bg); padding: 15px 20px; border-radius: 12px; box-shadow: var(--card-shadow); }
+.filter-group { display: flex; align-items: center; gap: 10px; }
+.filters label { font-weight: 500; }
+.filters select, #showReturnViewBtn { padding: 10px 15px; font-size: 1em; border-radius: 8px; border: 1px solid var(--border-color); background-color: white; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.3s ease; }
+.filters select { min-width: 280px; }
+#showReturnViewBtn { font-weight: 600; background-color: var(--accent-color); color: white; border: none; }
+#showReturnViewBtn:hover { background-color: #d35400; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.filters i { color: var(--secondary-color); }
+#showReturnViewBtn i { color: white; }
+
+/* --- MAIN CONTENT LAYOUT --- */
+.main-content { display: grid; grid-template-columns: 380px 1fr; gap: 30px; align-items: flex-start; }
+#dashboardContent { opacity: 0; transition: opacity 0.5s ease-in-out; }
+#dashboardContent.visible { opacity: 1; }
+
+/* --- PROFILE CARD --- */
+.profile-card { background-color: var(--card-bg); border-radius: 16px; box-shadow: var(--card-shadow); padding: 25px; text-align: center; position: sticky; top: 100px; border-top: 4px solid var(--secondary-color); }
+.profile-image-container { width: 130px; height: 130px; margin: 0 auto 15px auto; border-radius: 50%; overflow: hidden; border: 5px solid var(--light-bg); box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+.profile-image-container img { width: 100%; height: 100%; object-fit: cover; }
+.profile-card h2 { margin: 10px 0 20px 0; font-size: 1.8em; color: var(--primary-color); word-break: break-word; }
+.profile-stats { margin-top: 20px; text-align: left; }
+.stat-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid var(--border-color); font-size: 1em; }
+.stat-item:last-child { border-bottom: none; }
+.stat-item .label { font-weight: 500; color: var(--text-light); display: flex; align-items: center; gap: 10px; }
+.stat-item .label i { width: 20px; text-align: center; }
+.stat-item .value { font-weight: 700; font-size: 1.1em; }
+.value.positive { color: var(--positive-color); }
+.value.negative { color: var(--negative-color); }
+.icon-loan { color: var(--negative-color); }
+.icon-payment { color: var(--positive-color); }
+.icon-balance { color: var(--primary-color); }
+.icon-profit { color: var(--accent-color); }
+
+/* --- PROFIT LOG TABLE --- */
+.profit-log { background-color: var(--card-bg); border-radius: 16px; box-shadow: var(--card-shadow); padding: 25px; border-top: 4px solid var(--accent-color); }
+.profit-log h2 { margin-top: 0; text-align: center; color: var(--primary-color); }
+.table-container { width: 100%; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { padding: 15px; border-bottom: 1px solid var(--border-color); text-align: center; }
+th { background-color: var(--primary-color); color: white; font-size: 0.9em; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
+td { font-size: 0.95em; }
+.profit-value { font-weight: bold; color: var(--positive-color); }
+.details-btn { padding: 8px 14px; font-size: 0.85em; background-color: var(--secondary-color); color: white; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; }
+.details-btn:hover { background-color: #2980b9; transform: scale(1.05); }
+.no-data-row td { text-align: center; padding: 50px; color: var(--text-light); font-size: 1.1em; }
+
+/* --- MODALS --- */
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--modal-bg); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 2500; padding: 15px; box-sizing: border-box; transition: opacity 0.3s ease, visibility 0.3s ease; }
+.modal-content { background-color: var(--card-bg); padding: 30px; border-radius: 16px; box-shadow: var(--card-shadow); max-width: 600px; width: 95%; position: relative; max-height: 90vh; display: flex; flex-direction: column; }
+.modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 30px; color: #bdc3c7; cursor: pointer; transition: color 0.2s; }
+.modal-close:hover { color: var(--text-dark); }
+.modal h2 { margin-top: 0; text-align: center; color: var(--primary-color); font-weight: 600; }
+.modal ul, .modal ol { list-style: none; padding: 0; overflow-y: auto; margin-top: 15px; }
+#returnViewList li, #distributionDetails li { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-radius: 8px; margin-bottom: 8px; background-color: var(--light-bg); transition: background-color 0.2s; }
+#returnViewList li:hover, #distributionDetails li:hover { background-color: #dfe6e9; }
+#returnViewList .rank { font-weight: bold; color: var(--secondary-color); min-width: 35px; font-size: 1.1em; }
+#returnViewList .name, #distributionDetails .name { font-weight: 600; flex-grow: 1; }
+#returnViewList .share, #distributionDetails .share { font-weight: bold; color: var(--positive-color); white-space: nowrap; }
+.chart-container { margin-bottom: 20px; }
+.list-header { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid var(--border-color); font-size: 1.1em; color: var(--text-light); }
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 1100px) {
+    .main-content { grid-template-columns: 320px 1fr; }
+}
+@media (max-width: 992px) {
+    .main-content { grid-template-columns: 1fr; }
+    .profile-card { position: static; margin-bottom: 30px; }
+}
+@media (max-width: 600px) {
+    body { padding-top: 60px; }
+    .container { padding: 0 15px; }
+    .header h1 { font-size: 1.2em; }
+    .filters { flex-direction: column; align-items: stretch; padding: 15px; }
+    .filters select, #showReturnViewBtn { width: 100%; max-width: 100%; }
+    .profile-card h2 { font-size: 1.5em; }
+    th, td { padding: 12px 8px; }
+    .modal-content { padding: 20px; }
+}
+</style>
+    <div id="loader">
+        <div class="spinner"></div>
+        <span>Loading Analytics...</span>
+    </div>
+
+    <div id="passwordPromptContainer" class="hidden">
+        <div id="passwordPromptMessage">
+            <h3><i class="fas fa-lock"></i> Enter Access PIN</h3>
+            <input type="password" id="passwordInput" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••">
+            <button id="passwordSubmit">Enter</button>
+        </div>
+    </div>
+
+    <div id="dashboardContent" class="hidden">
+        <header class="header">
+            <h1><i class="fas fa-chart-line"></i> Bank Loan Profit</h1>
+        </header>
+
+        <div class="container">
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="memberFilter"><i class="fas fa-user-friends"></i> Select View:</label>
+                    <select id="memberFilter">
+                        <option value="all">Community Overview</option>
+                    </select>
+                </div>
+                <button id="showReturnViewBtn"><i class="fas fa-trophy"></i> Member Return Rank</button>
+            </div>
+
+            <main class="main-content">
+                <aside class="profile-card" id="profileSection">
+                    <div class="profile-image-container">
+                        <img id="profileImage" src="https://i.postimg.cc/XNpR3cN1/20241030-065157.png" alt="Profile Picture">
+                    </div>
+                    <h2 id="profileName">Community</h2>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="label"><i class="fas fa-arrow-up-from-bracket icon-loan"></i> Total Loan Taken</span>
+                            <span class="value negative" id="profileTotalLoan">₹0.00</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="label"><i class="fas fa-arrow-down-to-bracket icon-payment"></i> Total Paid</span>
+                            <span class="value positive" id="profileTotalPayment">₹0.00</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="label"><i class="fas fa-wallet icon-balance"></i> Current Balance</span>
+                            <span class="value" id="profileCurrentBalance">₹0.00</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="label"><i class="fas fa-sack-dollar icon-profit"></i> Profit Earned / Dist.</span>
+                            <span class="value positive" id="profileTotalProfit">₹0.00</span>
+                        </div>
+                    </div>
+                </aside>
+
+                <section class="profit-log" id="profitLogSection">
+                    <h2><i class="fas fa-exchange-alt"></i> Profit Distribution Events</h2>
+                    <div class="table-container">
+                        <table id="profitLogTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Payer</th>
+                                    <th>Loan Amt</th>
+                                    <th>Paid Amt</th>
+                                    <th>Profit</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    
+    <div id="detailsModal" class="modal hidden">
+        <div class="modal-content">
+            <button class="modal-close">×</button>
+            <h2><i class="fas fa-chart-pie"></i> Profit Distribution</h2>
+            <div class="chart-container">
+                <canvas id="distributionChart"></canvas>
+            </div>
+            <h3 class="list-header">Beneficiaries</h3>
+            <ul id="distributionDetails"></ul>
+        </div>
+    </div>
+
+    <div id="returnViewModal" class="modal hidden">
+        <div class="modal-content">
+            <button class="modal-close">×</button>
+            <h2><i class="fas fa-trophy"></i> Member Return Ranking</h2>
+            <ol id="returnViewList"></ol>
+        </div>
+    </div>
+
+    <!-- External JavaScript -->
+    <script> // --- CONFIGURATION ---
 const dataUrl = 'https://script.google.com/macros/s/AKfycbz9LCkPR8L3-i7F1KG2KUJ6It2l_p55murljRJ_4108nFysOXUOpG5WEs1sdEaGHq1L7w/exec';
 const CORRECT_PASSWORD = "7536";
 const defaultProfilePic = 'https://i.postimg.cc/XNpR3cN1/20241030-065157.png';
@@ -344,4 +597,7 @@ function formatDate(date) {
     return date.toLocaleDateString('en-GB', {
         day: '2-digit', month: 'short', year: 'numeric'
     });
-}
+} 
+</script>
+</body>
+</html>
