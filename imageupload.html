@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,6 +15,9 @@
             --card-bg-color: #FFFFFF;
             --border-color: #EAEAEA;
             --danger-color: #e74c3c;
+            --success-color: #28a745;
+            --like-color: #ff4757;
+            --like-color-disabled: #dcdcdc;
         }
 
         * {
@@ -49,24 +52,22 @@
             border-bottom: 1px solid var(--border-color);
         }
         
-.header-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
+        .header-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+        }
 
-.header-icon.left {
-    background-color: #E0E0E0;
-    background-image: url('https://i.ibb.co/v4zt0f30/20241030-065157.png');
-}
+        .header-icon.left {
+            background-color: #E0E0E0;
+            background-image: url('https://i.ibb.co/v4zt0f30/20241030-065157.png');
+        }
 
-.header-icon.right {
-    background: linear-gradient(45deg, #667eea, #764ba2) url('https://i.ibb.co/v4zt0f30/20241030-065157.png') no-repeat center;
-    background-size: contain, contain;
-}
+        .header-icon.right {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
         
         .title {
             font-size: 22px;
@@ -113,6 +114,11 @@
             text-align: center;
             flex-shrink: 0;
             cursor: pointer;
+            position: relative;
+        }
+        
+        .name-avatar-wrapper {
+            position: relative;
         }
 
         .name-avatar {
@@ -127,6 +133,23 @@
             transition: transform 0.3s ease;
         }
         
+        .photo-count-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--card-bg-color);
+        }
+
         .name-item.active .name-avatar {
             border-color: var(--primary-color);
         }
@@ -139,25 +162,73 @@
 
         .albums-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 15px;
+            transition: opacity 0.4s ease-in-out;
         }
 
         .album-card {
-            aspect-ratio: 1;
             border-radius: 18px;
+            background-color: #eee;
             background-size: cover;
             background-position: center;
             cursor: pointer;
-            transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; /* Align footer to bottom */
+            aspect-ratio: 1;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .album-card:hover {
-            transform: scale(1.05);
+            transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .album-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 10px;
+            gap: 8px;
+            background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 100%);
+        }
+
+        .like-button, .like-count {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .like-button:hover {
+             background: rgba(255, 255, 255, 0.4);
+        }
+        .like-button .heart {
+            font-size: 18px;
+            color: var(--like-color-disabled);
+            transition: color 0.3s ease;
+        }
+        .like-button.liked .heart {
+            color: var(--like-color);
+        }
+        
+        .like-count {
+            cursor: help;
+            display: none; /* Hidden by default */
+        }
+        .like-count.visible {
+            display: flex; /* Shown by JS if count > 0 */
         }
 
         .delete-btn {
@@ -166,11 +237,11 @@
             right: 8px;
             width: 30px;
             height: 30px;
-            background-color: rgba(231, 76, 60, 0.8);
+            background-color: rgba(255, 255, 255, 0.8);
             border: none;
             border-radius: 50%;
-            color: white;
-            font-size: 18px;
+            color: var(--danger-color);
+            font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -178,6 +249,7 @@
             opacity: 0;
             transform: scale(0.8);
             transition: all 0.3s ease;
+            z-index: 5;
         }
         
         .album-card:hover .delete-btn {
@@ -186,7 +258,7 @@
         }
         
         .delete-btn:hover {
-            background-color: var(--danger-color);
+            background-color: white;
         }
 
         .status-message {
@@ -195,12 +267,37 @@
             color: var(--light-text-color);
             font-size: 16px;
             grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .status-message .icon {
+            font-size: 40px;
+            color: #ccc;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid var(--primary-color);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            grid-column: 1 / -1;
+            margin: 40px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .fab {
             position: fixed;
             bottom: 30px;
-            right: calc(50% - 150px); /* Adjust to stay within container on larger screens */
+            right: calc(50% - 200px);
             width: 60px;
             height: 60px;
             background: var(--primary-color);
@@ -221,7 +318,6 @@
             transform: scale(1.1);
         }
         
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -234,7 +330,6 @@
             background-color: rgba(0,0,0,0.6);
             align-items: center;
             justify-content: center;
-            -webkit-backdrop-filter: blur(5px);
             backdrop-filter: blur(5px);
         }
 
@@ -269,42 +364,23 @@
         .modal-btn.primary:disabled { background-color: #B0C4DE; cursor: not-allowed; }
         .modal-btn.secondary { background-color: #F1F3F5; color: #555; }
         
-        /* Lightbox (Image Slider) Styles */
-        #lightboxModal {
-            background-color: rgba(0,0,0,0.85);
-        }
-        .lightbox-content {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .lightbox-image {
-            max-width: 90vw;
-            max-height: 80vh;
-            border-radius: 10px;
-        }
-        .lightbox-close, .lightbox-nav {
-            position: absolute;
-            color: white;
-            cursor: pointer;
-            font-size: 40px;
-            font-weight: bold;
-            user-select: none;
-            transition: opacity 0.2s ease;
-        }
+        #likeHistoryList { list-style: none; max-height: 200px; overflow-y: auto; margin-top: 15px; text-align: left; padding: 0 10px; }
+        #likeHistoryList li { padding: 8px 12px; border-bottom: 1px solid var(--border-color); font-size: 16px; }
+        #likeHistoryList li:last-child { border-bottom: none; }
+
+        #lightboxModal { background-color: rgba(0,0,0,0.85); }
+        .lightbox-content { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+        .lightbox-image { max-width: 90vw; max-height: 80vh; border-radius: 10px; }
+        .lightbox-close, .lightbox-nav { position: absolute; color: white; cursor: pointer; font-size: 40px; font-weight: bold; user-select: none; transition: opacity 0.2s ease; z-index: 1001; }
         .lightbox-close { top: 20px; right: 35px; }
         .lightbox-nav { top: 50%; transform: translateY(-50%); padding: 10px; }
         .lightbox-nav.prev { left: 10px; }
         .lightbox-nav.next { right: 10px; }
         .lightbox-close:hover, .lightbox-nav:hover { opacity: 0.7; }
 
-        /* Toast Notification */
-        .toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 10px; color: white; font-weight: 500; transition: bottom 0.5s ease; z-index: 2000; }
-        .toast.show { bottom: 80px; }
-        .toast.success { background: #28a745; }
+        .toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 10px; color: white; font-weight: 500; transition: bottom 0.5s ease, opacity 0.5s ease; z-index: 2000; opacity: 0;}
+        .toast.show { bottom: 80px; opacity: 1;}
+        .toast.success { background: var(--success-color); }
         .toast.error { background: var(--danger-color); }
     </style>
 </head>
@@ -322,9 +398,7 @@
                 <h3>Search by Name</h3>
                 <span class="view-all" onclick="showAllPhotos()">View all</span>
             </div>
-            <div id="nameGrid" class="name-grid">
-                <div class="status-message">No photos yet</div>
-            </div>
+            <div id="nameGrid" class="name-grid"></div>
         </div>
 
         <div class="section">
@@ -333,7 +407,7 @@
                 <span id="photoCount" class="view-all">0 photos</span>
             </div>
             <div id="albumsGrid" class="albums-grid">
-                <div class="status-message">No photos found</div>
+                 <div class="loader"></div>
             </div>
         </div>
     </div>
@@ -365,6 +439,28 @@
         </div>
     </div>
 
+    <div id="likeNameModal" class="modal">
+        <div class="modal-content">
+            <h3>Like Photo</h3>
+            <p style="margin-bottom: 15px; color: var(--light-text-color);">Enter your name to like photos.</p>
+            <input type="text" id="likerNameInput" class="modal-input" placeholder="Your Name">
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="closeLikeNameModal()">Cancel</button>
+                <button class="modal-btn primary" id="submitLikeBtn">Save and Like</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="likeHistoryModal" class="modal">
+        <div class="modal-content">
+            <h3>Liked By</h3>
+            <ul id="likeHistoryList"></ul>
+            <div class="modal-buttons" style="margin-top: 20px;">
+                <button class="modal-btn primary" onclick="closeLikeHistoryModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <div id="lightboxModal" class="modal">
         <span class="lightbox-close" id="lightboxCloseBtn">&times;</span>
         <span class="lightbox-nav prev" id="lightboxPrevBtn">&#10094;</span>
@@ -376,396 +472,424 @@
     
     <div id="toast" class="toast"></div>
 
-        <script>
-        // --- Configuration ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyDvJPTz3O4zZUvWNIv7vHiLCStxw69ihTY",
-            authDomain: "bank-gallery-6213f.firebaseapp.com",
-            databaseURL: "https://bank-gallery-6213f-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "bank-gallery-6213f",
-            storageBucket: "bank-gallery-6213f.firebasestorage.app",
-            messagingSenderId: "888354031561",
-            appId: "1:888354031561:web:f7abdb798121c047ea8a18"
-        };
-        const IMGBB_API_KEY = '7a1be8401cccf5271ff787e57c3035bc';
-        const CORRECT_PASSWORD = '7536';
+    <script>
+    // --- Configuration ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyDvJPTz3O4zZUvWNIv7vHiLCStxw69ihTY",
+        authDomain: "bank-gallery-6213f.firebaseapp.com",
+        databaseURL: "https://bank-gallery-6213f-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "bank-gallery-6213f",
+        storageBucket: "bank-gallery-6213f.firebasestorage.app",
+        messagingSenderId: "888354031561",
+        appId: "1:888354031561:web:f7abdb798121c047ea8a18"
+    };
+    const IMGBB_API_KEY = '7a1be8401cccf5271ff787e57c3035bc';
+    const CORRECT_PASSWORD = '7536';
+    const DELETION_LOCK_HOURS = 24;
 
-        // --- Initialize Firebase ---
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+    // --- Initialize Firebase ---
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-        // --- Global State ---
-        let allImages = [];
-        let currentlyVisibleImages = [];
-        let selectedFile = null;
-        let currentAction = null; // 'upload' or 'delete'
-        let actionItemId = null; // ID of the image to be deleted
-        let lightboxCurrentIndex = 0;
+    // --- Global State ---
+    let allImages = [];
+    let currentlyVisibleImages = [];
+    let selectedFile = null;
+    let currentAction = null; 
+    let actionItemId = null;
+    let lightboxCurrentIndex = 0;
+    let lazyLoadObserver;
+    let galleryUserName = localStorage.getItem('galleryUserName');
 
-        // --- DOM Elements ---
-        const nameGrid = document.getElementById('nameGrid');
-        const albumsGrid = document.getElementById('albumsGrid');
-        const albumsTitle = document.getElementById('albumsTitle');
-        const photoCount = document.getElementById('photoCount');
-        const toast = document.getElementById('toast');
-        // Modals
-        const uploadModal = document.getElementById('uploadModal');
-        const passwordModal = document.getElementById('passwordModal');
-        const lightboxModal = document.getElementById('lightboxModal');
-        // Upload Modal
-        const openUploadModalBtn = document.getElementById('openUploadModalBtn');
-        const fileInput = document.getElementById('fileInput');
-        const fileLabel = document.getElementById('fileLabel');
-        const personNameInput = document.getElementById('personName');
-        const previewImage = document.getElementById('previewImage');
-        const uploadBtn = document.getElementById('uploadBtn');
-        // Password Modal
-        const passwordModalTitle = document.getElementById('passwordModalTitle');
-        const passwordInput = document.getElementById('passwordInput');
-        // Lightbox Modal
-        const lightboxImage = document.getElementById('lightboxImage');
-        const lightboxCloseBtn = document.getElementById('lightboxCloseBtn');
-        const lightboxPrevBtn = document.getElementById('lightboxPrevBtn');
-        const lightboxNextBtn = document.getElementById('lightboxNextBtn');
+    // --- DOM Elements ---
+    const nameGrid = document.getElementById('nameGrid');
+    const albumsGrid = document.getElementById('albumsGrid');
+    const albumsTitle = document.getElementById('albumsTitle');
+    const photoCount = document.getElementById('photoCount');
+    const toast = document.getElementById('toast');
+    const uploadModal = document.getElementById('uploadModal');
+    const passwordModal = document.getElementById('passwordModal');
+    const lightboxModal = document.getElementById('lightboxModal');
+    const likeNameModal = document.getElementById('likeNameModal');
+    const likeHistoryModal = document.getElementById('likeHistoryModal');
+    const openUploadModalBtn = document.getElementById('openUploadModalBtn');
+    const fileInput = document.getElementById('fileInput');
+    const fileLabel = document.getElementById('fileLabel');
+    const personNameInput = document.getElementById('personName');
+    const previewImage = document.getElementById('previewImage');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const passwordModalTitle = document.getElementById('passwordModalTitle');
+    const passwordInput = document.getElementById('passwordInput');
+    const likerNameInput = document.getElementById('likerNameInput');
+    const submitLikeBtn = document.getElementById('submitLikeBtn');
+    const likeHistoryList = document.getElementById('likeHistoryList');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxCloseBtn = document.getElementById('lightboxCloseBtn');
+    const lightboxPrevBtn = document.getElementById('lightboxPrevBtn');
+    const lightboxNextBtn = document.getElementById('lightboxNextBtn');
 
-        // --- JS-APPLIED STYLING FIX FOR LIGHTBOX CONTROLS ---
-        // This ensures the lightbox controls are properly layered and have adequate tap areas.
-        if (lightboxCloseBtn) {
-            lightboxCloseBtn.style.zIndex = "10"; // Ensure it's above lightbox-content within the modal
-            lightboxCloseBtn.style.padding = "10px"; // Increase tappable area
-        }
-        if (lightboxPrevBtn) {
-            // The .lightbox-nav CSS class already includes padding, so only z-index might be beneficial
-            lightboxPrevBtn.style.zIndex = "10";
-        }
-        if (lightboxNextBtn) {
-            // The .lightbox-nav CSS class already includes padding, so only z-index might be beneficial
-            lightboxNextBtn.style.zIndex = "10";
-        }
-        // --- END OF JS-APPLIED STYLING FIX ---
+    // --- Utility Functions ---
+    const showToast = (message, type = 'success') => {
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => { toast.className = 'toast'; }, 3000);
+    };
 
-        // --- Toast Notification ---
-        function showToast(message, type = 'success') {
-            toast.textContent = message;
-            toast.className = `toast show ${type}`;
-            setTimeout(() => { toast.className = 'toast'; }, 3000);
-        }
+    const openModal = (modal) => modal.classList.add('show');
+    const closeModal = (modal) => modal.classList.remove('show');
 
-        // --- Upload Modal Logic ---
-        function openUploadModal() { uploadModal.classList.add('show'); }
-        function closeUploadModal() {
-            uploadModal.classList.remove('show');
-            resetUploadForm();
-        }
-        function resetUploadForm() {
-            fileInput.value = '';
-            personNameInput.value = '';
-            previewImage.style.display = 'none';
-            previewImage.src = '';
-            selectedFile = null;
-            fileLabel.textContent = 'Choose Image File';
-            uploadBtn.disabled = true;
-        }
+    // --- Modal Management ---
+    const openUploadModal = () => openModal(uploadModal);
+    const closeUploadModal = () => { closeModal(uploadModal); resetUploadForm(); };
+    const resetUploadForm = () => {
+        fileInput.value = ''; personNameInput.value = ''; previewImage.style.display = 'none';
+        previewImage.src = ''; selectedFile = null; fileLabel.textContent = 'Choose Image File'; uploadBtn.disabled = true;
+    };
+    
+    const openPasswordModal = () => { openModal(passwordModal); passwordInput.focus(); };
+    const closePasswordModal = () => { closeModal(passwordModal); passwordInput.value = ''; currentAction = null; actionItemId = null; };
+    
+    const openLikeNameModal = (imageId) => {
+        actionItemId = imageId;
+        likerNameInput.value = '';
+        openModal(likeNameModal);
+        likerNameInput.focus();
+    };
+    const closeLikeNameModal = () => closeModal(likeNameModal);
 
-        // --- Password Modal Logic ---
-        function openPasswordModal() { passwordModal.classList.add('show'); passwordInput.focus(); }
-        function closePasswordModal() {
-            passwordModal.classList.remove('show');
-            passwordInput.value = '';
-            currentAction = null;
-            actionItemId = null;
-        }
-
-        // --- Verification & Actions ---
-        function verifyPassword() {
-            if (passwordInput.value === CORRECT_PASSWORD) {
-                if (currentAction === 'upload') {
-                    handleUpload();
-                } else if (currentAction === 'delete') {
-                    deleteImage(actionItemId);
-                }
-                closePasswordModal();
-            } else {
-                showToast('Incorrect Password!', 'error');
-                passwordInput.value = '';
-                passwordInput.focus();
-            }
-        }
-
-        async function handleUpload() {
-            showToast('Uploading, please wait...', 'success');
-            const formData = new FormData();
-            formData.append('image', selectedFile);
-
-            try {
-                const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                    method: 'POST',
-                    body: formData,
+    const openLikeHistoryModal = async (imageId) => {
+        try {
+            const snapshot = await database.ref(`images/${imageId}/likes/likedBy`).once('value');
+            const likers = snapshot.val();
+            likeHistoryList.innerHTML = '';
+            if (likers) {
+                Object.values(likers).forEach(name => {
+                    const li = document.createElement('li');
+                    li.textContent = name;
+                    likeHistoryList.appendChild(li);
                 });
-                const result = await response.json();
+            } else {
+                likeHistoryList.innerHTML = '<li>No likes yet. Be the first!</li>';
+            }
+            openModal(likeHistoryModal);
+        } catch (error) {
+            showToast('Could not fetch like history.', 'error');
+        }
+    };
+    const closeLikeHistoryModal = () => closeModal(likeHistoryModal);
 
-                if (result.success) {
-                    await database.ref('images').push({
-                        personName: personNameInput.value.trim(),
-                        url: result.data.url,
-                        timestamp: Date.now(),
-                    });
-                    showToast('Photo uploaded successfully!', 'success');
-                    closeUploadModal();
-                    loadImages();
-                } else {
-                    throw new Error(result.error?.message || 'Upload failed');
+    // --- Main Actions (Upload, Delete, Like/Unlike) ---
+    const verifyPassword = () => {
+        if (passwordInput.value === CORRECT_PASSWORD) {
+            if (currentAction === 'upload') handleUpload();
+            else if (currentAction === 'delete') deleteImage(actionItemId);
+            closePasswordModal();
+        } else {
+            showToast('Incorrect Password!', 'error');
+            passwordInput.value = '';
+            passwordInput.focus();
+        }
+    };
+
+    const handleUpload = async () => {
+        showToast('Uploading, please wait...', 'success');
+        const formData = new FormData();
+        formData.append('image', selectedFile);
+
+        try {
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
+            const result = await response.json();
+
+            if (result.success) {
+                await database.ref('images').push({
+                    personName: personNameInput.value.trim(),
+                    url: result.data.url,
+                    timestamp: Date.now(),
+                    likes: { count: 0 }
+                });
+                showToast('Photo uploaded successfully!', 'success');
+                closeUploadModal();
+                loadImages();
+            } else { throw new Error(result.error?.message || 'Upload failed'); }
+        } catch (error) { showToast(`Upload failed: ${error.message}`, 'error'); }
+    };
+
+    const requestDelete = (imageId, timestamp) => {
+        const hoursElapsed = (Date.now() - timestamp) / (1000 * 60 * 60);
+        if (hoursElapsed > DELETION_LOCK_HOURS) {
+            showToast(`Cannot delete photo older than ${DELETION_LOCK_HOURS} hours.`, 'error');
+            return;
+        }
+        currentAction = 'delete'; actionItemId = imageId;
+        passwordModalTitle.textContent = 'Enter Password to Delete';
+        openPasswordModal();
+    };
+
+    const deleteImage = async (imageId) => {
+        try {
+            await database.ref('images/' + imageId).remove();
+            showToast('Photo deleted successfully.', 'success');
+            loadImages(); 
+        } catch (error) { showToast(`Failed to delete: ${error.message}`, 'error'); }
+    };
+
+    const handleLikeClick = (imageId) => {
+        const image = allImages.find(([id]) => id === imageId)?.[1];
+        if (!image) return;
+
+        const userLikeKey = galleryUserName && image.likes?.likedBy 
+            ? Object.entries(image.likes.likedBy).find(([, name]) => name === galleryUserName)?.[0] 
+            : null;
+
+        if (userLikeKey) {
+            unlikePhoto(imageId, userLikeKey);
+        } else if (galleryUserName) {
+            likePhoto(imageId, galleryUserName);
+        } else {
+            openLikeNameModal(imageId);
+        }
+    };
+    
+    const likePhoto = async (imageId, likerName) => {
+        const imageRef = database.ref(`images/${imageId}/likes`);
+        try {
+            await imageRef.transaction(currentLikes => {
+                currentLikes = currentLikes || { count: 0, likedBy: {} };
+                currentLikes.count++;
+                currentLikes.likedBy[database.ref().push().key] = likerName;
+                return currentLikes;
+            });
+            showToast(`Liked photo!`, 'success');
+            loadImages();
+        } catch (error) { showToast('Could not like photo.', 'error'); }
+    };
+
+    const unlikePhoto = async (imageId, likeKey) => {
+        const imageRef = database.ref(`images/${imageId}/likes`);
+        try {
+            await imageRef.transaction(currentLikes => {
+                if (currentLikes && currentLikes.likedBy && currentLikes.likedBy[likeKey]) {
+                    currentLikes.count--;
+                    delete currentLikes.likedBy[likeKey];
                 }
-            } catch (error) {
-                showToast(`Upload failed: ${error.message}`, 'error');
-                console.error("Upload error:", error); // Added for more detailed error logging
-            }
-        }
+                return currentLikes;
+            });
+            showToast('Unliked photo.', 'success');
+            loadImages();
+        } catch (error) { showToast('Could not unlike photo.', 'error'); }
+    };
 
-        function requestDelete(imageId) {
-            currentAction = 'delete';
-            actionItemId = imageId;
-            passwordModalTitle.textContent = 'Enter Password to Delete';
-            openPasswordModal();
+    const submitNameAndLike = () => {
+        const likerName = likerNameInput.value.trim();
+        if (!likerName) {
+            showToast('Please enter your name.', 'error');
+            return;
         }
+        galleryUserName = likerName;
+        localStorage.setItem('galleryUserName', likerName);
+        closeLikeNameModal();
+        likePhoto(actionItemId, likerName);
+    };
 
-        async function deleteImage(imageId) {
-            try {
-                await database.ref('images/' + imageId).remove();
-                showToast('Photo deleted successfully.', 'success');
-                loadImages(); // This will re-render and potentially close lightbox if current image deleted
-            } catch (error) {
-                showToast(`Failed to delete: ${error.message}`, 'error');
-                console.error("Delete error:", error); // Added for more detailed error logging
-            }
+    // --- Data Loading & Display ---
+    const loadImages = async () => {
+        try {
+            const snapshot = await database.ref('images').orderByChild('timestamp').once('value');
+            const imageData = snapshot.val() || {};
+            allImages = Object.entries(imageData).map(([id, data]) => [id, data]).sort((a, b) => b[1].timestamp - a[1].timestamp);
+            
+            displayNames();
+            const activeNameItem = document.querySelector('.name-item.active .name-label');
+            const filter = activeNameItem ? activeNameItem.textContent : null;
+            displayPhotos(filter);
+
+        } catch (error) {
+            showToast('Failed to load data.', 'error');
+            albumsGrid.innerHTML = `<div class="status-message"><span class="icon">😢</span><span>Could not load photos.</span></div>`;
+        }
+    };
+
+    const displayNames = () => {
+        const namesMap = new Map();
+        const photoCounts = {};
+        allImages.forEach(([, image]) => {
+            photoCounts[image.personName] = (photoCounts[image.personName] || 0) + 1;
+            if (!namesMap.has(image.personName)) namesMap.set(image.personName, image.url);
+        });
+        
+        nameGrid.innerHTML = '';
+        if (namesMap.size === 0) {
+            nameGrid.innerHTML = '<div class="status-message" style="padding: 0;">Add photos to see names.</div>';
+            return;
+        }
+        const sortedNames = Array.from(namesMap.keys()).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        sortedNames.forEach(name => {
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'name-item';
+            nameDiv.onclick = () => filterByName(name);
+            nameDiv.innerHTML = `
+                <div class="name-avatar-wrapper">
+                    <div class="name-avatar" style="background-image: url(${namesMap.get(name)})"></div>
+                    <div class="photo-count-badge">${photoCounts[name]}</div>
+                </div>
+                <div class="name-label">${name}</div>`;
+            nameGrid.appendChild(nameDiv);
+        });
+    };
+    
+    const displayPhotos = (filterName = null) => {
+        setupLazyLoader();
+        currentlyVisibleImages = filterName ? allImages.filter(([, img]) => img.personName === filterName) : allImages;
+
+        albumsGrid.innerHTML = ''; 
+        if (currentlyVisibleImages.length === 0) {
+            albumsGrid.innerHTML = `<div class="status-message"><span class="icon">🖼️</span><span>No photos found.</span></div>`;
+            photoCount.textContent = '0 photos';
+            return;
         }
         
-        // --- Data Loading & Display ---
-        async function loadImages() {
-            try {
-                const snapshot = await database.ref('images').orderByChild('timestamp').once('value');
-                const imageData = snapshot.val() || {};
-                allImages = Object.entries(imageData).sort((a, b) => b[1].timestamp - a[1].timestamp); // Newest first
-                
-                // Check if currently viewed image in lightbox was deleted
-                if (lightboxModal.classList.contains('show')) {
-                    const currentImageStillExists = currentlyVisibleImages[lightboxCurrentIndex] && 
-                                                    allImages.some(([id]) => id === currentlyVisibleImages[lightboxCurrentIndex][0]);
-                    if (!currentImageStillExists) {
-                        closeLightbox(); // Close lightbox if the current image is gone
+        photoCount.textContent = `${currentlyVisibleImages.length} photo${currentlyVisibleImages.length === 1 ? '' : 's'}`;
+        albumsTitle.textContent = filterName ? `${filterName}'s Photos` : 'All Photos';
+
+        currentlyVisibleImages.forEach(([id, image], index) => {
+            const photoDiv = document.createElement('div');
+            photoDiv.className = 'album-card';
+            photoDiv.setAttribute('data-src', image.url); 
+            photoDiv.onclick = (e) => {
+                if (e.target.closest('.like-button, .like-count, .delete-btn')) return;
+                openLightbox(index);
+            };
+
+            const likeCount = image.likes?.count || 0;
+            const userHasLiked = galleryUserName && image.likes?.likedBy && Object.values(image.likes.likedBy).includes(galleryUserName);
+
+            photoDiv.innerHTML = `
+                <button class="delete-btn" onclick="event.stopPropagation(); requestDelete('${id}', ${image.timestamp})">🗑️</button>
+                <div class="album-card-footer">
+                    <span class="like-count ${likeCount > 0 ? 'visible' : ''}" title="See who liked this" onclick="event.stopPropagation(); openLikeHistoryModal('${id}')">${likeCount}</span>
+                    <button class="like-button ${userHasLiked ? 'liked' : ''}" title="Like this photo" onclick="event.stopPropagation(); handleLikeClick('${id}')">
+                        <span class="heart">❤️</span>
+                    </button>
+                </div>
+            `;
+            albumsGrid.appendChild(photoDiv);
+            lazyLoadObserver.observe(photoDiv);
+        });
+    };
+    
+    const setupLazyLoader = () => {
+        if (lazyLoadObserver) lazyLoadObserver.disconnect();
+        lazyLoadObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const card = entry.target;
+                    const src = card.getAttribute('data-src');
+                    if (src) {
+                        card.style.backgroundImage = `url(${src})`;
+                        observer.unobserve(card);
                     }
                 }
-
-                displayNames();
-                // Determine if a filter is active to re-apply it
-                const activeNameItem = document.querySelector('.name-item.active .name-label');
-                if (activeNameItem) {
-                    displayPhotos(activeNameItem.textContent);
-                } else {
-                    displayPhotos();
-                }
-
-            } catch (error) {
-                showToast('Failed to load data.', 'error');
-                console.error("Load images error:", error); // Added for more detailed error logging
-            }
-        }
-
-        function displayNames() {
-            const namesMap = new Map();
-            // Iterate through allImages to get the latest image URL for each name
-            // (allImages is already sorted newest first)
-            for (const [id, image] of allImages) {
-                if (!namesMap.has(image.personName)) {
-                    namesMap.set(image.personName, image.url);
-                }
-            }
-            
-            nameGrid.innerHTML = ''; // Clear previous names
-            if (namesMap.size === 0) {
-                nameGrid.innerHTML = '<div class="status-message">No photos yet</div>';
-                return;
-            }
-
-            const sortedNames = Array.from(namesMap.keys()).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-
-            sortedNames.forEach(name => {
-                const url = namesMap.get(name);
-                const nameDiv = document.createElement('div');
-                nameDiv.className = 'name-item';
-                nameDiv.onclick = () => filterByName(name);
-                nameDiv.innerHTML = `<div class="name-avatar" style="background-image: url(${url})"></div><div class="name-label">${name}</div>`;
-                nameGrid.appendChild(nameDiv);
             });
-        }
-        
-        function displayPhotos(filterName = null) {
-            const previouslyVisibleImageId = lightboxModal.classList.contains('show') && currentlyVisibleImages.length > 0 
-                                            ? currentlyVisibleImages[lightboxCurrentIndex][0] 
-                                            : null;
+        }, { rootMargin: '0px 0px 200px 0px' });
+    };
 
-            currentlyVisibleImages = filterName 
-                ? allImages.filter(([, img]) => img.personName === filterName)
-                : allImages;
-
-            albumsGrid.innerHTML = ''; // Clear previous photos
-            if (currentlyVisibleImages.length === 0) {
-                albumsGrid.innerHTML = '<div class="status-message">No photos found</div>';
-                photoCount.textContent = '0 photos';
-                if (lightboxModal.classList.contains('show')) { // If lightbox was open and now no images
-                    closeLightbox();
-                }
-                return;
-            }
-            photoCount.textContent = `${currentlyVisibleImages.length} photo${currentlyVisibleImages.length === 1 ? '' : 's'}`;
-            albumsTitle.textContent = filterName ? `${filterName}'s Photos` : 'All Photos';
-
-            currentlyVisibleImages.forEach(([id, image], index) => {
-                const photoDiv = document.createElement('div');
-                photoDiv.className = 'album-card';
-                photoDiv.style.backgroundImage = `url(${image.url})`;
-                photoDiv.onclick = () => openLightbox(index);
-                
-                const deleteButton = document.createElement('button');
-                deleteButton.className = 'delete-btn';
-                deleteButton.innerHTML = '🗑️'; // Using actual emoji for delete
-                deleteButton.onclick = (e) => {
-                    e.stopPropagation(); // Prevent opening lightbox
-                    requestDelete(id);
-                };
-                
-                photoDiv.appendChild(deleteButton);
-                albumsGrid.appendChild(photoDiv);
-            });
-
-            // If lightbox was open, try to find the same image in the new list and update index
-            if (previouslyVisibleImageId && lightboxModal.classList.contains('show')) {
-                const newIndexOfOldImage = currentlyVisibleImages.findIndex(([id]) => id === previouslyVisibleImageId);
-                if (newIndexOfOldImage !== -1) {
-                    lightboxCurrentIndex = newIndexOfOldImage;
-                    updateLightboxImage(); // Refresh image in case URL changed (unlikely) or just to be safe
-                } else {
-                    // The image that was in lightbox is no longer in the filtered list
-                    closeLightbox(); 
-                }
+    const filterByName = (name) => {
+        document.querySelectorAll('.name-item').forEach(item => item.classList.remove('active'));
+        const nameItems = nameGrid.querySelectorAll('.name-item');
+        for (let item of nameItems) {
+            if (item.querySelector('.name-label').textContent === name) {
+                item.classList.add('active');
+                break;
             }
         }
-        
-        // --- Filtering and Navigation ---
-        function filterByName(name) {
-            // Remove 'active' from all, then add to the clicked one
-            document.querySelectorAll('.name-item').forEach(item => item.classList.remove('active'));
-            const nameItems = nameGrid.querySelectorAll('.name-item');
-            for (let item of nameItems) {
-                if (item.querySelector('.name-label').textContent === name) {
-                    item.classList.add('active');
-                    break;
-                }
-            }
+        albumsGrid.style.opacity = '0';
+        setTimeout(() => {
             displayPhotos(name);
-        }
+            albumsGrid.style.opacity = '1';
+        }, 400);
+    };
 
-        function showAllPhotos() {
-            document.querySelectorAll('.name-item').forEach(item => item.classList.remove('active'));
-            displayPhotos(); // Display all photos without a filter
-        }
+    const showAllPhotos = () => {
+        document.querySelectorAll('.name-item').forEach(item => item.classList.remove('active'));
+        albumsGrid.style.opacity = '0';
+        setTimeout(() => {
+            displayPhotos();
+            albumsGrid.style.opacity = '1';
+        }, 400);
+    };
 
-        // --- Lightbox (Slider) Logic ---
-        function openLightbox(index) {
-            if (index >= 0 && index < currentlyVisibleImages.length) {
-                lightboxCurrentIndex = index;
-                updateLightboxImage();
-                lightboxModal.classList.add('show');
-            } else {
-                console.error("Attempted to open lightbox with invalid index:", index);
-            }
-        }
+    const openLightbox = (index) => {
+        lightboxCurrentIndex = index;
+        updateLightboxImage();
+        openModal(lightboxModal);
+    };
+    const closeLightbox = () => closeModal(lightboxModal);
+    const updateLightboxImage = () => {
+        if (currentlyVisibleImages.length === 0) { closeLightbox(); return; }
+        const [, image] = currentlyVisibleImages[lightboxCurrentIndex];
+        lightboxImage.src = image.url;
+        lightboxPrevBtn.style.display = currentlyVisibleImages.length > 1 ? 'block' : 'none';
+        lightboxNextBtn.style.display = currentlyVisibleImages.length > 1 ? 'block' : 'none';
+    };
+    const showNextImage = () => {
+        if (currentlyVisibleImages.length === 0) return;
+        lightboxCurrentIndex = (lightboxCurrentIndex + 1) % currentlyVisibleImages.length;
+        updateLightboxImage();
+    };
+    const showPrevImage = () => {
+        if (currentlyVisibleImages.length === 0) return;
+        lightboxCurrentIndex = (lightboxCurrentIndex - 1 + currentlyVisibleImages.length) % currentlyVisibleImages.length;
+        updateLightboxImage();
+    };
 
-        function closeLightbox() {
-            lightboxModal.classList.remove('show');
-        }
-        
-        function updateLightboxImage() {
-            if (currentlyVisibleImages.length === 0 || lightboxCurrentIndex < 0 || lightboxCurrentIndex >= currentlyVisibleImages.length) {
-                // If no images or index is out of bounds (e.g., after deletion), close lightbox
-                if (lightboxModal.classList.contains('show')) {
-                    closeLightbox();
-                }
-                return;
-            }
-            const [, image] = currentlyVisibleImages[lightboxCurrentIndex];
-            lightboxImage.src = image.url;
+    // --- Event Listeners ---
+    document.addEventListener('DOMContentLoaded', () => {
+        albumsGrid.innerHTML = '<div class="loader"></div>';
+        loadImages();
+    });
 
-            // Show/hide nav buttons based on position
-            lightboxPrevBtn.style.display = currentlyVisibleImages.length > 1 ? 'block' : 'none';
-            lightboxNextBtn.style.display = currentlyVisibleImages.length > 1 ? 'block' : 'none';
+    openUploadModalBtn.addEventListener('click', openUploadModal);
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            selectedFile = file;
+            const fileName = file.name.length > 20 ? file.name.substring(0, 20) + "..." : file.name;
+            fileLabel.textContent = `✅ ${fileName}`;
+            previewImage.src = URL.createObjectURL(file);
+            previewImage.style.display = 'block';
+            uploadBtn.disabled = personNameInput.value.trim() === '';
         }
-        
-        function showNextImage() {
-            if (currentlyVisibleImages.length === 0) return;
-            lightboxCurrentIndex = (lightboxCurrentIndex + 1) % currentlyVisibleImages.length;
-            updateLightboxImage();
+    });
+    personNameInput.addEventListener('input', () => {
+         uploadBtn.disabled = !(selectedFile && personNameInput.value.trim() !== '');
+    });
+    uploadBtn.addEventListener('click', () => {
+        if (!uploadBtn.disabled) {
+            currentAction = 'upload';
+            passwordModalTitle.textContent = 'Enter Password to Upload';
+            openPasswordModal();
         }
-        
-        function showPrevImage() {
-            if (currentlyVisibleImages.length === 0) return;
-            lightboxCurrentIndex = (lightboxCurrentIndex - 1 + currentlyVisibleImages.length) % currentlyVisibleImages.length;
-            updateLightboxImage();
-        }
+    });
+    
+    submitLikeBtn.addEventListener('click', submitNameAndLike);
+    likerNameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitNameAndLike(); });
 
-        // --- Event Listeners ---
-        // Upload
-        openUploadModalBtn.addEventListener('click', openUploadModal);
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                selectedFile = file;
-                // Truncate file name if too long for the label
-                const maxLabelLength = 20;
-                const fileName = file.name.length > maxLabelLength ? file.name.substring(0, maxLabelLength) + "..." : file.name;
-                fileLabel.textContent = `✅ ${fileName}`;
-                previewImage.src = URL.createObjectURL(file);
-                previewImage.style.display = 'block';
-                uploadBtn.disabled = personNameInput.value.trim() === '';
-            } else { // No file selected or selection cancelled
-                resetUploadForm(); // Or just reset parts related to file
-            }
-        });
-        personNameInput.addEventListener('input', () => {
-             uploadBtn.disabled = !(selectedFile && personNameInput.value.trim() !== '');
-        });
-        uploadBtn.addEventListener('click', () => {
-            if (!uploadBtn.disabled) { // Proceed only if not disabled
-                currentAction = 'upload';
-                passwordModalTitle.textContent = 'Enter Password to Upload';
-                openPasswordModal();
-            }
-        });
-        
-        // Lightbox
-        lightboxCloseBtn.addEventListener('click', closeLightbox); // This listener should now work better
-        lightboxPrevBtn.addEventListener('click', showPrevImage);
-        lightboxNextBtn.addEventListener('click', showNextImage);
-        
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (lightboxModal.classList.contains('show')) {
-                if (e.key === 'ArrowRight' || e.key === ' ') showNextImage(); // Space for next
-                if (e.key === 'ArrowLeft') showPrevImage();
-                if (e.key === 'Escape') closeLightbox();
-            }
-            if(passwordModal.classList.contains('show') && e.key === 'Enter'){
-                // Trigger click on confirm button instead of calling verifyPassword directly
-                // to respect any disabled state or other logic on the button itself.
-                const confirmButton = passwordModal.querySelector('.modal-btn.primary');
-                if (confirmButton) {
-                    confirmButton.click();
-                }
-            }
-        });
-
-        // --- Initial Load ---
-        document.addEventListener('DOMContentLoaded', loadImages);
+    lightboxCloseBtn.addEventListener('click', closeLightbox);
+    lightboxPrevBtn.addEventListener('click', showPrevImage);
+    lightboxNextBtn.addEventListener('click', showNextImage);
+    
+    document.addEventListener('keydown', (e) => {
+        if (lightboxModal.classList.contains('show')) {
+            if (e.key === 'ArrowRight' || e.key === ' ') showNextImage();
+            if (e.key === 'ArrowLeft') showPrevImage();
+            if (e.key === 'Escape') closeLightbox();
+        } else if (passwordModal.classList.contains('show') && e.key === 'Enter') {
+            passwordModal.querySelector('.modal-btn.primary').click();
+        } else if (likeNameModal.classList.contains('show') && e.key === 'Enter') {
+            submitLikeBtn.click();
+        }
+    });
     </script>
 </body>
 </html>
+
