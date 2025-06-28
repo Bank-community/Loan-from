@@ -67,15 +67,11 @@
         }
         .photo-list {
             display: grid;
-            gap: 20px;
-            transition: grid-template-columns 0.4s ease;
-        }
-        /* Desktop Mode (Grid View) */
-        .photo-list.grid-view {
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            transition: all 0.3s ease;
         }
-        /* Mobile Mode (List View) */
-        .photo-list.list-view {
+        .photo-list.mobile-view {
             grid-template-columns: 1fr;
             max-width: 500px;
             margin: 0 auto;
@@ -86,38 +82,20 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.07);
             overflow: hidden;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        .photo-list.list-view .photo-card {
-            flex-direction: row;
         }
         .photo-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
-        .photo-card-img-wrapper {
-            width: 100%;
-            height: 200px;
-            cursor: pointer;
-            overflow: hidden;
-        }
-        .photo-list.list-view .photo-card-img-wrapper {
-            width: 150px;
-            height: 120px;
-            flex-shrink: 0;
-        }
         .photo-card img {
             width: 100%;
-            height: 100%;
+            height: 200px;
             object-fit: cover;
             display: block;
+            cursor: pointer;
         }
         .photo-info {
             padding: 15px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
         }
         .photo-info h4 {
             font-size: 16px;
@@ -127,7 +105,6 @@
             font-size: 13px;
             color: var(--light-text-color);
             margin-bottom: 15px;
-            flex-grow: 1;
         }
         .delete-btn {
             width: 100%;
@@ -165,9 +142,32 @@
             100% { transform: rotate(360deg); }
         }
 
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .modal.show { display: flex; }
-        .modal-content { background-color: var(--card-bg-color); padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background-color: var(--card-bg-color);
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
         .modal-content h3 { margin-bottom: 20px; font-size: 22px; }
         .modal-content p { margin-bottom: 25px; font-size: 16px; color: var(--light-text-color); }
         .modal-input { width: 100%; padding: 15px; border: 1px solid var(--border-color); border-radius: 10px; font-size: 16px; margin-bottom: 20px; text-align: center;}
@@ -177,15 +177,55 @@
         .modal-btn.danger { background-color: var(--danger-color); color: white; }
         .modal-btn.secondary { background-color: #F1F3F5; color: #555; }
 
-        #lightboxModal { background-color: rgba(0,0,0,0.85); backdrop-filter: blur(8px); }
-        .lightbox-content { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-        .lightbox-image { max-width: 90vw; max-height: 85vh; border-radius: 10px; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-        .lightbox-close { position: absolute; top: 20px; right: 35px; color: white; font-size: 45px; font-weight: bold; cursor: pointer; transition: opacity 0.3s ease; z-index: 1001; }
-        .lightbox-close:hover { opacity: 0.7; }
+        #lightboxModal {
+            background-color: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+        }
+        .lightbox-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .lightbox-image {
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: white;
+            font-size: 45px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+            z-index: 1001;
+        }
+        .lightbox-close:hover {
+            opacity: 0.7;
+        }
 
         #adminPanel { display: none; }
         
-        #toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 10px; color: white; font-weight: 500; transition: bottom 0.5s ease, opacity 0.5s ease; z-index: 2000; opacity: 0; }
+        /* Toast Notification */
+        #toast {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            transition: bottom 0.5s ease, opacity 0.5s ease;
+            z-index: 2000;
+            opacity: 0;
+        }
         #toast.show { bottom: 30px; opacity: 1; }
         #toast.success { background: var(--success-color); }
         #toast.error { background: var(--danger-color); }
@@ -197,7 +237,7 @@
         <div class="modal-content">
             <h3>Admin Login</h3>
             <p>Please enter the admin password to continue.</p>
-            <input type="number" id="adminPasswordInput" class="modal-input" placeholder="••••••••">
+            <input type="password" id="adminPasswordInput" class="modal-input" placeholder="••••••••">
             <div class="modal-buttons">
                 <button id="loginBtn" class="modal-btn primary">Login</button>
             </div>
@@ -233,6 +273,7 @@
     <div id="toast"></div>
 
     <script>
+        // --- Configuration ---
         const firebaseConfig = {
             apiKey: "AIzaSyDvJPTz3O4zZUvWNIv7vHiLCStxw69ihTY",
             authDomain: "bank-gallery-6213f.firebaseapp.com",
@@ -247,6 +288,7 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // --- DOM Elements ---
         const loginModal = document.getElementById('loginModal');
         const adminPasswordInput = document.getElementById('adminPasswordInput');
         const loginBtn = document.getElementById('loginBtn');
@@ -263,9 +305,11 @@
 
         let photoIdToDelete = null;
 
+        // --- SVG Icons for Toggle Button ---
         const gridIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zM13 3h8v8h-8V3zm0 10h8v8h-8v-8z"/></svg>`;
         const listIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/></svg>`;
 
+        // --- Functions ---
         const showToast = (message, type = 'success') => {
             toast.textContent = message;
             toast.className = `toast show ${type}`;
@@ -294,7 +338,7 @@
 
                 photoList.innerHTML = ''; 
                 if (allImages.length === 0) {
-                    photoList.innerHTML = '<p class="status-message">No photos found.</p>';
+                    photoList.innerHTML = '<p class="status-message">No photos found in the gallery.</p>';
                     return;
                 }
 
@@ -303,13 +347,11 @@
                     card.className = 'photo-card';
                     const uploadDate = new Date(image.timestamp).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
                     card.innerHTML = `
-                        <div class="photo-card-img-wrapper" data-url="${image.url}">
-                            <img src="${image.url}" alt="${image.personName}" loading="lazy">
-                        </div>
+                        <img src="${image.url}" alt="${image.personName}" loading="lazy" data-url="${image.url}">
                         <div class="photo-info">
                             <h4>${image.personName}</h4>
-                            <p>${uploadDate}</p>
-                            <button class="delete-btn" data-id="${image.id}">Delete</button>
+                            <p>Uploaded: ${uploadDate}</p>
+                            <button class="delete-btn" data-id="${image.id}">Delete Photo</button>
                         </div>
                     `;
                     photoList.appendChild(card);
@@ -332,13 +374,12 @@
             try {
                 await database.ref('images/' + photoIdToDelete).remove();
                 showToast('Photo deleted successfully!', 'success');
-            } catch (error) {
-                console.error("Error deleting photo:", error);
-                showToast('Failed to delete photo.', 'error');
-            } finally {
                 photoIdToDelete = null;
                 confirmDeleteModal.classList.remove('show');
                 loadPhotos();
+            } catch (error) {
+                console.error("Error deleting photo:", error);
+                showToast('Failed to delete photo.', 'error');
             }
         };
         
@@ -353,35 +394,37 @@
         };
 
         const applyViewMode = (mode) => {
-            if (mode === 'list') {
-                photoList.classList.remove('grid-view');
-                photoList.classList.add('list-view');
+            if (mode === 'mobile') {
+                photoList.classList.add('mobile-view');
                 viewToggleBtn.innerHTML = gridIcon;
                 viewToggleBtn.title = 'Switch to Desktop View';
-            } else { 
-                photoList.classList.remove('list-view');
-                photoList.classList.add('grid-view');
+            } else { // 'grid'
+                photoList.classList.remove('mobile-view');
                 viewToggleBtn.innerHTML = listIcon;
                 viewToggleBtn.title = 'Switch to Mobile View';
             }
         };
 
         const toggleView = () => {
-            const isListView = photoList.classList.contains('list-view');
-            const newMode = isListView ? 'grid' : 'list';
+            const isMobileView = photoList.classList.contains('mobile-view');
+            const newMode = isMobileView ? 'grid' : 'mobile';
             localStorage.setItem('adminViewMode', newMode);
             applyViewMode(newMode);
         };
 
+        // --- Event Listeners ---
         loginBtn.addEventListener('click', handleLogin);
-        adminPasswordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
+        adminPasswordInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        });
 
         photoList.addEventListener('click', (e) => {
-            const target = e.target;
-            if (target.classList.contains('delete-btn')) {
-                requestDelete(target.dataset.id);
-            } else if (target.closest('.photo-card-img-wrapper')) {
-                openLightbox(target.closest('.photo-card-img-wrapper').dataset.url);
+            if (e.target.classList.contains('delete-btn')) {
+                const id = e.target.getAttribute('data-id');
+                requestDelete(id);
+            } else if (e.target.tagName === 'IMG') {
+                const url = e.target.getAttribute('data-url');
+                openLightbox(url);
             }
         });
 
@@ -392,8 +435,15 @@
         confirmDeleteBtn.addEventListener('click', executeDelete);
         
         lightboxCloseBtn.addEventListener('click', closeLightbox);
-        lightboxModal.addEventListener('click', (e) => { if (e.target === lightboxModal) closeLightbox(); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightboxModal.classList.contains('show')) closeLightbox(); });
+        lightboxModal.addEventListener('click', (e) => {
+            if (e.target === lightboxModal) closeLightbox();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightboxModal.classList.contains('show')) {
+                closeLightbox();
+            }
+        });
 
         viewToggleBtn.addEventListener('click', toggleView);
 
