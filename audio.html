@@ -1,28 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <title>Click to Play Audio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transparency Info with Audio</title>
   <style>
     body {
-      font-family: sans-serif;
-      text-align: center;
-      margin-top: 100px;
-      background: #f4f4f4;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f7f7f7;
+      padding: 30px;
     }
 
+    .content-wrapper {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .transparency-section h2 {
+      font-size: 24px;
+      color: #0072ff;
+      margin-bottom: 20px;
+    }
+
+    .transparency-section p {
+      font-size: 17px;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .transparency-section strong {
+      color: #222;
+    }
+
+    /* 🎵 Play Button Style */
     .play-button {
       display: inline-block;
-      background: #ff5757;
+      margin-top: 25px;
+      background: #ff4d4d;
       border-radius: 50%;
-      width: 80px;
-      height: 80px;
-      line-height: 80px;
+      width: 70px;
+      height: 70px;
+      line-height: 70px;
       color: white;
-      font-size: 30px;
+      font-size: 28px;
       cursor: pointer;
       animation: pulse 1.5s infinite;
-      box-shadow: 0 0 10px rgba(255, 87, 87, 0.6);
+      box-shadow: 0 0 10px rgba(255, 77, 77, 0.6);
+      transition: background 0.3s ease;
+    }
+
+    .play-button:hover {
+      background: #e63946;
+    }
+
+    .play-label {
+      font-size: 16px;
+      margin-top: 10px;
+      color: #444;
     }
 
     @keyframes pulse {
@@ -31,31 +69,40 @@
       100% { transform: scale(1); }
     }
 
-    .label {
-      margin-top: 20px;
-      font-size: 18px;
-      color: #333;
+    .audio-wrapper {
+      text-align: center;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
 
-  <div class="play-button" id="playBtn">▶</div>
-  <div class="label">Tap to Play</div>
+  <main class="content-wrapper">
+    <section class="transparency-section animate-on-scroll">
+        <h2>📝 Transparency info.</h2>
+        <p>हमारी पूरी प्रक्रिया पारदर्शी है। आपके सभी डिटेल्स और लेन-देन की जानकारी सुरक्षित रहती है और सदस्यों को उपलब्ध कराई जाती है।</p>
+        <p>हमारी कम्युनिटी में लोग आपस में मिलकर <strong>Bank Community Loan</strong> में फंड इकट्ठा करते हैं। सभी सदस्य थोड़ी-थोड़ी राशि जमा करते हैं, जिसकी शुरुआत सिर्फ <strong>₹500/-</strong> से होती है।</p>
 
-  <!-- Audio file -->
-  <audio id="welcomeAudio">
-    <source src="speech.wav" type="audio/wav">
-    Your browser does not support the audio element.
-  </audio>
+        <!-- 🎧 Audio Player Section -->
+        <div class="audio-wrapper">
+          <div class="play-button" id="playBtn">▶</div>
+          <div class="play-label">Tap to Listen</div>
+          <audio id="welcomeAudio">
+            <source src="speech.wav" type="audio/wav">
+            आपका ब्राउज़र ऑडियो सपोर्ट नहीं करता।
+          </audio>
+        </div>
+    </section>
+  </main>
 
   <script>
-    const button = document.getElementById('playBtn');
+    const playBtn = document.getElementById('playBtn');
     const audio = document.getElementById('welcomeAudio');
 
-    button.addEventListener('click', () => {
+    playBtn.addEventListener('click', () => {
       audio.play();
     });
   </script>
+
 </body>
 </html>
