@@ -875,11 +875,53 @@ footer p {
 </div>
 
 <main class="content-wrapper">
-    <section class="transparency-section animate-on-scroll">
-        <h2>📝 Transparency info.</h2>
-        <p>हमारी पूरी प्रक्रिया पारदर्शी है। आपके सभी डिटेल्स और लेन-देन की जानकारी सुरक्षित रहती है और सदस्यों को उपलब्ध कराई जाती है।</p>
-        <p>हमारी कम्युनिटी में लोग आपस में मिलकर <strong>Bank Community Loan</strong> में फंड इकट्ठा करते हैं। सभी सदस्य थोड़ी-थोड़ी राशि जमा करते हैं, जिसकी शुरुआत सिर्फ <strong>₹500/-</strong> से होती है।</p>
-    </section>
+  <section class="transparency-section animate-on-scroll">
+    <h2>📝 Transparency info.</h2>
+    <p>हमारी पूरी प्रक्रिया पारदर्शी है। आपके सभी डिटेल्स और लेन-देन की जानकारी सुरक्षित रहती है और सदस्यों को उपलब्ध कराई जाती है।</p>
+    <p>हमारी कम्युनिटी में लोग आपस में मिलकर <strong>Bank Community Loan</strong> में फंड इकट्ठा करते हैं। सभी सदस्य थोड़ी-थोड़ी राशि जमा करते हैं, जिसकी शुरुआत सिर्फ <strong>₹500/-</strong> से होती है।</p>
+
+    <!-- 🎧 Audio Play Button -->
+    <div class="audio-wrapper" style="text-align:center; margin-top: 30px;">
+      <div class="play-button" id="playBtn" style="
+        display: inline-block;
+        background: #ff4d4d;
+        border-radius: 50%;
+        width: 70px;
+        height: 70px;
+        line-height: 70px;
+        color: white;
+        font-size: 28px;
+        cursor: pointer;
+        animation: pulse 1.5s infinite;
+        box-shadow: 0 0 10px rgba(255, 77, 77, 0.6);
+        transition: background 0.3s ease;
+      ">▶</div>
+      <div style="font-size: 16px; margin-top: 10px; color: #444;">Tap to Listen</div>
+      <audio id="welcomeAudio">
+        <source src="speech.wav" type="audio/wav">
+        आपका ब्राउज़र ऑडियो सपोर्ट नहीं करता।
+      </audio>
+    </div>
+  </section>
+</main>
+
+<!-- ✅ Audio Button Animation + Script (Put at end of page OR inside <script> tag block) -->
+<style>
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+</style>
+
+<script>
+  const playBtn = document.getElementById('playBtn');
+  const audio = document.getElementById('welcomeAudio');
+
+  playBtn.addEventListener('click', () => {
+    audio.play();
+  });
+</script>
 
     <section class="action-cards-section animate-on-scroll">
          <h2>Quick Actions</h2>
