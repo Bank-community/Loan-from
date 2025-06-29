@@ -2,27 +2,59 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Auto Play Audio</title>
+  <title>Click to Play Audio</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 100px;
+      background: #f4f4f4;
+    }
+
+    .play-button {
+      display: inline-block;
+      background: #ff5757;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      line-height: 80px;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      animation: pulse 1.5s infinite;
+      box-shadow: 0 0 10px rgba(255, 87, 87, 0.6);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .label {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome to My Website</h1>
 
-  <!-- Audio Element -->
-  <audio id="welcomeAudio" autoplay>
+  <div class="play-button" id="playBtn">▶</div>
+  <div class="label">Tap to Play</div>
+
+  <!-- Audio file -->
+  <audio id="welcomeAudio">
     <source src="speech.wav" type="audio/wav">
     Your browser does not support the audio element.
   </audio>
 
   <script>
-    // Try to play audio automatically
-    window.addEventListener('load', () => {
-      const audio = document.getElementById('welcomeAudio');
-      audio.play().catch((error) => {
-        console.warn("Autoplay failed, trying after user interaction.");
-        document.body.addEventListener('click', () => {
-          audio.play();
-        }, { once: true });
-      });
+    const button = document.getElementById('playBtn');
+    const audio = document.getElementById('welcomeAudio');
+
+    button.addEventListener('click', () => {
+      audio.play();
     });
   </script>
 </body>
