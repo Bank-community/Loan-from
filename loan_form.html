@@ -193,6 +193,12 @@
       color: #056fff;
       font-weight: bold;
     }
+    /* --- NEW: Style for Guarantor Name --- */
+    .guarantor-highlight {
+        color: #D32F2F; /* Red color */
+        font-weight: bold;
+    }
+
 
     /* --- Manual Upload Section --- */
     #manualUploadSection {
@@ -270,6 +276,10 @@
       <label for="mobile">Mobile Number:</label>
       <input type="tel" id="mobile" placeholder="Enter 10-digit mobile number" pattern="[0-9]{10}" required>
 
+      <!-- NEW: Guarantor Name Field -->
+      <label for="guarantorName">Guarantor Name:</label>
+      <input type="text" id="guarantorName" placeholder="Enter Guarantor's Name" required>
+
       <label for="amount">Loan Amount (₹):</label>
       <input type="number" id="amount" placeholder="Enter loan amount" min="1" required>
 
@@ -302,6 +312,8 @@
     <div class="loan-details-container">
         <div class="details-text">
           <p><i class="fas fa-user"></i>Applicant Name: <span class="highlight" id="displayName"></span></p>
+          <!-- NEW: Guarantor Display Row -->
+          <p id="guarantorRow"><i class="fas fa-user-shield"></i>Guarantor Name: <span class="guarantor-highlight" id="displayGuarantor"></span></p>
           <p><i class="fas fa-mobile-alt"></i>Mobile Number: <span id="displayMobile"></span></p>
           <p><i class="fas fa-rupee-sign"></i>Loan Amount: ₹<span id="displayAmount"></span></p>
           <p><i class="fas fa-percent"></i>Interest Rate: <span id="displayRate"></span></p>
@@ -342,6 +354,7 @@
     // Form Elements
     const nameSelect = document.getElementById('nameSelect');
     const mobileInput = document.getElementById('mobile');
+    const guarantorNameInput = document.getElementById('guarantorName'); // NEW
     const amountInput = document.getElementById('amount');
     const rateSelect = document.getElementById('monthlyRate');
     const imageUploadInput = document.getElementById('imageUpload');
@@ -352,6 +365,8 @@
     // Capture Div Content Elements
     const currentDateEl = document.getElementById('currentDate');
     const displayNameEl = document.getElementById('displayName');
+    const displayGuarantorEl = document.getElementById('displayGuarantor'); // NEW
+    const guarantorRowEl = document.getElementById('guarantorRow'); // NEW
     const displayMobileEl = document.getElementById('displayMobile');
     const displayAmountEl = document.getElementById('displayAmount');
     const displayRateEl = document.getElementById('displayRate');
@@ -360,10 +375,9 @@
     const repaymentDateEl = document.getElementById('repaymentDate');
     const regNumberEl = document.getElementById('regNumber');
     const emiRowEl = document.getElementById('emiRow');
-    const apiApplicantPhotoEl = document.getElementById('apiApplicantPhoto'); // API Image Element
-    const manualUploadSectionEl = document.getElementById('manualUploadSection'); // Manual Upload Section
-    const manualApplicantPhotoEl = document.getElementById('manualApplicantPhoto'); // Manual Image Element
-    // Add references to other images inside #capture if they might affect layout height significantly
+    const apiApplicantPhotoEl = document.getElementById('apiApplicantPhoto');
+    const manualUploadSectionEl = document.getElementById('manualUploadSection');
+    const manualApplicantPhotoEl = document.getElementById('manualApplicantPhoto');
     const logoImgEl = document.querySelector('#capture .header .logo');
     const stampImgEl = document.querySelector('#capture .stamp-img');
     const signatureImgEl = document.querySelector('#capture .signature-img');
@@ -418,15 +432,17 @@
 
     loanForm.addEventListener('submit', function(e) {
       e.preventDefault();
-      // ... (rest of the form submission logic remains the same as previous version) ...
-       const selectedName = nameSelect.value;
+      
+      const selectedName = nameSelect.value;
       const member = membersData.find(m => m.Name === selectedName);
       const mobile = mobileInput.value;
+      const guarantorName = guarantorNameInput.value; // NEW
       const amount = parseFloat(amountInput.value);
       const rateValue = rateSelect.value;
       const uploadedFile = imageUploadInput.files[0];
 
-      if (!selectedName || !mobile || isNaN(amount) || !rateValue) {
+      // UPDATED: Added guarantorName to validation
+      if (!selectedName || !mobile || !guarantorName || isNaN(amount) || !rateValue) {
           alert('Please fill in all required fields.');
           return;
       }
@@ -457,6 +473,8 @@
       // --- Populate Text Details ---
       currentDateEl.textContent = formatDate(today);
       displayNameEl.textContent = selectedName;
+      displayGuarantorEl.textContent = guarantorName; // NEW
+      guarantorRowEl.style.display = 'flex'; // NEW: Ensure the row is visible
       displayMobileEl.textContent = mobile;
       displayAmountEl.textContent = amount.toFixed(2);
       displayRateEl.textContent = rateText;
@@ -466,22 +484,22 @@
       regNumberEl.textContent = generateRegistrationNumber();
 
       // --- Set API Image ---
-      setApiImage(member); // Always attempt to set the API image
+      setApiImage(member);
 
       // --- Handle Manual Upload ---
-      manualApplicantPhotoEl.src = ""; // Clear previous manual image
-      manualUploadSectionEl.style.display = 'none'; // Hide section initially
+      manualApplicantPhotoEl.src = "";
+      manualUploadSectionEl.style.display = 'none';
 
       if (uploadedFile) {
           const reader = new FileReader();
           reader.onload = function(event) {
               manualApplicantPhotoEl.src = event.target.result;
-              manualUploadSectionEl.style.display = 'block'; // Show section
+              manualUploadSectionEl.style.display = 'block';
           }
           reader.onerror = function(event) {
               console.error("File could not be read: ", event.target.error);
               alert('Error reading uploaded file.');
-              manualUploadSectionEl.style.display = 'none'; // Keep hidden on error
+              manualUploadSectionEl.style.display = 'none';
           }
           reader.readAsDataURL(uploadedFile);
       }
@@ -492,28 +510,22 @@
       captureDiv.scrollIntoView({ behavior: 'smooth' });
     });
 
-    // --- Function to wait for images to load ---
     function waitForImages(containerElement) {
         const images = Array.from(containerElement.getElementsByTagName('img'));
         const promises = images.map(img => {
-            // Only create promise for images that have a src and aren't already complete
             if (img.src && !img.complete) {
-                 // Check if src is a data URL, these usually load instantly
                  if (img.src.startsWith('data:image/')) {
-                    return Promise.resolve(); // Assume data URLs are ready
+                    return Promise.resolve();
                  }
 
-                return new Promise((resolve, reject) => {
+                return new Promise((resolve) => {
                     img.onload = resolve;
-                    // If an image fails, we still resolve, otherwise Promise.all fails.
-                    // You might want to reject if a critical image fails.
                     img.onerror = () => {
                          console.warn(`Image failed to load: ${img.src}`);
-                         resolve(); // Resolve even on error to allow canvas generation
+                         resolve();
                     };
                 });
             } else {
-                // If image has no src or is already complete, resolve immediately
                 return Promise.resolve();
             }
         });
@@ -521,32 +533,27 @@
     }
 
 
-    // --- Download Logic ---
-    downloadBtn.addEventListener('click', async function() { // Make the handler async
+    downloadBtn.addEventListener('click', async function() {
       if (captureDiv.style.display === 'none') {
         alert('Please generate the loan form first.');
         return;
       }
 
-      // Show a temporary loading state (optional)
       downloadBtn.textContent = 'Preparing Download...';
       downloadBtn.disabled = true;
 
       try {
-        // Wait for all images inside #capture to load
         console.log("Waiting for images to load...");
         await waitForImages(captureDiv);
-        console.log("Images loaded (or timed out/error handled). Proceeding with canvas generation.");
+        console.log("Images loaded. Proceeding with canvas generation.");
 
-        // --- Run html2canvas AFTER images are loaded ---
          html2canvas(captureDiv, {
-             scale: 2, // Scale for better resolution
-             useCORS: true, // Important for cross-origin images (API, imgur)
+             scale: 2,
+             useCORS: true,
              allowTaint: false,
-             logging: false, // Optional: enable for debugging
-             scrollX: 0, // Keep these at 0
+             logging: false,
+             scrollX: 0,
              scrollY: 0,
-             // Avoid explicitly setting width/height/windowWidth/windowHeight unless necessary
          }).then(canvas => {
             const link = document.createElement('a');
             const fileName = `Loan_${displayNameEl.textContent.replace(/\s+/g, '_') || 'Form'}_${Date.now()}.png`;
@@ -556,22 +563,19 @@
             link.click();
             document.body.removeChild(link);
 
-            // Reset button state
             downloadBtn.textContent = 'Download Letter';
             downloadBtn.disabled = false;
 
-        }).catch(error => { // Catch errors specifically from html2canvas
+        }).catch(error => {
             console.error('Error generating image with html2canvas:', error);
             alert('Error generating the download image. Please try again. Check console for details.');
-            // Reset button state
             downloadBtn.textContent = 'Download Letter';
             downloadBtn.disabled = false;
         });
 
-      } catch (error) { // Catch errors from waitForImages promise rejection (if any)
+      } catch (error) {
             console.error('Error waiting for images:', error);
             alert('Could not confirm all images loaded before download. The image might be incomplete.');
-             // Reset button state
             downloadBtn.textContent = 'Download Letter';
             downloadBtn.disabled = false;
       }
@@ -583,3 +587,4 @@
 
 </body>
 </html>
+
