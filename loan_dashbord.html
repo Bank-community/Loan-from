@@ -3,93 +3,309 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Optimized Loan Dashboard</title>
+    <title>Upgraded Loan Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <style>
-/* General Styles & Color Variables */
+/* --- CSS IMPROVEMENTS --- */
+
+/* 1. Enhanced Color Palette & Root Variables */
 :root {
-    --primary-bg: #f0f2f5;
+    --primary-bg: #f8fafc; /* Lighter, cooler background */
     --card-bg: #ffffff;
-    --text-dark: #333333;
-    --text-light: #6c757d;
-    --accent-color: #d92525; /* Red for danger/pending */
-    --primary-color: #007BFF;
-    --primary-dark: #0056b3;
-    --warning-color: #ff9800; /* Orange for warning */
-    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
-    --card-hover-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    --font-family: 'Poppins', sans-serif;
+    --text-dark: #1f2937; /* Darker text for better contrast */
+    --text-light: #6b7280; /* Softer gray for secondary text */
+    --border-color: #e5e7eb; /* Subtle border color */
+    
+    --primary-color: #4f46e5; /* A modern indigo */
+    --primary-dark: #4338ca;
+    
+    --danger-color: #ef4444; /* Brighter, modern red */
+    --danger-bg: #fee2e2;
+    --danger-text: #b91c1c;
+
+    --warning-color: #f97316; /* Brighter, modern orange */
+    --warning-bg: #ffedd5;
+    --warning-text: #c2410c;
+
+    --pending-bg: #eef2ff; /* Light indigo for pending status */
+    --pending-text: #4338ca;
+
+    --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    --card-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --font-family: 'Inter', sans-serif; /* Switched to Inter for a cleaner UI look */
 }
 
-body { font-family: var(--font-family); background-color: var(--primary-bg); margin: 0; padding: 20px; color: var(--text-dark); }
-.container { max-width: 1200px; margin: 0 auto; }
-.header { text-align: center; margin-bottom: 30px; }
-.header h1 { margin: 0; font-size: 28px; font-weight: 600; color: var(--primary-dark); }
-.header p { margin: 5px 0 0; color: var(--text-light); font-size: 16px; }
-.summary-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-.summary-card { background: var(--card-bg); border-radius: 12px; padding: 20px; text-align: center; box-shadow: var(--card-shadow); }
-.summary-card h3 { margin: 0 0 10px 0; font-size: 16px; color: var(--text-light); font-weight: 500; }
-.summary-card p { margin: 0; font-size: 26px; font-weight: 700; color: var(--primary-dark); }
-.filter-controls { margin-bottom: 25px; }
-#search-input { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; transition: border-color 0.2s, box-shadow 0.2s; }
-#search-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); }
-#loader { text-align: center; padding: 40px; font-size: 16px; color: var(--text-light); }
-.spinner { width: 40px; height: 40px; border: 4px solid rgba(0,0,0,0.1); border-left-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
+/* 2. General Body & Layout Refinements */
+body { 
+    font-family: var(--font-family); 
+    background-color: var(--primary-bg); 
+    margin: 0; 
+    padding: 24px; /* Consistent padding */
+    color: var(--text-dark); 
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.container { 
+    max-width: 1280px; 
+    margin: 0 auto; 
+}
+
+/* 3. Header & Title Styling */
+.header { 
+    text-align: center; 
+    margin-bottom: 40px; 
+}
+.header h1 { 
+    margin: 0; 
+    font-size: 32px; 
+    font-weight: 700; 
+    color: var(--text-dark);
+    letter-spacing: -0.025em; /* Tighter letter spacing for headings */
+}
+.header p { 
+    margin: 8px 0 0; 
+    color: var(--text-light); 
+    font-size: 18px; 
+}
+
+/* 4. Summary Section Redesign */
+.summary-section { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 24px; 
+    margin-bottom: 40px; 
+}
+.summary-card { 
+    background: var(--card-bg); 
+    border-radius: 12px; 
+    padding: 24px; 
+    text-align: center; 
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+.summary-card:hover {
+    border-color: var(--primary-color);
+}
+.summary-card h3 { 
+    margin: 0 0 8px 0; 
+    font-size: 16px; 
+    color: var(--text-light); 
+    font-weight: 500; 
+}
+.summary-card p { 
+    margin: 0; 
+    font-size: 36px; 
+    font-weight: 700; 
+    color: var(--primary-color); 
+}
+
+/* 5. Modern Search Input */
+.filter-controls { 
+    margin-bottom: 32px; 
+}
+#search-input { 
+    width: 100%; 
+    padding: 12px 16px; 
+    border: 1px solid var(--border-color); 
+    border-radius: 8px; 
+    font-size: 16px; 
+    box-sizing: border-box; 
+    transition: border-color 0.2s, box-shadow 0.2s; 
+    background-color: var(--card-bg);
+}
+#search-input:focus { 
+    outline: none; 
+    border-color: var(--primary-color); 
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+/* 6. Loader & Message Styling */
+#loader { 
+    text-align: center; 
+    padding: 50px; 
+    font-size: 16px; 
+    color: var(--text-light); 
+}
+.spinner { 
+    width: 40px; height: 40px; 
+    border: 4px solid rgba(0,0,0,0.1); 
+    border-left-color: var(--primary-color); 
+    border-radius: 50%; 
+    animation: spin 1s linear infinite; 
+    margin: 0 auto 15px auto; 
+}
 @keyframes spin { to { transform: rotate(360deg); } }
 #loader.hidden { display: none; }
-#outstanding-loans-container { display: grid; gap: 25px; grid-template-columns: 1fr; }
-@media (min-width: 600px) { #outstanding-loans-container { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 992px) { #outstanding-loans-container { grid-template-columns: repeat(3, 1fr); } }
-.loan-card { background-color: var(--card-bg); border-radius: 16px; box-shadow: var(--card-shadow); transition: transform 0.2s ease, box-shadow 0.2s ease; overflow: hidden; display: flex; flex-direction: column; }
-.loan-card:hover { transform: translateY(-5px); box-shadow: var(--card-hover-shadow); }
 
-/* --- बदलाव: कार्ड कंटेंट को रिलेटिव बनाना --- */
-.card-main-content { padding: 20px; position: relative; }
+.message-box { 
+    background-color: #e8f5e9; 
+    color: #28a745; 
+    padding: 25px; 
+    border-radius: 12px; 
+    text-align: center; 
+    border: 1px solid #c8e6c9; 
+    grid-column: 1 / -1; /* Span across all columns in the grid */
+}
 
-/* --- नया स्टाइल: स्टेटस बैज के लिए --- */
+/* 7. Loan Card Grid Layout */
+#outstanding-loans-container { 
+    display: grid; 
+    gap: 24px; 
+    grid-template-columns: 1fr; 
+}
+@media (min-width: 640px) { #outstanding-loans-container { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { #outstanding-loans-container { grid-template-columns: repeat(3, 1fr); } }
+
+/* 8. Premium Loan Card Redesign */
+.loan-card { 
+    background-color: var(--card-bg); 
+    border-radius: 16px; 
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow); 
+    transition: transform 0.2s ease, box-shadow 0.2s ease; 
+    overflow: hidden; 
+    display: flex; 
+    flex-direction: column; 
+}
+.loan-card:hover { 
+    transform: translateY(-5px); 
+    box-shadow: var(--card-hover-shadow); 
+}
+
+.card-main-content { 
+    padding: 20px; 
+    position: relative; 
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 .status-badge {
     position: absolute;
     top: 20px;
     right: 20px;
-    background-color: #fef2f2;
-    color: var(--accent-color);
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 13px;
+    background-color: var(--pending-bg);
+    color: var(--pending-text);
+    padding: 5px 12px;
+    border-radius: 9999px; /* Pill shape */
+    font-size: 12px;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-.card-top { display: flex; align-items: center; margin-bottom: 20px; }
-.profile-picture { width: 55px; height: 55px; border-radius: 50%; overflow: hidden; margin-right: 15px; flex-shrink: 0; border: 3px solid var(--primary-bg); }
-.profile-picture img { width: 100%; height: 100%; object-fit: cover; }
-.user-details { flex-grow: 1; }
-.user-details h3 { margin: 0; font-size: 18px; font-weight: 600; }
-.loan-date { font-size: 13px; color: var(--text-light); display: flex; align-items: center; gap: 5px; margin-top: 3px; }
-.card-middle { background-color: #f8f9fa; border-radius: 12px; padding: 15px; }
-.detail-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-.detail-row:not(:last-child) { margin-bottom: 12px; }
-.detail-label { display: flex; align-items: center; gap: 8px; color: var(--text-light); }
-.detail-value { font-weight: 600; font-size: 15px; }
-.detail-value.amount { color: var(--text-dark); }
-.detail-value.penalty-value { color: var(--accent-color); font-weight: 700; }
-/* .detail-value.pending क्लास को हटा दिया गया क्योंकि वह अब उपयोग में नहीं है */
+.card-top { 
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 20px; 
+}
+.profile-picture { 
+    width: 50px; 
+    height: 50px; 
+    border-radius: 50%; 
+    overflow: hidden; 
+    margin-right: 16px; 
+    flex-shrink: 0; 
+    border: 2px solid var(--border-color); 
+}
+.profile-picture img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+}
+.user-details h3 { 
+    margin: 0; 
+    font-size: 18px; 
+    font-weight: 600; 
+    color: var(--text-dark);
+}
+.loan-date { 
+    font-size: 13px; 
+    color: var(--text-light); 
+    display: flex; 
+    align-items: center; 
+    gap: 6px; 
+    margin-top: 4px; 
+}
+.loan-date .icon {
+    width: 14px;
+    height: 14px;
+}
 
-.pending-banner { background-color: var(--primary-dark); color: white; padding: 10px 20px; text-align: center; font-weight: 500; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: auto; transition: background-color 0.3s ease; }
-.pending-banner.warning { background-color: var(--warning-color); }
-.pending-banner.danger { background-color: var(--accent-color); }
-.message-box { background-color: #e8f5e9; color: #28a745; padding: 25px; border-radius: 12px; text-align: center; border: 1px solid #c8e6c9; grid-column: 1 / -1; }
-.message-box .icon { font-size: 40px; margin-bottom: 10px; }
-.message-box h2 { margin: 0; font-size: 20px; }
+.card-middle { 
+    background-color: var(--primary-bg); 
+    border-radius: 12px; 
+    padding: 16px; 
+    border: 1px solid var(--border-color);
+    margin-top: auto; /* Pushes this section to the bottom of the flex container */
+}
+.detail-row { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    font-size: 14px; 
+}
+.detail-row:not(:last-child) { 
+    margin-bottom: 12px; 
+}
+.detail-label { 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    color: var(--text-light); 
+    font-weight: 500;
+}
+.detail-label .icon {
+    width: 16px;
+    height: 16px;
+}
+.detail-value { 
+    font-weight: 600; 
+    font-size: 15px; 
+}
+.detail-value.amount { 
+    color: var(--text-dark); 
+}
+.detail-value.penalty-value { 
+    color: var(--danger-text);
+    font-weight: 700; 
+}
+
+/* 9. Refined Bottom Banner */
+.pending-banner { 
+    color: white; 
+    padding: 12px 20px; 
+    text-align: center; 
+    font-weight: 500; 
+    font-size: 14px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 8px; 
+    transition: background-color 0.3s ease; 
+    background-color: var(--primary-dark);
+}
+.pending-banner.warning { 
+    background-color: var(--warning-text); 
+}
+.pending-banner.danger { 
+    background-color: var(--danger-text); 
+}
+.pending-banner .icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
 </style>
     <div class="container">
         <div class="header">
             <h1>Bank Community Loan Dashboard</h1>
-            <p>Members Loan और Let fee charges.</p>
+            <p>Track member loans and late fee charges.</p>
         </div>
 
         <!-- Summary Section -->
@@ -112,7 +328,7 @@ body { font-family: var(--font-family); background-color: var(--primary-bg); mar
         <!-- Loader -->
         <div id="loader">
             <div class="spinner"></div>
-            Loading data...
+            Loading member data...
         </div>
 
         <!-- Loan Cards Container -->
@@ -122,10 +338,19 @@ body { font-family: var(--font-family); background-color: var(--primary-bg); mar
 
     </div>
 
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
+<script>
+document.addEventListener("DOMContentLoaded", () => {
     initializeApp();
 });
+
+// --- JAVASCRIPT REFINEMENTS ---
+// Added SVG icons for a cleaner UI
+const ICONS = {
+    calendar: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0h18M-7.5 14.25h.008v.008H-7.5v-.008Z" /></svg>`,
+    money: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V8.25c0-.621.504-1.125 1.125-1.125h1.5" /></svg>`,
+    penalty: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg>`,
+    clock: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`,
+};
 
 const state = {
     allOutstandingLoans: [],
@@ -140,7 +365,6 @@ const state = {
 };
 
 async function initializeApp() {
-    // ... (यह फंक्शन पहले जैसा ही है)
     const { loader, container } = state.ui;
     loader.classList.remove('hidden');
     container.innerHTML = '';
@@ -154,14 +378,13 @@ async function initializeApp() {
         setupEventListeners();
     } catch (error) {
         console.error("Failed to fetch or process data:", error);
-        container.innerHTML = `<p style="color: red; text-align: center;">Could not load data. Please try again later.</p>`;
+        container.innerHTML = `<p style="color: red; text-align: center; grid-column: 1 / -1;">Could not load data. Please try again later.</p>`;
     } finally {
         loader.classList.add('hidden');
     }
 }
 
 function processRawData(rawData) {
-    // ... (यह फंक्शन पहले जैसा ही है)
     const processed = rawData.map(row => {
         let parsedDate = new Date(row.Date);
         if (isNaN(parsedDate)) {
@@ -181,7 +404,6 @@ function processRawData(rawData) {
 }
 
 function calculatePenalty(loanAmount, daysAgo) {
-    // ... (यह फंक्शन पहले जैसा ही है)
     let percentage = 0;
     if (daysAgo > 0 && daysAgo <= 30)       percentage = 1;
     else if (daysAgo >= 31 && daysAgo <= 60) percentage = 3;
@@ -193,7 +415,6 @@ function calculatePenalty(loanAmount, daysAgo) {
 }
 
 function findOutstandingLoans(allData) {
-    // ... (यह फंक्शन पहले जैसा ही है)
     const outstanding = [];
     const members = [...new Set(allData.map(d => d.Name))];
     members.forEach(name => {
@@ -228,7 +449,6 @@ function displayAllData() {
 }
 
 function displaySummary(loans) {
-    // ... (यह फंक्शन पहले जैसा ही है)
     const { totalCountEl, totalAmountEl } = state.ui;
     const totalAmount = loans.reduce((sum, loan) => sum + loan.loanAmount, 0);
     totalCountEl.textContent = loans.length;
@@ -236,11 +456,14 @@ function displaySummary(loans) {
 }
 
 function displayLoanCards(loans) {
-    const { container, searchInput } = state.ui;
+    const { container } = state.ui;
     container.innerHTML = '';
 
     if (loans.length === 0) {
-        // ... (यह हिस्सा पहले जैसा ही है)
+        container.innerHTML = `<div class="message-box">
+            <h2>All Clear!</h2>
+            <p>There are no outstanding loans at the moment.</p>
+        </div>`;
         return;
     }
 
@@ -248,11 +471,11 @@ function displayLoanCards(loans) {
         const card = document.createElement('div');
         card.className = 'loan-card';
 
-        const defaultPic = `https://ui-avatars.com/api/?name=${encodeURIComponent(loan.name)}&background=0D8ABC&color=fff&size=65`;
+        const defaultPic = `https://ui-avatars.com/api/?name=${encodeURIComponent(loan.name)}&background=4f46e5&color=fff&size=50`;
         const profilePic = loan.imageUrl || defaultPic;
         
         const formattedDate = loan.loanDate.toLocaleDateString('en-GB', {
-            day: 'numeric', month: 'long', year: 'numeric'
+            day: 'numeric', month: 'short', year: 'numeric'
         });
         
         let bannerClass = '';
@@ -263,7 +486,7 @@ function displayLoanCards(loans) {
         if (loan.penalty.amount > 0) {
             penaltyHtml = `
                 <div class="detail-row">
-                    <span class="detail-label">⚠️ Late Fee (${loan.penalty.percentage}%):</span>
+                    <span class="detail-label">${ICONS.penalty} Late Fee (${loan.penalty.percentage}%):</span>
                     <span class="detail-value penalty-value">₹${loan.penalty.amount.toLocaleString('en-IN')}</span>
                 </div>
             `;
@@ -271,13 +494,13 @@ function displayLoanCards(loans) {
         
         let bannerText;
         if (loan.daysAgo > 100) {
-            bannerText = `🚨 100+ दिन बकाया! 60 दिन की पेनल्टी और सभी शुल्क लागू!`;
+            bannerText = `100+ days overdue! Strict action required.`;
         } else {
-            const daysText = loan.daysAgo === 1 ? 'दिन' : 'दिनों';
-            bannerText = `⏰ ${loan.daysAgo} ${daysText} से पेमेंट पेंडिंग है`;
+            const daysText = loan.daysAgo === 1 ? 'day' : 'days';
+            bannerText = `Payment pending for ${loan.daysAgo} ${daysText}`;
         }
 
-        // --- बदलाव: कार्ड के HTML टेम्पलेट में ---
+        // --- Updated Card HTML Template with SVG Icons ---
         card.innerHTML = `
             <div class="card-main-content">
                 <div class="status-badge">Pending</div>
@@ -287,19 +510,20 @@ function displayLoanCards(loans) {
                     </div>
                     <div class="user-details">
                         <h3>${loan.name}</h3>
-                        <div class="loan-date">📅 ${formattedDate}</div>
+                        <div class="loan-date">${ICONS.calendar} ${formattedDate}</div>
                     </div>
                 </div>
                 <div class="card-middle">
                     <div class="detail-row">
-                        <span class="detail-label">💰 Loan Amount:</span>
+                        <span class="detail-label">${ICONS.money} Loan Amount:</span>
                         <span class="detail-value amount">₹${loan.loanAmount.toLocaleString('en-IN')}</span>
                     </div>
                     ${penaltyHtml}
                 </div>
             </div>
             <div class="pending-banner ${bannerClass}">
-                ${bannerText}
+                ${ICONS.clock}
+                <span>${bannerText}</span>
             </div>
         `;
         container.appendChild(card);
@@ -307,14 +531,16 @@ function displayLoanCards(loans) {
 }
 
 function setupEventListeners() {
-    // ... (यह फंक्शन पहले जैसा ही है)
     state.ui.searchInput.addEventListener('input', (e) => {
         const searchTerm = e.target.value.toLowerCase().trim();
         const filteredLoans = state.allOutstandingLoans.filter(loan => 
             loan.name.toLowerCase().includes(searchTerm)
         );
+        // We only need to re-render the cards, not the summary
         displayLoanCards(filteredLoans);
     });
-}   </script>
+}
+</script>
 </body>
 </html>
+
