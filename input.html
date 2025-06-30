@@ -131,16 +131,19 @@
 <body class="bg-gray-100 antialiased">
 
     <div class="relative min-h-screen md:flex">
-        <!-- Mobile menu button -->
+        <!-- UPDATED: Mobile menu button -->
         <div class="md:hidden flex justify-between items-center p-4 bg-white shadow-md sticky top-0 z-20">
             <span class="text-xl font-bold text-indigo-600">Admin Panel</span>
             <div class="flex items-center space-x-4">
-                <a href="https://bank-community-l.imgbb.com/" target="_blank" class="text-gray-600 hover:text-indigo-600">
+                <a href="https://bank-community-l.imgbb.com/" target="_blank" title="Upload Image" class="text-gray-600 hover:text-indigo-600">
                     <i class="ph-image text-2xl"></i>
                 </a>
-                <a href="https://loan-from.vercel.app/" target="_blank" class="text-gray-600 hover:text-indigo-600">
-                    <i class="ph-house text-2xl"></i>
+                <a href="https://loan-from.vercel.app/" target="_blank" title="Bank Site" class="text-gray-600 hover:text-indigo-600">
+                    <i class="ph-bank text-2xl"></i>
                 </a>
+                <button id="homeBtnHeader" title="Dashboard" class="text-gray-600 hover:text-indigo-600">
+                    <i class="ph-house text-2xl"></i>
+                </button>
                 <button id="mobileMenuBtn" class="text-gray-600 focus:outline-none">
                     <i class="ph-list text-3xl"></i>
                 </button>
@@ -155,14 +158,15 @@
                     <i class="ph-x text-2xl"></i>
                 </button>
             </div>
+            <!-- UPDATED: Sidebar Navigation -->
             <nav class="flex-1 p-4 space-y-2">
                 <a href="#" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 active" data-view="dashboard">
                     <i class="ph-layout text-xl text-gray-500 mr-3"></i>
                     <span>Dashboard</span>
                 </a>
                 <a href="https://loan-from.vercel.app/" target="_blank" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700">
-                    <i class="ph-house text-xl text-gray-500 mr-3"></i>
-                    <span>Home</span>
+                    <i class="ph-bank text-xl text-gray-500 mr-3"></i>
+                    <span>Bank Site</span>
                 </a>
                 <a href="#" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700" data-view="data-entry">
                     <i class="ph-note-pencil text-xl text-gray-500 mr-3"></i>
@@ -192,7 +196,12 @@
             
             <!-- Dashboard View -->
             <div id="dashboard-view" class="view active">
-                <h1 class="text-3xl font-bold text-gray-800 mb-6">Dashboard</h1>
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+                    <button id="addDataBtn" title="Add New Entry" class="text-indigo-600 hover:text-indigo-800 transition-colors">
+                        <i class="ph-plus-circle text-4xl"></i>
+                    </button>
+                </div>
                 <div id="dashboard-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Cards will be populated by JS -->
                 </div>
@@ -317,7 +326,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             // --- Configuration ---
             const getDataScriptUrl = 'https://script.google.com/macros/s/AKfycbz9LCkPR8L3-i7F1KG2KUJ6It2l_p55murljRJ_4108nFysOXUOpG5WEs1sdEaGHq1L7w/exec';
-            // UPDATED: Using the correct URL for submitting data from your provided code
             const postDataScriptUrl = 'https://script.google.com/macros/s/AKfycbzOFUW4IHCbaT3EdY_IrKs0NuVuuzYDvPhviTDJWsXbqR-s_JNBvMJ4TBaksqeW2Le0XA/exec';
             const imgbbApiKey = '7a1be8401cccf5271ff787e57c3035bc';
             const imgbbUploadUrl = 'https://api.imgbb.com/1/upload';
@@ -355,6 +363,10 @@
             const profileLoanCount = document.getElementById('profileLoanCount');
             const profileSipBalance = document.getElementById('profileSipBalance');
             const profileLoanAmount = document.getElementById('profileLoanAmount');
+            
+            const addDataBtn = document.getElementById('addDataBtn');
+            // UPDATED: New header home button
+            const homeBtnHeader = document.getElementById('homeBtnHeader');
 
 
             // --- State Variables ---
@@ -382,6 +394,15 @@
                         if (window.innerWidth < 768) sidebar.classList.remove('open');
                     });
                 }
+            });
+            
+            addDataBtn.addEventListener('click', () => {
+                document.querySelector('.sidebar-item[data-view="data-entry"]').click();
+            });
+
+            // UPDATED: Header home button logic
+            homeBtnHeader.addEventListener('click', () => {
+                document.querySelector('.sidebar-item[data-view="dashboard"]').click();
             });
 
             // --- Modal Handling ---
@@ -601,15 +622,11 @@
             setTodayDate();
             fetchTransactionData();
 
-            // --- FULLY REVISED: Form Submission Logic based on your provided code ---
-            
-            // Helper function to format date as DD-Month-YYYY
+            // --- Form Submission Logic ---
             function formatCustomDate(dateString) {
                 try {
-                    // Create date object assuming input is YYYY-MM-DD
                     const dateObj = new Date(dateString + 'T00:00:00Z');
                     if (isNaN(dateObj.getTime())) throw new Error("Invalid Date object");
-                    // Format it
                     return dateObj.toLocaleDateString('en-GB', { 
                         day: 'numeric', 
                         month: 'long', 
@@ -618,7 +635,7 @@
                     });
                 } catch (error) {
                     console.error("Error formatting date:", error, "Input was:", dateString);
-                    return dateString; // Return original string on error
+                    return dateString;
                 }
             }
 
@@ -632,7 +649,6 @@
                 let imageUrl = '';
 
                 try {
-                    // Step 1: Upload image to ImgBB if a file is selected
                     if (imageFileInput.files.length > 0) {
                         const imageFile = imageFileInput.files[0];
                         messageDiv.textContent = 'Uploading image...';
@@ -641,36 +657,29 @@
                         imgbbFormData.append('key', imgbbApiKey);
                         imgbbFormData.append('image', imageFile);
 
-                        console.log('Attempting to upload image to ImgBB...');
                         const imgResponse = await fetch(imgbbUploadUrl, {
                             method: 'POST',
                             body: imgbbFormData
                         });
 
                         const imgResult = await imgResponse.json();
-                        console.log('ImgBB Response:', imgResult);
 
                         if (imgResult && imgResult.success && imgResult.data?.url) {
                             imageUrl = imgResult.data.url;
-                            console.log('Image uploaded successfully. URL:', imageUrl);
                             messageDiv.textContent = 'Image uploaded. Submitting data...';
                         } else {
                             throw new Error(`Image upload failed: ${imgResult?.error?.message || 'Unknown ImgBB error.'}`);
                         }
-                    } else {
-                        console.log('No image file selected.');
                     }
 
-                    // Step 2: Prepare and submit data to Google Apps Script
                     const dataToSubmit = {
                         date: formatCustomDate(dateInput.value),
                         name: nameInput.value,
                         category: categorySelect.value,
                         amount: amountInput.value,
-                        imageUrl: imageUrl // This will be the URL from ImgBB or an empty string
+                        imageUrl: imageUrl
                     };
-
-                    console.log('Final data object being sent to Apps Script:', dataToSubmit);
+                    
                     messageDiv.textContent = 'Submitting data to Google Sheet...';
                     
                     const scriptResponse = await fetch(postDataScriptUrl, {
@@ -681,7 +690,6 @@
                     });
 
                     const scriptResult = await scriptResponse.json();
-                    console.log('Apps Script Response:', scriptResult);
 
                     if (scriptResult.status === 'success') {
                         messageDiv.textContent = scriptResult.message || 'Data submitted successfully!';
@@ -690,7 +698,6 @@
                         fileInfoDiv.textContent = 'No file selected';
                         setTodayDate();
                         
-                        // Refresh dashboard data after successful submission
                         setTimeout(fetchTransactionData, 1000);
                     } else {
                         throw new Error(`Submission failed: ${scriptResult.message || 'Unknown script error'}`);
@@ -706,7 +713,6 @@
                 }
             });
 
-            // Show selected file name
             imageFileInput.addEventListener('change', () => {
                 if (imageFileInput.files.length > 0) {
                     const file = imageFileInput.files[0];
