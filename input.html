@@ -3,7 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Admin Panel</title>
+    
+    <!-- UPDATED: Home Screen Icon and App Title -->
+    <title>Admin Panel</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/20mS3KgF/IMG-20250630-184409.png">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/20mS3KgF/IMG-20250630-184409.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Admin">
+    <link rel="manifest" href="data:application/manifest+json,{
+        &quot;name&quot;: &quot;Admin Panel&quot;,
+        &quot;short_name&quot;: &quot;Admin&quot;,
+        &quot;icons&quot;: [{
+            &quot;src&quot;: &quot;https://i.ibb.co/20mS3KgF/IMG-20250630-184409.png&quot;,
+            &quot;sizes&quot;: &quot;192x192&quot;,
+            &quot;type&quot;: &quot;image/png&quot;
+        }],
+        &quot;start_url&quot;: &quot;.&quot;,
+        &quot;display&quot;: &quot;standalone&quot;,
+        &quot;background_color&quot;: &quot;#ffffff&quot;,
+        &quot;theme_color&quot;: &quot;#4f46e5&quot;
+    }">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/phosphor-icons"></script>
@@ -110,7 +131,7 @@
 <body class="bg-gray-100 antialiased">
 
     <div class="relative min-h-screen md:flex">
-        <!-- UPDATED: Mobile menu button -->
+        <!-- Mobile menu button -->
         <div class="md:hidden flex justify-between items-center p-4 bg-white shadow-md sticky top-0 z-20">
             <span class="text-xl font-bold text-indigo-600">Admin Panel</span>
             <div class="flex items-center space-x-4">
@@ -131,7 +152,7 @@
                     <i class="ph-x text-2xl"></i>
                 </button>
             </div>
-            <!-- UPDATED: Sidebar Navigation -->
+            <!-- Sidebar Navigation -->
             <nav class="flex-1 p-4 space-y-2">
                 <a href="#" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 active" data-view="dashboard">
                     <i class="ph-layout text-xl text-gray-500 mr-3"></i>
