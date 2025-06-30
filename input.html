@@ -248,14 +248,30 @@
             <img id="profileImage" src="https://placehold.co/100x100/E0E7FF/4F46E5?text=User" alt="Profile Picture" class="w-24 h-24 rounded-full mx-auto -mt-4 mb-4 border-4 border-white shadow-lg">
             <h2 id="profileName" class="text-2xl font-bold text-gray-800">User Name</h2>
             <p class="text-gray-500">Bank Community Member</p>
-            <div class="mt-6 flex justify-around text-center border-t pt-4">
-                <div>
-                    <p id="profileSipCount" class="text-xl font-bold text-gray-800">0</p>
-                    <p class="text-sm text-gray-500">SIP Payments</p>
+            
+            <!-- UPDATED: Profile Stats Section -->
+            <div class="mt-6 space-y-4 text-center border-t pt-4">
+                <!-- Row 1: Counts -->
+                <div class="flex justify-around">
+                    <div>
+                        <p id="profileSipCount" class="text-xl font-bold text-gray-800">0</p>
+                        <p class="text-sm text-gray-500">SIP Payments</p>
+                    </div>
+                    <div>
+                        <p id="profileLoanCount" class="text-xl font-bold text-gray-800">0</p>
+                        <p class="text-sm text-gray-500">Loans Taken</p>
+                    </div>
                 </div>
-                <div>
-                    <p id="profileLoanCount" class="text-xl font-bold text-gray-800">0</p>
-                    <p class="text-sm text-gray-500">Loans Taken</p>
+                <!-- Row 2: Amounts -->
+                <div class="flex justify-around bg-gray-50 p-3 rounded-lg">
+                     <div>
+                        <p id="profileSipBalance" class="text-xl font-bold text-emerald-600">₹0</p>
+                        <p class="text-sm text-gray-500">Total SIP</p>
+                    </div>
+                    <div>
+                        <p id="profileLoanAmount" class="text-xl font-bold text-red-600">₹0</p>
+                        <p class="text-sm text-gray-500">Total Loan</p>
+                    </div>
                 </div>
             </div>
              <p id="profileEmail" class="mt-6 text-gray-600">bankcommunityloan@gmail.com</p>
@@ -299,6 +315,10 @@
             const profileImage = document.getElementById('profileImage');
             const profileSipCount = document.getElementById('profileSipCount');
             const profileLoanCount = document.getElementById('profileLoanCount');
+            // UPDATED: Added new element selectors
+            const profileSipBalance = document.getElementById('profileSipBalance');
+            const profileLoanAmount = document.getElementById('profileLoanAmount');
+
 
             // --- State Variables ---
             let allTransactionData = [];
@@ -331,13 +351,18 @@
             const openModal = (modal) => {
                 modal.classList.remove('hidden', 'opacity-0');
                 modal.classList.add('flex');
-                setTimeout(() => modal.querySelector('.modal-content').classList.remove('scale-95'), 10);
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modal.querySelector('.modal-content').classList.remove('scale-95');
+                }, 10);
             }
 
             const closeModal = (modal) => {
                  modal.querySelector('.modal-content').classList.add('scale-95');
                  modal.classList.add('opacity-0');
-                 setTimeout(() => modal.classList.add('hidden'), 300);
+                 setTimeout(() => {
+                    modal.classList.add('hidden');
+                 }, 300);
             }
 
             document.querySelectorAll('.close-modal-btn').forEach(btn => {
@@ -403,7 +428,7 @@
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-md">
                         <h2 class="text-gray-600 font-medium">Total Loan Amount</h2>
-                        <p class="text-3xl font-bold text-green-600 mt-2">₹${loans.reduce((sum, t) => sum + parseFloat(t.Loan || 0), 0).toLocaleString('en-IN')}</p>
+                        <p class="text-3xl font-bold text-red-600 mt-2">₹${loans.reduce((sum, t) => sum + parseFloat(t.Loan || 0), 0).toLocaleString('en-IN')}</p>
                     </div>
                 `;
                 dashboardCardsContainer.innerHTML = cardHTML;
@@ -447,24 +472,41 @@
                 cachedNames.forEach(name => {
                     const li = document.createElement('li');
                     li.className = 'flex items-center p-3 hover:bg-gray-100 rounded-md cursor-pointer';
+                    // Placeholder image using the first letter of the name
                     const img = document.createElement('img');
                     img.src = `https://placehold.co/40x40/E0E7FF/4F46E5?text=${name.charAt(0).toUpperCase()}`;
+                    img.alt = name;
                     img.className = 'w-10 h-10 rounded-full mr-4';
                     li.appendChild(img);
                     const span = document.createElement('span');
                     span.textContent = name;
                     span.className = 'text-gray-800 font-medium';
                     li.appendChild(span);
+                    
                     li.addEventListener('click', () => {
+                        // --- UPDATED: Profile Modal Logic ---
+                        
+                        // 1. Set basic info
                         profileName.textContent = name;
+                        // You can replace this with a real image URL if you have one in your data
                         profileImage.src = `https://placehold.co/100x100/E0E7FF/4F46E5?text=${name.charAt(0).toUpperCase()}`;
                         
-                        const userSips = allTransactionData.filter(t => t.Name === name && t['SIP Payment']).length;
-                        const userLoans = allTransactionData.filter(t => t.Name === name && t.Loan).length;
+                        // 2. Filter all transactions for the selected member
+                        const userTransactions = allTransactionData.filter(t => t.Name === name);
                         
-                        profileSipCount.textContent = userSips;
-                        profileLoanCount.textContent = userLoans;
+                        // 3. Calculate counts and totals
+                        const userSipCount = userTransactions.filter(t => t['SIP Payment']).length;
+                        const userLoanCount = userTransactions.filter(t => t.Loan).length;
+                        const userSipBalance = userTransactions.reduce((sum, t) => sum + parseFloat(t['SIP Payment'] || 0), 0);
+                        const userLoanAmount = userTransactions.reduce((sum, t) => sum + parseFloat(t.Loan || 0), 0);
                         
+                        // 4. Update the profile modal with the calculated data
+                        profileSipCount.textContent = userSipCount;
+                        profileLoanCount.textContent = userLoanCount;
+                        profileSipBalance.textContent = `₹${userSipBalance.toLocaleString('en-IN')}`;
+                        profileLoanAmount.textContent = `₹${userLoanAmount.toLocaleString('en-IN')}`;
+                        
+                        // 5. Show the modal
                         closeModal(totalMembersModal);
                         openModal(profileModal);
                     });
