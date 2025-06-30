@@ -110,12 +110,17 @@
 <body class="bg-gray-100 antialiased">
 
     <div class="relative min-h-screen md:flex">
-        <!-- Mobile menu button -->
+        <!-- UPDATED: Mobile menu button -->
         <div class="md:hidden flex justify-between items-center p-4 bg-white shadow-md sticky top-0 z-20">
             <span class="text-xl font-bold text-indigo-600">Admin Panel</span>
-            <button id="mobileMenuBtn" class="text-gray-600 focus:outline-none">
-                <i class="ph-list text-3xl"></i>
-            </button>
+            <div class="flex items-center space-x-4">
+                <a href="https://loan-from.vercel.app/" target="_blank" class="text-gray-600 hover:text-indigo-600 flex items-center space-x-1">
+                    <i class="ph-house text-2xl"></i>
+                </a>
+                <button id="mobileMenuBtn" class="text-gray-600 focus:outline-none">
+                    <i class="ph-list text-3xl"></i>
+                </button>
+            </div>
         </div>
 
         <!-- Sidebar -->
@@ -126,10 +131,15 @@
                     <i class="ph-x text-2xl"></i>
                 </button>
             </div>
+            <!-- UPDATED: Sidebar Navigation -->
             <nav class="flex-1 p-4 space-y-2">
                 <a href="#" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 active" data-view="dashboard">
-                    <i class="ph-house text-xl text-gray-500 mr-3"></i>
+                    <i class="ph-layout text-xl text-gray-500 mr-3"></i>
                     <span>Dashboard</span>
+                </a>
+                <a href="https://loan-from.vercel.app/" target="_blank" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700">
+                    <i class="ph-house text-xl text-gray-500 mr-3"></i>
+                    <span>Home</span>
                 </a>
                 <a href="#" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700" data-view="data-entry">
                     <i class="ph-note-pencil text-xl text-gray-500 mr-3"></i>
@@ -249,7 +259,6 @@
             <h2 id="profileName" class="text-2xl font-bold text-gray-800">User Name</h2>
             <p class="text-gray-500">Bank Community Member</p>
             
-            <!-- UPDATED: Profile Stats Section -->
             <div class="mt-6 space-y-4 text-center border-t pt-4">
                 <!-- Row 1: Counts -->
                 <div class="flex justify-around">
@@ -315,7 +324,6 @@
             const profileImage = document.getElementById('profileImage');
             const profileSipCount = document.getElementById('profileSipCount');
             const profileLoanCount = document.getElementById('profileLoanCount');
-            // UPDATED: Added new element selectors
             const profileSipBalance = document.getElementById('profileSipBalance');
             const profileLoanAmount = document.getElementById('profileLoanAmount');
 
@@ -391,7 +399,6 @@
                 }
                 namesModalBody.innerHTML = `<ul id="namesList">${listHTML}</ul>`;
 
-                // Add event listeners to the new list items
                 document.querySelectorAll('.name-item').forEach(item => {
                     item.addEventListener('click', (e) => {
                         nameInput.value = e.target.dataset.name;
@@ -472,7 +479,6 @@
                 cachedNames.forEach(name => {
                     const li = document.createElement('li');
                     li.className = 'flex items-center p-3 hover:bg-gray-100 rounded-md cursor-pointer';
-                    // Placeholder image using the first letter of the name
                     const img = document.createElement('img');
                     img.src = `https://placehold.co/40x40/E0E7FF/4F46E5?text=${name.charAt(0).toUpperCase()}`;
                     img.alt = name;
@@ -484,29 +490,21 @@
                     li.appendChild(span);
                     
                     li.addEventListener('click', () => {
-                        // --- UPDATED: Profile Modal Logic ---
-                        
-                        // 1. Set basic info
                         profileName.textContent = name;
-                        // You can replace this with a real image URL if you have one in your data
                         profileImage.src = `https://placehold.co/100x100/E0E7FF/4F46E5?text=${name.charAt(0).toUpperCase()}`;
                         
-                        // 2. Filter all transactions for the selected member
                         const userTransactions = allTransactionData.filter(t => t.Name === name);
                         
-                        // 3. Calculate counts and totals
                         const userSipCount = userTransactions.filter(t => t['SIP Payment']).length;
                         const userLoanCount = userTransactions.filter(t => t.Loan).length;
                         const userSipBalance = userTransactions.reduce((sum, t) => sum + parseFloat(t['SIP Payment'] || 0), 0);
                         const userLoanAmount = userTransactions.reduce((sum, t) => sum + parseFloat(t.Loan || 0), 0);
                         
-                        // 4. Update the profile modal with the calculated data
                         profileSipCount.textContent = userSipCount;
                         profileLoanCount.textContent = userLoanCount;
                         profileSipBalance.textContent = `₹${userSipBalance.toLocaleString('en-IN')}`;
                         profileLoanAmount.textContent = `₹${userLoanAmount.toLocaleString('en-IN')}`;
                         
-                        // 5. Show the modal
                         closeModal(totalMembersModal);
                         openModal(profileModal);
                     });
