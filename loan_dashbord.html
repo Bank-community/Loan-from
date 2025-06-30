@@ -400,6 +400,7 @@ function processRawData(rawData) {
             ImageUrl: row.imageUrl || null
         };
     }).filter(r => r.Name !== 'Unknown' && r.Date !== null);
+    // Data ko date ke hisab se sort karna zaroori hai taaki transactions sahi order mein process ho.
     return processed.sort((a, b) => a.Date - b.Date);
 }
 
@@ -414,34 +415,64 @@ function calculatePenalty(loanAmount, daysAgo) {
     return { percentage, amount };
 }
 
+// --- UPDATED FUNCTION with new logic for principal and interest ---
 function findOutstandingLoans(allData) {
     const outstanding = [];
     const members = [...new Set(allData.map(d => d.Name))];
+
     members.forEach(name => {
         const memberData = allData.filter(r => r.Name === name);
-        const memberDataSortedDesc = [...memberData].sort((a, b) => b.Date - a.Date);
-        const lastLoan = memberDataSortedDesc.find(r => r.Loan > 0);
-        if (lastLoan) {
-            const hasPaidAfterLoan = memberData.some(r => r.Payment > 0 && r.Date > lastLoan.Date);
-            if (!hasPaidAfterLoan) {
-                const today = new Date();
-                const timeDiff = today.getTime() - lastLoan.Date.getTime();
-                const daysPassed = Math.max(0, Math.floor(timeDiff / (1000 * 3600 * 24)));
-                const latestImage = memberDataSortedDesc.find(r => r.ImageUrl)?.ImageUrl || null;
-                const penaltyInfo = calculatePenalty(lastLoan.Loan, daysPassed);
-                outstanding.push({
-                    name: lastLoan.Name,
-                    loanAmount: lastLoan.Loan,
-                    daysAgo: daysPassed,
-                    imageUrl: latestImage,
-                    loanDate: lastLoan.Date,
-                    penalty: penaltyInfo,
-                });
+        
+        let currentBalance = 0;
+        let lastLoanDate = null;
+
+        // Har member ke liye transactions ko process karna.
+        memberData.forEach(transaction => {
+            if (transaction.Loan > 0) {
+                // Jab bhi loan liya jaata hai, balance badh jaata hai.
+                currentBalance += transaction.Loan;
+                // Aakhri loan ki date ko penalty calculation ke liye save karna.
+                lastLoanDate = transaction.Date;
+            } else if (transaction.Payment > 0) {
+                // Jab payment hota hai, to balance kam ho jaata hai.
+                // Isse yeh sunishchit hota hai ki balance kabhi 0 se neeche na jaaye.
+                // Agar 5000 ka loan hai aur 5150 chukaye, to balance 0 ho jaayega, -150 nahi.
+                currentBalance -= transaction.Payment;
+                if (currentBalance < 0) {
+                    currentBalance = 0;
+                }
             }
+        });
+
+        // Agar sabhi transactions ke baad balance 0 se zyada hai, to loan outstanding hai.
+        if (currentBalance > 0) {
+            const memberDataSortedDesc = [...memberData].sort((a, b) => b.Date - a.Date);
+            const today = new Date();
+            let daysPassed = 0;
+            if (lastLoanDate) {
+                 const timeDiff = today.getTime() - lastLoanDate.getTime();
+                 daysPassed = Math.max(0, Math.floor(timeDiff / (1000 * 3600 * 24)));
+            }
+            
+            const latestImage = memberDataSortedDesc.find(r => r.ImageUrl)?.ImageUrl || null;
+            
+            // Penalty hamesha bache hue balance par calculate hogi.
+            const penaltyInfo = calculatePenalty(currentBalance, daysPassed);
+
+            outstanding.push({
+                name: name,
+                loanAmount: currentBalance, // Yahan 'currentBalance' hi outstanding amount hai.
+                daysAgo: daysPassed,
+                imageUrl: latestImage,
+                loanDate: lastLoanDate,
+                penalty: penaltyInfo,
+            });
         }
     });
+    
     return outstanding.sort((a, b) => b.daysAgo - a.daysAgo);
 }
+
 
 function displayAllData() {
     displaySummary(state.allOutstandingLoans);
@@ -474,9 +505,9 @@ function displayLoanCards(loans) {
         const defaultPic = `https://ui-avatars.com/api/?name=${encodeURIComponent(loan.name)}&background=4f46e5&color=fff&size=50`;
         const profilePic = loan.imageUrl || defaultPic;
         
-        const formattedDate = loan.loanDate.toLocaleDateString('en-GB', {
+        const formattedDate = loan.loanDate ? loan.loanDate.toLocaleDateString('en-GB', {
             day: 'numeric', month: 'short', year: 'numeric'
-        });
+        }) : 'N/A';
         
         let bannerClass = '';
         if (loan.daysAgo > 90) bannerClass = 'danger';
@@ -494,13 +525,12 @@ function displayLoanCards(loans) {
         
         let bannerText;
         if (loan.daysAgo > 100) {
-            bannerText = `100+ days overdue! Strict action required.`;
+            bannerText = `100+ din se baaki! Sakht karvai ki zaroorat.`;
         } else {
-            const daysText = loan.daysAgo === 1 ? 'day' : 'days';
-            bannerText = `Payment pending for ${loan.daysAgo} ${daysText}`;
+            const daysText = loan.daysAgo === 1 ? 'din' : 'din';
+            bannerText = `Payment ${loan.daysAgo} ${daysText} se pending hai`;
         }
 
-        // --- Updated Card HTML Template with SVG Icons ---
         card.innerHTML = `
             <div class="card-main-content">
                 <div class="status-badge">Pending</div>
@@ -510,12 +540,12 @@ function displayLoanCards(loans) {
                     </div>
                     <div class="user-details">
                         <h3>${loan.name}</h3>
-                        <div class="loan-date">${ICONS.calendar} ${formattedDate}</div>
+                        <div class="loan-date">${ICONS.calendar} Last Loan: ${formattedDate}</div>
                     </div>
                 </div>
                 <div class="card-middle">
                     <div class="detail-row">
-                        <span class="detail-label">${ICONS.money} Loan Amount:</span>
+                        <span class="detail-label">${ICONS.money} Outstanding Amount:</span>
                         <span class="detail-value amount">₹${loan.loanAmount.toLocaleString('en-IN')}</span>
                     </div>
                     ${penaltyHtml}
@@ -536,7 +566,6 @@ function setupEventListeners() {
         const filteredLoans = state.allOutstandingLoans.filter(loan => 
             loan.name.toLowerCase().includes(searchTerm)
         );
-        // We only need to re-render the cards, not the summary
         displayLoanCards(filteredLoans);
     });
 }
