@@ -343,18 +343,20 @@
           <p>Prime Members</p>
         </div>
     </div>
-  </div> <button id="downloadBtn" class="btn">Download Letter</button>
+  </div> 
+  <button id="downloadBtn" class="btn">Download Letter</button>
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbz9LCkPR8L3-i7F1KG2KUJ6It2l_p55murljRJ_4108nFysOXUOpG5WEs1sdEaGHq1L7w/exec';
+    // --- UPDATED API URL ---
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwmzH2yCELpKKA_iuVdM59dDzN9w-E7q37IElk24RmjRjAahR2tS2LVJ6UibwH5Z8g4VQ/exec';
     let membersData = [];
 
-    // Form Elements
+    // --- Form Elements ---
     const nameSelect = document.getElementById('nameSelect');
     const mobileInput = document.getElementById('mobile');
-    const guarantorNameInput = document.getElementById('guarantorName'); // NEW
+    const guarantorNameInput = document.getElementById('guarantorName');
     const amountInput = document.getElementById('amount');
     const rateSelect = document.getElementById('monthlyRate');
     const imageUploadInput = document.getElementById('imageUpload');
@@ -362,11 +364,11 @@
     const captureDiv = document.getElementById('capture');
     const downloadBtn = document.getElementById('downloadBtn');
 
-    // Capture Div Content Elements
+    // --- Capture Div Content Elements ---
     const currentDateEl = document.getElementById('currentDate');
     const displayNameEl = document.getElementById('displayName');
-    const displayGuarantorEl = document.getElementById('displayGuarantor'); // NEW
-    const guarantorRowEl = document.getElementById('guarantorRow'); // NEW
+    const displayGuarantorEl = document.getElementById('displayGuarantor');
+    const guarantorRowEl = document.getElementById('guarantorRow');
     const displayMobileEl = document.getElementById('displayMobile');
     const displayAmountEl = document.getElementById('displayAmount');
     const displayRateEl = document.getElementById('displayRate');
@@ -382,19 +384,29 @@
     const stampImgEl = document.querySelector('#capture .stamp-img');
     const signatureImgEl = document.querySelector('#capture .signature-img');
 
-
+    // --- UPDATED FUNCTION TO HANDLE NEW API RESPONSE STRUCTURE ---
     async function fetchMemberData() {
       try {
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        const data = await res.json();
-        membersData = Array.isArray(data) ? data : [data];
+        
+        const responseData = await res.json(); // Get the whole response object
+
+        // Check if the response status is 'success' and the 'data' key is an array
+        if (responseData.status === 'success' && Array.isArray(responseData.data)) {
+            membersData = responseData.data; // Assign the array from the 'data' key
+        } else {
+            throw new Error('API response was not successful or data format is incorrect.');
+        }
+
         const validMembers = membersData.filter(d => d && d.Name && d.Name.trim() !== '');
         const uniqueNames = [...new Set(validMembers.map(d => d.Name.trim()))].sort();
+        
         nameSelect.innerHTML = '<option value="" disabled selected>Select Applicant Name</option>';
         uniqueNames.forEach(name => {
           const option = document.createElement('option');
-          option.value = name; option.textContent = name;
+          option.value = name; 
+          option.textContent = name;
           nameSelect.appendChild(option);
         });
       } catch (error) {
@@ -436,12 +448,11 @@
       const selectedName = nameSelect.value;
       const member = membersData.find(m => m.Name === selectedName);
       const mobile = mobileInput.value;
-      const guarantorName = guarantorNameInput.value; // NEW
+      const guarantorName = guarantorNameInput.value;
       const amount = parseFloat(amountInput.value);
       const rateValue = rateSelect.value;
       const uploadedFile = imageUploadInput.files[0];
 
-      // UPDATED: Added guarantorName to validation
       if (!selectedName || !mobile || !guarantorName || isNaN(amount) || !rateValue) {
           alert('Please fill in all required fields.');
           return;
@@ -473,8 +484,8 @@
       // --- Populate Text Details ---
       currentDateEl.textContent = formatDate(today);
       displayNameEl.textContent = selectedName;
-      displayGuarantorEl.textContent = guarantorName; // NEW
-      guarantorRowEl.style.display = 'flex'; // NEW: Ensure the row is visible
+      displayGuarantorEl.textContent = guarantorName;
+      guarantorRowEl.style.display = 'flex';
       displayMobileEl.textContent = mobile;
       displayAmountEl.textContent = amount.toFixed(2);
       displayRateEl.textContent = rateText;
