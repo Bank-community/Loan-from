@@ -131,7 +131,7 @@
 <body class="bg-gray-100 antialiased">
 
     <div class="relative min-h-screen md:flex">
-        <!-- UPDATED: Mobile menu button -->
+        <!-- Mobile menu button -->
         <div class="md:hidden flex justify-between items-center p-4 bg-white shadow-md sticky top-0 z-20">
             <span class="text-xl font-bold text-indigo-600">Admin Panel</span>
             <div class="flex items-center space-x-4">
@@ -158,7 +158,6 @@
                     <i class="ph-x text-2xl"></i>
                 </button>
             </div>
-            <!-- UPDATED: Sidebar Navigation -->
             <nav class="flex-1 p-4 space-y-2">
                 <a href="#" class="sidebar-item flex items-center p-3 rounded-lg text-gray-700 active" data-view="dashboard">
                     <i class="ph-layout text-xl text-gray-500 mr-3"></i>
@@ -233,17 +232,22 @@
                         </div>
                         <div class="mt-6 form-group">
                             <label for="category" class="block mb-2 font-medium text-gray-700">Category:</label>
+                            <!-- UPDATED: Category options -->
                             <select id="category" name="category" class="form-input w-full p-3 rounded-lg" required>
                                 <option value="">-- Select Category --</option>
                                 <option value="Loan">Loan</option>
-                                <option value="Payment">Payment</option>
-                                <option value="EMI Payment">EMI Payment</option>
+                                <option value="Loan Payment">Loan Payment</option>
                                 <option value="SIP Payment">SIP Payment</option>
                             </select>
                         </div>
                         <div class="mt-6 form-group">
                             <label for="amount" class="block mb-2 font-medium text-gray-700">Amount:</label>
                             <input type="number" id="amount" name="amount" step="any" class="form-input w-full p-3 rounded-lg" required>
+                        </div>
+                        <!-- UPDATED: New conditional field -->
+                        <div class="mt-6 form-group" id="returnAmountGroup" style="display: none;">
+                            <label for="returnAmount" class="block mb-2 font-medium text-gray-700">Return Amount:</label>
+                            <input type="number" id="returnAmount" name="returnAmount" step="any" class="form-input w-full p-3 rounded-lg">
                         </div>
                         <div class="mt-6 form-group">
                             <label for="imageFile" class="block mb-2 font-medium text-gray-700">Image Upload <span class="font-normal text-sm text-gray-500">(Optional)</span>:</label>
@@ -324,9 +328,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- Configuration ---
-            const getDataScriptUrl = 'https://script.google.com/macros/s/AKfycbz9LCkPR8L3-i7F1KG2KUJ6It2l_p55murljRJ_4108nFysOXUOpG5WEs1sdEaGHq1L7w/exec';
-            const postDataScriptUrl = 'https://script.google.com/macros/s/AKfycbzOFUW4IHCbaT3EdY_IrKs0NuVuuzYDvPhviTDJWsXbqR-s_JNBvMJ4TBaksqeW2Le0XA/exec';
+            // --- UPDATED: Configuration with new URLs ---
+            const getDataScriptUrl = 'https://script.google.com/macros/s/AKfycbwmzH2yCELpKKA_iuVdM59dDzN9w-E7q37IElk24RmjRjAahR2tS2LVJ6UibwH5Z8g4VQ/exec';
+            const postDataScriptUrl = 'https://script.google.com/macros/s/AKfycbzVB6xwhJLqYVwBUSCWPyDF2pM8tiMbQatVZw3OPG9CecS_LQamofS3ocshOe3FMBMmlQ/exec';
+            const fetchNamesScriptUrl = 'https://script.google.com/macros/s/AKfycbyMz0cnHwKixgWTFZfhy7AyKE-g79TyzDeiN7D_HiXDs9QB94dtT8cF--pVZUgOzpoWUA/exec';
             const imgbbApiKey = '7a1be8401cccf5271ff787e57c3035bc';
             const imgbbUploadUrl = 'https://api.imgbb.com/1/upload';
             
@@ -347,6 +352,7 @@
             const nameInput = document.getElementById('name');
             const categorySelect = document.getElementById('category');
             const amountInput = document.getElementById('amount');
+            const returnAmountGroup = document.getElementById('returnAmountGroup');
             
             const showNamesBtn = document.getElementById('showNamesBtn');
             const namesModal = document.getElementById('namesModal');
@@ -365,13 +371,12 @@
             const profileLoanAmount = document.getElementById('profileLoanAmount');
             
             const addDataBtn = document.getElementById('addDataBtn');
-            // UPDATED: New header home button
             const homeBtnHeader = document.getElementById('homeBtnHeader');
-
 
             // --- State Variables ---
             let allTransactionData = [];
-            let cachedNames = [];
+            let cachedNames = null;
+            let namesLoadState = 'idle';
             let monthlySipChart = null;
             let dataLoadState = 'idle';
 
@@ -400,7 +405,6 @@
                 document.querySelector('.sidebar-item[data-view="data-entry"]').click();
             });
 
-            // UPDATED: Header home button logic
             homeBtnHeader.addEventListener('click', () => {
                 document.querySelector('.sidebar-item[data-view="dashboard"]').click();
             });
@@ -438,23 +442,28 @@
                 if (!dateInput.value) dateInput.value = new Date().toISOString().split('T')[0];
             };
             
+            // UPDATED: Populate names with copy-paste functionality
             const populateNamesList = (namesArray) => {
-                let listHTML = '';
+                namesModalBody.innerHTML = ''; // Clear previous content
                 if (!namesArray || namesArray.length === 0) {
-                    listHTML = `<li class="text-center text-gray-500 py-4">No names found.</li>`;
-                } else {
-                    namesArray.forEach(name => {
-                        listHTML += `<li class="name-item text-gray-700 p-3 hover:bg-gray-100 rounded-md cursor-pointer transition-colors" data-name="${name}">${name}</li>`;
-                    });
+                    namesModalBody.innerHTML = `<p class="text-center text-gray-500 py-4">No names found.</p>`;
+                    return;
                 }
-                namesModalBody.innerHTML = `<ul id="namesList">${listHTML}</ul>`;
-
-                document.querySelectorAll('.name-item').forEach(item => {
-                    item.addEventListener('click', (e) => {
-                        nameInput.value = e.target.dataset.name;
-                        closeModal(namesModal);
-                    });
+                const ul = document.createElement('ul');
+                namesArray.forEach(name => {
+                    if (name && typeof name === 'string' && name.trim() !== '') {
+                        const li = document.createElement('li');
+                        li.className = 'name-item text-gray-700 p-3 hover:bg-gray-100 rounded-md cursor-pointer transition-colors';
+                        li.textContent = name;
+                        li.dataset.name = name;
+                        li.addEventListener('click', () => {
+                            nameInput.value = name; // Paste name into input
+                            closeModal(namesModal); // Close modal
+                        });
+                        ul.appendChild(li);
+                    }
                 });
+                namesModalBody.appendChild(ul);
             };
 
             const processData = (data) => {
@@ -503,6 +512,7 @@
                 container.querySelector('.refresh-data-btn').addEventListener('click', fetchTransactionData);
             };
 
+            // UPDATED: Fetch transaction data with new JSON structure
             const fetchTransactionData = async () => {
                 dataLoadState = 'loading';
                 showLoadingState(dashboardCardsContainer);
@@ -510,9 +520,9 @@
                     const response = await fetch(getDataScriptUrl);
                     if (!response.ok) throw new Error(`Network response was not ok: ${response.status}`);
                     
-                    const data = await response.json();
-                    if(Array.isArray(data)) {
-                        processData(data);
+                    const result = await response.json();
+                    if(result.status === 'success' && Array.isArray(result.data)) {
+                        processData(result.data); // Use result.data
                         dataLoadState = 'success';
                     } else {
                         throw new Error('Invalid data format received.');
@@ -520,13 +530,33 @@
                 } catch (error) {
                     dataLoadState = 'error';
                     console.error('Failed to fetch transaction data:', error);
-                    showErrorState(dashboardCardsContainer, 'Could not load data from the server. Please check your connection and Apps Script URL.');
+                    showErrorState(dashboardCardsContainer, 'Could not load data from the server.');
                 }
             };
+            
+            // UPDATED: Fetch names logic
+            async function fetchAndCacheNames() {
+                if (namesLoadState === 'loading' || namesLoadState === 'success') return;
+                namesLoadState = 'loading';
+                try {
+                    const response = await fetch(`${fetchNamesScriptUrl}?action=getNames&cachebust=${Date.now()}`);
+                    if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                    const result = await response.json();
+                    let namesArray = (result?.status === 'success' && Array.isArray(result.names)) ? result.names : (Array.isArray(result) ? result : []);
+                    cachedNames = namesArray.filter(name => name && typeof name === 'string' && name.trim() !== '').sort();
+                    namesLoadState = 'success';
+                } catch (error) {
+                    console.error('Error fetching or caching names:', error);
+                    cachedNames = null;
+                    namesLoadState = 'error';
+                }
+            }
 
             const onTotalMembersCardClick = () => {
                 totalMembersList.innerHTML = '';
-                cachedNames.forEach(name => {
+                const uniqueNames = [...new Set(allTransactionData.map(item => item.Name))].filter(name => name).sort();
+
+                uniqueNames.forEach(name => {
                     const li = document.createElement('li');
                     li.className = 'flex items-center p-3 hover:bg-gray-100 rounded-md cursor-pointer';
                     const img = document.createElement('img');
@@ -542,9 +572,7 @@
                     li.addEventListener('click', () => {
                         profileName.textContent = name;
                         profileImage.src = `https://placehold.co/100x100/E0E7FF/4F46E5?text=${name.charAt(0).toUpperCase()}`;
-                        
                         const userTransactions = allTransactionData.filter(t => t.Name === name);
-                        
                         const userSipCount = userTransactions.filter(t => t['SIP Payment']).length;
                         const userLoanCount = userTransactions.filter(t => t.Loan).length;
                         const userSipBalance = userTransactions.reduce((sum, t) => sum + parseFloat(t['SIP Payment'] || 0), 0);
@@ -565,53 +593,61 @@
 
             showNamesBtn.addEventListener('click', () => {
                 openModal(namesModal);
-                if (dataLoadState === 'success') {
-                    populateNamesList(cachedNames);
-                } else if (dataLoadState === 'loading') {
-                    showLoadingState(namesModalBody);
-                } else {
-                    showErrorState(namesModalBody, 'Could not load names.');
+                namesModalBody.innerHTML = ''; // Clear it first
+                switch (namesLoadState) {
+                    case 'success':
+                        populateNamesList(cachedNames);
+                        break;
+                    case 'loading':
+                        showLoadingState(namesModalBody);
+                        break;
+                    case 'error':
+                        showErrorState(namesModalBody, 'Failed to load names.');
+                        break;
+                    default:
+                        showLoadingState(namesModalBody);
+                        fetchAndCacheNames().then(() => {
+                            if (namesLoadState === 'success') {
+                                populateNamesList(cachedNames);
+                            } else {
+                                showErrorState(namesModalBody, 'Failed to load names.');
+                            }
+                        });
+                        break;
                 }
             });
 
             const initializeChart = (data) => {
                 const ctx = document.getElementById('monthlySipChart').getContext('2d');
-                
-                const today = new Date();
-                const currentMonth = today.getMonth();
-                const currentYear = today.getFullYear();
+                const sipData = data.filter(t => t['SIP Payment']);
+                const monthlyTotals = {};
 
-                const sipData = data.filter(t => {
-                    try {
-                        const tDate = new Date(t.Date);
-                        return t['SIP Payment'] && tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
-                    } catch(e) { return false; }
-                });
-
-                const dailyTotals = {};
                 sipData.forEach(t => {
-                    const day = new Date(t.Date).getDate();
-                    dailyTotals[day] = (dailyTotals[day] || 0) + parseFloat(t['SIP Payment'] || 0);
+                    try {
+                        // Assuming date is "DD Month YYYY"
+                        const monthYear = t.Date.split(' ').slice(1).join(' ');
+                        monthlyTotals[monthYear] = (monthlyTotals[monthYear] || 0) + parseFloat(t['SIP Payment'] || 0);
+                    } catch(e) { /* ignore invalid dates */ }
                 });
 
-                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-                const labels = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-                const chartData = labels.map(day => dailyTotals[day] || 0);
+                const labels = Object.keys(monthlyTotals);
+                const chartData = Object.values(monthlyTotals);
 
                 if (monthlySipChart) monthlySipChart.destroy();
                 
                 monthlySipChart = new Chart(ctx, {
-                    type: 'line',
+                    type: 'bar', // Changed to bar for better monthly view
                     data: { labels: labels, datasets: [{
-                        label: 'SIP Collection', data: chartData, backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                        borderColor: 'rgba(79, 70, 229, 1)', borderWidth: 2, pointBackgroundColor: 'rgba(79, 70, 229, 1)',
-                        pointRadius: 4, tension: 0.4, fill: true,
+                        label: 'SIP Collection', data: chartData, 
+                        backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 1
                     }]},
                     options: {
                         responsive: true, maintainAspectRatio: false,
                         scales: { 
                             y: { beginAtZero: true, grid: { drawBorder: false }, ticks: { callback: value => '₹' + value / 1000 + 'k' } }, 
-                            x: { grid: { display: false }, title: { display: true, text: `Days in ${today.toLocaleString('default', { month: 'long' })}` } } 
+                            x: { grid: { display: false } } 
                         },
                         plugins: { legend: { display: false } }
                     }
@@ -621,20 +657,26 @@
             // --- Page Initialization ---
             setTodayDate();
             fetchTransactionData();
+            fetchAndCacheNames(); // Fetch names on page load
 
-            // --- Form Submission Logic ---
+            // --- UPDATED: Form Logic ---
+            categorySelect.addEventListener('change', function() {
+                returnAmountGroup.style.display = (this.value === 'Loan Payment') ? 'block' : 'none';
+                if (this.value !== 'Loan Payment') {
+                    document.getElementById('returnAmount').value = '';
+                }
+                if (this.value === 'SIP Payment') {
+                    amountInput.value = 500;
+                }
+            });
+
             function formatCustomDate(dateString) {
                 try {
                     const dateObj = new Date(dateString + 'T00:00:00Z');
-                    if (isNaN(dateObj.getTime())) throw new Error("Invalid Date object");
-                    return dateObj.toLocaleDateString('en-GB', { 
-                        day: 'numeric', 
-                        month: 'long', 
-                        year: 'numeric',
-                        timeZone: 'UTC' 
-                    });
+                    if (isNaN(dateObj.getTime())) throw new Error("Invalid Date");
+                    return dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
                 } catch (error) {
-                    console.error("Error formatting date:", error, "Input was:", dateString);
+                    console.error("Date formatting error:", error);
                     return dateString;
                 }
             }
@@ -650,55 +692,47 @@
 
                 try {
                     if (imageFileInput.files.length > 0) {
-                        const imageFile = imageFileInput.files[0];
                         messageDiv.textContent = 'Uploading image...';
-                        
                         const imgbbFormData = new FormData();
                         imgbbFormData.append('key', imgbbApiKey);
-                        imgbbFormData.append('image', imageFile);
-
-                        const imgResponse = await fetch(imgbbUploadUrl, {
-                            method: 'POST',
-                            body: imgbbFormData
-                        });
-
+                        imgbbFormData.append('image', imageFileInput.files[0]);
+                        const imgResponse = await fetch(imgbbUploadUrl, { method: 'POST', body: imgbbFormData });
                         const imgResult = await imgResponse.json();
-
-                        if (imgResult && imgResult.success && imgResult.data?.url) {
+                        if (imgResult.success && imgResult.data?.url) {
                             imageUrl = imgResult.data.url;
-                            messageDiv.textContent = 'Image uploaded. Submitting data...';
                         } else {
                             throw new Error(`Image upload failed: ${imgResult?.error?.message || 'Unknown ImgBB error.'}`);
                         }
                     }
 
-                    const dataToSubmit = {
-                        date: formatCustomDate(dateInput.value),
-                        name: nameInput.value,
-                        category: categorySelect.value,
-                        amount: amountInput.value,
-                        imageUrl: imageUrl
-                    };
+                    const formData = new FormData(form);
+                    const dataToSubmit = {};
+                    formData.forEach((value, key) => {
+                        if (key !== 'imageFile') dataToSubmit[key] = value;
+                    });
+                    
+                    dataToSubmit.date = formatCustomDate(dataToSubmit.date);
+                    dataToSubmit.imageUrl = imageUrl;
                     
                     messageDiv.textContent = 'Submitting data to Google Sheet...';
-                    
                     const scriptResponse = await fetch(postDataScriptUrl, {
                         method: 'POST',
-                        body: JSON.stringify({ action: 'submitData', data: dataToSubmit }),
+                        body: JSON.stringify({ data: dataToSubmit }),
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                         mode: 'cors'
                     });
 
                     const scriptResult = await scriptResponse.json();
-
+                    
                     if (scriptResult.status === 'success') {
                         messageDiv.textContent = scriptResult.message || 'Data submitted successfully!';
                         messageDiv.className = 'mt-6 text-center font-semibold text-green-600';
                         form.reset();
                         fileInfoDiv.textContent = 'No file selected';
                         setTodayDate();
-                        
-                        setTimeout(fetchTransactionData, 1000);
+                        categorySelect.value = '';
+                        returnAmountGroup.style.display = 'none';
+                        setTimeout(fetchTransactionData, 1500); // Refresh data
                     } else {
                         throw new Error(`Submission failed: ${scriptResult.message || 'Unknown script error'}`);
                     }
