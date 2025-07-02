@@ -6,840 +6,959 @@
     <title>बैंक कम्युनिटी लोन</title>
     <link rel="shortcut icon" href="https://i.postimg.cc/XNpR3cN1/20241030-065157.png" type="image/x-icon">
     <link rel="apple-touch-icon" href="https://i.ibb.co/8F6snVv/20241030-065157.png" sizes="180x180">
-    <!-- CSS फ़ाइल को यहाँ लिंक करें -->
-    <link rel="stylesheet" href="style.css">
     <!-- Feather Icons Script -->
     <script src="https://unpkg.com/feather-icons"></script>
-</head>
-<body>
-<style>
-/* --- General Styles --- */
-:root {
-    --primary-color: #007bff;
-    --primary-darker: #0056b3;
-    --secondary-color: #25D366; /* WhatsApp Green */
-    --secondary-darker: #128C7E;
-    --text-color: #333;
-    --light-text: #555; /* Slightly darker light text */
-    --bg-color: #f8f9fa; /* Lighter background */
-    --card-bg: #ffffff;
-    --border-color: #dee2e6; /* Softer border */
-    --shadow-color: rgba(0, 0, 0, 0.08); /* Softer shadow */
-    --prime-color: #ffc107; /* Prime Gold */
-    --danger-color: #dc3545;
-    --success-color: #28a745;
-    --info-color: #17a2b8; /* Info color for new cards */
-    --animation-duration: 0.6s;
-}
-
-/* Smooth scrolling */
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    font-family: 'Roboto', 'Arial', sans-serif; /* Using Roboto, fallback to Arial */
-    background-color: var(--bg-color);
-    margin: 0;
-    padding: 0;
-    color: var(--text-color);
-    overflow-x: hidden;
-    line-height: 1.7; /* Slightly more line height */
-}
-
-h1, h2, h3, h4, h5, h6 {
-    color: var(--text-color);
-    margin-top: 1.5em;
-    margin-bottom: 0.8em;
-    font-weight: 600; /* Slightly bolder headings */
-}
-
-h2 {
-    text-align: center;
-    color: var(--primary-darker); /* Darker primary */
-    font-size: 1.8em; /* Larger h2 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px; /* Gap between icon and text */
-}
-
-h2 i { /* Style icons inside h2 */
-    width: 28px;
-    height: 28px;
-    color: var(--primary-color);
-}
-
-p {
-    margin-bottom: 1.2em; /* More space after paragraphs */
-    color: var(--light-text);
-}
-
-a {
-    color: var(--primary-color);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-a:hover {
-    color: var(--primary-darker);
-    text-decoration: none; /* Remove underline globally on hover */
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-}
-
-/* --- Header --- */
-header {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-darker)); /* Gradient background */
-    color: white;
-    padding: 20px 0;
-    text-align: center;
-    border-bottom: 5px solid var(--prime-color); /* Prime color accent */
-}
-
-.slider {
-    width: 100%;
-    max-width: 500px; /* Slightly smaller max-width */
-    margin: 0 auto 15px auto; /* Add bottom margin */
-    overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-.slider img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-header h1 {
-    color: white;
-    font-size: 2.2em;
-    margin: 15px 0 5px 0;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
-    font-weight: 700;
-}
-
-header h4 {
-    color: rgba(255, 255, 255, 0.9);
-    margin: 0 0 20px 0; /* More bottom margin */
-    font-weight: 400; /* Lighter weight */
-    font-size: 1em;
-}
-
-.header-actions {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
-    width: 100%;
-    padding: 0 15px;
-    margin-top: 15px;
-    box-sizing: border-box;
-}
-
-/* --- Header Buttons --- */
-.civil-button {
-    background: var(--prime-color);
-    border-radius: 50px; /* Pill shape */
-    border: none;
-    text-shadow: none;
-    box-shadow: 0 4px 10px 0px rgba(0,0,0,0.2);
-    padding: 12px 25px; /* Adjusted padding */
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: var(--text-color); /* Dark text on gold */
-    font-size: 1em;
-    font-weight: 600;
-    display: inline-block;
-    text-decoration: none;
-}
-
-.civil-button:hover {
-    box-shadow: 0 6px 15px 0px rgba(0,0,0,0.3);
-    transform: translateY(-2px);
-    background-color: #ffcd39; /* Lighter gold on hover */
-    color: var(--text-color);
-}
-
-
-/* --- Main Content Wrapper --- */
-.content-wrapper {
-    max-width: 1140px; /* Standard max width */
-    margin: 30px auto; /* More top/bottom margin */
-    padding: 0 20px; /* More padding */
-}
-
-/* --- Sections Styling --- */
-section {
-    margin-bottom: 40px; /* More space between sections */
-    padding: 25px; /* More padding */
-    background-color: var(--card-bg);
-    border-radius: 12px; /* More rounded corners */
-    box-shadow: 0 4px 15px var(--shadow-color); /* Deeper shadow */
-    border: 1px solid var(--border-color);
-}
-
-section h2 {
-    margin-top: 0;
-    margin-bottom: 25px;
-    font-size: 1.7em; /* Consistent h2 size */
-}
-
-.transparency-section p {
-    font-size: 1.1em;
-    text-align: center;
-    max-width: 800px; /* Limit width for readability */
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* --- Features Section --- */
-.features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Responsive grid */
-    gap: 25px; /* More gap */
-    margin-top: 25px;
-}
-
-.feature {
-    background: #f1f8ff; /* Lighter blue background */
-    padding: 20px; /* More padding */
-    border-radius: 10px;
-    text-align: center;
-    border: 1px solid #d1e7ff; /* Softer border */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.feature:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.15);
-}
-
-.feature h3 {
-    color: var(--primary-darker);
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 1.3em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-.feature h3 i { /* Icon styling in feature */
-    width: 22px;
-    height: 22px;
-    color: var(--primary-color);
-}
-
-.feature p {
-    color: var(--light-text);
-    font-size: 1em;
-    margin-bottom: 0;
-}
-
-/* --- Prime Members Section --- */
-.prime-members-section h2 {
-    text-align: center;
-}
-.prime-member-list {
-    text-align: center;
-    font-size: 1.15em; /* Slightly larger */
-    line-height: 1.9; /* More line height */
-}
-.prime-member-list p {
-    margin-bottom: 8px;
-    color: var(--text-color);
-    font-weight: 500; /* Medium weight */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-.prime-icon {
-    color: var(--prime-color);
-    width: 18px;
-    height: 18px;
-    fill: var(--prime-color); /* Fill star */
-}
-
-
-/* --- Action Cards Section --- */
-.action-cards-section h2 {
-    text-align: center;
-    margin-bottom: 30px; /* More space */
-}
-
-.action-cards {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px; /* Consistent gap */
-    margin-top: 30px;
-}
-
-/* --- Individual Action Card Styling --- */
-.action-card {
-    background-color: var(--card-bg);
-    border-radius: 10px;
-    padding: 15px 20px; /* Generous padding */
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07); /* Refined shadow */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    color: var(--primary-color);
-    border: 1px solid var(--border-color);
-    min-height: 90px; /* Increased min-height */
-    overflow: hidden;
-}
-
-.action-card:hover {
-    transform: translateY(-6px); /* More lift on hover */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); /* Stronger hover shadow */
-    text-decoration: none;
-    color: var(--primary-darker);
-}
-
-/* --- Icon Styling (Feather Icons & IMG) --- */
-.action-card-icon { /* Style for Feather icons */
-    width: 36px;
-    height: 56px;
-    stroke-width: 1.5px; /* Thinner strokes */
-    margin-bottom: 12px;
-    color: var(--primary-color);
-}
-.action-card:hover .action-card-icon {
-    color: var(--primary-darker);
-}
-
-.action-card-icon-img { /* Style for IMG icons */
-    width: 40px;
-    height: 40px;
-    margin-bottom: 10px;
-    object-fit: contain;
-}
-
-.action-card span {
-    font-size: 1em;
-    font-weight: 500;
-    line-height: 1.4;
-    margin-top: auto;
-}
-
-/* --- WhatsApp Card Specific Styling --- */
-.action-card.whatsapp-card {
-    background-color: var(--secondary-color);
-    color: white;
-    border-color: var(--secondary-darker);
-}
-.action-card.whatsapp-card:hover {
-    background-color: var(--secondary-darker);
-    color: white;
-}
-.action-card.whatsapp-card span {
-    color: white; /* Ensure text is white */
-}
-
-/* --- Info Card Styling (Total Members, Total Loan) --- */
-.info-card {
-    cursor: default; /* Not clickable */
-    align-items: center; /* Center items */
-    padding: 20px 15px; /* Adjust padding if needed */
-    border-left: 4px solid var(--info-color); /* Accent border */
-    min-height: 140px; /* Adjust height if needed */
-}
-.info-card:hover {
-     transform: none; /* Disable hover lift for info cards */
-     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07); /* Keep original shadow */
-}
-
-.info-card .action-card-icon {
-    color: var(--info-color); /* Use info color for icon */
-    margin-bottom: 8px;
-}
-.info-card:hover .action-card-icon {
-    color: var(--info-color); /* Keep color on hover */
-}
-
-.info-card-label {
-    font-size: 0.9em;
-    color: var(--light-text);
-    margin-bottom: 5px;
-    display: block;
-}
-
-.info-card-value {
-    font-size: 1.6em; /* Larger value text */
-    font-weight: 700; /* Bold value */
-    color: var(--primary-darker);
-    display: block;
-    line-height: 1.2;
-}
-
-/* Specific style for Total Loan value */
-.total-loan-value {
-    color: var(--danger-color) !important; /* Red color, important to override */
-}
-
-/* Media Queries for Action Cards Layout */
-@media (min-width: 768px) {
-    .action-cards {
-        grid-template-columns: repeat(3, 1fr);
+    <style>
+    /* --- General Styles --- */
+    :root {
+        --primary-color: #007bff;
+        --primary-darker: #0056b3;
+        --secondary-color: #25D366; /* WhatsApp Green */
+        --secondary-darker: #128C7E;
+        --text-color: #333;
+        --light-text: #555; /* Slightly darker light text */
+        --bg-color: #f8f9fa; /* Lighter background */
+        --card-bg: #ffffff;
+        --border-color: #dee2e6; /* Softer border */
+        --shadow-color: rgba(0, 0, 0, 0.08); /* Softer shadow */
+        --prime-color: #ffc107; /* Prime Gold */
+        --danger-color: #dc3545;
+        --success-color: #28a745;
+        --info-color: #17a2b8; /* Info color for new cards */
+        --animation-duration: 0.6s;
     }
-}
-@media (min-width: 992px) {
-    .action-cards {
-        grid-template-columns: repeat(4, 1fr);
-        max-width: 900px;
+
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: 'Roboto', 'Arial', sans-serif; /* Using Roboto, fallback to Arial */
+        background-color: var(--bg-color);
+        margin: 0;
+        padding: 0;
+        color: var(--text-color);
+        overflow-x: hidden;
+        line-height: 1.7; /* Slightly more line height */
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--text-color);
+        margin-top: 1.5em;
+        margin-bottom: 0.8em;
+        font-weight: 600; /* Slightly bolder headings */
+    }
+
+    h2 {
+        text-align: center;
+        color: var(--primary-darker); /* Darker primary */
+        font-size: 1.8em; /* Larger h2 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px; /* Gap between icon and text */
+    }
+
+    h2 i { /* Style icons inside h2 */
+        width: 28px;
+        height: 28px;
+        color: var(--primary-color);
+    }
+
+    p {
+        margin-bottom: 1.2em; /* More space after paragraphs */
+        color: var(--light-text);
+    }
+
+    a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    a:hover {
+        color: var(--primary-darker);
+        text-decoration: none; /* Remove underline globally on hover */
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    /* --- Header --- */
+    header {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-darker)); /* Gradient background */
+        color: white;
+        padding: 20px 0;
+        text-align: center;
+        border-bottom: 5px solid var(--prime-color); /* Prime color accent */
+    }
+
+    .slider {
+        width: 100%;
+        max-width: 500px; /* Slightly smaller max-width */
+        margin: 0 auto 15px auto; /* Add bottom margin */
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .slider img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    header h1 {
+        color: white;
+        font-size: 2.2em;
+        margin: 15px 0 5px 0;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+        font-weight: 700;
+    }
+
+    header h4 {
+        color: rgba(255, 255, 255, 0.9);
+        margin: 0 0 20px 0; /* More bottom margin */
+        font-weight: 400; /* Lighter weight */
+        font-size: 1em;
+    }
+
+    .header-actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        width: 100%;
+        padding: 0 15px;
+        margin-top: 15px;
+        box-sizing: border-box;
+    }
+
+    /* --- Header Buttons --- */
+    .civil-button {
+        background: var(--prime-color);
+        border-radius: 50px; /* Pill shape */
+        border: none;
+        text-shadow: none;
+        box-shadow: 0 4px 10px 0px rgba(0,0,0,0.2);
+        padding: 12px 25px; /* Adjusted padding */
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: var(--text-color); /* Dark text on gold */
+        font-size: 1em;
+        font-weight: 600;
+        display: inline-block;
+        text-decoration: none;
+    }
+
+    .civil-button:hover {
+        box-shadow: 0 6px 15px 0px rgba(0,0,0,0.3);
+        transform: translateY(-2px);
+        background-color: #ffcd39; /* Lighter gold on hover */
+        color: var(--text-color);
+    }
+
+
+    /* --- Main Content Wrapper --- */
+    .content-wrapper {
+        max-width: 1140px; /* Standard max width */
+        margin: 30px auto; /* More top/bottom margin */
+        padding: 0 20px; /* More padding */
+    }
+
+    /* --- Sections Styling --- */
+    section {
+        margin-bottom: 40px; /* More space between sections */
+        padding: 25px; /* More padding */
+        background-color: var(--card-bg);
+        border-radius: 12px; /* More rounded corners */
+        box-shadow: 0 4px 15px var(--shadow-color); /* Deeper shadow */
+        border: 1px solid var(--border-color);
+    }
+
+    section h2 {
+        margin-top: 0;
+        margin-bottom: 25px;
+        font-size: 1.7em; /* Consistent h2 size */
+    }
+
+    .transparency-section p {
+        font-size: 1.1em;
+        text-align: center;
+        max-width: 800px; /* Limit width for readability */
         margin-left: auto;
         margin-right: auto;
     }
-}
-@media (min-width: 1200px) {
-    .action-cards {
-         grid-template-columns: repeat(4, 1fr);
-         max-width: 1100px;
+
+    /* --- Features Section --- */
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Responsive grid */
+        gap: 25px; /* More gap */
+        margin-top: 25px;
     }
-}
+
+    .feature {
+        background: #f1f8ff; /* Lighter blue background */
+        padding: 20px; /* More padding */
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid #d1e7ff; /* Softer border */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 123, 255, 0.15);
+    }
+
+    .feature h3 {
+        color: var(--primary-darker);
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 1.3em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .feature h3 i { /* Icon styling in feature */
+        width: 22px;
+        height: 22px;
+        color: var(--primary-color);
+    }
+
+    .feature p {
+        color: var(--light-text);
+        font-size: 1em;
+        margin-bottom: 0;
+    }
+
+    /* --- Prime Members Section --- */
+    .prime-members-section h2 {
+        text-align: center;
+    }
+    .prime-member-list {
+        text-align: center;
+        font-size: 1.15em; /* Slightly larger */
+        line-height: 1.9; /* More line height */
+    }
+    .prime-member-list p {
+        margin-bottom: 8px;
+        color: var(--text-color);
+        font-weight: 500; /* Medium weight */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .prime-icon {
+        color: var(--prime-color);
+        width: 18px;
+        height: 18px;
+        fill: var(--prime-color); /* Fill star */
+    }
 
 
-/* --- About Community Letter Slider --- */
-.letter-slider-section h2 {
-    text-align: center;
-}
+    /* --- Action Cards Section --- */
+    .action-cards-section h2 {
+        text-align: center;
+        margin-bottom: 30px; /* More space */
+    }
 
-.slider-container {
-    position: relative;
-    max-width: 1000px;
-    margin: 10px auto;
-    overflow: hidden;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background-color: var(--card-bg);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
+    .action-cards {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px; /* Consistent gap */
+        margin-top: 30px;
+    }
 
-.slides {
-    display: flex;
-    transition: transform 0.5s ease-in-out;
-}
+    /* --- Individual Action Card Styling --- */
+    .action-card {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        padding: 15px 20px; /* Generous padding */
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07); /* Refined shadow */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: var(--primary-color);
+        border: 1px solid var(--border-color);
+        min-height: 90px; /* Increased min-height */
+        overflow: hidden;
+    }
 
-.slide {
-    min-width: 100%;
-    box-sizing: border-box;
-}
+    .action-card:hover {
+        transform: translateY(-6px); /* More lift on hover */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); /* Stronger hover shadow */
+        text-decoration: none;
+        color: var(--primary-darker);
+    }
 
-.slide img {
-    width: 100%;
-    display: block;
-    border-radius: 8px;
-    cursor: pointer; /* Add pointer cursor to indicate it's clickable */
-}
+    /* --- Icon Styling (Feather Icons & IMG) --- */
+    .action-card-icon { /* Style for Feather icons */
+        width: 36px;
+        height: 56px;
+        stroke-width: 1.5px; /* Thinner strokes */
+        margin-bottom: 12px;
+        color: var(--primary-color);
+    }
+    .action-card:hover .action-card-icon {
+        color: var(--primary-darker);
+    }
 
-.prev, .next {
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: auto;
-    padding: 12px 16px;
-    color: white;
-    font-weight: bold;
-    font-size: 24px;
-    background-color: rgba(0, 0, 0, 0.5);
-    border: none;
-    border-radius: 50%;
-    user-select: none;
-    transition: background-color 0.3s ease;
-    line-height: 1;
-    z-index: 10;
-}
-.prev:hover, .next:hover {
-     background-color: rgba(0, 0, 0, 0.8);
-}
+    .action-card-icon-img { /* Style for IMG icons */
+        width: 40px;
+        height: 40px;
+        margin-bottom: 10px;
+        object-fit: contain;
+    }
 
-.prev { left: 15px; }
-.next { right: 15px; }
+    .action-card span {
+        font-size: 1em;
+        font-weight: 500;
+        line-height: 1.4;
+        margin-top: auto;
+    }
 
-.slide-indicator {
-    text-align: center;
-    margin-top: 15px;
-    padding-bottom: 10px;
-}
+    /* --- WhatsApp Card Specific Styling --- */
+    .action-card.whatsapp-card {
+        background-color: var(--secondary-color);
+        color: white;
+        border-color: var(--secondary-darker);
+    }
+    .action-card.whatsapp-card:hover {
+        background-color: var(--secondary-darker);
+        color: white;
+    }
+    .action-card.whatsapp-card span {
+        color: white; /* Ensure text is white */
+    }
 
-.indicator-dot {
-    display: inline-block;
-    width: 5px;
-    height: 5px;
-    background-color: #ccc;
-    border-radius: 50%;
-    margin: 0 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
+    /* --- Info Card Styling (Total Members, Total Loan) --- */
+    .info-card {
+        cursor: default; /* Not clickable */
+        align-items: center; /* Center items */
+        padding: 20px 15px; /* Adjust padding if needed */
+        border-left: 4px solid var(--info-color); /* Accent border */
+        min-height: 140px; /* Adjust height if needed */
+    }
+    .info-card:hover {
+         transform: none; /* Disable hover lift for info cards */
+         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07); /* Keep original shadow */
+    }
 
-.indicator-dot.active {
-    background-color: var(--primary-color);
-    transform: scale(1.2);
-}
+    .info-card .action-card-icon {
+        color: var(--info-color); /* Use info color for icon */
+        margin-bottom: 8px;
+    }
+    .info-card:hover .action-card-icon {
+        color: var(--info-color); /* Keep color on hover */
+    }
 
+    .info-card-label {
+        font-size: 0.9em;
+        color: var(--light-text);
+        margin-bottom: 5px;
+        display: block;
+    }
 
-/* --- Bank Members Section --- */
-.bank-members {
-    background: linear-gradient(to bottom, #e0f2f7, #ffffff);
-    padding: 30px 0;
-    width: 100%;
-    box-sizing: border-box;
-    border-bottom: 1px solid var(--border-color);
-}
+    .info-card-value {
+        font-size: 1.6em; /* Larger value text */
+        font-weight: 700; /* Bold value */
+        color: var(--primary-darker);
+        display: block;
+        line-height: 1.2;
+    }
 
-.header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 25px 20px 25px;
-    flex-wrap: wrap;
-    gap: 15px;
-    max-width: 1140px;
-    margin: 0 auto;
-}
+    /* Specific style for Total Loan value */
+    .total-loan-value {
+        color: var(--danger-color) !important; /* Red color, important to override */
+    }
 
-.bank-headline {
-    font-size: 1.8em;
-    font-weight: 700;
-    color: var(--primary-darker);
-    margin: 0;
-    flex-grow: 1;
-}
-
-.view-balance {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    background-color: var(--card-bg);
-    padding: 10px 18px;
-    border-radius: 25px;
-    font-weight: 600;
-    font-size: 1em;
-    box-shadow: 0 3px 8px var(--shadow-color);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    color: var(--primary-color);
-    border: 1px solid var(--border-color);
-}
-
-.view-balance:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 12px rgba(0,0,0,0.15);
-    color: var(--primary-darker);
-}
-
-.view-balance img.balance-icon {
-    width: 24px;
-    height: 24px;
-}
-
-.member-slider {
-    display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding: 20px 25px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary-color) #e0f2f7;
-    max-width: 1140px;
-    margin: 0 auto;
-}
-
-/* Webkit Scrollbar Styles */
-.member-slider::-webkit-scrollbar { height: 8px; }
-.member-slider::-webkit-scrollbar-track { background: #e0f2f7; border-radius: 4px;}
-.member-slider::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 4px; border: 2px solid #e0f2f7; }
-.member-slider::-webkit-scrollbar-thumb:hover { background-color: var(--primary-darker); }
+    /* Media Queries for Action Cards Layout */
+    @media (min-width: 768px) {
+        .action-cards {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    @media (min-width: 992px) {
+        .action-cards {
+            grid-template-columns: repeat(4, 1fr);
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+    @media (min-width: 1200px) {
+        .action-cards {
+             grid-template-columns: repeat(4, 1fr);
+             max-width: 1100px;
+        }
+    }
 
 
-.member-card {
-    position: relative;
-    background-color: var(--card-bg);
-    border-radius: 12px;
-    flex: 0 0 145px;
-    text-align: center;
-    padding: 12px;
-    box-shadow: 0 5px 10px var(--shadow-color);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-    border: 1px solid var(--border-color);
-    box-sizing: border-box;
-    overflow: hidden;
-}
+    /* --- About Community Letter Slider --- */
+    .letter-slider-section h2 {
+        text-align: center;
+    }
 
-.member-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
+    .slider-container {
+        position: relative;
+        max-width: 1000px;
+        margin: 10px auto;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background-color: var(--card-bg);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
 
-.member-card img {
-    width: 100%;
-    height: 125px;
-    border-radius: 8px;
-    object-fit: cover;
-    margin-bottom: 12px;
-    display: block;
-    background-color: #f0f0f0;
-    transition: transform 0.3s ease;
-}
-.member-card:hover img {
-    transform: scale(1.05);
-}
+    .slides {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+    }
 
-.member-name {
-    font-size: 1em;
-    font-weight: 600;
-    margin: 8px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--text-color);
-}
+    .slide {
+        min-width: 100%;
+        box-sizing: border-box;
+    }
 
-.member-balance {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 6px 20px;
-    margin-top: 10px;
-    border-radius: 5px;
-    font-size: 0.85em;
-    font-weight: bold;
-    display: inline-block;
-}
+    .slide img {
+        width: 100%;
+        display: block;
+        border-radius: 8px;
+        cursor: pointer; /* Add pointer cursor to indicate it's clickable */
+    }
 
-.prime-tag {
-    position: absolute;
-    top: 120px;
-    right: 12px;
-    background-color: var(--prime-color);
-    color: var(--text-color);
-    padding: 4px 9px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    line-height: 1;
-    z-index: 2;
-}
+    .prev, .next {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: auto;
+        padding: 12px 16px;
+        color: white;
+        font-weight: bold;
+        font-size: 24px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border: none;
+        border-radius: 50%;
+        user-select: none;
+        transition: background-color 0.3s ease;
+        line-height: 1;
+        z-index: 10;
+    }
+    .prev:hover, .next:hover {
+         background-color: rgba(0, 0, 0, 0.8);
+    }
 
-.loading-text, .error-text {
-    color: var(--light-text);
-    text-align: center;
-    width: 100%;
-    padding: 30px 20px;
-    font-size: 1.1em;
-    font-style: italic;
-}
-.error-text {
-    color: var(--danger-color);
-    font-weight: bold;
-    font-style: normal;
-}
+    .prev { left: 15px; }
+    .next { right: 15px; }
 
-/* --- Balance Modal --- */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed;
-    z-index: 1001;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.7); /* Darker overlay */
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 0.4s ease; /* Longer transition */
-}
+    .slide-indicator {
+        text-align: center;
+        margin-top: 15px;
+        padding-bottom: 10px;
+    }
 
-.modal.show {
-   display: flex;
-   opacity: 1;
-}
+    .indicator-dot {
+        display: inline-block;
+        width: 5px;
+        height: 5px;
+        background-color: #ccc;
+        border-radius: 50%;
+        margin: 0 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
 
-.modal-content {
-    background-color: var(--card-bg);
-    padding: 45px; /* More padding */
-    border-radius: 15px; /* More rounded */
-    width: 90%;
-    max-width: 400px; /* Slightly wider */
-    text-align: center;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3); /* Stronger shadow */
-    position: relative;
-    transform: scale(0.9) translateY(20px); /* Start smaller and lower */
-    transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); /* Springy transition */
-}
+    .indicator-dot.active {
+        background-color: var(--primary-color);
+        transform: scale(1.2);
+    }
 
-.modal.show .modal-content {
-    transform: scale(1) translateY(0); /* Animate to normal size/position */
-}
 
-.modal-content h2 {
-    margin-top: 0;
-    margin-bottom: 30px;
-    color: var(--primary-darker);
-    font-size: 1.5em;
-}
+    /* --- Bank Members Section --- */
+    .bank-members {
+        background: linear-gradient(to bottom, #e0f2f7, #ffffff);
+        padding: 30px 0;
+        width: 100%;
+        box-sizing: border-box;
+        border-bottom: 1px solid var(--border-color);
+    }
 
-.close {
-    position: absolute;
-    top: 15px; /* Adjust position */
-    right: 15px;
-    color: #aaa;
-    font-size: 35px;
-    font-weight: bold;
-    cursor: pointer;
-    line-height: 1;
-    transition: color 0.3s ease, transform 0.3s ease;
-}
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 25px 20px 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+        max-width: 1140px;
+        margin: 0 auto;
+    }
 
-.close:hover,
-.close:focus {
-    color: var(--danger-color);
-    transform: rotate(90deg); /* Rotate on hover */
-    text-decoration: none;
-}
+    .bank-headline {
+        font-size: 1.8em;
+        font-weight: 700;
+        color: var(--primary-darker);
+        margin: 0;
+        flex-grow: 1;
+    }
 
-.balance-display {
-    font-size: 3em; /* Larger balance */
-    font-weight: 700; /* Bolder */
-    margin: 30px 0;
-    color: var(--success-color);
-    display: block;
-    letter-spacing: 1.5px;
-    font-family: 'Arial', sans-serif; /* Different font for emphasis */
-}
+    .view-balance {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        background-color: var(--card-bg);
+        padding: 10px 18px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1em;
+        box-shadow: 0 3px 8px var(--shadow-color);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        color: var(--primary-color);
+        border: 1px solid var(--border-color);
+    }
 
-/* --- Footer --- */
-footer {
-    background-color: #343a40; /* Dark grey footer */
-    color: #f8f9fa; /* Light text */
-    padding: 25px 15px;
-    margin-top: 50px;
-    font-size: 0.95em;
-    text-align: center;
-    border-top: 5px solid var(--primary-color); /* Primary color accent */
-}
+    .view-balance:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+        color: var(--primary-darker);
+    }
 
-footer p {
-    color: #f8f9fa;
-    margin: 0;
-}
+    .view-balance img.balance-icon {
+        width: 24px;
+        height: 24px;
+    }
 
-/* --- Image Modal (Full Image View) --- */
-.image-modal-overlay {
-    display: none;
-    position: fixed;
-    z-index: 1002;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.92); /* Even darker */
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    padding: 20px;
-    box-sizing: border-box;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
+    .member-slider {
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        padding: 20px 25px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary-color) #e0f2f7;
+        max-width: 1140px;
+        margin: 0 auto;
+    }
 
-.image-modal-overlay.show {
-    display: flex;
-    opacity: 1;
-}
+    /* Webkit Scrollbar Styles */
+    .member-slider::-webkit-scrollbar { height: 8px; }
+    .member-slider::-webkit-scrollbar-track { background: #e0f2f7; border-radius: 4px;}
+    .member-slider::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 4px; border: 2px solid #e0f2f7; }
+    .member-slider::-webkit-scrollbar-thumb:hover { background-color: var(--primary-darker); }
 
-.image-modal-content {
-    max-width: 100%; /* Allow larger image */
-    max-height: 85%;
-    object-fit: contain;
-    display: block;
-    border: 5px solid white; /* Thicker border */
-    border-radius: 8px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.6);
-    transform: scale(0.8); /* Start smaller */
-    transition: transform 0.4s ease;
-}
 
-.image-modal-overlay.show .image-modal-content {
-     transform: scale(1); /* Scale to normal size */
-}
+    .member-card {
+        position: relative;
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        flex: 0 0 145px;
+        text-align: center;
+        padding: 12px;
+        box-shadow: 0 5px 10px var(--shadow-color);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        border: 1px solid var(--border-color);
+        box-sizing: border-box;
+        overflow: hidden;
+    }
 
-.image-modal-close {
-    position: absolute;
-    top: 25px;
-    right: 35px;
-    color: #ccc; /* Lighter close button */
-    font-size: 45px; /* Larger */
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.3s ease, transform 0.3s ease;
-    z-index: 1003; /* Ensure it's above image */
-}
+    .member-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
 
-.image-modal-close:hover {
-    color: #fff;
-    transform: scale(1.1); /* Scale up on hover */
-}
+    .member-card img {
+        width: 100%;
+        height: 125px;
+        border-radius: 8px;
+        object-fit: cover;
+        margin-bottom: 12px;
+        display: block;
+        background-color: #f0f0f0;
+        transition: transform 0.3s ease;
+    }
+    .member-card:hover img {
+        transform: scale(1.05);
+    }
 
-/* --- Scroll Animation --- */
-.animate-on-scroll {
-    opacity: 0;
-    transform: translateY(40px); /* Start further down */
-    transition: opacity var(--animation-duration) ease-out, transform var(--animation-duration) ease-out;
-}
+    .member-name {
+        font-size: 1em;
+        font-weight: 600;
+        margin: 8px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--text-color);
+    }
 
-.animate-on-scroll.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-}
+    .member-balance {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 6px 20px;
+        margin-top: 10px;
+        border-radius: 5px;
+        font-size: 0.85em;
+        font-weight: bold;
+        display: inline-block;
+    }
 
-/* --- Responsive Adjustments --- */
-@media (min-width: 576px) {
-    header h1 { font-size: 2.4em; }
-    .member-card { flex: 0 0 200px; } /* Slightly wider cards */
-    h2 { font-size: 1.9em; }
-}
+    .prime-tag {
+        position: absolute;
+        top: 120px;
+        right: 12px;
+        background-color: var(--prime-color);
+        color: var(--text-color);
+        padding: 4px 9px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        line-height: 1;
+        z-index: 2;
+    }
 
-@media (min-width: 768px) {
-    header h1 { font-size: 2.6em; }
-    .features { grid-template-columns: repeat(2, 1fr); }
-    .member-card { flex: 0 0 210px; }
-    h2 { font-size: 2em; }
-}
+    .loading-text, .error-text {
+        color: var(--light-text);
+        text-align: center;
+        width: 100%;
+        padding: 30px 20px;
+        font-size: 1.1em;
+        font-style: italic;
+    }
+    .error-text {
+        color: var(--danger-color);
+        font-weight: bold;
+        font-style: normal;
+    }
 
-@media (min-width: 992px) {
-    .features { grid-template-columns: repeat(4, 1fr); }
-    .member-card { flex: 0 0 220px; }
-    .balance-display { font-size: 3.2em; }
-    h2 { font-size: 2.1em; }
-}
+    /* --- Modals --- */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 1001;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.7); /* Darker overlay */
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.4s ease; /* Longer transition */
+    }
 
-@media (min-width: 1200px) {
-    .content-wrapper, .header-container, .member-slider { max-width: 1140px; }
-    .member-card { flex: 0 0 230px; }
-    h2 { font-size: 2.2em; }
-}
-</style>
+    .modal.show {
+       display: flex;
+       opacity: 1;
+    }
+
+    .modal-content {
+        background-color: var(--card-bg);
+        padding: 25px 30px; /* Adjusted padding */
+        border-radius: 15px; /* More rounded */
+        width: 90%;
+        max-width: 450px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3); /* Stronger shadow */
+        position: relative;
+        transform: scale(0.9) translateY(20px); /* Start smaller and lower */
+        transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28), border-color 0.3s ease; /* Springy transition */
+    }
+
+    .modal.show .modal-content {
+        transform: scale(1) translateY(0); /* Animate to normal size/position */
+    }
+
+    .modal-content h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: var(--primary-darker);
+        font-size: 1.5em;
+    }
+
+    .close {
+        position: absolute;
+        top: 15px; /* Adjust position */
+        right: 15px;
+        color: #aaa;
+        font-size: 35px;
+        font-weight: bold;
+        cursor: pointer;
+        line-height: 1;
+        transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: var(--danger-color);
+        transform: rotate(90deg); /* Rotate on hover */
+        text-decoration: none;
+    }
+
+    .balance-display {
+        font-size: 2.8em;
+        font-weight: 700;
+        margin: 10px 0 0 0;
+        color: var(--success-color);
+        display: block;
+        line-height: 1.1;
+        font-family: 'Arial', sans-serif;
+    }
+    
+    .balance-label {
+        font-size: 0.9em;
+        color: var(--light-text);
+        display: block;
+        margin-top: 2px;
+    }
+
+    .balance-display.return {
+        color: var(--info-color);
+        font-size: 2.2em;
+    }
+
+    .balance-display.total {
+        color: var(--primary-darker);
+        font-size: 3.2em;
+    }
+    
+    /* --- Member Profile Modal Styles --- */
+    #memberProfileModal .modal-content {
+        text-align: left;
+        padding-top: 80px; /* Increased padding to make space for image */
+        margin-top: 40px; /* Added margin to push modal down slightly */
+        border-top: 5px solid var(--primary-color);
+    }
+    .profile-modal-header {
+        position: absolute;
+        top: -60px; /* Moved image further up */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 5px solid white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        overflow: hidden;
+        background-color: #eee;
+        cursor: pointer; /* Make it clickable */
+        transition: transform 0.2s ease, border-color 0.3s ease;
+    }
+    .profile-modal-header:hover {
+        transform: translateX(-50%) scale(1.05); /* Slight zoom on hover */
+    }
+    .profile-modal-header img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    #profileModalName {
+        text-align: center;
+        font-size: 1.6em;
+        margin-bottom: 25px;
+        color: var(--primary-darker);
+        font-weight: 600;
+    }
+    .profile-stats-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .profile-stats-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 5px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .profile-stats-list li:last-child {
+        border-bottom: none;
+    }
+    .profile-stats-list .stat-label {
+        font-weight: 500;
+        color: var(--light-text);
+    }
+    .profile-stats-list .stat-value {
+        font-weight: 700;
+        font-size: 1.1em;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .stat-value.positive { color: var(--success-color); }
+    .stat-value.negative { color: var(--danger-color); }
+    .stat-value.info { color: var(--info-color); }
+    
+    .sip-status-icon { font-size: 1.2em; }
+    .sip-status-icon.paid { color: var(--success-color); }
+    .sip-status-icon.not-paid { color: var(--danger-color); }
+    .sip-status-text { font-size: 0.9em; font-weight: 500; }
+
+    /* Prime Member Styles */
+    #memberProfileModal.prime-modal .modal-content {
+        border-top-color: var(--prime-color);
+        background: linear-gradient(to bottom, #fff, #fffef5);
+    }
+    #memberProfileModal.prime-modal .profile-modal-header {
+        border-color: var(--prime-color);
+    }
+    .profile-modal-prime-tag {
+        display: none; /* Hidden by default */
+        position: absolute;
+        top: 85px;
+        right: 20px;
+        background: var(--prime-color);
+        color: var(--text-color);
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 0.8em;
+        font-weight: bold;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+
+    /* --- Footer --- */
+    footer {
+        background-color: #343a40; /* Dark grey footer */
+        color: #f8f9fa; /* Light text */
+        padding: 25px 15px;
+        margin-top: 50px;
+        font-size: 0.95em;
+        text-align: center;
+        border-top: 5px solid var(--primary-color); /* Primary color accent */
+    }
+
+    footer p {
+        color: #f8f9fa;
+        margin: 0;
+    }
+
+    /* --- Image Modal (Full Image View) --- */
+    .image-modal-overlay {
+        display: none;
+        position: fixed;
+        z-index: 1002;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.92); /* Even darker */
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        padding: 20px;
+        box-sizing: border-box;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .image-modal-overlay.show {
+        display: flex;
+        opacity: 1;
+    }
+
+    .image-modal-content {
+        max-width: 100%; /* Allow larger image */
+        max-height: 85%;
+        object-fit: contain;
+        display: block;
+        border: 5px solid white; /* Thicker border */
+        border-radius: 8px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.6);
+        transform: scale(0.8); /* Start smaller */
+        transition: transform 0.4s ease;
+    }
+
+    .image-modal-overlay.show .image-modal-content {
+         transform: scale(1); /* Scale to normal size */
+    }
+
+    .image-modal-close {
+        position: absolute;
+        top: 25px;
+        right: 35px;
+        color: #ccc; /* Lighter close button */
+        font-size: 45px; /* Larger */
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.3s ease, transform 0.3s ease;
+        z-index: 1003; /* Ensure it's above image */
+    }
+
+    .image-modal-close:hover {
+        color: #fff;
+        transform: scale(1.1); /* Scale up on hover */
+    }
+
+    /* --- Scroll Animation --- */
+    .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(40px); /* Start further down */
+        transition: opacity var(--animation-duration) ease-out, transform var(--animation-duration) ease-out;
+    }
+
+    .animate-on-scroll.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* --- Responsive Adjustments --- */
+    @media (min-width: 576px) {
+        header h1 { font-size: 2.4em; }
+        .member-card { flex: 0 0 200px; } /* Slightly wider cards */
+        h2 { font-size: 1.9em; }
+    }
+
+    @media (min-width: 768px) {
+        header h1 { font-size: 2.6em; }
+        .features { grid-template-columns: repeat(2, 1fr); }
+        .member-card { flex: 0 0 210px; }
+        h2 { font-size: 2em; }
+    }
+
+    @media (min-width: 992px) {
+        .features { grid-template-columns: repeat(4, 1fr); }
+        .member-card { flex: 0 0 220px; }
+        .balance-display { font-size: 3.2em; }
+        h2 { font-size: 2.1em; }
+    }
+
+    @media (min-width: 1200px) {
+        .content-wrapper, .header-container, .member-slider { max-width: 1140px; }
+        .member-card { flex: 0 0 230px; }
+        h2 { font-size: 2.2em; }
+    }
+    
+    /* Audio Button Animation */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    </style>
+</head>
+<body>
+
 <header class="animate-on-scroll">
     <div class="slider">
         <img id="sliderImage" src="https://i.imgur.com/jy7gXWz.png" alt="Community Loan Banner">
@@ -866,13 +985,59 @@ footer p {
     </div>
 </section>
 
+<!-- Balance Modal -->
 <div id="balanceModal" class="modal">
     <div class="modal-content">
         <span class="close" id="closeBalanceModal">×</span>
-        <h2>Available Community Balance</h2>
+        <h2>Community Funds</h2>
+        
         <div id="totalBalance" class="balance-display">₹0</div>
+        <small class="balance-label">Available Community Balance</small>
+
+        <div id="returnBalance" class="balance-display return">₹0</div>
+        <small class="balance-label">Return Amount</small>
+
+        <hr style="margin: 20px auto; width: 80%; border: 0; height: 1px; background: var(--border-color);">
+
+        <div id="combinedBalance" class="balance-display total">₹0</div>
+        <small class="balance-label">Grand Total</small>
     </div>
 </div>
+
+<!-- Member Profile Modal -->
+<div id="memberProfileModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeProfileModal">×</span>
+        <div class="profile-modal-header" id="profileModalHeader">
+            <img id="profileModalImage" src="" alt="Profile Picture">
+        </div>
+        <div class="profile-modal-prime-tag" id="profileModalPrimeTag">👑 Prime</div>
+        <h2 id="profileModalName">Member Name</h2>
+        <ul class="profile-stats-list">
+            <li>
+                <span class="stat-label">Joining Date</span>
+                <span id="profileModalJoiningDate" class="stat-value">--</span>
+            </li>
+            <li>
+                <span class="stat-label">Current Balance</span>
+                <span id="profileModalBalance" class="stat-value positive">₹0</span>
+            </li>
+            <li>
+                <span class="stat-label">Return Earned</span>
+                <span id="profileModalReturn" class="stat-value info">₹0</span>
+            </li>
+             <li>
+                <span class="stat-label">This Month SIP</span>
+                <span id="profileModalSipStatus" class="stat-value">--</span>
+            </li>
+            <li>
+                <span class="stat-label">Loan Count</span>
+                <span id="profileModalLoanCount" class="stat-value">0</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
 
 <main class="content-wrapper">
   <section class="transparency-section animate-on-scroll">
@@ -903,25 +1068,6 @@ footer p {
       </audio>
     </div>
   </section>
-</main>
-
-<!-- ✅ Audio Button Animation + Script (Put at end of page OR inside <script> tag block) -->
-<style>
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-  }
-</style>
-
-<script>
-  const playBtn = document.getElementById('playBtn');
-  const audio = document.getElementById('welcomeAudio');
-
-  playBtn.addEventListener('click', () => {
-    audio.play();
-  });
-</script>
 
     <section class="action-cards-section animate-on-scroll">
          <h2>Quick Actions</h2>
@@ -935,8 +1081,8 @@ footer p {
             <div class="action-card info-card animate-on-scroll" id="totalLoanCard" onclick="window.open('https://bank-community.github.io/Loan-from/loan_dashbord.html')" style="cursor: pointer;">
                 <i data-feather="trending-up" class="action-card-icon"></i>
                 <span class="info-card-label">
-  कुल लोन वितरित <span style="color: blue; font-weight: bold;">Click here</span>
-</span>
+                  कुल लोन वितरित <span style="color: blue; font-weight: bold;">Click here</span>
+                </span>
                 <span class="info-card-value total-loan-value" id="totalLoanValue">₹--</span>
             </div>
 
@@ -1017,21 +1163,42 @@ footer p {
     <img class="image-modal-content" id="fullImageSrc" alt="Full Size Image">
 </div>
 
-<!-- JavaScript फ़ाइल को यहाँ लिंक करें -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // --- Global Variables & Constants ---
-    const API_URL = 'https://script.google.com/macros/s/AKfycbz9LCkPR8L3-i7F1KG2KUJ6It2l_p55murljRJ_4108nFysOXUOpG5WEs1sdEaGHq1L7w/exec';
-    const DEFAULT_IMAGE = 'https://i.imgur.com/6aATcZR.jpeg'; // Default member image
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwmzH2yCELpKKA_iuVdM59dDzN9w-E7q37IElk24RmjRjAahR2tS2LVJ6UibwH5Z8g4VQ/exec';
+    const DEFAULT_IMAGE = 'https://i.imgur.com/6aATcZR.jpeg';
     const PRIME_MEMBERS = ["Prince rama", "Amit kumar", "Mithlesh sahni"];
 
-    // DOM Elements
-    const sliderImageElement = document.getElementById("sliderImage");
+    // --- DOM Elements ---
     const memberContainer = document.getElementById('memberContainer');
+    const totalMembersValueElement = document.getElementById('totalMembersValue');
+    const totalLoanValueElement = document.getElementById('totalLoanValue');
+    const currentYearElement = document.getElementById('currentYear');
+    
+    // Balance Modal Elements
     const balanceModalElement = document.getElementById('balanceModal');
     const viewBalanceBtn = document.getElementById('viewBalanceBtn');
     const totalBalanceElement = document.getElementById('totalBalance');
+    const returnBalanceElement = document.getElementById('returnBalance');
+    const combinedBalanceElement = document.getElementById('combinedBalance');
     const closeBalanceModalBtn = document.getElementById('closeBalanceModal');
+
+    // Profile Modal Elements
+    const profileModalElement = document.getElementById('memberProfileModal');
+    const closeProfileModalBtn = document.getElementById('closeProfileModal');
+    const profileModalHeader = document.getElementById('profileModalHeader');
+    const profileModalImage = document.getElementById('profileModalImage');
+    const profileModalPrimeTag = document.getElementById('profileModalPrimeTag');
+    const profileModalName = document.getElementById('profileModalName');
+    const profileModalJoiningDate = document.getElementById('profileModalJoiningDate');
+    const profileModalBalance = document.getElementById('profileModalBalance');
+    const profileModalReturn = document.getElementById('profileModalReturn');
+    const profileModalSipStatus = document.getElementById('profileModalSipStatus');
+    const profileModalLoanCount = document.getElementById('profileModalLoanCount');
+
+    // Other Elements
+    const sliderImageElement = document.getElementById("sliderImage");
     const imageModalElement = document.getElementById('imageModal');
     const fullImageSrcElement = document.getElementById('fullImageSrc');
     const closeImageModalBtn = document.getElementById('closeImageModal');
@@ -1039,167 +1206,165 @@ document.addEventListener('DOMContentLoaded', () => {
     const slideIndicatorContainer = document.getElementById('slideIndicator');
     const prevSlideBtn = document.getElementById('prevSlideBtn');
     const nextSlideBtn = document.getElementById('nextSlideBtn');
-    const totalMembersValueElement = document.getElementById('totalMembersValue');
-    const totalLoanValueElement = document.getElementById('totalLoanValue');
-    const currentYearElement = document.getElementById('currentYear');
+    const playBtn = document.getElementById('playBtn');
+    const audio = document.getElementById('welcomeAudio');
 
-    // State Variables
-    let currentHeaderImageIndex = 0;
-    let currentSlideIndex = 0;
+    // --- State Variables ---
+    let allTransactions = [];
     let netCommunityBalance = 0;
-    let totalSlides = 0;
-    let headerImageInterval;
+    let netReturnAmount = 0;
+    
+    // --- Utility Functions ---
+    const formatDate = (date) => {
+        if (!(date instanceof Date) || isNaN(date)) return "N/A";
+        return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    };
 
-    const headerImages = [
-        "https://i.imgur.com/pEWE3nL.png",
-        "https://i.imgur.com/FsIMTye.png",
-        "https://i.imgur.com/xtqkYZH.png",
-        "https://i.imgur.com/jy7gXWz.png"
-    ];
+    // --- Profit Calculation Logic ---
+    function calculateProfitDistribution(paymentRecord, allData) {
+        const profit = paymentRecord.ReturnAmount;
+        if (profit <= 0) return null;
 
-    // --- Functions ---
+        const payerName = paymentRecord.Name;
+        const userLoansBeforePayment = allData.filter(r => 
+            r.Name === payerName && r.Loan > 0 && (r.Date < paymentRecord.Date || (r.Date.getTime() === paymentRecord.Date.getTime() && r.id < paymentRecord.id))
+        );
+        if (userLoansBeforePayment.length === 0) return null;
 
-    feather.replace();
+        const relevantLoan = userLoansBeforePayment[userLoansBeforePayment.length - 1];
+        const loanDate = relevantLoan.Date;
+        const loanId = relevantLoan.id;
 
-    if (currentYearElement) {
-        currentYearElement.textContent = new Date().getFullYear();
-    }
-
-    function startHeaderSlider() {
-        if (!sliderImageElement || headerImages.length <= 1) return;
-        if (headerImageInterval) clearInterval(headerImageInterval);
-
-        headerImageInterval = setInterval(() => {
-            currentHeaderImageIndex = (currentHeaderImageIndex + 1) % headerImages.length;
-            sliderImageElement.style.opacity = 0;
-            setTimeout(() => {
-                sliderImageElement.src = headerImages[currentHeaderImageIndex];
-                sliderImageElement.style.opacity = 1;
-            }, 300);
-        }, 4000);
-
-        sliderImageElement.style.transition = 'opacity 0.3s ease-in-out';
-    }
-
-    function initializeLetterSlider() {
-        if (!slidesContainer || !slideIndicatorContainer || !prevSlideBtn || !nextSlideBtn) return;
-
-        const slides = slidesContainer.children;
-        totalSlides = slides.length;
-        if (totalSlides === 0) return;
-
-        // Add click event to each slide's image to open in modal
-        const slideImages = slidesContainer.querySelectorAll('.slide img');
-        slideImages.forEach(img => {
-            img.onclick = () => showFullImage(img.src, img.alt);
+        const transactionsBeforeLoan = allData.filter(r => 
+            r.Date < loanDate || (r.Date.getTime() === loanDate.getTime() && r.id < loanId)
+        );
+        
+        const memberBalances = {};
+        transactionsBeforeLoan.forEach(r => {
+            memberBalances[r.Name] = (memberBalances[r.Name] || 0) + r.SipPayment + r.Payment - r.Loan;
         });
 
-        slideIndicatorContainer.innerHTML = '';
-        for (let i = 0; i < totalSlides; i++) {
-            const dot = document.createElement('span');
-            dot.classList.add('indicator-dot');
-            dot.onclick = () => goToSlide(i);
-            slideIndicatorContainer.appendChild(dot);
-        }
+        const capitalProviders = Object.entries(memberBalances).filter(([_, balance]) => balance > 0);
+        const totalCommunityCapital = capitalProviders.reduce((sum, [, balance]) => sum + balance, 0);
+        if (totalCommunityCapital <= 0) return null;
 
-        prevSlideBtn.onclick = prevSlide;
-        nextSlideBtn.onclick = nextSlide;
-        showSlide(0);
+        const distribution = capitalProviders.map(([name, balance]) => ({
+            name,
+            share: (balance / totalCommunityCapital) * profit
+        }));
+        
+        return { distribution };
     }
 
-    function showSlide(index) {
-        if (!slidesContainer || totalSlides === 0) return;
-        currentSlideIndex = (index + totalSlides) % totalSlides;
-        slidesContainer.style.transform = `translateX(${-currentSlideIndex * 100}%)`;
-        updateDots();
+    function calculateTotalProfitForMember(memberName, allData) {
+        let totalProfit = 0;
+        allData.forEach(transaction => {
+            if (transaction.ReturnAmount > 0) {
+                const result = calculateProfitDistribution(transaction, allData);
+                if (result && result.distribution.length > 0) {
+                    const memberShare = result.distribution.find(d => d.name === memberName);
+                    if (memberShare) totalProfit += memberShare.share;
+                }
+            }
+        });
+        return totalProfit;
     }
 
-    function prevSlide() { showSlide(currentSlideIndex - 1); }
-    function nextSlide() { showSlide(currentSlideIndex + 1); }
-    function goToSlide(index) { showSlide(index); }
-
-    function updateDots() {
-        const indicatorDots = slideIndicatorContainer.children;
-        for (let i = 0; i < indicatorDots.length; i++) {
-             indicatorDots[i].classList.toggle('active', i === currentSlideIndex);
-        }
-    }
-
+    // --- Data Fetching and Processing ---
     async function fetchMemberData() {
         if (!memberContainer) return;
         memberContainer.innerHTML = '<p class="loading-text">सदस्य डेटा लोड हो रहा है...</p>';
-        if(totalMembersValueElement) totalMembersValueElement.textContent = '--';
-        if(totalLoanValueElement) totalLoanValueElement.textContent = '₹--';
-
+        
         try {
             const response = await fetch(API_URL);
-            if (!response.ok) {
-                 throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const data = await response.json();
-
-            if (!Array.isArray(data)) {
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const responseData = await response.json();
+            if (responseData.status !== 'success' || !Array.isArray(responseData.data)) {
                 throw new Error("API से अमान्य डेटा प्रारूप प्राप्त हुआ।");
             }
-            const validData = data.filter(entry => entry && typeof entry === 'object' && entry.Name && String(entry.Name).trim() !== "");
             
-            processMemberData(validData);
+            allTransactions = responseData.data
+                .map((row, index) => ({
+                    id: index,
+                    Date: new Date(row.Date),
+                    Name: String(row.Name).trim(),
+                    Loan: parseFloat(row.Loan) || 0,
+                    Payment: parseFloat(row["Loan Payment"]) || 0,
+                    SipPayment: parseFloat(row["SIP Payment"]) || 0,
+                    ReturnAmount: parseFloat(row["Return amount "]) || 0,
+                    ImageUrl: row.imageUrl || null
+                }))
+                .filter(r => r.Name && !isNaN(r.Date.getTime()));
+            
+            allTransactions.sort((a, b) => a.Date - b.Date || a.id - b.id);
+            
+            processAndDisplayData(allTransactions);
 
         } catch (error) {
             console.error('Error fetching or processing member data:', error);
             if (memberContainer) {
                memberContainer.innerHTML = `<p class="error-text">❌ सदस्य डेटा लोड करने में विफल।<br><small>${error.message}</small><br>कृपया बाद में प्रयास करें।</p>`;
             }
-            updateTotalBalanceDisplay([]);
-            if(totalMembersValueElement) totalMembersValueElement.textContent = '--';
-            if(totalLoanValueElement) totalLoanValueElement.textContent = '₹--';
         }
     }
 
-    function processMemberData(data) {
+    function processAndDisplayData(data) {
         const members = {};
         let totalLoanDisbursed = 0;
+        let totalReturnAmount = 0;
 
-        data.forEach(entry => {
-            const name = String(entry.Name).trim();
-            if (!name) return;
+        const memberNames = [...new Set(data.map(r => r.Name))];
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
 
-            const loanAmount = parseFloat(entry.Loan) || 0;
-            const paymentAmount = parseFloat(entry.Payment) || 0;
-            const sipAmount = parseFloat(entry["SIP Payment"]) || 0;
-            const imageUrl = (typeof entry.imageUrl === 'string' && entry.imageUrl.trim().startsWith('http')) ? entry.imageUrl.trim() : null;
+        memberNames.forEach(name => {
+            const memberData = data.filter(r => r.Name === name);
+            const totalLoan = memberData.reduce((sum, r) => sum + r.Loan, 0);
+            const totalPayment = memberData.reduce((sum, r) => sum + r.Payment, 0);
+            const totalSIP = memberData.reduce((sum, r) => sum + r.SipPayment, 0);
+            const lastEntryWithImage = [...memberData].reverse().find(r => r.ImageUrl);
+            const isPrime = PRIME_MEMBERS.some(p => p.trim().toLowerCase() === name.trim().toLowerCase());
 
-            if (!members[name]) {
-                members[name] = { name: String(entry.Name).trim(), totalLoan: 0, totalPayment: 0, totalSIP: 0, imageUrl: null };
-            }
+            // Check for SIP payment in the current month
+            const currentMonthSip = memberData.find(r => 
+                r.SipPayment > 0 &&
+                r.Date.getMonth() === currentMonth &&
+                r.Date.getFullYear() === currentYear
+            );
 
-            members[name].totalLoan += loanAmount;
-            members[name].totalPayment += paymentAmount;
-            members[name].totalSIP += sipAmount;
-            if (imageUrl) members[name].imageUrl = imageUrl;
-            totalLoanDisbursed += loanAmount;
-        });
-
-        const memberList = Object.values(members).map(member => {
-            const balance = (member.totalSIP + member.totalPayment) - member.totalLoan;
-            return {
-                ...member,
-                balance: balance,
-                displayImageUrl: member.imageUrl || DEFAULT_IMAGE
+            members[name] = {
+                name: name,
+                balance: (totalSIP + totalPayment) - totalLoan,
+                totalReturn: calculateTotalProfitForMember(name, data),
+                loanCount: memberData.filter(r => r.Loan > 0).length,
+                joiningDate: memberData.length > 0 ? memberData[0].Date : null,
+                displayImageUrl: lastEntryWithImage ? lastEntryWithImage.ImageUrl : DEFAULT_IMAGE,
+                isPrime: isPrime,
+                sipStatus: {
+                    paid: !!currentMonthSip,
+                    amount: currentMonthSip ? currentMonthSip.SipPayment : 0
+                }
             };
         });
 
-        memberList.sort((a, b) => b.balance - a.balance);
+        data.forEach(entry => {
+            totalLoanDisbursed += entry.Loan;
+            totalReturnAmount += entry.ReturnAmount;
+        });
+
+        netReturnAmount = totalReturnAmount;
+        const memberList = Object.values(members).sort((a, b) => b.balance - a.balance);
 
         displayMembers(memberList);
         updateTotalBalanceDisplay(memberList);
         updateInfoCards(memberList.length, totalLoanDisbursed);
     }
 
+    // --- Display Functions ---
     function displayMembers(members) {
         if (!memberContainer) return;
         memberContainer.innerHTML = '';
-
         if (members.length === 0) {
              memberContainer.innerHTML = '<p class="loading-text">कोई सदस्य नहीं मिला।</p>';
              return;
@@ -1208,31 +1373,82 @@ document.addEventListener('DOMContentLoaded', () => {
         members.forEach(member => {
             const card = document.createElement('div');
             card.className = 'member-card animate-on-scroll';
-
-            const isPrime = PRIME_MEMBERS.some(primeName => primeName.trim().toLowerCase() === member.name.trim().toLowerCase());
-            const primeTagHTML = isPrime ? '<div class="prime-tag">Prime</div>' : '';
-            const formattedBalance = member.balance.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
-
+            
             card.innerHTML = `
-                ${primeTagHTML}
+                ${member.isPrime ? '<div class="prime-tag">Prime</div>' : ''}
                 <img src="${member.displayImageUrl}" alt="${member.name}" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
                 <p class="member-name" title="${member.name}">${member.name}</p>
-                <p class="member-balance">${formattedBalance}</p>
+                <p class="member-balance">${member.balance.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</p>
             `;
-
-            card.onclick = () => showFullImage(member.displayImageUrl, member.name);
+            
+            card.onclick = () => showMemberProfileModal(member);
             memberContainer.appendChild(card);
         });
         observeElements(memberContainer.querySelectorAll('.animate-on-scroll'));
     }
 
     function updateInfoCards(memberCount, totalLoan) {
-        if (totalMembersValueElement) {
-            totalMembersValueElement.textContent = memberCount;
+        if (totalMembersValueElement) totalMembersValueElement.textContent = memberCount;
+        if (totalLoanValueElement) totalLoanValueElement.textContent = totalLoan.toLocaleString('en-IN', { style: 'currency', currency: 'INR'});
+    }
+
+    function updateTotalBalanceDisplay(memberList) {
+        netCommunityBalance = memberList.reduce((sum, member) => sum + member.balance, 0);
+    }
+
+    // --- Modal Logic ---
+    function showMemberProfileModal(member) {
+        // Set content
+        profileModalImage.src = member.displayImageUrl;
+        profileModalName.textContent = member.name;
+        profileModalJoiningDate.textContent = formatDate(member.joiningDate);
+        profileModalBalance.textContent = member.balance.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+        profileModalReturn.textContent = member.totalReturn.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+        profileModalLoanCount.textContent = member.loanCount;
+        
+        // SIP Status
+        if (member.sipStatus.paid) {
+            profileModalSipStatus.innerHTML = `
+                <span class="sip-status-icon paid">✔</span>
+                <span class="sip-status-text">Paid: ${member.sipStatus.amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
+            `;
+        } else {
+            profileModalSipStatus.innerHTML = `
+                <span class="sip-status-icon not-paid">✖</span>
+                <span class="sip-status-text">Not Paid</span>
+            `;
         }
-        if (totalLoanValueElement) {
-            totalLoanValueElement.textContent = totalLoan.toLocaleString('en-IN', { style: 'currency', currency: 'INR'});
+
+        // Apply conditional styling
+        profileModalBalance.className = `stat-value ${member.balance >= 0 ? 'positive' : 'negative'}`;
+        
+        if (member.isPrime) {
+            profileModalElement.classList.add('prime-modal');
+            profileModalPrimeTag.style.display = 'block';
+        } else {
+            profileModalElement.classList.remove('prime-modal');
+            profileModalPrimeTag.style.display = 'none';
         }
+
+        // Show modal
+        profileModalElement.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function showBalanceModal() {
+        if (!balanceModalElement) return;
+        balanceModalElement.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        const combinedBalance = netCommunityBalance + netReturnAmount;
+
+        animateValue(totalBalanceElement, 0, netCommunityBalance, 1200);
+        animateValue(returnBalanceElement, 0, netReturnAmount, 1200);
+        animateValue(combinedBalanceElement, 0, combinedBalance, 1200);
+    }
+
+    function closeModal(modalElement) {
+        if (modalElement) modalElement.classList.remove('show');
+        document.body.style.overflow = '';
     }
 
     function showFullImage(imageUrl, altText) {
@@ -1243,24 +1459,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = 'hidden';
     }
 
-    function closeImageModal() {
-         if (!imageModalElement) return;
-         imageModalElement.classList.remove('show');
-         document.body.style.overflow = '';
-    }
-
-    function updateTotalBalanceDisplay(memberList) {
-        netCommunityBalance = memberList.reduce((sum, member) => sum + member.balance, 0);
-    }
-
-    function showBalanceModal() {
-        if (!balanceModalElement || !totalBalanceElement) return;
-        balanceModalElement.classList.add('show');
-        document.body.style.overflow = 'hidden';
-        totalBalanceElement.textContent = '₹0';
-        animateValue(totalBalanceElement, 0, netCommunityBalance, 1000);
-    }
-
+    // --- Animation & UI Helpers ---
     function animateValue(element, start, end, duration) {
         let startTimestamp = null;
         const step = (timestamp) => {
@@ -1277,67 +1476,113 @@ document.addEventListener('DOMContentLoaded', () => {
         window.requestAnimationFrame(step);
     }
 
-    function closeModal() {
-         if (balanceModalElement) {
-             balanceModalElement.classList.remove('show');
-         }
-          document.body.style.overflow = '';
-    }
-
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px 0px -50px 0px',
-        threshold: 0.1
-    };
-    const observerCallback = (entries, observer) => {
+    const scrollObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('is-visible');
                 observer.unobserve(entry.target);
             }
         });
-    };
-    const scrollObserver = new IntersectionObserver(observerCallback, observerOptions);
+    }, { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 });
 
     function observeElements(elements) {
-        if (!elements) return;
-        elements.forEach(el => {
-             if (el) scrollObserver.observe(el);
+        elements.forEach(el => { if (el) scrollObserver.observe(el); });
+    }
+    
+    // --- Sliders and Initializers ---
+    function initializeLetterSlider() {
+        if (!slidesContainer || !slideIndicatorContainer) return;
+        const slides = slidesContainer.children;
+        const totalSlides = slides.length;
+        if (totalSlides === 0) return;
+
+        slidesContainer.querySelectorAll('.slide img').forEach(img => {
+            img.onclick = () => showFullImage(img.src, img.alt);
+        });
+
+        slideIndicatorContainer.innerHTML = '';
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('span');
+            dot.classList.add('indicator-dot');
+            dot.onclick = () => showSlide(i);
+            slideIndicatorContainer.appendChild(dot);
+        }
+        
+        let currentSlideIndex = 0;
+        const showSlide = (index) => {
+            currentSlideIndex = (index + totalSlides) % totalSlides;
+            slidesContainer.style.transform = `translateX(${-currentSlideIndex * 100}%)`;
+            slideIndicatorContainer.childNodes.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === currentSlideIndex);
+            });
+        };
+        
+        if(prevSlideBtn) prevSlideBtn.onclick = () => showSlide(currentSlideIndex - 1);
+        if(nextSlideBtn) nextSlideBtn.onclick = () => showSlide(currentSlideIndex + 1);
+        showSlide(0);
+    }
+
+    function startHeaderSlider() {
+        const headerImages = [
+            "https://i.imgur.com/pEWE3nL.png", "https://i.imgur.com/FsIMTye.png",
+            "https://i.imgur.com/xtqkYZH.png", "https://i.imgur.com/jy7gXWz.png"
+        ];
+        if (!sliderImageElement || headerImages.length <= 1) return;
+        let currentHeaderImageIndex = 0;
+        sliderImageElement.style.transition = 'opacity 0.3s ease-in-out';
+        setInterval(() => {
+            currentHeaderImageIndex = (currentHeaderImageIndex + 1) % headerImages.length;
+            sliderImageElement.style.opacity = 0;
+            setTimeout(() => {
+                sliderImageElement.src = headerImages[currentHeaderImageIndex];
+                sliderImageElement.style.opacity = 1;
+            }, 300);
+        }, 4000);
+    }
+
+    // --- Event Listeners Setup ---
+    function setupEventListeners() {
+        if (currentYearElement) currentYearElement.textContent = new Date().getFullYear();
+        if (playBtn && audio) playBtn.addEventListener('click', () => audio.play());
+
+        // Modal Close Listeners
+        if (viewBalanceBtn) viewBalanceBtn.addEventListener('click', showBalanceModal);
+        if (closeBalanceModalBtn) closeBalanceModalBtn.addEventListener('click', () => closeModal(balanceModalElement));
+        if (closeProfileModalBtn) closeProfileModalBtn.addEventListener('click', () => closeModal(profileModalElement));
+        if (closeImageModalBtn) closeImageModalBtn.addEventListener('click', () => closeModal(imageModalElement));
+        
+        // Click profile picture in modal to view full screen
+        if (profileModalHeader) {
+            profileModalHeader.addEventListener('click', () => {
+                if (profileModalImage.src) {
+                    showFullImage(profileModalImage.src, profileModalName.textContent);
+                }
+            });
+        }
+
+        [balanceModalElement, profileModalElement, imageModalElement].forEach(modal => {
+            if(modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(modal); });
+        });
+        
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal(balanceModalElement);
+                closeModal(profileModalElement);
+                closeModal(imageModalElement);
+            }
         });
     }
 
-    // --- Event Listeners & Initial Calls ---
+    // --- Initial Calls ---
+    feather.replace();
+    setupEventListeners();
     fetchMemberData();
     initializeLetterSlider();
     startHeaderSlider();
     observeElements(document.querySelectorAll('.animate-on-scroll'));
-
-    if (viewBalanceBtn) {
-        viewBalanceBtn.addEventListener('click', showBalanceModal);
-    }
-    if (closeBalanceModalBtn) {
-        closeBalanceModalBtn.addEventListener('click', closeModal);
-    }
-    if (balanceModalElement) {
-        balanceModalElement.addEventListener('click', (event) => {
-            if (event.target === balanceModalElement) closeModal();
-        });
-    }
-    if (imageModalElement) {
-         imageModalElement.addEventListener('click', (event) => {
-             if (event.target === imageModalElement || event.target === closeImageModalBtn) {
-                  closeImageModal();
-             }
-         });
-    }
-    window.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            if (balanceModalElement && balanceModalElement.classList.contains('show')) closeModal();
-            if (imageModalElement && imageModalElement.classList.contains('show')) closeImageModal();
-        }
-    });
-
-}); // End DOMContentLoaded</script>
+});
+</script>
 
 </body>
 </html>
+
