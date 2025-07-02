@@ -10,41 +10,31 @@
 </head>
 <body>
 <style>
-/* --- CSS IMPROVEMENTS --- */
-
-/* 1. Enhanced Color Palette & Root Variables */
+/* --- CSS --- */
 :root {
-    --primary-bg: #f8fafc; /* Lighter, cooler background */
+    --primary-bg: #f8fafc;
     --card-bg: #ffffff;
-    --text-dark: #1f2937; /* Darker text for better contrast */
-    --text-light: #6b7280; /* Softer gray for secondary text */
-    --border-color: #e5e7eb; /* Subtle border color */
-    
-    --primary-color: #4f46e5; /* A modern indigo */
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --border-color: #e5e7eb;
+    --primary-color: #4f46e5;
     --primary-dark: #4338ca;
-    
-    --danger-color: #ef4444; /* Brighter, modern red */
-    --danger-bg: #fee2e2;
+    --danger-color: #ef4444;
     --danger-text: #b91c1c;
-
-    --warning-color: #f97316; /* Brighter, modern orange */
-    --warning-bg: #ffedd5;
+    --warning-color: #f97316;
     --warning-text: #c2410c;
-
-    --pending-bg: #eef2ff; /* Light indigo for pending status */
+    --pending-bg: #eef2ff;
     --pending-text: #4338ca;
-
     --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
     --card-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-    --font-family: 'Inter', sans-serif; /* Switched to Inter for a cleaner UI look */
+    --font-family: 'Inter', sans-serif;
 }
 
-/* 2. General Body & Layout Refinements */
 body { 
     font-family: var(--font-family); 
     background-color: var(--primary-bg); 
     margin: 0; 
-    padding: 24px; /* Consistent padding */
+    padding: 24px;
     color: var(--text-dark); 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -55,7 +45,6 @@ body {
     margin: 0 auto; 
 }
 
-/* 3. Header & Title Styling */
 .header { 
     text-align: center; 
     margin-bottom: 40px; 
@@ -65,7 +54,7 @@ body {
     font-size: 32px; 
     font-weight: 700; 
     color: var(--text-dark);
-    letter-spacing: -0.025em; /* Tighter letter spacing for headings */
+    letter-spacing: -0.025em;
 }
 .header p { 
     margin: 8px 0 0; 
@@ -73,7 +62,6 @@ body {
     font-size: 18px; 
 }
 
-/* 4. Summary Section Redesign */
 .summary-section { 
     display: grid; 
     grid-template-columns: 1fr 1fr; 
@@ -104,7 +92,6 @@ body {
     color: var(--primary-color); 
 }
 
-/* 5. Modern Search Input */
 .filter-controls { 
     margin-bottom: 32px; 
 }
@@ -124,7 +111,6 @@ body {
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
 }
 
-/* 6. Loader & Message Styling */
 #loader { 
     text-align: center; 
     padding: 50px; 
@@ -149,10 +135,9 @@ body {
     border-radius: 12px; 
     text-align: center; 
     border: 1px solid #c8e6c9; 
-    grid-column: 1 / -1; /* Span across all columns in the grid */
+    grid-column: 1 / -1;
 }
 
-/* 7. Loan Card Grid Layout */
 #outstanding-loans-container { 
     display: grid; 
     gap: 24px; 
@@ -161,7 +146,6 @@ body {
 @media (min-width: 640px) { #outstanding-loans-container { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1024px) { #outstanding-loans-container { grid-template-columns: repeat(3, 1fr); } }
 
-/* 8. Premium Loan Card Redesign */
 .loan-card { 
     background-color: var(--card-bg); 
     border-radius: 16px; 
@@ -192,7 +176,7 @@ body {
     background-color: var(--pending-bg);
     color: var(--pending-text);
     padding: 5px 12px;
-    border-radius: 9999px; /* Pill shape */
+    border-radius: 9999px;
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
@@ -242,7 +226,7 @@ body {
     border-radius: 12px; 
     padding: 16px; 
     border: 1px solid var(--border-color);
-    margin-top: auto; /* Pushes this section to the bottom of the flex container */
+    margin-top: auto;
 }
 .detail-row { 
     display: flex; 
@@ -276,7 +260,6 @@ body {
     font-weight: 700; 
 }
 
-/* 9. Refined Bottom Banner */
 .pending-banner { 
     color: white; 
     padding: 12px 20px; 
@@ -308,7 +291,6 @@ body {
             <p>Track member loans and late fee charges.</p>
         </div>
 
-        <!-- Summary Section -->
         <div class="summary-section">
             <div class="summary-card">
                 <h3>Total Loan Number</h3>
@@ -320,21 +302,16 @@ body {
             </div>
         </div>
 
-        <!-- Filter and Search Controls -->
         <div class="filter-controls">
             <input type="text" id="search-input" placeholder="Search by member name...">
         </div>
 
-        <!-- Loader -->
         <div id="loader">
             <div class="spinner"></div>
             Loading member data...
         </div>
 
-        <!-- Loan Cards Container -->
-        <div id="outstanding-loans-container">
-            <!-- Loan cards will be injected here by JavaScript -->
-        </div>
+        <div id="outstanding-loans-container"></div>
 
     </div>
 
@@ -343,8 +320,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeApp();
 });
 
-// --- JAVASCRIPT REFINEMENTS ---
-// Added SVG icons for a cleaner UI
 const ICONS = {
     calendar: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0h18M-7.5 14.25h.008v.008H-7.5v-.008Z" /></svg>`,
     money: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V8.25c0-.621.504-1.125 1.125-1.125h1.5" /></svg>`,
@@ -361,7 +336,8 @@ const state = {
         totalAmountEl: document.getElementById('total-outstanding-amount'),
         searchInput: document.getElementById('search-input'),
     },
-    dataUrl: 'https://script.google.com/macros/s/AKfycbz9LCkPR8L3-i7F1KG2KUJ6It2l_p55murljRJ_4108nFysOXUOpG5WEs1sdEaGHq1L7w/exec',
+    // --- UPDATED URL ---
+    dataUrl: 'https://script.google.com/macros/s/AKfycbwmzH2yCELpKKA_iuVdM59dDzN9w-E7q37IElk24RmjRjAahR2tS2LVJ6UibwH5Z8g4VQ/exec',
 };
 
 async function initializeApp() {
@@ -371,8 +347,16 @@ async function initializeApp() {
     try {
         const response = await fetch(state.dataUrl);
         if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+        
         const rawData = await response.json();
-        const allData = processRawData(rawData);
+        
+        // --- UPDATED to handle new JSON structure ---
+        // Ab data rawData.data ke andar hai.
+        if (rawData.status !== 'success' || !Array.isArray(rawData.data)) {
+            throw new Error("Invalid data format received from the server.");
+        }
+        
+        const allData = processRawData(rawData.data);
         state.allOutstandingLoans = findOutstandingLoans(allData);
         displayAllData();
         setupEventListeners();
@@ -384,23 +368,29 @@ async function initializeApp() {
     }
 }
 
-function processRawData(rawData) {
-    const processed = rawData.map(row => {
+// --- UPDATED to handle new column names ---
+function processRawData(data) {
+    const processed = data.map(row => {
         let parsedDate = new Date(row.Date);
         if (isNaN(parsedDate)) {
              const dateParts = String(row.Date).match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);
              if (dateParts) parsedDate = new Date(`${dateParts[2]} ${dateParts[1]}, ${dateParts[3]}`);
         }
         if (isNaN(parsedDate)) parsedDate = null;
+        
         return {
             Name: String(row.Name || 'Unknown').trim(),
             Date: parsedDate,
+            // Naye column 'Loan' se value lena.
             Loan: parseFloat(row.Loan) || 0,
-            Payment: parseFloat(row.Payment) || 0,
+            // Naye column 'Loan Payment' se value lena.
+            Payment: parseFloat(row['Loan Payment']) || 0,
             ImageUrl: row.imageUrl || null
+            // 'SIP Payment' aur 'Return amount' ko yahan ignore kar rahe hain
+            // kyunki loan calculation ke liye unki zaroorat nahi hai.
         };
     }).filter(r => r.Name !== 'Unknown' && r.Date !== null);
-    // Data ko date ke hisab se sort karna zaroori hai taaki transactions sahi order mein process ho.
+    
     return processed.sort((a, b) => a.Date - b.Date);
 }
 
@@ -415,7 +405,7 @@ function calculatePenalty(loanAmount, daysAgo) {
     return { percentage, amount };
 }
 
-// --- UPDATED FUNCTION with new logic for principal and interest ---
+// Yeh function pehle jaisa hi kaam karega, kyunki processRawData ab sahi data de raha hai.
 function findOutstandingLoans(allData) {
     const outstanding = [];
     const members = [...new Set(allData.map(d => d.Name))];
@@ -426,17 +416,11 @@ function findOutstandingLoans(allData) {
         let currentBalance = 0;
         let lastLoanDate = null;
 
-        // Har member ke liye transactions ko process karna.
         memberData.forEach(transaction => {
             if (transaction.Loan > 0) {
-                // Jab bhi loan liya jaata hai, balance badh jaata hai.
                 currentBalance += transaction.Loan;
-                // Aakhri loan ki date ko penalty calculation ke liye save karna.
                 lastLoanDate = transaction.Date;
             } else if (transaction.Payment > 0) {
-                // Jab payment hota hai, to balance kam ho jaata hai.
-                // Isse yeh sunishchit hota hai ki balance kabhi 0 se neeche na jaaye.
-                // Agar 5000 ka loan hai aur 5150 chukaye, to balance 0 ho jaayega, -150 nahi.
                 currentBalance -= transaction.Payment;
                 if (currentBalance < 0) {
                     currentBalance = 0;
@@ -444,7 +428,6 @@ function findOutstandingLoans(allData) {
             }
         });
 
-        // Agar sabhi transactions ke baad balance 0 se zyada hai, to loan outstanding hai.
         if (currentBalance > 0) {
             const memberDataSortedDesc = [...memberData].sort((a, b) => b.Date - a.Date);
             const today = new Date();
@@ -455,13 +438,11 @@ function findOutstandingLoans(allData) {
             }
             
             const latestImage = memberDataSortedDesc.find(r => r.ImageUrl)?.ImageUrl || null;
-            
-            // Penalty hamesha bache hue balance par calculate hogi.
             const penaltyInfo = calculatePenalty(currentBalance, daysPassed);
 
             outstanding.push({
                 name: name,
-                loanAmount: currentBalance, // Yahan 'currentBalance' hi outstanding amount hai.
+                loanAmount: currentBalance,
                 daysAgo: daysPassed,
                 imageUrl: latestImage,
                 loanDate: lastLoanDate,
