@@ -14,8 +14,6 @@
     <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- External CSS -->
-    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <style>
@@ -53,6 +51,9 @@ body {
     padding: 0 20px;
 }
 .hidden {
+    display: none !important;
+}
+.visually-hidden {
     opacity: 0;
     pointer-events: none;
     visibility: hidden;
@@ -64,6 +65,7 @@ body {
 #loader .spinner { width: 50px; height: 50px; border: 5px solid rgba(0,0,0,0.1); border-left-color: var(--secondary-color); border-radius: 50%; animation: spin 1.2s linear infinite; margin-bottom: 20px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 #passwordPromptContainer { background-color: var(--modal-bg); backdrop-filter: blur(5px); }
+#passwordPromptContainer.visually-hidden { opacity: 0; }
 #passwordPromptMessage { padding: 30px 35px; background-color: var(--card-bg); border-radius: 16px; box-shadow: var(--card-shadow); text-align: center; max-width: 340px; width: 90%; }
 #passwordPromptMessage h3 { margin-top: 0; font-size: 1.3em; }
 #passwordInput { width: calc(100% - 24px); padding: 12px; margin-bottom: 20px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 22px; text-align: center; letter-spacing: 10px; font-family: 'Poppins', sans-serif; }
@@ -83,15 +85,39 @@ body {
 .filters i { color: var(--secondary-color); }
 #showReturnViewBtn i { color: white; }
 
+/* --- GROWTH CHART SECTION --- */
+#growthChartSection {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    padding: 25px;
+    margin-bottom: 30px;
+}
+#growthChartSection h2 {
+    margin-top: 0;
+    text-align: center;
+    color: var(--primary-color);
+}
+#growthChartContainer {
+    position: relative;
+    height: 350px; 
+}
+
 /* --- MAIN CONTENT LAYOUT --- */
-.main-content { display: grid; grid-template-columns: 380px 1fr; gap: 30px; align-items: flex-start; }
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr; /* Default to 1 column for mobile-first */
+    gap: 30px;
+    align-items: flex-start;
+}
 #dashboardContent { opacity: 0; transition: opacity 0.5s ease-in-out; }
 #dashboardContent.visible { opacity: 1; }
 
 /* --- PROFILE CARD --- */
-.profile-card { background-color: var(--card-bg); border-radius: 16px; box-shadow: var(--card-shadow); padding: 25px; text-align: center; position: sticky; top: 100px; border-top: 4px solid var(--secondary-color); }
+.profile-card { background-color: var(--card-bg); border-radius: 16px; box-shadow: var(--card-shadow); padding: 25px; text-align: center; border-top: 4px solid var(--secondary-color); }
 .profile-image-container { width: 130px; height: 130px; margin: 0 auto 15px auto; border-radius: 50%; overflow: hidden; border: 5px solid var(--light-bg); box-shadow: 0 0 15px rgba(0,0,0,0.1); }
-.profile-image-container img { width: 100%; height: 100%; object-fit: cover; }
+.profile-image-container img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: transform 0.2s ease; }
+.profile-image-container img:hover { transform: scale(1.05); }
 .profile-card h2 { margin: 10px 0 20px 0; font-size: 1.8em; color: var(--primary-color); word-break: break-word; }
 .profile-stats { margin-top: 20px; text-align: left; }
 .stat-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid var(--border-color); font-size: 1em; }
@@ -105,6 +131,7 @@ body {
 .icon-payment { color: var(--positive-color); }
 .icon-balance { color: var(--primary-color); }
 .icon-profit { color: var(--accent-color); }
+.icon-roi { color: var(--secondary-color); } 
 
 /* --- PROFIT LOG TABLE --- */
 .profit-log { background-color: var(--card-bg); border-radius: 16px; box-shadow: var(--card-shadow); padding: 25px; border-top: 4px solid var(--accent-color); }
@@ -122,7 +149,8 @@ td { font-size: 0.95em; }
 /* --- MODALS --- */
 .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--modal-bg); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 2500; padding: 15px; box-sizing: border-box; transition: opacity 0.3s ease, visibility 0.3s ease; }
 .modal-content { background-color: var(--card-bg); padding: 30px; border-radius: 16px; box-shadow: var(--card-shadow); max-width: 600px; width: 95%; position: relative; max-height: 90vh; display: flex; flex-direction: column; }
-.modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 30px; color: #bdc3c7; cursor: pointer; transition: color 0.2s; }
+.modal.visually-hidden { opacity: 0; visibility: hidden; }
+.modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 30px; color: #bdc3c7; cursor: pointer; transition: color 0.2s; z-index: 2510;}
 .modal-close:hover { color: var(--text-dark); }
 .modal h2 { margin-top: 0; text-align: center; color: var(--primary-color); font-weight: 600; }
 .modal ul, .modal ol { list-style: none; padding: 0; overflow-y: auto; margin-top: 15px; }
@@ -134,14 +162,35 @@ td { font-size: 0.95em; }
 .chart-container { margin-bottom: 20px; }
 .list-header { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid var(--border-color); font-size: 1.1em; color: var(--text-light); }
 
+#imageModal .modal-content {
+    background: transparent; padding: 0; box-shadow: none; max-width: 90vw;
+}
+#imageModal img {
+    max-height: 85vh; width: auto; object-fit: contain; border-radius: 12px;
+}
+#imageModal .modal-close {
+    color: white; background-color: rgba(0,0,0,0.4); border-radius: 50%; width: 35px; height: 35px; line-height: 35px; font-size: 22px; text-align: center; top: 20px; right: 20px;
+}
+
 /* --- RESPONSIVE DESIGN --- */
-@media (max-width: 1100px) {
-    .main-content { grid-template-columns: 320px 1fr; }
+@media (min-width: 992px) {
+    /* Apply 2-column layout only on large screens */
+    .main-content {
+        grid-template-columns: 380px 1fr;
+    }
+    .profile-card {
+        position: sticky;
+        top: 100px;
+    }
 }
-@media (max-width: 992px) {
-    .main-content { grid-template-columns: 1fr; }
-    .profile-card { position: static; margin-bottom: 30px; }
+
+@media (max-width: 991px) {
+    /* On smaller screens, the profile card is just a normal block */
+    .profile-card {
+        margin-bottom: 30px;
+    }
 }
+
 @media (max-width: 600px) {
     body { padding-top: 60px; }
     .container { padding: 0 15px; }
@@ -151,6 +200,7 @@ td { font-size: 0.95em; }
     .profile-card h2 { font-size: 1.5em; }
     th, td { padding: 12px 8px; }
     .modal-content { padding: 20px; }
+    #growthChartContainer { height: 300px; }
 }
 </style>
     <div id="loader">
@@ -158,7 +208,7 @@ td { font-size: 0.95em; }
         <span>Loading Analytics...</span>
     </div>
 
-    <div id="passwordPromptContainer" class="hidden">
+    <div id="passwordPromptContainer">
         <div id="passwordPromptMessage">
             <h3><i class="fas fa-lock"></i> Enter Access PIN</h3>
             <input type="password" id="passwordInput" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••">
@@ -166,7 +216,7 @@ td { font-size: 0.95em; }
         </div>
     </div>
 
-    <div id="dashboardContent" class="hidden">
+    <div id="dashboardContent" class="visually-hidden">
         <header class="header">
             <h1><i class="fas fa-chart-line"></i> Bank Loan Profit</h1>
         </header>
@@ -181,6 +231,13 @@ td { font-size: 0.95em; }
                 </div>
                 <button id="showReturnViewBtn"><i class="fas fa-trophy"></i> Member Return Rank</button>
             </div>
+
+            <section id="growthChartSection" class="hidden">
+                <h2><i class="fas fa-chart-area"></i> Community Growth Over Time</h2>
+                <div id="growthChartContainer">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </section>
 
             <main class="main-content">
                 <aside class="profile-card" id="profileSection">
@@ -204,6 +261,10 @@ td { font-size: 0.95em; }
                         <div class="stat-item">
                             <span class="label"><i class="fas fa-sack-dollar icon-profit"></i> Profit Earned / Dist.</span>
                             <span class="value positive" id="profileTotalProfit">₹0.00</span>
+                        </div>
+                        <div class="stat-item hidden" id="roiStatItem">
+                             <span class="label"><i class="fas fa-percent icon-roi"></i> Personal ROI</span>
+                             <span class="value positive" id="profileROI">0.00 %</span>
                         </div>
                     </div>
                 </aside>
@@ -230,7 +291,7 @@ td { font-size: 0.95em; }
         </div>
     </div>
     
-    <div id="detailsModal" class="modal hidden">
+    <div id="detailsModal" class="modal visually-hidden">
         <div class="modal-content">
             <button class="modal-close">×</button>
             <h2><i class="fas fa-chart-pie"></i> Profit Distribution</h2>
@@ -242,7 +303,7 @@ td { font-size: 0.95em; }
         </div>
     </div>
 
-    <div id="returnViewModal" class="modal hidden">
+    <div id="returnViewModal" class="modal visually-hidden">
         <div class="modal-content">
             <button class="modal-close">×</button>
             <h2><i class="fas fa-trophy"></i> Member Return Ranking</h2>
@@ -250,15 +311,23 @@ td { font-size: 0.95em; }
         </div>
     </div>
 
-    <!-- External JavaScript -->
-    <script> // --- CONFIGURATION ---
-const dataUrl = 'https://script.google.com/macros/s/AKfycbz9LCkPR8L3-i7F1KG2KUJ6It2l_p55murljRJ_4108nFysOXUOpG5WEs1sdEaGHq1L7w/exec';
+    <div id="imageModal" class="modal visually-hidden">
+         <button class="modal-close">×</button>
+         <div class="modal-content">
+            <img id="fullProfileImage" src="" alt="Full Profile Picture View">
+         </div>
+    </div>
+
+<script> 
+// --- CONFIGURATION ---
+const dataUrl = 'https://script.google.com/macros/s/AKfycbwmzH2yCELpKKA_iuVdM59dDzN9w-E7q37IElk24RmjRjAahR2tS2LVJ6UibwH5Z8g4VQ/exec';
 const CORRECT_PASSWORD = "7536";
 const defaultProfilePic = 'https://i.postimg.cc/XNpR3cN1/20241030-065157.png';
 
 // --- GLOBAL VARIABLES ---
 let allData = [];
-let distributionChartInstance = null; // To hold the chart instance
+let distributionChartInstance = null;
+let growthChartInstance = null; 
 
 // --- INITIALIZATION ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -270,12 +339,12 @@ function setupPasswordPrompt() {
     const passwordInput = document.getElementById('passwordInput');
     const passwordSubmit = document.getElementById('passwordSubmit');
     
-    passwordContainer.classList.remove('hidden');
+    passwordContainer.classList.remove('visually-hidden');
     passwordInput.focus();
 
     const checkPassword = () => {
         if (passwordInput.value === CORRECT_PASSWORD) {
-            passwordContainer.classList.add('hidden');
+            passwordContainer.classList.add('visually-hidden');
             document.getElementById('loader').classList.remove('hidden');
             fetchData();
         } else {
@@ -293,18 +362,28 @@ function setupPasswordPrompt() {
 async function fetchData() {
     try {
         const response = await fetch(dataUrl);
-        const rawData = await response.json();
+        const jsonResponse = await response.json();
+        
+        if (jsonResponse.status !== 'success' || !Array.isArray(jsonResponse.data)) {
+            throw new Error("Invalid data format from API.");
+        }
+        
+        const rawData = jsonResponse.data;
 
-        allData = rawData.map(row => ({
-            Date: new Date(row.Date),
-            Name: String(row.Name).trim(),
-            Loan: parseFloat(row.Loan) || 0,
-            Payment: parseFloat(row.Payment) || 0,
-            SipPayment: parseFloat(row["SIP Payment"]) || 0,
-            ImageUrl: row.imageUrl || null
-        })).filter(r => r.Name && !isNaN(r.Date.getTime()));
+        allData = rawData
+            .map((row, index) => ({
+                id: index, 
+                Date: new Date(row.Date),
+                Name: String(row.Name).trim(),
+                Loan: parseFloat(row.Loan) || 0,
+                Payment: parseFloat(row["Loan Payment"]) || 0,
+                SipPayment: parseFloat(row["SIP Payment"]) || 0,
+                ReturnAmount: parseFloat(row["Return amount "]) || 0,
+                ImageUrl: row.imageUrl || null
+            }))
+            .filter(r => r.Name && !isNaN(r.Date.getTime()));
 
-        allData.sort((a, b) => a.Date - b.Date);
+        allData.sort((a, b) => a.Date - b.Date || a.id - b.id);
         initializeDashboard();
 
     } catch (error) {
@@ -315,11 +394,12 @@ async function fetchData() {
     }
 }
 
+
 // --- DASHBOARD SETUP ---
 function initializeDashboard() {
     const dashboard = document.getElementById('dashboardContent');
-    dashboard.classList.remove('hidden');
-    setTimeout(() => dashboard.classList.add('visible'), 50); // For fade-in animation
+    dashboard.classList.remove('visually-hidden');
+    setTimeout(() => dashboard.classList.add('visible'), 50);
 
     populateMemberFilter();
     setupEventListeners();
@@ -329,15 +409,26 @@ function initializeDashboard() {
 function setupEventListeners() {
     document.getElementById('memberFilter').addEventListener('change', updateDisplay);
     
-    // Setup modal close events
     const modals = document.querySelectorAll('.modal');
     modals.forEach(modal => {
-        modal.querySelector('.modal-close').addEventListener('click', () => modal.classList.add('hidden'));
-        modal.addEventListener('click', (e) => (e.target === modal) && modal.classList.add('hidden'));
+        modal.querySelector('.modal-close').addEventListener('click', () => modal.classList.add('visually-hidden'));
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                 modal.classList.add('visually-hidden')
+            }
+        });
     });
 
-    // Setup return view button
     document.getElementById('showReturnViewBtn').addEventListener('click', displayOverallReturnView);
+
+    const profileImageEl = document.getElementById('profileImage');
+    const imageModal = document.getElementById('imageModal');
+    const fullProfileImage = document.getElementById('fullProfileImage');
+
+    profileImageEl.addEventListener('click', () => {
+        fullProfileImage.src = profileImageEl.src;
+        imageModal.classList.remove('visually-hidden');
+    });
 }
 
 function populateMemberFilter() {
@@ -355,6 +446,18 @@ function populateMemberFilter() {
 // --- CORE DISPLAY LOGIC ---
 function updateDisplay() {
     const selectedName = document.getElementById('memberFilter').value;
+    const growthChartSection = document.getElementById('growthChartSection');
+    const roiStatItem = document.getElementById('roiStatItem');
+
+    if (selectedName === 'all') {
+        growthChartSection.classList.remove('hidden');
+        roiStatItem.classList.add('hidden');
+        renderGrowthChart();
+    } else {
+        growthChartSection.classList.add('hidden');
+        roiStatItem.classList.remove('hidden');
+    }
+
     updateProfileCard(selectedName);
     populateProfitLog(selectedName);
 }
@@ -366,50 +469,44 @@ function updateProfileCard(name) {
     const totalPaymentEl = document.getElementById('profileTotalPayment');
     const balanceEl = document.getElementById('profileCurrentBalance');
     const totalProfitEl = document.getElementById('profileTotalProfit');
+    const profileROIEl = document.getElementById('profileROI');
 
-    let totalLoan = 0;
-    let totalPayment = 0;
-    let totalProfit = 0;
+    let totalLoan = 0, totalPaidIn = 0, totalProfitEarned = 0, totalSip = 0;
 
     if (name === 'all') {
-        // Community Overview
         allData.forEach(r => {
             totalLoan += r.Loan;
-            totalPayment += r.Payment + r.SipPayment;
+            totalPaidIn += r.SipPayment + r.Payment;
         });
+        totalProfitEarned = allData.reduce((sum, r) => sum + r.ReturnAmount, 0);
         
-        // NEW: Calculate total distributed profit for the community view
-        allData.filter(r => r.Payment > 0).forEach(payment => {
-            const result = calculateProfitDistribution(payment);
-            if (result && result.profit > 0) {
-                totalProfit += result.profit;
-            }
-        });
-
         profileNameEl.textContent = 'Community Overview';
         profileImageEl.src = defaultProfilePic;
     } else {
-        // Single Member View
         const dataToShow = allData.filter(r => r.Name === name);
         dataToShow.forEach(r => {
             totalLoan += r.Loan;
-            totalPayment += r.Payment + r.SipPayment;
+            totalSip += r.SipPayment;
+            totalPaidIn += r.SipPayment + r.Payment;
         });
-        totalProfit = calculateTotalProfitForMember(name);
+        totalProfitEarned = calculateTotalProfitForMember(name);
+
+        const roi = (totalSip > 0) ? (totalProfitEarned / totalSip) * 100 : 0;
+        profileROIEl.textContent = `${roi.toFixed(2)} %`;
         
         profileNameEl.textContent = name;
         const lastUserEntryWithImage = [...dataToShow].reverse().find(r => r.ImageUrl);
         profileImageEl.src = lastUserEntryWithImage ? lastUserEntryWithImage.ImageUrl : defaultProfilePic;
     }
 
-    const balance = totalPayment - totalLoan;
+    const balance = totalPaidIn - totalLoan;
     
     totalLoanEl.textContent = `₹${totalLoan.toFixed(2)}`;
-    totalPaymentEl.textContent = `₹${totalPayment.toFixed(2)}`;
+    totalPaymentEl.textContent = `₹${totalPaidIn.toFixed(2)}`;
     balanceEl.textContent = `₹${balance.toFixed(2)}`;
     balanceEl.className = `value ${balance >= 0 ? 'positive' : 'negative'}`;
-    totalProfitEl.textContent = `₹${totalProfit.toFixed(2)}`;
-    totalProfitEl.className = `value ${totalProfit > 0 ? 'positive' : ''}`;
+    totalProfitEl.textContent = `₹${totalProfitEarned.toFixed(2)}`;
+    totalProfitEl.className = `value ${totalProfitEarned > 0 ? 'positive' : ''}`;
 }
 
 
@@ -418,51 +515,43 @@ function populateProfitLog(selectedName) {
     const tableBody = document.querySelector("#profitLogTable tbody");
     tableBody.innerHTML = '';
     
-    const paymentEvents = allData.filter(r => r.Payment > 0);
     let profitEventsFound = 0;
 
-    paymentEvents.forEach(paymentRecord => {
+    allData.forEach(paymentRecord => {
+        if (paymentRecord.ReturnAmount <= 0) return;
         const result = calculateProfitDistribution(paymentRecord);
-
         if (result && result.profit > 0) {
-            if (selectedName !== 'all' && paymentRecord.Name !== selectedName) {
-                return;
-            }
+            if (selectedName !== 'all' && paymentRecord.Name !== selectedName) return;
             
             profitEventsFound++;
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${formatDate(paymentRecord.Date)}</td>
                 <td>${paymentRecord.Name}</td>
-                <td>₹${result.loan.Loan.toFixed(2)}</td>
+                <td>₹${result.relevantLoan.Loan.toFixed(2)}</td>
                 <td>₹${paymentRecord.Payment.toFixed(2)}</td>
                 <td class="profit-value">₹${result.profit.toFixed(2)}</td>
                 <td><button class="details-btn">View</button></td>
             `;
-
-            row.querySelector('.details-btn').addEventListener('click', () => {
-                showDistributionModal(result.distribution);
-            });
+            row.querySelector('.details-btn').addEventListener('click', () => showDistributionModal(result.distribution));
             tableBody.appendChild(row);
         }
     });
     
     if (profitEventsFound === 0) {
-        tableBody.innerHTML = `<tr class="no-data-row"><td colspan="6">No profit events found for this selection.</td></tr>`;
+        tableBody.innerHTML = `<tr class="no-data-row"><td colspan="6">No profit events found.</td></tr>`;
     }
 }
 
 function calculateTotalProfitForMember(memberName) {
     if (memberName === 'all') return 0;
     let totalProfit = 0;
-    const paymentEvents = allData.filter(r => r.Payment > 0);
-
-    paymentEvents.forEach(payment => {
-        const result = calculateProfitDistribution(payment);
-        if (result && result.distribution.length > 0) {
-            const memberShare = result.distribution.find(d => d.name === memberName);
-            if (memberShare) {
-                totalProfit += memberShare.share;
+    allData.forEach(transaction => {
+        if (transaction.ReturnAmount > 0) {
+            const result = calculateProfitDistribution(transaction);
+            if (result && result.distribution.length > 0) {
+                const memberShare = result.distribution.find(d => d.name === memberName);
+                if (memberShare) totalProfit += memberShare.share;
             }
         }
     });
@@ -470,41 +559,119 @@ function calculateTotalProfitForMember(memberName) {
 }
 
 function calculateProfitDistribution(paymentRecord) {
-    const correspondingLoan = allData
-        .filter(r => r.Name === paymentRecord.Name && r.Loan > 0 && r.Date < paymentRecord.Date)
-        .pop(); // Get the most recent loan before this payment
-
-    if (!correspondingLoan) return null;
-    
-    const profit = paymentRecord.Payment - correspondingLoan.Loan;
+    const profit = paymentRecord.ReturnAmount;
     if (profit <= 0) return null;
 
-    const loanDate = correspondingLoan.Date;
-    const transactionsBeforeLoan = allData.filter(r => r.Date < loanDate);
-    
-    const memberBalancesAtLoanTime = {};
-    transactionsBeforeLoan.forEach(r => {
-        memberBalancesAtLoanTime[r.Name] = (memberBalancesAtLoanTime[r.Name] || 0) + (r.Payment + r.SipPayment - r.Loan);
-    });
-    
-    const positiveBalances = Object.entries(memberBalancesAtLoanTime).filter(([name, balance]) => balance > 0);
-    const totalCommunityCapital = positiveBalances.reduce((sum, [, balance]) => sum + balance, 0);
+    const payerName = paymentRecord.Name;
+    const userLoansBeforePayment = allData.filter(r => 
+        r.Name === payerName && r.Loan > 0 && (r.Date < paymentRecord.Date || (r.Date.getTime() === paymentRecord.Date.getTime() && r.id < paymentRecord.id))
+    );
+    if (userLoansBeforePayment.length === 0) return null; 
 
+    const relevantLoan = userLoansBeforePayment[userLoansBeforePayment.length-1];
+    const loanDate = relevantLoan.Date;
+    const loanId = relevantLoan.id;
+
+    const transactionsBeforeLoan = allData.filter(r => 
+        r.Date < loanDate || (r.Date.getTime() === loanDate.getTime() && r.id < loanId)
+    );
+    
+    const memberBalances = {};
+    transactionsBeforeLoan.forEach(r => {
+        memberBalances[r.Name] = (memberBalances[r.Name] || 0) + r.SipPayment + r.Payment - r.Loan;
+    });
+
+    const capitalProviders = Object.entries(memberBalances).filter(([name, balance]) => balance > 0);
+    const totalCommunityCapital = capitalProviders.reduce((sum, [, balance]) => sum + balance, 0);
     if (totalCommunityCapital <= 0) return null;
 
-    const distribution = [];
-    positiveBalances.forEach(([name, balance]) => {
-        const share = (balance / totalCommunityCapital) * profit;
-        distribution.push({ name, share });
-    });
+    const distribution = capitalProviders.map(([name, balance]) => ({
+        name,
+        share: (balance / totalCommunityCapital) * profit
+    }));
     
     return {
         profit,
-        loan: correspondingLoan,
-        payment: paymentRecord,
+        relevantLoan,
         distribution: distribution.sort((a,b) => b.share - a.share)
     };
 }
+
+
+// --- CHARTING FUNCTIONS ---
+function renderGrowthChart() {
+    const ctx = document.getElementById('growthChart').getContext('2d');
+    const growthData = calculateGrowthData();
+
+    if (growthChartInstance) {
+        growthChartInstance.destroy();
+    }
+
+    growthChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: growthData.labels,
+            datasets: [
+                {
+                    label: 'Total Capital',
+                    data: growthData.capital,
+                    borderColor: 'rgba(52, 152, 219, 1)',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    fill: true, tension: 0.1
+                },
+                {
+                    label: 'Total Loans',
+                    data: growthData.loans,
+                    borderColor: 'rgba(231, 76, 60, 1)',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    fill: true, tension: 0.1
+                },
+                {
+                    label: 'Total Profit',
+                    data: growthData.profits,
+                    borderColor: 'rgba(39, 174, 96, 1)',
+                    backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                    fill: true, tension: 0.1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, ticks: { callback: value => `₹${value}` } } },
+            plugins: { tooltip: { callbacks: { label: context => `${context.dataset.label}: ₹${context.parsed.y.toFixed(2)}` } } }
+        }
+    });
+}
+
+function calculateGrowthData() {
+    const snapshots = {};
+    let cumulativeCapital = 0, cumulativeLoan = 0, cumulativeProfit = 0;
+
+    allData.forEach(r => {
+        cumulativeCapital += r.SipPayment + r.Payment - r.Loan;
+        cumulativeLoan += r.Loan;
+        cumulativeProfit += r.ReturnAmount;
+        
+        const monthKey = r.Date.toLocaleString('en-GB', { month: 'short', year: 'numeric' });
+        snapshots[monthKey] = {
+            capital: cumulativeCapital,
+            loans: cumulativeLoan,
+            profits: cumulativeProfit,
+            date: new Date(r.Date.getFullYear(), r.Date.getMonth(), 1) 
+        };
+    });
+
+    const sortedKeys = Object.keys(snapshots).sort((a,b) => snapshots[a].date - snapshots[b].date);
+
+    return {
+        labels: sortedKeys,
+        capital: sortedKeys.map(key => snapshots[key].capital),
+        loans: sortedKeys.map(key => snapshots[key].loans),
+        profits: sortedKeys.map(key => snapshots[key].profits)
+    };
+}
+
 
 // --- MODAL AND UTILITY FUNCTIONS ---
 function showDistributionModal(distributionData) {
@@ -512,16 +679,14 @@ function showDistributionModal(distributionData) {
     const listEl = document.getElementById('distributionDetails');
     listEl.innerHTML = '';
 
-    // NEW: Chart.js implementation
     const ctx = document.getElementById('distributionChart').getContext('2d');
     if (distributionChartInstance) {
-        distributionChartInstance.destroy(); // Destroy previous chart to prevent conflicts
+        distributionChartInstance.destroy();
     }
 
     if (distributionData.length === 0) {
-        listEl.innerHTML = '<li>No beneficiaries found.</li>';
+        listEl.innerHTML = '<li>No beneficiaries found for this event.</li>';
     } else {
-        // Prepare data for the chart and list
         const labels = distributionData.map(d => d.name);
         const data = distributionData.map(d => d.share.toFixed(2));
         
@@ -531,38 +696,18 @@ function showDistributionModal(distributionData) {
             listEl.appendChild(li);
         });
 
-        // Create the new chart
         distributionChartInstance = new Chart(ctx, {
             type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Profit Share (₹)',
-                    data: data,
-                    backgroundColor: 'rgba(52, 152, 219, 0.7)',
-                    borderColor: 'rgba(52, 152, 219, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                indexAxis: 'y', // Horizontal bars
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'Amount (₹)' }
-                    }
-                },
-                plugins: {
-                    legend: { display: false }
-                }
-            }
+            data: { labels, datasets: [{ label: 'Profit Share (₹)', data, backgroundColor: 'rgba(52, 152, 219, 0.7)', borderColor: 'rgba(52, 152, 219, 1)', borderWidth: 1 }] },
+            options: { responsive: true, indexAxis: 'y', scales: { x: { beginAtZero: true, title: { display: true, text: 'Amount (₹)' } } }, plugins: { legend: { display: false } } }
         });
     }
-    modal.classList.remove('hidden');
+    modal.classList.remove('visually-hidden');
 }
 
 function displayOverallReturnView() {
+    const modal = document.getElementById('returnViewModal');
+    const listEl = document.getElementById('returnViewList');
     const memberNames = [...new Set(allData.map(row => row.Name))];
     let memberProfits = memberNames.map(name => ({
         name: name,
@@ -570,9 +715,6 @@ function displayOverallReturnView() {
     })).filter(member => member.totalProfit > 0);
 
     memberProfits.sort((a, b) => b.totalProfit - a.totalProfit);
-
-    const modal = document.getElementById('returnViewModal');
-    const listEl = document.getElementById('returnViewList');
     listEl.innerHTML = '';
 
     if (memberProfits.length === 0) {
@@ -580,23 +722,16 @@ function displayOverallReturnView() {
     } else {
         memberProfits.forEach((member, index) => {
             const li = document.createElement('li');
-            li.innerHTML = `
-                <span class="rank">${index + 1}.</span>
-                <span class="name">${member.name}</span>
-                <span class="share">+ ₹${member.totalProfit.toFixed(2)}</span>
-            `;
+            li.innerHTML = `<span class="rank">${index + 1}.</span><span class="name">${member.name}</span><span class="share">+ ₹${member.totalProfit.toFixed(2)}</span>`;
             listEl.appendChild(li);
         });
     }
-    
-    modal.classList.remove('hidden');
+    modal.classList.remove('visually-hidden');
 }
 
 function formatDate(date) {
     if (!(date instanceof Date) || isNaN(date)) return "N/A";
-    return date.toLocaleDateString('en-GB', {
-        day: '2-digit', month: 'short', year: 'numeric'
-    });
+    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 } 
 </script>
 </body>
