@@ -151,7 +151,10 @@
         color: var(--text-color); /* Dark text on gold */
         font-size: 1em;
         font-weight: 600;
-        display: inline-block;
+        display: inline-flex; /* Use flex for alignment */
+        align-items: center;
+        justify-content: center;
+        gap: 8px; /* Space between text and icon */
         text-decoration: none;
     }
 
@@ -834,6 +837,57 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
+    /* --- NEW: SIP Status Modal Styles --- */
+    .sip-status-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 20px;
+        max-height: 60vh; /* Make it scrollable if content overflows */
+        overflow-y: auto;
+        text-align: left;
+    }
+    .sip-status-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.2s ease;
+    }
+    .sip-status-item:hover {
+        background-color: #f8f9fa;
+    }
+    .sip-status-item:last-child {
+        border-bottom: none;
+    }
+    .sip-status-item img {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 15px;
+        border: 2px solid var(--border-color);
+    }
+    .sip-status-name {
+        font-weight: 500;
+        flex-grow: 1;
+        color: var(--text-color);
+    }
+    .sip-status-badge {
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.85em;
+        font-weight: bold;
+        color: white;
+        min-width: 80px;
+        text-align: center;
+    }
+    .sip-status-badge.paid {
+        background-color: var(--success-color);
+    }
+    .sip-status-badge.not-paid {
+        background-color: var(--danger-color);
+    }
+
 
     /* --- Footer --- */
     footer {
@@ -969,6 +1023,8 @@
         <a href="https://bank-community.github.io/Loan-from/chatbot.html" class="civil-button">Bank AI 💻</a>
         <a href="imageupload.html" class="civil-button">Gallery 🖼️</a>
         <a href="profit_return.html" class="civil-button">Return 💵</a>
+        <!-- NEW SIP Status Button -->
+        <button class="civil-button" id="sipStatusBtn">SIP Status </button>
     </div>
 </header>
 
@@ -1038,12 +1094,23 @@
     </div>
 </div>
 
+<!-- NEW: SIP Status Modal -->
+<div id="sipStatusModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeSipStatusModal">×</span>
+        <h2>Current Month SIP Status</h2>
+        <div class="sip-status-list" id="sipStatusListContainer">
+            <!-- Member statuses will be dynamically inserted here -->
+        </div>
+    </div>
+</div>
+
 
 <main class="content-wrapper">
   <section class="transparency-section animate-on-scroll">
     <h2>📝 Transparency info.</h2>
-    <p>हमारी पूरी प्रक्रिया पारदर्शी है। आपके सभी डिटेल्स और लेन-देन की जानकारी सुरक्षित रहती है और सदस्यों को उपलब्ध कराई जाती है।</p>
-    <p>हमारी कम्युनिटी में लोग आपस में मिलकर <strong>Bank Community Loan</strong> में फंड इकट्ठा करते हैं। सभी सदस्य थोड़ी-थोड़ी राशि जमा करते हैं, जिसकी शुरुआत सिर्फ <strong>₹500/-</strong> से होती है।</p>
+    <p>Hamari poori prakriya pardarshi hai. Aapke sabhi details aur len-den ki jankari surakshit rehti hai aur sadasyon ko uplabdh karayi jaati hai.</p>
+    <p>Hamari community mein log aapas mein milkar <strong>Bank Community Loan</strong> mein fund ikattha karte hain. Sabhi sadasya thodi-thodi rashi jama karte hain, jiski shuruwat sirf <strong>₹500/-</strong> se hoti hai.</p>
 
     <!-- 🎧 Audio Play Button -->
     <div class="audio-wrapper" style="text-align:center; margin-top: 30px;">
@@ -1064,7 +1131,7 @@
       <div style="font-size: 16px; margin-top: 10px; color: #444;">Tap to Listen</div>
       <audio id="welcomeAudio">
         <source src="speech.wav" type="audio/wav">
-        आपका ब्राउज़र ऑडियो सपोर्ट नहीं करता।
+        Aapka browser audio support nahi karta.
       </audio>
     </div>
   </section>
@@ -1081,7 +1148,7 @@
             <div class="action-card info-card animate-on-scroll" id="totalLoanCard" onclick="window.open('https://bank-community.github.io/Loan-from/loan_dashbord.html')" style="cursor: pointer;">
                 <i data-feather="trending-up" class="action-card-icon"></i>
                 <span class="info-card-label">
-                  कुल लोन वितरित <span style="color: blue; font-weight: bold;">Click here</span>
+                  Kul loan vitrit <span style="color: blue; font-weight: bold;">Click here</span>
                 </span>
                 <span class="info-card-value total-loan-value" id="totalLoanValue">₹--</span>
             </div>
@@ -1109,23 +1176,23 @@
     </section>
 
     <section class="how-it-works animate-on-scroll">
-        <h2>💡 कैसे काम करता है?</h2>
+        <h2>💡 Kaise kaam karta hai?</h2>
         <div class="features">
             <div class="feature animate-on-scroll">
-                <h3><i data-feather="dollar-sign"></i> फंड जमा</h3>
-                <p>सभी सदस्य मिलकर फंड जमा करते हैं<strong> (Every Month SIP)</strong> के रूप में।</p>
+                <h3><i data-feather="dollar-sign"></i> Fund jama</h3>
+                <p>Sabhi sadasya milkar fund jama karte hain<strong> (Every Month SIP)</strong> ke roop mein.</p>
             </div>
             <div class="feature animate-on-scroll">
-                <h3><i data-feather="gift"></i> लोन प्रदान</h3>
-                <p>जरूरतमंद सदस्य को उसी फंड से <strong>लोन</strong> दिया जाता है।</p>
+                <h3><i data-feather="gift"></i> Loan pradan</h3>
+                <p>Zarooratmand sadasya ko usi fund se <strong>loan</strong> diya jaata hai.</p>
             </div>
             <div class="feature animate-on-scroll">
-                <h3><i data-feather="calendar"></i> लोन अवधि</h3>
-                <p>लोन केवल <strong>1 महीने</strong> के लिए होता है (न्यूनतम ब्याज पर)।</p>
+                <h3><i data-feather="calendar"></i> Loan avadhi</h3>
+                <p>Loan keval <strong>1 mahine</strong> ke liye hota hai (nyunatam byaj par).</p>
             </div>
             <div class="feature animate-on-scroll">
-                <h3><i data-feather="percent"></i> ब्याज दर</h3>
-                <p>अवधि और राशि के अनुसार ब्याज दरें बदल सकती हैं।</p>
+                <h3><i data-feather="percent"></i> Byaj dar</h3>
+                <p>Avadhi aur rashi ke anusaar byaj darein badal sakti hain.</p>
             </div>
         </div>
     </section>
@@ -1197,6 +1264,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileModalSipStatus = document.getElementById('profileModalSipStatus');
     const profileModalLoanCount = document.getElementById('profileModalLoanCount');
 
+    // NEW: SIP Status Modal Elements
+    const sipStatusBtn = document.getElementById('sipStatusBtn');
+    const sipStatusModalElement = document.getElementById('sipStatusModal');
+    const closeSipStatusModalBtn = document.getElementById('closeSipStatusModal');
+    const sipStatusListContainer = document.getElementById('sipStatusListContainer');
+
     // Other Elements
     const sliderImageElement = document.getElementById("sliderImage");
     const imageModalElement = document.getElementById('imageModal');
@@ -1211,6 +1284,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- State Variables ---
     let allTransactions = [];
+    let allMembersData = []; // To store processed member data globally
     let netCommunityBalance = 0;
     let netReturnAmount = 0;
     
@@ -1273,14 +1347,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Data Fetching and Processing ---
     async function fetchMemberData() {
         if (!memberContainer) return;
-        memberContainer.innerHTML = '<p class="loading-text">सदस्य डेटा लोड हो रहा है...</p>';
+        memberContainer.innerHTML = '<p class="loading-text">Sadasya data load ho raha hai...</p>';
         
         try {
             const response = await fetch(API_URL);
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             const responseData = await response.json();
             if (responseData.status !== 'success' || !Array.isArray(responseData.data)) {
-                throw new Error("API से अमान्य डेटा प्रारूप प्राप्त हुआ।");
+                throw new Error("API se amanya data prapt hua.");
             }
             
             allTransactions = responseData.data
@@ -1303,7 +1377,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error fetching or processing member data:', error);
             if (memberContainer) {
-               memberContainer.innerHTML = `<p class="error-text">❌ सदस्य डेटा लोड करने में विफल।<br><small>${error.message}</small><br>कृपया बाद में प्रयास करें।</p>`;
+               memberContainer.innerHTML = `<p class="error-text">❌ Sadasya data load karne mein vifal.<br><small>${error.message}</small><br>Kripya baad mein prayas karein.</p>`;
             }
         }
     }
@@ -1356,6 +1430,8 @@ document.addEventListener('DOMContentLoaded', () => {
         netReturnAmount = totalReturnAmount;
         const memberList = Object.values(members).sort((a, b) => b.balance - a.balance);
 
+        allMembersData = memberList; // Store for global access
+
         displayMembers(memberList);
         updateTotalBalanceDisplay(memberList);
         updateInfoCards(memberList.length, totalLoanDisbursed);
@@ -1366,7 +1442,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!memberContainer) return;
         memberContainer.innerHTML = '';
         if (members.length === 0) {
-             memberContainer.innerHTML = '<p class="loading-text">कोई सदस्य नहीं मिला।</p>';
+             memberContainer.innerHTML = '<p class="loading-text">Koi sadasya nahi mila.</p>';
              return;
         }
 
@@ -1444,6 +1520,42 @@ document.addEventListener('DOMContentLoaded', () => {
         animateValue(totalBalanceElement, 0, netCommunityBalance, 1200);
         animateValue(returnBalanceElement, 0, netReturnAmount, 1200);
         animateValue(combinedBalanceElement, 0, combinedBalance, 1200);
+    }
+
+    // NEW: Function to show SIP Status Modal
+    function showSipStatusModal() {
+        if (!sipStatusListContainer || allMembersData.length === 0) {
+            alert('Sadasya data abhi load ho raha hai. Kripya pratiksha karein.');
+            return;
+        }
+
+        sipStatusListContainer.innerHTML = ''; // Clear previous list
+
+        // Sort members: Not Paid first, then alphabetically
+        const sortedMembers = [...allMembersData].sort((a, b) => {
+            if (a.sipStatus.paid === b.sipStatus.paid) {
+                return a.name.localeCompare(b.name); // Alphabetical if statuses are the same
+            }
+            return a.sipStatus.paid ? 1 : -1; // Not paid (false) comes first
+        });
+
+        sortedMembers.forEach(member => {
+            const item = document.createElement('div');
+            item.className = 'sip-status-item';
+
+            const statusClass = member.sipStatus.paid ? 'paid' : 'not-paid';
+            const statusText = member.sipStatus.paid ? 'Paid' : 'Not Paid';
+
+            item.innerHTML = `
+                <img src="${member.displayImageUrl}" alt="${member.name}" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
+                <span class="sip-status-name">${member.name}</span>
+                <span class="sip-status-badge ${statusClass}">${statusText}</span>
+            `;
+            sipStatusListContainer.appendChild(item);
+        });
+
+        sipStatusModalElement.classList.add('show');
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal(modalElement) {
@@ -1551,6 +1663,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (closeProfileModalBtn) closeProfileModalBtn.addEventListener('click', () => closeModal(profileModalElement));
         if (closeImageModalBtn) closeImageModalBtn.addEventListener('click', () => closeModal(imageModalElement));
         
+        // NEW: SIP Status Modal Listeners
+        if (sipStatusBtn) sipStatusBtn.addEventListener('click', showSipStatusModal);
+        if (closeSipStatusModalBtn) closeSipStatusModalBtn.addEventListener('click', () => closeModal(sipStatusModalElement));
+
         // Click profile picture in modal to view full screen
         if (profileModalHeader) {
             profileModalHeader.addEventListener('click', () => {
@@ -1560,7 +1676,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        [balanceModalElement, profileModalElement, imageModalElement].forEach(modal => {
+        [balanceModalElement, profileModalElement, imageModalElement, sipStatusModalElement].forEach(modal => {
             if(modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(modal); });
         });
         
@@ -1569,6 +1685,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeModal(balanceModalElement);
                 closeModal(profileModalElement);
                 closeModal(imageModalElement);
+                closeModal(sipStatusModalElement);
             }
         });
     }
