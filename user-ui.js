@@ -7,7 +7,7 @@ let penaltyWalletData = {};
 let allTransactions = [];
 let communityStats = {};
 let cardColors = {};
-let currentMemberForFullView = null;
+let currentMemberForFullView = null; // Yeh variable store karega ki kis member ka profile khula hai
 let deferredInstallPrompt = null;
 let popupsHaveBeenShown = false;
 
@@ -33,7 +33,7 @@ const elements = {
     notificationModal: getElement('notificationModal'),
     allMembersModal: getElement('allMembersModal'),
     passwordPromptModal: getElement('passwordPromptModal'),
-    fullProfileViewModal: getElement('fullProfileViewModal'),
+    // fullProfileViewModal ko hata diya gaya hai kyunki ab hum naye page par redirect karenge
     imageModal: getElement('imageModal'),
 };
 
@@ -57,23 +57,18 @@ export function initUI(database) {
  * @param {object} data - Processed data from user-data.js
  */
 export function renderPage(data) {
-    // Data ko global variables mein store karein
-    allMembersData = data.processedMembers.reduce((obj, member) => {
-        obj[member.id] = member;
-        return obj;
-    }, {});
+    allMembersData = data.allMembersData; // Changed to object for easier lookup
     penaltyWalletData = data.penaltyWalletData;
     allTransactions = data.allTransactions;
     communityStats = data.communityStats;
     cardColors = data.adminSettings.card_colors || {};
 
-    // UI update functions ko call karein
     displayHeaderButtons(data.adminSettings.header_buttons || {});
-    displayMembers(data.processedMembers);
+    displayMembers(Object.values(data.allMembersData).filter(m => m.status === 'Approved').sort((a, b) => b.balance - a.balance));
     displayCustomCards(data.adminSettings.custom_cards || {});
     displayCommunityLetters(data.adminSettings.community_letters || {});
-    updateInfoCards(data.processedMembers.length, data.communityStats.totalLoanDisbursed);
-    startHeaderDisplayRotator(data.processedMembers, data.communityStats);
+    updateInfoCards(Object.keys(data.allMembersData).length, data.communityStats.totalLoanDisbursed);
+    startHeaderDisplayRotator(Object.values(data.allMembersData), data.communityStats);
     buildInfoSlider(data.adminSettings);
     processTodaysTransactions();
     
@@ -175,7 +170,7 @@ function displayHeaderButtons(buttons) {
     });
     
     elements.headerActionsContainer.appendChild(buttonWrapper);
-    attachDynamicButtonListeners(); // === YEH CALL AB SAHI JAGAH PAR HAI ===
+    attachDynamicButtonListeners();
 }
 
 function displayCustomCards(cards) {
@@ -234,12 +229,12 @@ function showMemberProfileModal(memberId) {
     const member = allMembersData[memberId];
     if (!member) return;
 
-    currentMemberForFullView = member.id;
+    currentMemberForFullView = memberId; // Sabse zaroori: ID ko store karein
     getElement('profileModalImage').src = member.displayImageUrl;
     getElement('profileModalName').textContent = member.name;
     getElement('profileModalJoiningDate').textContent = formatDate(member.joiningDate);
-    getElement('profileModalBalance').textContent = member.balance.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
-    getElement('profileModalReturn').textContent = member.totalReturn.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
+    getElement('profileModalBalance').textContent = member.balance.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+    getElement('profileModalReturn').textContent = member.totalReturn.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
     getElement('profileModalLoanCount').textContent = member.loanCount;
     
     getElement('profileModalSipStatus').innerHTML = member.sipStatus.paid
@@ -330,33 +325,6 @@ function showPenaltyWalletModal() {
     openModal(elements.penaltyWalletModal);
 }
 
-function showFullProfileViewModal() {
-    const memberData = allMembersData[currentMemberForFullView];
-    if (!memberData) return;
-    
-    getElement('fullProfileName').textContent = memberData.fullName;
-    getElement('fullProfileMemberId').textContent = memberData.membershipId || 'N/A';
-    getElement('fullProfileMobile').textContent = memberData.mobileNumber || 'N/A';
-    getElement('fullProfileDob').textContent = formatDate(memberData.dob);
-    getElement('fullProfileAadhaar').textContent = memberData.aadhaar || 'N/A';
-    getElement('fullProfileAddress').textContent = memberData.address || 'N/A';
-    getElement('fullProfileExtraAmount').textContent = (memberData.balance - (memberData.sipAmount * (new Date().getMonth() + 1))).toLocaleString('en-IN', { style: 'currency', currency: 'INR' }); // Approximate calculation
-    
-    const pic = getElement('fullProfilePic');
-    pic.src = memberData.profilePicUrl || DEFAULT_IMAGE;
-    pic.onclick = () => showFullImage(pic.src, 'Profile Photo');
-
-    const doc = getElement('fullProfileDoc');
-    doc.src = memberData.documentUrl || DEFAULT_IMAGE;
-    doc.onclick = () => showFullImage(doc.src, 'Document');
-
-    const sign = getElement('fullProfileSign');
-    sign.src = memberData.signatureUrl || DEFAULT_IMAGE;
-    sign.onclick = () => showFullImage(sign.src, 'Signature');
-
-    openModal(elements.fullProfileViewModal);
-}
-
 
 // --- Event Listeners & Helpers ---
 
@@ -372,7 +340,9 @@ function setupEventListeners(database) {
             closeModal(elements.memberProfileModal);
             openModal(elements.passwordPromptModal);
         }
+        // === YAHAN BADLAV KIYA GAYA HAI ===
         if (e.target.closest('#submitPasswordBtn')) handlePasswordCheck(database);
+        // ===================================
         if (e.target.closest('#viewHistoryBtn')) {
             const list = getElement('penaltyHistoryList');
             list.classList.toggle('visible');
@@ -387,14 +357,14 @@ function setupEventListeners(database) {
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') document.querySelectorAll('.modal.show').forEach(closeModal);
     });
-
+    
+    // === YAHAN BADLAV KIYA GAYA HAI ===
     getElement('passwordInput').addEventListener('keyup', (e) => {
         if (e.key === 'Enter') handlePasswordCheck(database);
     });
+    // ===================================
 }
 
-// === YAHAN BADLAV KIYA GAYA HAI ===
-// Is function mein sabhi dynamic buttons ke click events jode gaye hain.
 function attachDynamicButtonListeners() {
     const sipStatusBtn = getElement('sipStatusBtn');
     const notificationBtn = getElement('notificationBtn');
@@ -573,19 +543,22 @@ function displayNotifications() {
 
     todaysTransactions.forEach(tx => {
         let text = '', amount = '', typeClass = '';
+        const member = allMembersData[tx.memberId];
+        if(!member) return;
+
         switch(tx.type) {
             case 'SIP':
-                text = `<strong>${allMembersData[tx.memberId]?.name}</strong> paid their SIP.`;
+                text = `<strong>${member.name}</strong> paid their SIP.`;
                 amount = `+ ₹${tx.amount.toLocaleString()}`;
                 typeClass = 'sip';
                 break;
             case 'Loan Taken':
-                text = `A loan was disbursed to <strong>${allMembersData[tx.memberId]?.name}</strong>.`;
+                text = `A loan was disbursed to <strong>${member.name}</strong>.`;
                 amount = `- ₹${tx.amount.toLocaleString()}`;
                 typeClass = 'loan';
                 break;
             case 'Loan Payment':
-                text = `<strong>${allMembersData[tx.memberId]?.name}</strong> made a loan payment.`;
+                text = `<strong>${member.name}</strong> made a loan payment.`;
                 amount = `+ ₹${tx.principalPaid.toLocaleString()}`;
                 typeClass = 'payment';
                 break;
@@ -593,7 +566,7 @@ function displayNotifications() {
         
         list.innerHTML += `
             <li class="notification-item">
-                <img src="${allMembersData[tx.memberId]?.profilePicUrl || DEFAULT_IMAGE}" alt="${allMembersData[tx.memberId]?.name}">
+                <img src="${member.profilePicUrl || DEFAULT_IMAGE}" alt="${member.name}">
                 <div class="notification-details">
                     <p class="notification-text">${text}</p>
                     <div class="notification-time">${new Date(tx.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
@@ -614,22 +587,10 @@ function showPopupNotification(tx) {
     let text = '', amount = '', typeClass = '';
 
     switch(tx.type) {
-        case 'SIP':
-            text = `<p><strong>${member.name}</strong> paid their SIP.</p>`;
-            amount = `+ ₹${tx.amount.toLocaleString()}`;
-            typeClass = 'sip';
-            break;
-        case 'Loan Taken':
-            text = `<p>Loan disbursed to <strong>${member.name}</strong>.</p>`;
-            amount = `- ₹${tx.amount.toLocaleString()}`;
-            typeClass = 'loan';
-            break;
-        case 'Loan Payment':
-            text = `<p><strong>${member.name}</strong> made a loan payment.</p>`;
-            amount = `+ ₹${tx.principalPaid.toLocaleString()}`;
-            typeClass = 'payment';
-            break;
-        default: return; // Do not show popups for other types
+        case 'SIP': text = `<p><strong>${member.name}</strong> paid their SIP.</p>`; amount = `+ ₹${tx.amount.toLocaleString()}`; typeClass = 'sip'; break;
+        case 'Loan Taken': text = `<p>Loan disbursed to <strong>${member.name}</strong>.</p>`; amount = `- ₹${tx.amount.toLocaleString()}`; typeClass = 'loan'; break;
+        case 'Loan Payment': text = `<p><strong>${member.name}</strong> made a loan payment.</p>`; amount = `+ ₹${tx.principalPaid.toLocaleString()}`; typeClass = 'payment'; break;
+        default: return;
     }
 
     popup.innerHTML = `
@@ -671,25 +632,33 @@ function animateValue(el, start, end, duration) {
     window.requestAnimationFrame(step);
 }
 
+// === YAHAN BADLAV KIYA GAYA HAI ===
+// Is function ko poori tarah se badal diya gaya hai.
 async function handlePasswordCheck(database) {
     const input = getElement('passwordInput');
     const password = input.value;
     if (!password) return alert('Please enter password.');
 
     try {
+        // currentMemberForFullView mein member ID pehle se store hai
         const snapshot = await database.ref(`members/${currentMemberForFullView}/password`).once('value');
-        if (password === snapshot.val()) {
+        const correctPassword = snapshot.val();
+        
+        if (password === correctPassword) {
+            // Sahi password par, modal band karein aur naye page par redirect karein
             closeModal(elements.passwordPromptModal);
-            showFullProfileViewModal();
-            input.value = '';
+            // Member ID ko URL parameter ke roop mein pass karein
+            window.location.href = `view.html?memberId=${currentMemberForFullView}`;
         } else {
             alert('Incorrect password.');
             input.value = '';
         }
     } catch (error) {
-        alert('Could not verify password.');
+        alert('Could not verify password. Please try again.');
+        console.error("Password check failed:", error);
     }
 }
+// ===================================
 
 function openModal(modal) { if (modal) { modal.classList.add('show'); document.body.style.overflow = 'hidden'; } }
 function closeModal(modal) { if (modal) { modal.classList.remove('show'); document.body.style.overflow = ''; } }
