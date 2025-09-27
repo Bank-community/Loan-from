@@ -12,7 +12,8 @@ import { initUI, renderPage, showLoadingError } from './user-ui.js';
 async function checkAuthAndInitialize() {
     try {
         // Vercel se Firebase configuration securely fetch karein
-        const response = await fetch('/api/firebase-config');
+        // === YAHAN BADLAV KIYA GAYA HAI ===
+        const response = await fetch('/api/config'); // Pata theek kar diya gaya hai
         if (!response.ok) throw new Error('Configuration failed to load.');
         const firebaseConfig = await response.json();
         if (!firebaseConfig.apiKey) throw new Error('Invalid config received');
@@ -65,5 +66,3 @@ async function runAppLogic(database) {
 // --- App ko shuru karein ---
 // Jab poora HTML document load ho jaye, tab app initialization shuru karein.
 document.addEventListener('DOMContentLoaded', checkAuthAndInitialize);
-
-
