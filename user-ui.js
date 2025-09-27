@@ -56,14 +56,12 @@ export function initUI(database) {
  * @param {object} data - Processed data from user-data.js
  */
 export function renderPage(data) {
-    // Data ko global variables mein store karein
     allMembersData = data.allMembersData;
     penaltyWalletData = data.penaltyWalletData;
     allTransactions = data.allTransactions;
     communityStats = data.communityStats;
     cardColors = data.adminSettings.card_colors || {};
 
-    // UI update functions ko call karein
     displayHeaderButtons(data.adminSettings.header_buttons || {});
     const approvedMembers = Object.values(allMembersData).filter(m => m.status === 'Approved').sort((a, b) => b.balance - a.balance);
     displayMembers(approvedMembers);
@@ -263,7 +261,7 @@ function showSipStatusModal() {
     if (!container) return;
     container.innerHTML = '';
     
-    const sortedMembers = Object.values(allMembersData).sort((a, b) => 
+    const sortedMembers = Object.values(allMembersData).filter(m => m.status === 'Approved').sort((a, b) => 
         (b.sipStatus.paid ? 1 : 0) - (a.sipStatus.paid ? 1 : 0) || a.name.localeCompare(b.name)
     );
     
