@@ -51,14 +51,15 @@
         }
         .header h1 { 
             margin: 0; 
-            font-size: 32px; 
+            font-size: 28px; /* Thoda chhota kiya gaya */
             font-weight: 700; 
             color: var(--text-dark);
+            line-height: 1.2;
         }
         .header p { 
             margin: 8px 0 0; 
             color: var(--text-light); 
-            font-size: 18px; 
+            font-size: 16px; /* Thoda chhota kiya gaya */
         }
 
         #generate-credit-btn {
@@ -232,7 +233,25 @@
         .detail-value.amount { color: var(--text-dark); }
         .detail-value.loan-type-value { color: var(--primary-dark); font-weight: 600; background-color: #e0e7ff; padding: 2px 8px; border-radius: 6px; font-size: 13px; }
         
-        .pending-banner { color: white; padding: 10px 20px; text-align: center; font-weight: 500; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background-color 0.3s ease; }
+        /* === YAHAN BADLAV KIYA GAYA HAI === */
+        .pending-banner { 
+            color: white; 
+            padding: 8px 16px; /* Padding kam kiya gaya */
+            text-align: center; 
+            font-weight: 600; /* Thoda bold kiya gaya */
+            font-size: 12px; /* Font size chhota kiya gaya */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 6px; /* Icon aur text ke beech space kam kiya gaya */
+            border-bottom-left-radius: 16px; /* Card se match karne ke liye radius */
+            border-bottom-right-radius: 16px;
+        }
+        .pending-banner .icon { 
+            width: 14px; /* Icon chhota kiya gaya */
+            height: 14px; 
+            flex-shrink: 0; 
+        }
         .pending-banner.green { background-color: var(--success-color); }
         .pending-banner.warning { background-color: var(--warning-color); }
         
@@ -355,4 +374,5 @@
     <script src="loan_dashboard.js"></script>
 </body>
 </html>
+
 
