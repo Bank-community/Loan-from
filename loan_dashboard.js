@@ -19,7 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-        } catch (error) {
+        } catch (error)
+        {
             console.error("Initialization Error:", error);
             const loader = document.getElementById('loader');
             loader.innerHTML = `<p style="color: red;">Application failed to initialize: ${error.message}</p>`;
@@ -37,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
             clock: `<svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`,
         };
 
-        // State object to hold all data and UI elements
         const state = {
             allActiveLoans: [],
             membersData: {},
@@ -64,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
             },
         };
 
-        // Fetches all required data from Firebase and processes it
         async function fetchAndProcessData() {
             state.ui.loader.innerHTML = '<div class="spinner"></div>Loading active loans...';
             state.ui.loader.classList.remove('hidden');
@@ -74,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const activeLoansRef = db.ref('activeLoans');
                 const membersRef = db.ref('members');
 
-                // Fetch both active loans and members data simultaneously
                 const [loansSnapshot, membersSnapshot] = await Promise.all([
                     activeLoansRef.once('value'),
                     membersRef.once('value')
@@ -87,17 +85,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 state.membersData = membersSnapshot.val();
                 const activeLoansData = loansSnapshot.val();
 
-                // Process the active loans data
                 state.allActiveLoans = Object.values(activeLoansData)
-                    .filter(loan => loan.status === 'Active') // Only show active loans
+                    .filter(loan => loan.status === 'Active')
                     .map(loan => {
-                        // Combine loan data with corresponding member data
                         const memberInfo = state.membersData[loan.memberId] || {};
-                        return {
-                            ...loan,
-                            memberName: memberInfo.fullName || 'Unknown Member',
-                            profilePicUrl: memberInfo.profilePicUrl || null,
-                        };
+                        return { ...loan, memberName: memberInfo.fullName || 'Unknown', profilePicUrl: memberInfo.profilePicUrl || null };
                     })
                     .sort((a, b) => new Date(b.loanDate) - new Date(a.loanDate));
                 
@@ -112,13 +104,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         
-        // Main function to update the entire UI
         function displayAllData() {
             displaySummary(state.allActiveLoans);
             displayLoanCards(state.allActiveLoans);
         }
 
-        // Updates the summary cards at the top
         function displaySummary(loans) {
             const { totalCountEl, totalAmountEl } = state.ui;
             const totalAmount = loans.reduce((sum, loan) => sum + parseFloat(loan.outstandingAmount), 0);
@@ -126,7 +116,6 @@ document.addEventListener("DOMContentLoaded", () => {
             totalAmountEl.textContent = `₹${totalAmount.toLocaleString('en-IN')}`;
         }
         
-        // Renders all the loan cards on the screen
         function displayLoanCards(loans) {
             const { container } = state.ui;
             container.innerHTML = '';
@@ -143,13 +132,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 const loanDate = new Date(loan.loanDate);
                 const daysAgo = Math.floor((new Date() - loanDate) / (1000 * 3600 * 24));
 
-                // Logic for 10-Day Credit and Recharge cards
                 if (loan.loanType === '10 Days Credit' || loan.loanType === 'Recharge') {
                     card.className = 'credit-card-wrapper';
                     const isRecharge = loan.loanType === 'Recharge';
                     const cardImageUrl = isRecharge ? "https://i.ibb.co/p7pVDLx/IMG-20250922-104425.jpg" : "https://i.ibb.co/bjWtdV0L/1757738358948.jpg";
-                    const bannerClass = isRecharge ? 'warning' : 'green';
                     
+                    const bannerClass = isRecharge ? 'warning' : 'green';
                     let bannerText;
                     if (isRecharge) {
                          bannerText = `Recharge taken ${daysAgo} ${daysAgo === 1 ? 'day' : 'days'} ago`;
@@ -171,7 +159,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         </div>
                         <div class="pending-banner ${bannerClass}">${ICONS.clock}<span>${bannerText}</span></div>`;
                 } else { 
-                    // Logic for standard loan cards (Personal, Business etc.)
                     card.className = 'loan-card';
                     const formattedDate = loanDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
                     const bannerClass = daysAgo > 60 ? 'danger' : (daysAgo > 30 ? 'warning' : 'green');
@@ -204,33 +191,34 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
         
-        // Populates the member dropdown in the modal
         function populateMembersDropdown() {
             const { memberSelect } = state.ui;
             memberSelect.innerHTML = '<option value="">-- Choose a member --</option>';
-            for (const memberId in state.membersData) {
-                const member = state.membersData[memberId];
-                if(member.status === 'Approved') {
-                    const option = document.createElement('option');
-                    option.value = memberId;
-                    option.textContent = member.fullName;
-                    option.dataset.profilePic = member.profilePicUrl || '';
-                    memberSelect.appendChild(option);
-                }
-            }
+            // Approved members ko sort karke dropdown mein daalein
+            const sortedMembers = Object.entries(state.membersData)
+                .filter(([id, member]) => member.status === 'Approved')
+                .sort(([, a], [, b]) => a.fullName.localeCompare(b.fullName));
+
+            sortedMembers.forEach(([memberId, member]) => {
+                const option = document.createElement('option');
+                option.value = memberId;
+                option.textContent = member.fullName;
+                option.dataset.profilePic = member.profilePicUrl || '';
+                memberSelect.appendChild(option);
+            });
         }
 
-        // Sets up all event listeners for the modal
         function setupModalEventListeners() {
-            const { modal, openModalBtn, closeModalBtn, memberSelect, creditAmountInput, generateCardBtn, modalStatus, generatedCardContainer, rechargeToggle, creditFields, rechargeFields, modalTitle, telecomSelect, rechargeAmountInput } = state.ui;
+            const { modal, openModalBtn, closeModalBtn, memberSelect, creditAmountInput, generateCardBtn, modalStatus, generatedCardContainer, rechargeToggle, creditFields, rechargeFields, modalTitle } = state.ui;
 
             openModalBtn.addEventListener('click', () => {
                 rechargeToggle.checked = false;
-                rechargeToggle.dispatchEvent(new Event('change')); // Trigger change to reset UI
+                rechargeToggle.dispatchEvent(new Event('change'));
                 memberSelect.value = '';
                 creditAmountInput.value = '';
-                rechargeAmountInput.value = '';
+                state.ui.rechargeAmountInput.value = '';
                 creditAmountInput.disabled = true;
+                creditAmountInput.placeholder = 'Select a member first';
                 generatedCardContainer.innerHTML = '';
                 modalStatus.textContent = '';
                 modal.classList.add('visible');
@@ -251,9 +239,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 modalTitle.textContent = isRecharge ? 'Generate Recharge Card' : 'Generate 10-Day Credit';
                 generateCardBtn.textContent = isRecharge ? 'Generate Recharge Card' : 'Generate Card';
             });
-
-            // This is the main function for generating the card AND saving to Firebase
-            generateCardBtn.addEventListener('click', async () => {
+            
+            // === YAHAN BADLAV KIYA GAYA HAI ===
+            // Is function se Firebase ka code hata diya gaya hai.
+            generateCardBtn.addEventListener('click', () => {
                 const isRecharge = rechargeToggle.checked;
                 const memberId = memberSelect.value;
                 const selectedOption = memberSelect.options[memberSelect.selectedIndex];
@@ -264,81 +253,30 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
                 
-                const amount = parseFloat(isRecharge ? rechargeAmountInput.value : creditAmountInput.value);
+                const amount = parseFloat(isRecharge ? state.ui.rechargeAmountInput.value : creditAmountInput.value);
                 if (isNaN(amount) || amount <= 0) {
                     modalStatus.textContent = 'Please enter a valid amount.';
                     modalStatus.style.color = 'red';
                     return;
                 }
-
-                modalStatus.textContent = 'Saving to database...';
+                
+                modalStatus.textContent = 'Generating card...';
                 modalStatus.style.color = 'var(--text-light)';
-                generateCardBtn.disabled = true;
 
-                try {
-                    const db = firebase.database();
-                    const updates = {};
-                    const timestamp = firebase.database.ServerValue.TIMESTAMP;
-                    const loanDate = new Date().toISOString();
+                const loanData = {
+                    memberName: selectedOption.textContent,
+                    loanType: isRecharge ? 'Recharge' : '10 Days Credit',
+                    originalAmount: amount,
+                    telecomCompany: isRecharge ? state.ui.telecomSelect.value : null
+                };
 
-                    const newLoanRef = db.ref('activeLoans').push();
-                    const loanId = newLoanRef.key;
-
-                    const newTxRef = db.ref('transactions').push();
-                    const transactionId = newTxRef.key;
-                    
-                    const loanType = isRecharge ? 'Recharge' : '10 Days Credit';
-
-                    // Prepare the active loan data
-                    const loanData = {
-                        loanId, memberId,
-                        memberName: selectedOption.textContent,
-                        loanType, loanDate,
-                        originalAmount: amount,
-                        outstandingAmount: amount,
-                        status: 'Active',
-                        timestamp
-                    };
-                    if (isRecharge) {
-                        loanData.telecomCompany = telecomSelect.value;
-                    }
-
-                    // Prepare the transaction data
-                    const transactionData = {
-                        transactionId, memberId, date: loanDate,
-                        type: 'Loan Taken',
-                        amount, loanType,
-                        linkedLoanId: loanId,
-                        timestamp,
-                        imageUrl: "" // No image for these types of loans
-                    };
-
-                    updates[`/activeLoans/${loanId}`] = loanData;
-                    updates[`/transactions/${transactionId}`] = transactionData;
-
-                    // Save to Firebase
-                    await db.ref().update(updates);
-                    
-                    modalStatus.textContent = 'Loan saved! Generating card...';
-                    modalStatus.style.color = 'var(--success-color)';
-
-                    // Now, generate the visual card for sharing
-                    generateVisualCard(loanData, selectedOption.dataset.profilePic);
-                    
-                    // Refresh the main dashboard data
-                    fetchAndProcessData();
-
-                } catch (error) {
-                    console.error("Error saving loan:", error);
-                    modalStatus.textContent = `Error: ${error.message}`;
-                    modalStatus.style.color = 'red';
-                } finally {
-                    generateCardBtn.disabled = false;
-                }
+                // Firebase mein save karne ke bajaye, ab yeh sirf visual card banayega.
+                generateVisualCard(loanData, selectedOption.dataset.profilePic);
+                modalStatus.textContent = 'Card generated successfully!';
+                modalStatus.style.color = 'var(--success-color)';
             });
         }
         
-        // Generates the visual representation of the card in the modal
         function generateVisualCard(loanData, profilePicUrl) {
             const { generatedCardContainer } = state.ui;
             const isRecharge = loanData.loanType === 'Recharge';
@@ -350,10 +288,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="cc-profile-pic"><img src="${profilePic}" alt="${loanData.memberName}"></div>
                 <div class="cc-member-name">${loanData.memberName}</div>
                 <div class="cc-amount-group"><div class="cc-value">₹${loanData.originalAmount.toLocaleString('en-IN')}</div></div>
+                ${isRecharge ? `<div class="cc-telecom-logo">${loanData.telecomCompany}</div>` : ''}
             `;
-            if (isRecharge) {
-                cardContentHtml += `<div class="cc-telecom-logo">${loanData.telecomCompany}</div>`;
-            }
 
             generatedCardContainer.innerHTML = `
                 <div id="card-to-share" class="credit-card-wrapper" style="margin: 0 auto;">
@@ -370,7 +306,8 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('share-btn').addEventListener('click', () => handleCardAction('share'));
         }
 
-        // Handles downloading or sharing the generated card image
+        // === YAHAN BADLAV KIYA GAYA HAI ===
+        // Download quality behtar ki gayi hai.
         async function handleCardAction(action) {
             const cardElement = document.getElementById('card-to-share');
             const statusEl = state.ui.modalStatus;
@@ -378,7 +315,14 @@ document.addEventListener("DOMContentLoaded", () => {
             statusEl.style.color = 'var(--text-light)';
 
             try {
-                const canvas = await html2canvas(cardElement, { useCORS: true, scale: 3, backgroundColor: null });
+                // Download ke liye high quality (scale: 4), Share ke liye medium (scale: 2)
+                const scale = action === 'download' ? 4 : 2;
+                
+                const canvas = await html2canvas(cardElement, { 
+                    useCORS: true, 
+                    scale: scale, 
+                    backgroundColor: null // Transparent background ke liye
+                });
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                 
                 if (action === 'download') {
@@ -387,7 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     link.download = `card-${Date.now()}.png`;
                     link.click();
                     URL.revokeObjectURL(link.href);
-                    statusEl.textContent = "Image downloaded!";
+                    statusEl.textContent = "Image downloaded in high quality!";
                     statusEl.style.color = 'var(--success-color)';
                 } else if (action === 'share') {
                     const file = new File([blob], 'card.png', { type: 'image/png' });
@@ -407,14 +351,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         
-        // Handles downloading individual loan cards from the dashboard
         function downloadCardAsImage(cardId) {
             const cardElement = document.getElementById(cardId);
             if (!cardElement) return;
 
             html2canvas(cardElement, { 
                 useCORS: true,
-                scale: 4,
+                scale: 4, // High quality download
                 onclone: (document) => {
                     const button = document.querySelector(`#${cardId} .card-download-btn`);
                     if(button) button.style.display = 'none';
@@ -427,7 +370,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // Sets up general event listeners for search and card downloads
         function setupEventListeners() {
              state.ui.searchInput.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase().trim();
@@ -446,13 +388,12 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
         
-        // Initial function calls when the app is ready
         fetchAndProcessData();
         setupEventListeners();
         setupModalEventListeners();
     }
     
-    // Start the application
     checkAuthAndInitialize();
 });
+
 
