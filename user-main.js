@@ -53,9 +53,10 @@ async function runAppLogic(database) {
             // Step 2: user-ui.js ko UI initialize karne ke liye bolein
             initUI(database);
             
+            // === YAHAN Galti THEEK KAR DI GAYI HAI ===
             // Step 3: user-ui.js ko process kiya hua data dekar poora page render karwayein
-            // YAHAN PAR Galti THI: processedData pass nahi kiya gaya tha
-            renderPage(); 
+            renderPage(processedData);
+            // =========================================
         }
     } catch (error) {
         console.error("Failed to run main app logic:", error);
