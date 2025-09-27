@@ -1,62 +1,71 @@
 // user-main.js
-// Yeh file app ka entry point (shuruwat) hai.
-// Iska kaam authentication check karna aur dusre modules ko unka kaam saunpna hai.
+// Yeh file app ka "Director" hai. Yeh app ko shuru karta hai,
+// authentication check karta hai, aur baaki files ko unka kaam saunpta hai.
 
-import { fetchAllData } from './user-data.js';
+import { fetchAndProcessData } from './user-data.js';
 import { initUI, renderPage, showLoadingError } from './user-ui.js';
 
-// App ko shuru karne ka mukhya function
-async function initializeAndRunApp() {
+/**
+ * App ko shuru karne ka mukhya function.
+ * Firebase config fetch karta hai aur user authentication check karta hai.
+ */
+async function checkAuthAndInitialize() {
     try {
-        // PWA ke liye service worker register karein
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(reg => console.log('Service Worker registered successfully', reg))
-                .catch(err => console.error('Service Worker registration failed:', err));
-        }
-
-        // Vercel se Firebase config fetch karein
+        // Vercel se Firebase configuration securely fetch karein
         const response = await fetch('/api/firebase-config');
-        if (!response.ok) throw new Error('Config fetch failed');
+        if (!response.ok) throw new Error('Configuration failed to load.');
         const firebaseConfig = await response.json();
         if (!firebaseConfig.apiKey) throw new Error('Invalid config received');
         
-        // Firebase ko initialize karein
         firebase.initializeApp(firebaseConfig);
         
         const auth = firebase.auth();
         const database = firebase.database();
 
-        // User ke login status ko check karein
-        auth.onAuthStateChanged(async user => {
+        // User ke login status mein badlav ko sunein
+        auth.onAuthStateChanged(user => {
             if (user) {
-                // Agar user logged in hai, to poora app chalu karein
-                try {
-                    // Step 1: UI ke sabhi event listeners ko attach karein
-                    initUI(database);
-                    
-                    // Step 2: Firebase se saara data fetch aur process karein
-                    const processedData = await fetchAllData(database);
-                    
-                    // Step 3: Processed data ko UI par render karein
-                    renderPage(processedData);
-
-                } catch (error) {
-                    console.error('App failed to run after login:', error);
-                    showLoadingError(error.message);
-                }
+                // Agar user logged in hai, to mukhya app logic chalayein
+                runAppLogic(database);
             } else {
-                // Agar user logged in nahi hai, to login page par redirect karein
+                // Agar user logged in nahi hai, to login page par bhej dein
                 window.location.href = '/login.html';
             }
         });
 
     } catch (error) {
         console.error("FATAL: Could not initialize application.", error);
-        showLoadingError(`Application Error: ${error.message}`);
+        // UI par error dikhayein
+        showLoadingError(`Application failed to initialize: ${error.message}`);
     }
 }
 
-// App ko shuru karne ke liye event listener
-document.addEventListener('DOMContentLoaded', initializeAndRunApp);
+/**
+ * Mukhya application logic. Data fetch karta hai aur UI ko render karta hai.
+ * @param {firebase.database.Database} database - Firebase database instance.
+ */
+async function runAppLogic(database) {
+    try {
+        // Step 1: user-data.js se saara data fetch aur process karwayein
+        const processedData = await fetchAndProcessData(database);
+
+        if (processedData) {
+            // Step 2: user-ui.js ko UI initialize karne ke liye bolein
+            initUI(database);
+            
+            // === YAHAN BADLAV KIYA GAYA HAI ===
+            // Step 3: user-ui.js ko process kiya hua data dekar poora page render karwayein
+            renderPage(processedData);
+            // ===================================
+        }
+    } catch (error) {
+        console.error("Failed to run main app logic:", error);
+        showLoadingError(error.message);
+    }
+}
+
+// --- App ko shuru karein ---
+// Jab poora HTML document load ho jaye, tab app initialization shuru karein.
+document.addEventListener('DOMContentLoaded', checkAuthAndInitialize);
+
 
