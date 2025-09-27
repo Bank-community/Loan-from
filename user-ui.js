@@ -56,9 +56,7 @@ export function initUI(database) {
  * @param {object} data - Processed data from user-data.js
  */
 export function renderPage(data) {
-    // === YAHAN BADLAV KIYA GAYA HAI ===
-    allMembersData = data.processedMembers; // 'allMembersData' ko 'processedMembers' se theek kiya gaya
-    // ===================================
+    allMembersData = data.allMembersData;
     penaltyWalletData = data.penaltyWalletData;
     allTransactions = data.allTransactions;
     communityStats = data.communityStats;
@@ -228,7 +226,7 @@ function updateInfoCards(memberCount, totalLoan) {
 // --- Modal Functions ---
 
 function showMemberProfileModal(memberId) {
-    const member = Object.values(allMembersData).find(m => m.id === memberId);
+    const member = allMembersData[memberId];
     if (!member) return;
 
     currentMemberForFullView = memberId;
@@ -264,7 +262,7 @@ function showSipStatusModal() {
     container.innerHTML = '';
     
     const sortedMembers = Object.values(allMembersData).filter(m => m.status === 'Approved').sort((a, b) => 
-        (a.sipStatus.paid ? 1 : 0) - (b.sipStatus.paid ? 1 : 0) || a.name.localeCompare(b.name)
+        (b.sipStatus.paid ? 1 : 0) - (a.sipStatus.paid ? 1 : 0) || a.name.localeCompare(b.name)
     );
     
     sortedMembers.forEach(member => {
@@ -358,12 +356,9 @@ function setupEventListeners(database) {
         if (e.key === 'Escape') document.querySelectorAll('.modal.show').forEach(closeModal);
     });
     
-    const passwordInput = getElement('passwordInput');
-    if(passwordInput) {
-        passwordInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') handlePasswordCheck(database);
-        });
-    }
+    getElement('passwordInput').addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') handlePasswordCheck(database);
+    });
 }
 
 function attachDynamicButtonListeners() {
@@ -410,7 +405,6 @@ function initializeLetterSlider() {
     const slides = slidesContainer.children;
     const totalSlides = slides.length;
     const indicator = getElement('slideIndicator');
-    if(!indicator) return;
     indicator.innerHTML = '';
 
     for (let i = 0; i < totalSlides; i++) {
@@ -425,14 +419,10 @@ function initializeLetterSlider() {
         slidesContainer.style.transform = `translateX(${-currentSlideIndex * 100}%)`;
         indicator.childNodes.forEach((dot, idx) => dot.classList.toggle('active', idx === currentSlideIndex));
     };
-    
-    const prevBtn = getElement('prevSlideBtn');
-    const nextBtn = getElement('nextSlideBtn');
 
-    if(prevBtn) prevBtn.onclick = () => showSlide(currentSlideIndex - 1);
-    if(nextBtn) nextBtn.onclick = () => showSlide(currentSlideIndex + 1);
-    
-    if(totalSlides > 0) showSlide(0);
+    getElement('prevSlideBtn').onclick = () => showSlide(currentSlideIndex - 1);
+    getElement('nextSlideBtn').onclick = () => showSlide(currentSlideIndex + 1);
+    showSlide(0);
 }
 
 function initializeCustomCardSlider(cards) {
@@ -465,10 +455,7 @@ function initializeCustomCardSlider(cards) {
 }
 
 function startHeaderDisplayRotator(members, stats) {
-    if(!elements.headerDisplay) return;
     const adContainer = elements.headerDisplay.querySelector('.ad-content');
-    if(!adContainer) return;
-    
     const ads = [];
     
     const topThree = members.slice(0, 3);
@@ -541,7 +528,6 @@ function processTodaysTransactions() {
 
 function displayNotifications() {
     const list = getElement('notificationList');
-    if(!list) return;
     list.innerHTML = '';
     const today = new Date().toISOString().split('T')[0];
     const todaysTransactions = allTransactions.filter(tx => new Date(tx.date).toISOString().split('T')[0] === today).sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -553,7 +539,7 @@ function displayNotifications() {
 
     todaysTransactions.forEach(tx => {
         let text = '', amount = '', typeClass = '';
-        const member = Object.values(allMembersData).find(m => m.id === tx.memberId);
+        const member = allMembersData[tx.memberId];
         if(!member) return;
 
         switch(tx.type) {
@@ -577,7 +563,7 @@ function displayNotifications() {
 function showPopupNotification(tx) {
     const container = getElement('notification-popup-container');
     if (!container) return;
-    const member = Object.values(allMembersData).find(m => m.id === tx.memberId);
+    const member = allMembersData[tx.memberId];
     if (!member) return;
 
     const popup = document.createElement('div');
@@ -654,15 +640,9 @@ async function handlePasswordCheck(database) {
 
 function openModal(modal) { if (modal) { modal.classList.add('show'); document.body.style.overflow = 'hidden'; } }
 function closeModal(modal) { if (modal) { modal.classList.remove('show'); document.body.style.overflow = ''; } }
-function showFullImage(src, alt) { 
-    const fullImageSrc = getElement('fullImageSrc');
-    const imageModal = getElement('imageModal');
-    if(fullImageSrc && imageModal) {
-      fullImageSrc.src = src; 
-      fullImageSrc.alt = alt; 
-      openModal(imageModal);
-    } 
-}
+function showFullImage(src, alt) { getElement('fullImageSrc').src = src; getElement('fullImageSrc').alt = alt; openModal(elements.imageModal); }
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
 function formatDate(dateString) { return dateString ? new Date(dateString).toLocaleDateString('en-GB') : 'N/A'; }
+
+
