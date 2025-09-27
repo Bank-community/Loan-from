@@ -10,7 +10,9 @@ const PRIME_MEMBERS = ["Prince rama", "Amit kumar", "Mithilesh Sahni"];
  * @param {firebase.database.Database} database - Firebase database ka instance.
  * @returns {Promise<object>} - Processed data ka object.
  */
-export async function fetchAllData(database) {
+// === YAHAN BADLAV KIYA GAYA HAI ===
+// Function ka naam theek kar diya gaya hai taaki user-main.js ise call kar sake
+export async function fetchAndProcessData(database) {
     try {
         const snapshot = await database.ref().once('value');
         const data = snapshot.val();
@@ -83,7 +85,7 @@ export async function fetchAllData(database) {
         }
 
         // Poore community ke liye stats calculate karein
-        const communityStats = calculateCommunityStats(processedMembers, allTransactions, allActiveLoansRaw, penaltyWalletRaw);
+        const communityStats = calculateCommunityStats(Object.values(processedMembers), allTransactions, allActiveLoansRaw, penaltyWalletRaw);
 
         // Sab kuch ek object mein return karein
         return {
@@ -137,4 +139,3 @@ function calculateCommunityStats(processedMembers, allTransactions, allActiveLoa
         totalLoanDisbursed: allTransactions.filter(tx => tx.type === 'Loan Taken').reduce((sum, tx) => sum + tx.amount, 0)
     };
 }
-
