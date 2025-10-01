@@ -128,7 +128,6 @@ function renderProducts() {
     if (!container) return;
     const productEntries = Object.entries(allProducts);
     if (productEntries.length === 0) {
-        // container.innerHTML = '<p class="loading-text">No products available right now.</p>';
         const productSection = container.closest('.products-section');
         if (productSection) {
             productSection.style.display = 'none';
@@ -611,18 +610,19 @@ function displayNotifications() {
     const list = getElement('notificationList');
     if (!list) return;
     list.innerHTML = '';
+    
     const verifiedMemberId = localStorage.getItem('verifiedMemberId');
-    if (!verifiedMemberId) {
+    const currentUser = allMembersData.find(m => m.id === verifiedMemberId);
+
+    if (!currentUser) {
          list.innerHTML = `<li class="no-notifications">Please verify your device to see notifications.</li>`;
          return;
     }
     
-    // Reminders ko a alag category mein map karein
     const userReminders = Object.values(allAutomatedQueue)
         .filter(item => item.memberId === verifiedMemberId && item.status === 'active')
         .map(item => ({...item, category: 'reminder', date: Date.now()})); 
     
-    // Manual notifications ko map karein
     const manualNotifs = Object.values(allManualNotifications)
         .map(item => ({...item, category: 'manual', date: item.createdAt}));
 
@@ -634,31 +634,38 @@ function displayNotifications() {
     }
 
     allNotifs.forEach(item => {
-        let icon = '', text = '', time = '';
+        let iconHTML = '', header = '', body = '', time = '';
+
         if (item.category === 'reminder') {
-            icon = 'bell';
-            // Yahan `item.type` ka istemal karein jo descriptive hai
-            text = `<strong>${item.type}</strong>`;
+            iconHTML = `<img src="${currentUser.displayImageUrl}" alt="${currentUser.name}" class="notification-img">`;
+            header = currentUser.name;
             time = 'Just now';
+            
+            // SIP Reminder ke liye special text
+            if (item.type.includes('SIP Payment Reminder')) {
+                body = `₹${currentUser.sipAmount || 500} SIP Payment Now`;
+            } else {
+                body = item.type; // Baaki reminders ke liye default text
+            }
         } else if (item.category === 'manual') {
-            icon = 'gift';
-            text = `<strong>${item.title}</strong>`;
+            iconHTML = `<div class="notification-icon-wrapper"><i data-feather="gift"></i></div>`;
+            header = item.title;
+            body = ''; // Manual notifications mein body nahi hoti
             time = new Date(item.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         }
 
         list.innerHTML += `
             <li class="notification-item">
-                <div style="margin-right: 15px;"><i data-feather="${icon}" style="color: var(--primary-color);"></i></div>
-                <div class="notification-details">
-                    <p class="notification-text">${text}</p>
-                    <div class="notification-time">${time}</div>
+                ${iconHTML}
+                <div class="notification-content">
+                    <p class="notification-header">${header}</p>
+                    ${body ? `<p class="notification-body">${body}</p>` : ''}
+                    <span class="notification-time">${time}</span>
                 </div>
             </li>`;
     });
     feather.replace();
 }
-// === BADLAV SAMAPT ===
-
 
 function showPopupNotification(type, data) {
     const container = getElement('notification-popup-container');
@@ -754,6 +761,6 @@ function showFullImage(src, alt) {
 }
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
-function formatDate(dateString) { return dateString ? new Date(dateString).toLocaleDateString('en-GB') : 'N/A'; }
+function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
 
 
