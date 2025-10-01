@@ -24,12 +24,12 @@ export async function fetchAndProcessData(database) {
         const allActiveLoansRaw = data.activeLoans || {};
         const penaltyWalletRaw = data.penaltyWallet || {};
         const adminSettingsRaw = data.admin || {};
-        
-        // === YAHAN BADLAV KIYA GAYA HAI ===
-        // Notification data ko fetch karein
         const notificationsRaw = (data.admin && data.admin.notifications) || {};
         const manualNotificationsRaw = notificationsRaw.manual || {};
         const automatedQueueRaw = notificationsRaw.automatedQueue || {};
+        
+        // === YAHAN BADLAV KIYA GAYA HAI: Product Data Fetch Karna ===
+        const allProductsRaw = data.products || {};
         // === BADLAV SAMAPT ===
 
         // Data ko process karne ka process shuru karein
@@ -99,10 +99,10 @@ export async function fetchAndProcessData(database) {
             penaltyWalletData: penaltyWalletRaw,
             adminSettings: adminSettingsRaw,
             communityStats,
-            // === YAHAN BADLAV KIYA GAYA HAI ===
-            // Notification data ko bhi return karein
             manualNotifications: manualNotificationsRaw,
             automatedQueue: automatedQueueRaw,
+            // === YAHAN BADLAV KIYA GAYA HAI: Product Data Return Karna ===
+            allProducts: allProductsRaw,
             // === BADLAV SAMAPT ===
         };
 
@@ -149,4 +149,5 @@ function calculateCommunityStats(processedMembers, allTransactions, allActiveLoa
         totalLoanDisbursed: allTransactions.filter(tx => tx.type === 'Loan Taken').reduce((sum, tx) => sum + tx.amount, 0)
     };
 }
+
 
