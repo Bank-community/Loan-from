@@ -12,7 +12,7 @@ let allAutomatedQueue = {};
 let allProducts = {};
 let currentMemberForFullView = null;
 let deferredInstallPrompt = null;
-let popupsHaveBeenShown = false;
+// popupsHaveBeenShown variable ko hata diya gaya hai.
 
 // Element Cache
 const getElement = (id) => document.getElementById(id);
@@ -581,20 +581,32 @@ function buildInfoSlider() {
     feather.replace();
 }
 
+// === YAHAN FUNCTION KO UPDATE KIYA GAYA HAI ===
 function processAndShowNotifications() {
-    if (!popupsHaveBeenShown) {
-        const today = new Date().toISOString().split('T')[0];
-        const todaysTransactions = allTransactions.filter(tx => new Date(tx.date).toISOString().split('T')[0] === today);
-        if (todaysTransactions.length > 0) {
-            todaysTransactions.forEach((tx, index) => {
-                setTimeout(() => showPopupNotification('transaction', tx), index * 1500);
-            });
-        }
-        Object.values(allManualNotifications).forEach((notif, index) => {
-             setTimeout(() => showPopupNotification('manual', notif), (index + todaysTransactions.length) * 1500);
-        });
-        popupsHaveBeenShown = true;
+    // Check if popups for this session have already been shown
+    if (sessionStorage.getItem('popupsShownThisSession')) {
+        return;
     }
+
+    // 1. Transaction Popups (Only for today)
+    const today = new Date().toISOString().split('T')[0];
+    const todaysTransactions = allTransactions.filter(tx => new Date(tx.date).toISOString().split('T')[0] === today);
+    if (todaysTransactions.length > 0) {
+        todaysTransactions.forEach((tx, index) => {
+            setTimeout(() => showPopupNotification('transaction', tx), index * 1500);
+        });
+    }
+
+    // 2. Manual Notification Popups (Always show if they exist)
+    Object.values(allManualNotifications).forEach((notif, index) => {
+        // Delay manual popups until after transaction popups
+        setTimeout(() => showPopupNotification('manual', notif), (index + todaysTransactions.length) * 1500);
+    });
+
+    // Mark popups as shown for this session
+    sessionStorage.setItem('popupsShownThisSession', 'true');
+    
+    // Logic for notification bell dot remains the same
     const verifiedMemberId = localStorage.getItem('verifiedMemberId');
     if (!verifiedMemberId) return;
     const userReminders = Object.values(allAutomatedQueue).filter(item => item.memberId === verifiedMemberId && item.status === 'active');
@@ -604,31 +616,34 @@ function processAndShowNotifications() {
         dot.style.display = 'block';
     }
 }
+// === BADLAV SAMAPT ===
 
-// === YAHAN FUNCTION KO UPDATE KIYA GAYA HAI ===
 function displayNotifications() {
     const list = getElement('notificationList');
     if (!list) return;
     list.innerHTML = '';
-
+    
     const verifiedMemberId = localStorage.getItem('verifiedMemberId');
     const currentUser = allMembersData.find(m => m.id === verifiedMemberId);
 
     if (!currentUser) {
-        list.innerHTML = `<li class="no-notifications">Please verify your device to see notifications.</li>`;
-        return;
+         list.innerHTML = `<li class="no-notifications">Please verify your device to see notifications.</li>`;
+         return;
     }
-
+    
     let userReminders = Object.values(allAutomatedQueue)
         .filter(item => item.memberId === verifiedMemberId && item.status === 'active');
-
+        
     if (currentUser.sipStatus.paid === true) {
         userReminders = userReminders.filter(item => !item.type.includes('SIP Payment Reminder'));
     }
 
-    const finalReminders = userReminders.map(item => ({ ...item, category: 'reminder', date: Date.now() }));
-    const manualNotifs = Object.values(allManualNotifications).map(item => ({ ...item, category: 'manual', date: item.createdAt }));
-    const allNotifs = [...finalReminders, ...manualNotifs].sort((a, b) => b.date - a.date);
+    const finalReminders = userReminders.map(item => ({...item, category: 'reminder', date: Date.now()}));
+    
+    const manualNotifs = Object.values(allManualNotifications)
+        .map(item => ({...item, category: 'manual', date: item.createdAt}));
+
+    const allNotifs = [...finalReminders, ...manualNotifs].sort((a,b) => b.date - a.date);
 
     if (allNotifs.length === 0) {
         list.innerHTML = `<li class="no-notifications">No new notifications.</li>`;
@@ -652,9 +667,10 @@ function displayNotifications() {
                     body = `${sipAmountHTML} SIP Payment. Only ${daysLeft} days left!`;
                 } else if (daysLeft === 1) {
                     body = `${sipAmountHTML} SIP Payment. Only 1 day left!`;
-                } else {
-                    body = `${sipAmountHTML} SIP Payment. Today is the last day!`;
+                } else if (daysLeft <= 0) {
+                     body = `${sipAmountHTML} SIP Payment. Today is the last day!`;
                 }
+
             } else {
                 body = item.type;
             }
@@ -662,7 +678,7 @@ function displayNotifications() {
                 <img src="${currentUser.displayImageUrl}" alt="${currentUser.name}" class="notification-img">
                 <div class="notification-content">
                     <p class="notification-header">${currentUser.name}</p>
-                    <p class="notification-body">${body}</p>
+                    ${body ? `<p class="notification-body">${body}</p>` : ''}
                     <span class="notification-time">Just now</span>
                 </div>`;
         } else if (item.category === 'manual') {
@@ -685,7 +701,6 @@ function displayNotifications() {
     });
     feather.replace();
 }
-// === BADLAV SAMAPT ===
 
 
 function showPopupNotification(type, data) {
