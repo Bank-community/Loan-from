@@ -10,7 +10,7 @@ let cardColors = {};
 let allManualNotifications = {};
 let allAutomatedQueue = {};
 let allProducts = {};
-let currentMemberForFullView = null; 
+let currentMemberForFullView = null;
 let deferredInstallPrompt = null;
 let popupsHaveBeenShown = false;
 
@@ -64,7 +64,7 @@ export function renderPage(data) {
     displayHeaderButtons((data.adminSettings && data.adminSettings.header_buttons) || {});
     const approvedMembers = allMembersData.filter(m => m.status === 'Approved');
     displayMembers(approvedMembers);
-    
+
     displayCustomCards((data.adminSettings && data.adminSettings.custom_cards) || {});
     displayCommunityLetters((data.adminSettings && data.adminSettings.community_letters) || {});
     updateInfoCards(approvedMembers.length, communityStats.totalLoanDisbursed || 0);
@@ -72,7 +72,7 @@ export function renderPage(data) {
     buildInfoSlider();
     processAndShowNotifications();
     renderProducts();
-    
+
     feather.replace();
 }
 
@@ -91,23 +91,23 @@ function displayMembers(members) {
         elements.memberContainer.innerHTML = '<p class="loading-text">Koi sadasya nahi mila.</p>';
         return;
     }
-    
+
     const medalURLs = ["https://www.svgrepo.com/show/452215/gold-medal.svg", "https://www.svgrepo.com/show/452101/silver-medal.svg", "https://www.svgrepo.com/show/452174/bronze-medal.svg"];
-    
+
     members.forEach((member, index) => {
         const card = document.createElement('div');
         card.className = 'member-card animate-on-scroll';
         let rankHTML = '';
-        
-        if (index < 3) { 
+
+        if (index < 3) {
             rankHTML = `<img src="${medalURLs[index]}" class="rank-icon" alt="Medal">`;
             const rankColor = ['gold', 'silver', 'bronze'][index];
             if (cardColors[rankColor]) {
                 card.style.backgroundColor = cardColors[rankColor];
                 card.classList.add('colored-card');
             }
-        } 
-        
+        }
+
         card.innerHTML = `
             ${rankHTML}
             <div class="member-photo-container">
@@ -123,33 +123,27 @@ function displayMembers(members) {
     observeElements(document.querySelectorAll('.animate-on-scroll'));
 }
 
-/**
- * Products ko screen par render karta hai.
- */
 function renderProducts() {
     const container = elements.productsContainer;
     if (!container) return;
-
     const productEntries = Object.entries(allProducts);
-
     if (productEntries.length === 0) {
-        container.innerHTML = '<p class="loading-text">No products available right now.</p>';
+        // container.innerHTML = '<p class="loading-text">No products available right now.</p>';
+        const productSection = container.closest('.products-section');
+        if (productSection) {
+            productSection.style.display = 'none';
+        }
         return;
     }
-
-    container.innerHTML = ''; // Purana content saaf karein
-
+    container.innerHTML = '';
     productEntries.forEach(([id, product]) => {
         const card = document.createElement('div');
         card.className = 'product-card';
-
         const price = parseFloat(product.price) || 0;
         const mrp = parseFloat(product.mrp) || 0;
         const discount = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
-
         const whatsappMessage = encodeURIComponent(`Hello, I want to know more about ${product.name} priced at ₹${price.toLocaleString('en-IN')}.`);
         const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
-
         card.innerHTML = `
             <div class="product-image-wrapper">
                 <img src="${product.imageUrl}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
@@ -170,50 +164,32 @@ function renderProducts() {
                 <a href="${product.exploreLink || '#'}" target="_blank" class="product-btn explore">Explore</a>
             </div>
         `;
-
-        // EMI link ke liye event listener attach karein
         const emiLink = card.querySelector('.product-emi-link');
         if (emiLink) {
             emiLink.addEventListener('click', () => {
                 const clickedProduct = allProducts[emiLink.dataset.productId];
-                // === YAHAN BADLAV KIYA GAYA HAI: Product ka price bhi pass karein ===
                 showEmiModal(clickedProduct.emi, clickedProduct.name, parseFloat(clickedProduct.price));
             });
         }
-
         container.appendChild(card);
     });
 }
 
-/**
- * EMI details ke liye modal dikhata hai.
- * @param {object} emiOptions - EMI ke options (e.g., { '3': '5', '6': '8' })
- * @param {string} productName - Product ka naam.
- * @param {number} productPrice - Product ki keemat.
- */
-// === YAHAN FUNCTION KO UPDATE KIYA GAYA HAI ===
 function showEmiModal(emiOptions, productName, productPrice) {
     const modal = elements.emiModal;
     if (!modal) return;
-
     const modalTitle = getElement('emiModalTitle');
     const list = getElement('emiDetailsList');
-
     modalTitle.textContent = `EMI Details for ${productName}`;
     list.innerHTML = '';
-
     const validEmi = Object.entries(emiOptions).filter(([, rate]) => rate && parseFloat(rate) >= 0);
-
     if (validEmi.length > 0) {
         validEmi.forEach(([duration, rate]) => {
             const li = document.createElement('li');
             const interestRate = parseFloat(rate);
             const months = parseInt(duration);
-            
-            // EMI Calculation
             const totalAmount = productPrice * (1 + interestRate / 100);
             const monthlyEmi = Math.ceil(totalAmount / months);
-
             li.innerHTML = `
                 <span class="duration">${duration} Months</span> 
                 <span class="rate">${rate}% Interest (${monthlyEmi.toLocaleString('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 })}/mo)</span>`;
@@ -222,10 +198,8 @@ function showEmiModal(emiOptions, productName, productPrice) {
     } else {
         list.innerHTML = '<li>No EMI options available for this product.</li>';
     }
-
     openModal(modal);
 }
-// === BADLAV SAMAPT ===
 
 function displayHeaderButtons(buttons) {
     if (!elements.headerActionsContainer || !elements.staticHeaderButtonsContainer) return;
@@ -632,6 +606,7 @@ function processAndShowNotifications() {
     }
 }
 
+// === YAHAN FUNCTION KO UPDATE KIYA GAYA HAI ===
 function displayNotifications() {
     const list = getElement('notificationList');
     if (!list) return;
@@ -641,27 +616,36 @@ function displayNotifications() {
          list.innerHTML = `<li class="no-notifications">Please verify your device to see notifications.</li>`;
          return;
     }
+    
+    // Reminders ko a alag category mein map karein
     const userReminders = Object.values(allAutomatedQueue)
         .filter(item => item.memberId === verifiedMemberId && item.status === 'active')
-        .map(item => ({...item, type: 'reminder', date: Date.now()})); 
+        .map(item => ({...item, category: 'reminder', date: Date.now()})); 
+    
+    // Manual notifications ko map karein
     const manualNotifs = Object.values(allManualNotifications)
-        .map(item => ({...item, type: 'manual', date: item.createdAt}));
+        .map(item => ({...item, category: 'manual', date: item.createdAt}));
+
     const allNotifs = [...userReminders, ...manualNotifs].sort((a,b) => b.date - a.date);
+
     if (allNotifs.length === 0) {
         list.innerHTML = `<li class="no-notifications">No new notifications.</li>`;
         return;
     }
+
     allNotifs.forEach(item => {
         let icon = '', text = '', time = '';
-        if (item.type === 'reminder') {
+        if (item.category === 'reminder') {
             icon = 'bell';
-            text = `<strong>Reminder:</strong> ${item.type}`;
+            // Yahan `item.type` ka istemal karein jo descriptive hai
+            text = `<strong>${item.type}</strong>`;
             time = 'Just now';
-        } else if (item.type === 'manual') {
+        } else if (item.category === 'manual') {
             icon = 'gift';
             text = `<strong>${item.title}</strong>`;
             time = new Date(item.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         }
+
         list.innerHTML += `
             <li class="notification-item">
                 <div style="margin-right: 15px;"><i data-feather="${icon}" style="color: var(--primary-color);"></i></div>
@@ -673,6 +657,8 @@ function displayNotifications() {
     });
     feather.replace();
 }
+// === BADLAV SAMAPT ===
+
 
 function showPopupNotification(type, data) {
     const container = getElement('notification-popup-container');
