@@ -15,7 +15,11 @@ export default function handler(request, response) {
     messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.FIREBASE_APP_ID,
     measurementId: process.env.FIREBASE_MEASUREMENT_ID,
-  };
+
+    // --- यह लाइन जोड़नी है ---
+    vapidKey: process.env.FIREBASE_VAPID_KEY 
+};
+
 
   // We send the configuration as a JSON response to the front-end request.
   // The 'Cache-Control' header tells browsers to cache the config for 10 minutes,
