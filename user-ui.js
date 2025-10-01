@@ -2,11 +2,15 @@
 // Is file ka kaam data ko screen par dikhana (render) aur sabhi user interactions (clicks, scrolls) ko handle karna hai.
 
 // --- Global Variables & Element Cache ---
-let allMembersData = []; // Default to an empty array for safety
+let allMembersData = [];
 let penaltyWalletData = {};
 let allTransactions = [];
 let communityStats = {};
 let cardColors = {};
+// === YAHAN BADLAV KIYA GAYA HAI ===
+let allManualNotifications = {};
+let allAutomatedQueue = {};
+// === BADLAV SAMAPT ===
 let currentMemberForFullView = null; 
 let deferredInstallPrompt = null;
 let popupsHaveBeenShown = false;
@@ -32,6 +36,9 @@ const elements = {
     allMembersModal: getElement('allMembersModal'),
     passwordPromptModal: getElement('passwordPromptModal'),
     imageModal: getElement('imageModal'),
+    // === YAHAN BADLAV KIYA GAYA HAI ===
+    deviceVerificationModal: getElement('deviceVerificationModal'),
+    // === BADLAV SAMAPT ===
 };
 
 const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
@@ -46,15 +53,17 @@ export function initUI(database) {
 }
 
 export function renderPage(data) {
-    allMembersData = data.processedMembers || []; // Ensure it's always an array
+    allMembersData = data.processedMembers || [];
     penaltyWalletData = data.penaltyWalletData || {};
     allTransactions = data.allTransactions || [];
     communityStats = data.communityStats || {};
     cardColors = (data.adminSettings && data.adminSettings.card_colors) || {};
+    // === YAHAN BADLAV KIYA GAYA HAI ===
+    allManualNotifications = data.manualNotifications || {};
+    allAutomatedQueue = data.automatedQueue || {};
+    // === BADLAV SAMAPT ===
 
     displayHeaderButtons((data.adminSettings && data.adminSettings.header_buttons) || {});
-    // === YAHAN BADLAV KIYA GAYA HAI ===
-    // 'allMembersData' pehle se hi ek sorted array hai, isliye seedhe istemal karenge.
     const approvedMembers = allMembersData.filter(m => m.status === 'Approved');
     displayMembers(approvedMembers);
     
@@ -63,7 +72,9 @@ export function renderPage(data) {
     updateInfoCards(approvedMembers.length, communityStats.totalLoanDisbursed || 0);
     startHeaderDisplayRotator(approvedMembers, communityStats);
     buildInfoSlider();
-    processTodaysTransactions();
+    // === YAHAN BADLAV KIYA GAYA HAI ===
+    processAndShowNotifications();
+    // === BADLAV SAMAPT ===
     
     feather.replace();
 }
@@ -193,11 +204,81 @@ function updateInfoCards(memberCount, totalLoan) {
     if (elements.totalLoanValue) elements.totalLoanValue.textContent = (totalLoan || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
 }
 
+// --- NAYE FUNCTIONS YAHAN JODE GAYE HAIN ---
+
+/**
+ * User se device verification ke liye prompt karta hai.
+ * @param {Array} allMembers - Sabhi members ka array.
+ * @returns {Promise<string|null>} - Chune gaye member ki ID ya null.
+ */
+export function promptForDeviceVerification(allMembers) {
+    return new Promise(resolve => {
+        const modal = elements.deviceVerificationModal;
+        if (!modal) return resolve(null);
+
+        const modalContent = modal.querySelector('.modal-content');
+        const sortedMembers = [...allMembers].sort((a, b) => a.name.localeCompare(b.name));
+
+        modalContent.innerHTML = `
+            <span class="close" id="closeVerificationModal">×</span>
+            <h2>Verify Your Device</h2>
+            <p style="margin-bottom: 20px; font-size: 0.9em; color: var(--light-text);">
+                To receive important notifications, please select your name from the list below. This is a one-time setup.
+            </p>
+            <select id="memberSelect" style="width: 100%; padding: 12px; font-size: 1.1em; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 20px;">
+                <option value="">-- Select Your Name --</option>
+                ${sortedMembers.map(m => `<option value="${m.id}">${m.name}</option>`).join('')}
+            </select>
+            <button id="confirmMemberBtn" style="width: 100%; padding: 12px; background-color: var(--success-color); color: white; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer;">Confirm</button>
+        `;
+
+        const confirmBtn = getElement('confirmMemberBtn');
+        const memberSelect = getElement('memberSelect');
+        const closeModalBtn = getElement('closeVerificationModal');
+
+        const cleanupAndResolve = (value) => {
+            closeModal(modal);
+            resolve(value);
+        };
+
+        confirmBtn.onclick = () => {
+            if (memberSelect.value) {
+                cleanupAndResolve(memberSelect.value);
+            } else {
+                alert('Please select your name.');
+            }
+        };
+
+        closeModalBtn.onclick = () => cleanupAndResolve(null);
+
+        openModal(modal);
+    });
+}
+
+/**
+ * Browser se push notification ki permission mangta hai.
+ * @returns {Promise<boolean>} - True agar permission mili, varna false.
+ */
+export async function requestNotificationPermission() {
+    if (!('Notification' in window)) {
+        alert('This browser does not support desktop notification');
+        return false;
+    }
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+        console.log('Notification permission granted.');
+        return true;
+    } else {
+        console.log('Notification permission denied.');
+        return false;
+    }
+}
+// --- NAYE FUNCTIONS KA ANT ---
+
+
 // --- Modal Functions ---
 
 function showMemberProfileModal(memberId) {
-    // === YAHAN BADLAV KIYA GAYA HAI ===
-    // 'allMembersData' ek array hai, isliye seedhe .find() ka istemal karenge.
     const member = allMembersData.find(m => m.id === memberId);
     if (!member) return;
     currentMemberForFullView = memberId;
@@ -228,7 +309,6 @@ function showSipStatusModal() {
     const container = getElement('sipStatusListContainer');
     if (!container) return;
     container.innerHTML = '';
-    // === YAHAN BADLAV KIYA GAYA HAI ===
     const sortedMembers = [...allMembersData].filter(m => m.status === 'Approved').sort((a, b) => (a.sipStatus.paid ? 1 : 0) - (b.sipStatus.paid ? 1 : 0) || a.name.localeCompare(b.name));
     sortedMembers.forEach(member => {
         const item = document.createElement('div');
@@ -247,7 +327,6 @@ function showAllMembersModal() {
     const container = getElement('allMembersListContainer');
     if (!container) return;
     container.innerHTML = '';
-    // === YAHAN BADLAV KIYA GAYA HAI ===
     const sortedMembers = [...allMembersData].filter(m => m.status === 'Approved').sort((a, b) => a.name.localeCompare(b.name));
     sortedMembers.forEach(member => {
         const item = document.createElement('div');
@@ -286,8 +365,6 @@ function showPenaltyWalletModal() {
     }
     openModal(elements.penaltyWalletModal);
 }
-
-// Baaki ka code (Event Listeners, Helpers, etc.) jaisa hai waisa hi rahega...
 
 // --- Event Listeners & Helpers ---
 function setupEventListeners(database) {
@@ -459,19 +536,35 @@ function buildInfoSlider() {
     feather.replace();
 }
 
-function processTodaysTransactions() {
-    if (!allTransactions || allTransactions.length === 0) return;
-    const today = new Date().toISOString().split('T')[0];
-    const todaysTransactions = allTransactions.filter(tx => new Date(tx.date).toISOString().split('T')[0] === today);
-    if (!popupsHaveBeenShown && todaysTransactions.length > 0) {
-        todaysTransactions.forEach((tx, index) => {
-            setTimeout(() => showPopupNotification(tx), index * 1500);
+// === YAHAN FUNCTION KO UPDATE KIYA GAYA HAI ===
+function processAndShowNotifications() {
+    // 1. In-App Pop-up notifications
+    if (!popupsHaveBeenShown) {
+        // Transactions ke liye pop-ups
+        const today = new Date().toISOString().split('T')[0];
+        const todaysTransactions = allTransactions.filter(tx => new Date(tx.date).toISOString().split('T')[0] === today);
+        if (todaysTransactions.length > 0) {
+            todaysTransactions.forEach((tx, index) => {
+                setTimeout(() => showPopupNotification('transaction', tx), index * 1500);
+            });
+        }
+        // Manual notifications ke liye pop-ups
+        Object.values(allManualNotifications).forEach((notif, index) => {
+             setTimeout(() => showPopupNotification('manual', notif), (index + todaysTransactions.length) * 1500);
         });
+
         popupsHaveBeenShown = true;
     }
-    const viewedToday = sessionStorage.getItem(`notificationsViewed_${today}`);
+
+    // 2. Notification Bell icon dot
+    const verifiedMemberId = localStorage.getItem('verifiedMemberId');
+    if (!verifiedMemberId) return;
+    
+    const userReminders = Object.values(allAutomatedQueue).filter(item => item.memberId === verifiedMemberId && item.status === 'active');
+    const viewedToday = sessionStorage.getItem(`notificationsViewed_${new Date().toISOString().split('T')[0]}`);
     const dot = getElement('notificationDot');
-    if (dot && todaysTransactions.length > 0 && !viewedToday) {
+
+    if (dot && (userReminders.length > 0 || Object.keys(allManualNotifications).length > 0) && !viewedToday) {
         dot.style.display = 'block';
     }
 }
@@ -480,53 +573,85 @@ function displayNotifications() {
     const list = getElement('notificationList');
     if (!list) return;
     list.innerHTML = '';
-    const today = new Date().toISOString().split('T')[0];
-    const todaysTransactions = allTransactions.filter(tx => new Date(tx.date).toISOString().split('T')[0] === today).sort((a,b) => new Date(b.date) - new Date(a.date));
-    if (todaysTransactions.length === 0) {
-        list.innerHTML = `<li class="no-notifications">No activity today.</li>`;
+    const verifiedMemberId = localStorage.getItem('verifiedMemberId');
+    if (!verifiedMemberId) {
+         list.innerHTML = `<li class="no-notifications">Please verify your device to see notifications.</li>`;
+         return;
+    }
+
+    // 1. Apne reminders filter karein
+    const userReminders = Object.values(allAutomatedQueue)
+        .filter(item => item.memberId === verifiedMemberId && item.status === 'active')
+        .map(item => ({...item, type: 'reminder', date: Date.now()})); // Date for sorting
+
+    // 2. Manual notifications
+    const manualNotifs = Object.values(allManualNotifications)
+        .map(item => ({...item, type: 'manual', date: item.createdAt}));
+
+    const allNotifs = [...userReminders, ...manualNotifs].sort((a,b) => b.date - a.date);
+
+    if (allNotifs.length === 0) {
+        list.innerHTML = `<li class="no-notifications">No new notifications.</li>`;
         return;
     }
-    todaysTransactions.forEach(tx => {
-        let text = '', amount = '', typeClass = '';
-        const member = allMembersData.find(m => m.id === tx.memberId);
-        if (!member) return;
-        switch(tx.type) {
-            case 'SIP': text = `<strong>${member.name}</strong> paid their SIP.`; amount = `+ ₹${(tx.amount || 0).toLocaleString()}`; typeClass = 'sip'; break;
-            case 'Loan Taken': text = `A loan was disbursed to <strong>${member.name}</strong>.`; amount = `- ₹${(tx.amount || 0).toLocaleString()}`; typeClass = 'loan'; break;
-            case 'Loan Payment': text = `<strong>${member.name}</strong> made a loan payment.`; amount = `+ ₹${(tx.principalPaid || 0).toLocaleString()}`; typeClass = 'payment'; break;
+
+    allNotifs.forEach(item => {
+        let icon = '', text = '', time = '';
+        if (item.type === 'reminder') {
+            icon = 'bell';
+            text = `<strong>Reminder:</strong> ${item.type}`;
+            time = 'Just now';
+        } else if (item.type === 'manual') {
+            icon = 'gift';
+            text = `<strong>${item.title}</strong>`;
+            time = new Date(item.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         }
+
         list.innerHTML += `
             <li class="notification-item">
-                <img src="${member.profilePicUrl || DEFAULT_IMAGE}" alt="${member.name}">
+                <div style="margin-right: 15px;"><i data-feather="${icon}" style="color: var(--primary-color);"></i></div>
                 <div class="notification-details">
                     <p class="notification-text">${text}</p>
-                    <div class="notification-time">${new Date(tx.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+                    <div class="notification-time">${time}</div>
                 </div>
-                <span class="notification-amount ${typeClass}">${amount}</span>
             </li>`;
     });
+    feather.replace();
 }
 
-function showPopupNotification(tx) {
+function showPopupNotification(type, data) {
     const container = getElement('notification-popup-container');
     if (!container) return;
-    const member = allMembersData.find(m => m.id === tx.memberId);
-    if (!member) return;
+    
     const popup = document.createElement('div');
     popup.className = 'notification-popup';
-    let text = '', amount = '', typeClass = '';
-    switch(tx.type) {
-        case 'SIP': text = `<p><strong>${member.name}</strong> paid their SIP.</p>`; amount = `+ ₹${(tx.amount || 0).toLocaleString()}`; typeClass = 'sip'; break;
-        case 'Loan Taken': text = `<p>Loan disbursed to <strong>${member.name}</strong>.</p>`; amount = `- ₹${(tx.amount || 0).toLocaleString()}`; typeClass = 'loan'; break;
-        case 'Loan Payment': text = `<p><strong>${member.name}</strong> made a loan payment.</p>`; amount = `+ ₹${(tx.principalPaid || 0).toLocaleString()}`; typeClass = 'payment'; break;
-        default: return;
+    let contentHTML = '';
+
+    if(type === 'transaction') {
+        const member = allMembersData.find(m => m.id === data.memberId);
+        if (!member) return;
+        let text = '', amount = '', typeClass = '';
+        switch(data.type) {
+            case 'SIP': text = `<p><strong>${member.name}</strong> paid their SIP.</p>`; amount = `+ ₹${(data.amount || 0).toLocaleString()}`; typeClass = 'sip'; break;
+            case 'Loan Taken': text = `<p>Loan disbursed to <strong>${member.name}</strong>.</p>`; amount = `- ₹${(data.amount || 0).toLocaleString()}`; typeClass = 'loan'; break;
+            case 'Loan Payment': text = `<p><strong>${member.name}</strong> made a loan payment.</p>`; amount = `+ ₹${(data.principalPaid || 0).toLocaleString()}`; typeClass = 'payment'; break;
+            default: return;
+        }
+        contentHTML = `
+            <img src="${member.profilePicUrl}" alt="${member.name}" class="notification-popup-img">
+            <div class="notification-popup-content">
+                ${text}<p class="notification-popup-amount ${typeClass}">${amount}</p>
+            </div>`;
+    } else if (type === 'manual') {
+         contentHTML = `
+            <img src="${data.imageUrl}" alt="${data.title}" class="notification-popup-img">
+            <div class="notification-popup-content">
+                <p><strong>${data.title}</strong></p>
+            </div>`;
     }
-    popup.innerHTML = `
-        <img src="${member.profilePicUrl}" alt="${member.name}" class="notification-popup-img">
-        <div class="notification-popup-content">
-            ${text}<p class="notification-popup-amount ${typeClass}">${amount}</p>
-        </div>
-        <button class="notification-popup-close">&times;</button>`;
+
+    popup.innerHTML = `${contentHTML}<button class="notification-popup-close">&times;</button>`;
+    
     popup.querySelector('.notification-popup-close').onclick = () => {
         popup.classList.add('closing');
         popup.addEventListener('animationend', () => popup.remove(), { once: true });
@@ -534,8 +659,10 @@ function showPopupNotification(tx) {
     popup.addEventListener('animationend', (e) => {
         if (e.animationName === 'fadeOutNotification') popup.remove();
     }, { once: true });
+
     container.appendChild(popup);
 }
+// === BADLAV SAMAPT ===
 
 function setupPWA() {
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -592,4 +719,5 @@ function showFullImage(src, alt) {
 }
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
-function formatDate(dateString) { return dateString ? new Date(dateString).toLocaleDateDateString('en-GB') : 'N/A'; }
+function formatDate(dateString) { return dateString ? new Date(dateString).toLocaleDateString('en-GB') : 'N/A'; }
+
