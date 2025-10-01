@@ -9,9 +9,7 @@ let communityStats = {};
 let cardColors = {};
 let allManualNotifications = {};
 let allAutomatedQueue = {};
-// === YAHAN BADLAV KIYA GAYA HAI ===
 let allProducts = {};
-// === BADLAV SAMAPT ===
 let currentMemberForFullView = null; 
 let deferredInstallPrompt = null;
 let popupsHaveBeenShown = false;
@@ -38,10 +36,8 @@ const elements = {
     passwordPromptModal: getElement('passwordPromptModal'),
     imageModal: getElement('imageModal'),
     deviceVerificationModal: getElement('deviceVerificationModal'),
-    // === YAHAN BADLAV KIYA GAYA HAI ===
     productsContainer: getElement('productsContainer'),
     emiModal: getElement('emiModal'),
-    // === BADLAV SAMAPT ===
 };
 
 const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
@@ -63,9 +59,7 @@ export function renderPage(data) {
     cardColors = (data.adminSettings && data.adminSettings.card_colors) || {};
     allManualNotifications = data.manualNotifications || {};
     allAutomatedQueue = data.automatedQueue || {};
-    // === YAHAN BADLAV KIYA GAYA HAI ===
     allProducts = data.allProducts || {};
-    // === BADLAV SAMAPT ===
 
     displayHeaderButtons((data.adminSettings && data.adminSettings.header_buttons) || {});
     const approvedMembers = allMembersData.filter(m => m.status === 'Approved');
@@ -77,9 +71,7 @@ export function renderPage(data) {
     startHeaderDisplayRotator(approvedMembers, communityStats);
     buildInfoSlider();
     processAndShowNotifications();
-    // === YAHAN BADLAV KIYA GAYA HAI ===
     renderProducts();
-    // === BADLAV SAMAPT ===
     
     feather.replace();
 }
@@ -130,8 +122,6 @@ function displayMembers(members) {
     });
     observeElements(document.querySelectorAll('.animate-on-scroll'));
 }
-
-// === YAHAN NAYE FUNCTIONS JODE GAYE HAIN ===
 
 /**
  * Products ko screen par render karta hai.
@@ -186,7 +176,8 @@ function renderProducts() {
         if (emiLink) {
             emiLink.addEventListener('click', () => {
                 const clickedProduct = allProducts[emiLink.dataset.productId];
-                showEmiModal(clickedProduct.emi, clickedProduct.name);
+                // === YAHAN BADLAV KIYA GAYA HAI: Product ka price bhi pass karein ===
+                showEmiModal(clickedProduct.emi, clickedProduct.name, parseFloat(clickedProduct.price));
             });
         }
 
@@ -198,8 +189,10 @@ function renderProducts() {
  * EMI details ke liye modal dikhata hai.
  * @param {object} emiOptions - EMI ke options (e.g., { '3': '5', '6': '8' })
  * @param {string} productName - Product ka naam.
+ * @param {number} productPrice - Product ki keemat.
  */
-function showEmiModal(emiOptions, productName) {
+// === YAHAN FUNCTION KO UPDATE KIYA GAYA HAI ===
+function showEmiModal(emiOptions, productName, productPrice) {
     const modal = elements.emiModal;
     if (!modal) return;
 
@@ -214,7 +207,16 @@ function showEmiModal(emiOptions, productName) {
     if (validEmi.length > 0) {
         validEmi.forEach(([duration, rate]) => {
             const li = document.createElement('li');
-            li.innerHTML = `<span class="duration">${duration} Months</span> <span class="rate">${rate}% Interest</span>`;
+            const interestRate = parseFloat(rate);
+            const months = parseInt(duration);
+            
+            // EMI Calculation
+            const totalAmount = productPrice * (1 + interestRate / 100);
+            const monthlyEmi = Math.ceil(totalAmount / months);
+
+            li.innerHTML = `
+                <span class="duration">${duration} Months</span> 
+                <span class="rate">${rate}% Interest (${monthlyEmi.toLocaleString('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 })}/mo)</span>`;
             list.appendChild(li);
         });
     } else {
@@ -223,8 +225,7 @@ function showEmiModal(emiOptions, productName) {
 
     openModal(modal);
 }
-
-// === BAAKI PURANE FUNCTIONS NEECHE HAIN ===
+// === BADLAV SAMAPT ===
 
 function displayHeaderButtons(buttons) {
     if (!elements.headerActionsContainer || !elements.staticHeaderButtonsContainer) return;
@@ -308,10 +309,8 @@ export function promptForDeviceVerification(allMembers) {
     return new Promise(resolve => {
         const modal = elements.deviceVerificationModal;
         if (!modal) return resolve(null);
-
         const modalContent = modal.querySelector('.modal-content');
         const sortedMembers = [...allMembers].sort((a, b) => a.name.localeCompare(b.name));
-
         modalContent.innerHTML = `
             <span class="close" id="closeVerificationModal">×</span>
             <h2>Verify Your Device</h2>
@@ -324,16 +323,13 @@ export function promptForDeviceVerification(allMembers) {
             </select>
             <button id="confirmMemberBtn" style="width: 100%; padding: 12px; background-color: var(--success-color); color: white; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer;">Confirm</button>
         `;
-
         const confirmBtn = getElement('confirmMemberBtn');
         const memberSelect = getElement('memberSelect');
         const closeModalBtn = getElement('closeVerificationModal');
-
         const cleanupAndResolve = (value) => {
             closeModal(modal);
             resolve(value);
         };
-
         confirmBtn.onclick = () => {
             if (memberSelect.value) {
                 cleanupAndResolve(memberSelect.value);
@@ -341,9 +337,7 @@ export function promptForDeviceVerification(allMembers) {
                 alert('Please select your name.');
             }
         };
-
         closeModalBtn.onclick = () => cleanupAndResolve(null);
-
         openModal(modal);
     });
 }
@@ -354,13 +348,7 @@ export async function requestNotificationPermission() {
         return false;
     }
     const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
-        console.log('Notification permission granted.');
-        return true;
-    } else {
-        console.log('Notification permission denied.');
-        return false;
-    }
+    return permission === 'granted';
 }
 
 function showMemberProfileModal(memberId) {
