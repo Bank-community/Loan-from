@@ -7,9 +7,10 @@ let penaltyWalletData = {};
 let allTransactions = [];
 let communityStats = {};
 let cardColors = {};
-// === YAHAN BADLAV KIYA GAYA HAI ===
 let allManualNotifications = {};
 let allAutomatedQueue = {};
+// === YAHAN BADLAV KIYA GAYA HAI ===
+let allProducts = {};
 // === BADLAV SAMAPT ===
 let currentMemberForFullView = null; 
 let deferredInstallPrompt = null;
@@ -36,13 +37,15 @@ const elements = {
     allMembersModal: getElement('allMembersModal'),
     passwordPromptModal: getElement('passwordPromptModal'),
     imageModal: getElement('imageModal'),
-    // === YAHAN BADLAV KIYA GAYA HAI ===
     deviceVerificationModal: getElement('deviceVerificationModal'),
+    // === YAHAN BADLAV KIYA GAYA HAI ===
+    productsContainer: getElement('productsContainer'),
+    emiModal: getElement('emiModal'),
     // === BADLAV SAMAPT ===
 };
 
 const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
-const BANK_LOGO_URL = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
+const WHATSAPP_NUMBER = '7903698180';
 
 // --- Initialization ---
 export function initUI(database) {
@@ -58,9 +61,10 @@ export function renderPage(data) {
     allTransactions = data.allTransactions || [];
     communityStats = data.communityStats || {};
     cardColors = (data.adminSettings && data.adminSettings.card_colors) || {};
-    // === YAHAN BADLAV KIYA GAYA HAI ===
     allManualNotifications = data.manualNotifications || {};
     allAutomatedQueue = data.automatedQueue || {};
+    // === YAHAN BADLAV KIYA GAYA HAI ===
+    allProducts = data.allProducts || {};
     // === BADLAV SAMAPT ===
 
     displayHeaderButtons((data.adminSettings && data.adminSettings.header_buttons) || {});
@@ -72,8 +76,9 @@ export function renderPage(data) {
     updateInfoCards(approvedMembers.length, communityStats.totalLoanDisbursed || 0);
     startHeaderDisplayRotator(approvedMembers, communityStats);
     buildInfoSlider();
-    // === YAHAN BADLAV KIYA GAYA HAI ===
     processAndShowNotifications();
+    // === YAHAN BADLAV KIYA GAYA HAI ===
+    renderProducts();
     // === BADLAV SAMAPT ===
     
     feather.replace();
@@ -125,6 +130,101 @@ function displayMembers(members) {
     });
     observeElements(document.querySelectorAll('.animate-on-scroll'));
 }
+
+// === YAHAN NAYE FUNCTIONS JODE GAYE HAIN ===
+
+/**
+ * Products ko screen par render karta hai.
+ */
+function renderProducts() {
+    const container = elements.productsContainer;
+    if (!container) return;
+
+    const productEntries = Object.entries(allProducts);
+
+    if (productEntries.length === 0) {
+        container.innerHTML = '<p class="loading-text">No products available right now.</p>';
+        return;
+    }
+
+    container.innerHTML = ''; // Purana content saaf karein
+
+    productEntries.forEach(([id, product]) => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+
+        const price = parseFloat(product.price) || 0;
+        const mrp = parseFloat(product.mrp) || 0;
+        const discount = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
+
+        const whatsappMessage = encodeURIComponent(`Hello, I want to know more about ${product.name} priced at ₹${price.toLocaleString('en-IN')}.`);
+        const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
+
+        card.innerHTML = `
+            <div class="product-image-wrapper">
+                <img src="${product.imageUrl}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
+            </div>
+            <div class="product-info">
+                <p class="product-name">${product.name}</p>
+                <div class="product-price-container">
+                    <span class="product-price">₹${price.toLocaleString('en-IN')}</span>
+                    ${mrp > price ? `<span class="product-mrp">₹${mrp.toLocaleString('en-IN')}</span>` : ''}
+                    ${discount > 0 ? `<span class="product-discount">${discount}% OFF</span>` : ''}
+                </div>
+                ${product.emi && Object.keys(product.emi).length > 0 ? `<a class="product-emi-link" data-product-id="${id}">View EMI Details</a>` : ''}
+            </div>
+            <div class="product-actions">
+                <a href="${whatsappLink}" target="_blank" class="product-btn whatsapp">
+                    <img src="https://www.svgrepo.com/show/452133/whatsapp.svg" alt="WhatsApp">
+                </a>
+                <a href="${product.exploreLink || '#'}" target="_blank" class="product-btn explore">Explore</a>
+            </div>
+        `;
+
+        // EMI link ke liye event listener attach karein
+        const emiLink = card.querySelector('.product-emi-link');
+        if (emiLink) {
+            emiLink.addEventListener('click', () => {
+                const clickedProduct = allProducts[emiLink.dataset.productId];
+                showEmiModal(clickedProduct.emi, clickedProduct.name);
+            });
+        }
+
+        container.appendChild(card);
+    });
+}
+
+/**
+ * EMI details ke liye modal dikhata hai.
+ * @param {object} emiOptions - EMI ke options (e.g., { '3': '5', '6': '8' })
+ * @param {string} productName - Product ka naam.
+ */
+function showEmiModal(emiOptions, productName) {
+    const modal = elements.emiModal;
+    if (!modal) return;
+
+    const modalTitle = getElement('emiModalTitle');
+    const list = getElement('emiDetailsList');
+
+    modalTitle.textContent = `EMI Details for ${productName}`;
+    list.innerHTML = '';
+
+    const validEmi = Object.entries(emiOptions).filter(([, rate]) => rate && parseFloat(rate) >= 0);
+
+    if (validEmi.length > 0) {
+        validEmi.forEach(([duration, rate]) => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span class="duration">${duration} Months</span> <span class="rate">${rate}% Interest</span>`;
+            list.appendChild(li);
+        });
+    } else {
+        list.innerHTML = '<li>No EMI options available for this product.</li>';
+    }
+
+    openModal(modal);
+}
+
+// === BAAKI PURANE FUNCTIONS NEECHE HAIN ===
 
 function displayHeaderButtons(buttons) {
     if (!elements.headerActionsContainer || !elements.staticHeaderButtonsContainer) return;
@@ -204,13 +304,6 @@ function updateInfoCards(memberCount, totalLoan) {
     if (elements.totalLoanValue) elements.totalLoanValue.textContent = (totalLoan || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
 }
 
-// --- NAYE FUNCTIONS YAHAN JODE GAYE HAIN ---
-
-/**
- * User se device verification ke liye prompt karta hai.
- * @param {Array} allMembers - Sabhi members ka array.
- * @returns {Promise<string|null>} - Chune gaye member ki ID ya null.
- */
 export function promptForDeviceVerification(allMembers) {
     return new Promise(resolve => {
         const modal = elements.deviceVerificationModal;
@@ -255,10 +348,6 @@ export function promptForDeviceVerification(allMembers) {
     });
 }
 
-/**
- * Browser se push notification ki permission mangta hai.
- * @returns {Promise<boolean>} - True agar permission mili, varna false.
- */
 export async function requestNotificationPermission() {
     if (!('Notification' in window)) {
         alert('This browser does not support desktop notification');
@@ -273,10 +362,6 @@ export async function requestNotificationPermission() {
         return false;
     }
 }
-// --- NAYE FUNCTIONS KA ANT ---
-
-
-// --- Modal Functions ---
 
 function showMemberProfileModal(memberId) {
     const member = allMembersData.find(m => m.id === memberId);
@@ -366,7 +451,6 @@ function showPenaltyWalletModal() {
     openModal(elements.penaltyWalletModal);
 }
 
-// --- Event Listeners & Helpers ---
 function setupEventListeners(database) {
     document.body.addEventListener('click', (e) => {
         if (e.target.matches('.close, .close *')) {
@@ -536,11 +620,8 @@ function buildInfoSlider() {
     feather.replace();
 }
 
-// === YAHAN FUNCTION KO UPDATE KIYA GAYA HAI ===
 function processAndShowNotifications() {
-    // 1. In-App Pop-up notifications
     if (!popupsHaveBeenShown) {
-        // Transactions ke liye pop-ups
         const today = new Date().toISOString().split('T')[0];
         const todaysTransactions = allTransactions.filter(tx => new Date(tx.date).toISOString().split('T')[0] === today);
         if (todaysTransactions.length > 0) {
@@ -548,22 +629,16 @@ function processAndShowNotifications() {
                 setTimeout(() => showPopupNotification('transaction', tx), index * 1500);
             });
         }
-        // Manual notifications ke liye pop-ups
         Object.values(allManualNotifications).forEach((notif, index) => {
              setTimeout(() => showPopupNotification('manual', notif), (index + todaysTransactions.length) * 1500);
         });
-
         popupsHaveBeenShown = true;
     }
-
-    // 2. Notification Bell icon dot
     const verifiedMemberId = localStorage.getItem('verifiedMemberId');
     if (!verifiedMemberId) return;
-    
     const userReminders = Object.values(allAutomatedQueue).filter(item => item.memberId === verifiedMemberId && item.status === 'active');
     const viewedToday = sessionStorage.getItem(`notificationsViewed_${new Date().toISOString().split('T')[0]}`);
     const dot = getElement('notificationDot');
-
     if (dot && (userReminders.length > 0 || Object.keys(allManualNotifications).length > 0) && !viewedToday) {
         dot.style.display = 'block';
     }
@@ -578,23 +653,16 @@ function displayNotifications() {
          list.innerHTML = `<li class="no-notifications">Please verify your device to see notifications.</li>`;
          return;
     }
-
-    // 1. Apne reminders filter karein
     const userReminders = Object.values(allAutomatedQueue)
         .filter(item => item.memberId === verifiedMemberId && item.status === 'active')
-        .map(item => ({...item, type: 'reminder', date: Date.now()})); // Date for sorting
-
-    // 2. Manual notifications
+        .map(item => ({...item, type: 'reminder', date: Date.now()})); 
     const manualNotifs = Object.values(allManualNotifications)
         .map(item => ({...item, type: 'manual', date: item.createdAt}));
-
     const allNotifs = [...userReminders, ...manualNotifs].sort((a,b) => b.date - a.date);
-
     if (allNotifs.length === 0) {
         list.innerHTML = `<li class="no-notifications">No new notifications.</li>`;
         return;
     }
-
     allNotifs.forEach(item => {
         let icon = '', text = '', time = '';
         if (item.type === 'reminder') {
@@ -606,7 +674,6 @@ function displayNotifications() {
             text = `<strong>${item.title}</strong>`;
             time = new Date(item.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         }
-
         list.innerHTML += `
             <li class="notification-item">
                 <div style="margin-right: 15px;"><i data-feather="${icon}" style="color: var(--primary-color);"></i></div>
@@ -622,11 +689,9 @@ function displayNotifications() {
 function showPopupNotification(type, data) {
     const container = getElement('notification-popup-container');
     if (!container) return;
-    
     const popup = document.createElement('div');
     popup.className = 'notification-popup';
     let contentHTML = '';
-
     if(type === 'transaction') {
         const member = allMembersData.find(m => m.id === data.memberId);
         if (!member) return;
@@ -649,9 +714,7 @@ function showPopupNotification(type, data) {
                 <p><strong>${data.title}</strong></p>
             </div>`;
     }
-
     popup.innerHTML = `${contentHTML}<button class="notification-popup-close">&times;</button>`;
-    
     popup.querySelector('.notification-popup-close').onclick = () => {
         popup.classList.add('closing');
         popup.addEventListener('animationend', () => popup.remove(), { once: true });
@@ -659,10 +722,8 @@ function showPopupNotification(type, data) {
     popup.addEventListener('animationend', (e) => {
         if (e.animationName === 'fadeOutNotification') popup.remove();
     }, { once: true });
-
     container.appendChild(popup);
 }
-// === BADLAV SAMAPT ===
 
 function setupPWA() {
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -720,4 +781,5 @@ function showFullImage(src, alt) {
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
 function formatDate(dateString) { return dateString ? new Date(dateString).toLocaleDateString('en-GB') : 'N/A'; }
+
 
