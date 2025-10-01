@@ -641,9 +641,23 @@ function displayNotifications() {
             header = currentUser.name;
             time = 'Just now';
             
-            // SIP Reminder ke liye special text
+            // SIP Reminder ke liye special text with days left
             if (item.type.includes('SIP Payment Reminder')) {
-                body = `₹${currentUser.sipAmount || 500} SIP Payment Now`;
+                const today = new Date();
+                const currentDay = today.getDate();
+                const dueDate = 10;
+                const daysLeft = dueDate - currentDay;
+
+                const sipAmountHTML = `<strong style="color: red;">₹${currentUser.sipAmount || 500}</strong>`;
+
+                if (daysLeft > 1) {
+                    body = `${sipAmountHTML} SIP Payment. Only ${daysLeft} days left!`;
+                } else if (daysLeft === 1) {
+                    body = `${sipAmountHTML} SIP Payment. Only 1 day left!`;
+                } else {
+                    body = `${sipAmountHTML} SIP Payment. Today is the last day!`;
+                }
+
             } else {
                 body = item.type; // Baaki reminders ke liye default text
             }
@@ -666,6 +680,7 @@ function displayNotifications() {
     });
     feather.replace();
 }
+// === BADLAV SAMAPT ===
 
 function showPopupNotification(type, data) {
     const container = getElement('notification-popup-container');
