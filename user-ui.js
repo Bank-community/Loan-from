@@ -619,14 +619,21 @@ function displayNotifications() {
          return;
     }
     
-    const userReminders = Object.values(allAutomatedQueue)
-        .filter(item => item.memberId === verifiedMemberId && item.status === 'active')
-        .map(item => ({...item, category: 'reminder', date: Date.now()})); 
+    // Pehle user ke reminders ko filter karein
+    let userReminders = Object.values(allAutomatedQueue)
+        .filter(item => item.memberId === verifiedMemberId && item.status === 'active');
+        
+    // AB, agar SIP pay ho gaya hai to SIP reminder ko list se hata dein
+    if (currentUser.sipStatus.paid === true) {
+        userReminders = userReminders.filter(item => !item.type.includes('SIP Payment Reminder'));
+    }
+
+    const finalReminders = userReminders.map(item => ({...item, category: 'reminder', date: Date.now()}));
     
     const manualNotifs = Object.values(allManualNotifications)
         .map(item => ({...item, category: 'manual', date: item.createdAt}));
 
-    const allNotifs = [...userReminders, ...manualNotifs].sort((a,b) => b.date - a.date);
+    const allNotifs = [...finalReminders, ...manualNotifs].sort((a,b) => b.date - a.date);
 
     if (allNotifs.length === 0) {
         list.innerHTML = `<li class="no-notifications">No new notifications.</li>`;
@@ -641,7 +648,6 @@ function displayNotifications() {
             header = currentUser.name;
             time = 'Just now';
             
-            // SIP Reminder ke liye special text with days left
             if (item.type.includes('SIP Payment Reminder')) {
                 const today = new Date();
                 const currentDay = today.getDate();
@@ -654,17 +660,17 @@ function displayNotifications() {
                     body = `${sipAmountHTML} SIP Payment. Only ${daysLeft} days left!`;
                 } else if (daysLeft === 1) {
                     body = `${sipAmountHTML} SIP Payment. Only 1 day left!`;
-                } else {
-                    body = `${sipAmountHTML} SIP Payment. Today is the last day!`;
+                } else if (daysLeft <= 0) {
+                     body = `${sipAmountHTML} SIP Payment. Today is the last day!`;
                 }
 
             } else {
-                body = item.type; // Baaki reminders ke liye default text
+                body = item.type;
             }
         } else if (item.category === 'manual') {
             iconHTML = `<div class="notification-icon-wrapper"><i data-feather="gift"></i></div>`;
             header = item.title;
-            body = ''; // Manual notifications mein body nahi hoti
+            body = '';
             time = new Date(item.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         }
 
@@ -681,6 +687,7 @@ function displayNotifications() {
     feather.replace();
 }
 // === BADLAV SAMAPT ===
+
 
 function showPopupNotification(type, data) {
     const container = getElement('notification-popup-container');
