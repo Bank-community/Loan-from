@@ -9,13 +9,16 @@
     <link rel="shortcut icon" href="https://i.ibb.co/pjB1bQ7J/1752978674430.jpg" type="image/x-icon">
     <link rel="apple-touch-icon" href="https://i.ibb.co/9HF2cM4w/1752676628661.jpg" sizes="180x180">
     
+    <!-- Third-party libraries -->
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
+    <!-- Firebase Libraries (Version 8) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <!-- Custom CSS file link -->
     <link rel="stylesheet" href="user-style.css">
 </head>
 <body>
@@ -39,7 +42,8 @@
             <div class="header-container"> 
                 <h2 class="bank-headline">BANK MEMBERS</h2> 
                 <div class="header-buttons-wrapper" id="staticHeaderButtons">
-                    </div>
+                    <!-- Dynamic buttons will be loaded here by JS -->
+                </div>
             </div> 
             <div class="member-slider" id="memberContainer"> <p class="loading-text">Authenticating...</p> </div> 
         </section> 
@@ -51,6 +55,7 @@
             <div class="slide-indicator" id="custom-cards-indicator"></div>
         </section>
 
+        <!-- Action Cards Section -->
         <section class="action-cards-section animate-on-scroll"> 
             <h2>Quick Actions</h2> 
             <div class="action-cards"> 
@@ -69,8 +74,19 @@
                 <a href="loan_form.html" class="action-card animate-on-scroll"><i data-feather="file-text" class="action-card-icon"></i><span>Loan form</span></a> 
                 <a href="registration.html" target="_blank" class="action-card animate-on-scroll"><i data-feather="user-plus" class="action-card-icon"></i><span>New Registration</span></a> 
             </div> 
-        </section> 
+        </section>
+        
+        <!-- === YAHAN BADLAV KIYA GAYA HAI: Naya Product Section === -->
+        <section class="products-section animate-on-scroll">
+            <h2>Products on EMI</h2>
+            <div class="products-container" id="productsContainer">
+                <!-- Product cards will be loaded here by user-ui.js -->
+                <p class="loading-text">Loading Products...</p>
+            </div>
+        </section>
+        <!-- === BADLAV SAMAPT === -->
 
+        <!-- Info and Letter Sections -->
         <section class="info-slider-section animate-on-scroll"> <h2>💡 Community Info</h2> <div class="info-slider-container" id="infoSlider"> </div> </section> 
         <section class="letter-slider-section animate-on-scroll"> <h2><i data-feather="image"></i> About Community Letter</h2> <div class="slider-container"> <div class="slides" id="communityLetterSlides"></div> <button class="prev" id="prevSlideBtn">❮</button> <button class="next" id="nextSlideBtn">❯</button> </div> <div class="slide-indicator" id="slideIndicator"></div> </section> 
     </main>
@@ -79,6 +95,7 @@
         <p>© <span id="currentYear"></span> Bank Community Loan. All rights reserved.<a href="Exit_Letter.html" style="color: #a0aec0; text-decoration: none; font-size: 0.8em; opacity: 0.7;" title="Exit Community Letter">Exit</a></p>
     </footer>
 
+    <!-- All Modals Start Here -->
     <div id="balanceModal" class="modal">
         <div class="modal-content">
             <span class="close" id="closeBalanceModal">×</span>
@@ -187,11 +204,28 @@
     
     <div id="deviceVerificationModal" class="modal">
         <div class="modal-content">
-            </div>
+            <!-- Dynamic content will be injected here by user-ui.js -->
+        </div>
     </div>
+
+    <!-- === YAHAN BADLAV KIYA GAYA HAI: Naya EMI Modal === -->
+    <div id="emiModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeEmiModal">×</span>
+            <h2 id="emiModalTitle">EMI Details</h2>
+            <ul class="emi-details-list" id="emiDetailsList">
+                <!-- EMI details will be loaded here by user-ui.js -->
+            </ul>
+        </div>
+    </div>
+    <!-- === BADLAV SAMAPT === -->
     
     <div id="notification-popup-container"></div>
+    <!-- All Modals End Here -->
+
+    <!-- JavaScript files link (modular approach) -->
     <script src="user-main.js" type="module"></script>
 
 </body>
 </html>
+
