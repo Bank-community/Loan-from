@@ -610,30 +610,25 @@ function displayNotifications() {
     const list = getElement('notificationList');
     if (!list) return;
     list.innerHTML = '';
-    
+
     const verifiedMemberId = localStorage.getItem('verifiedMemberId');
     const currentUser = allMembersData.find(m => m.id === verifiedMemberId);
 
     if (!currentUser) {
-         list.innerHTML = `<li class="no-notifications">Please verify your device to see notifications.</li>`;
-         return;
+        list.innerHTML = `<li class="no-notifications">Please verify your device to see notifications.</li>`;
+        return;
     }
-    
-    // Pehle user ke reminders ko filter karein
+
     let userReminders = Object.values(allAutomatedQueue)
         .filter(item => item.memberId === verifiedMemberId && item.status === 'active');
-        
-    // AB, agar SIP pay ho gaya hai to SIP reminder ko list se hata dein
+
     if (currentUser.sipStatus.paid === true) {
         userReminders = userReminders.filter(item => !item.type.includes('SIP Payment Reminder'));
     }
 
-    const finalReminders = userReminders.map(item => ({...item, category: 'reminder', date: Date.now()}));
-    
-    const manualNotifs = Object.values(allManualNotifications)
-        .map(item => ({...item, category: 'manual', date: item.createdAt}));
-
-    const allNotifs = [...finalReminders, ...manualNotifs].sort((a,b) => b.date - a.date);
+    const finalReminders = userReminders.map(item => ({ ...item, category: 'reminder', date: Date.now() }));
+    const manualNotifs = Object.values(allManualNotifications).map(item => ({ ...item, category: 'manual', date: item.createdAt }));
+    const allNotifs = [...finalReminders, ...manualNotifs].sort((a, b) => b.date - a.date);
 
     if (allNotifs.length === 0) {
         list.innerHTML = `<li class="no-notifications">No new notifications.</li>`;
@@ -641,48 +636,52 @@ function displayNotifications() {
     }
 
     allNotifs.forEach(item => {
-        let iconHTML = '', header = '', body = '', time = '';
+        const li = document.createElement('li');
+        li.className = 'notification-item';
 
         if (item.category === 'reminder') {
-            iconHTML = `<img src="${currentUser.displayImageUrl}" alt="${currentUser.name}" class="notification-img">`;
-            header = currentUser.name;
-            time = 'Just now';
-            
+            li.classList.add('personal');
+            let body = '';
             if (item.type.includes('SIP Payment Reminder')) {
                 const today = new Date();
                 const currentDay = today.getDate();
                 const dueDate = 10;
                 const daysLeft = dueDate - currentDay;
-
                 const sipAmountHTML = `<strong style="color: red;">₹${currentUser.sipAmount || 500}</strong>`;
-
                 if (daysLeft > 1) {
                     body = `${sipAmountHTML} SIP Payment. Only ${daysLeft} days left!`;
                 } else if (daysLeft === 1) {
                     body = `${sipAmountHTML} SIP Payment. Only 1 day left!`;
-                } else if (daysLeft <= 0) {
-                     body = `${sipAmountHTML} SIP Payment. Today is the last day!`;
+                } else {
+                    body = `${sipAmountHTML} SIP Payment. Today is the last day!`;
                 }
-
             } else {
                 body = item.type;
             }
-        } else if (item.category === 'manual') {
-            iconHTML = `<div class="notification-icon-wrapper"><i data-feather="gift"></i></div>`;
-            header = item.title;
-            body = '';
-            time = new Date(item.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-        }
-
-        list.innerHTML += `
-            <li class="notification-item">
-                ${iconHTML}
+            li.innerHTML = `
+                <img src="${currentUser.displayImageUrl}" alt="${currentUser.name}" class="notification-img">
                 <div class="notification-content">
-                    <p class="notification-header">${header}</p>
-                    ${body ? `<p class="notification-body">${body}</p>` : ''}
-                    <span class="notification-time">${time}</span>
+                    <p class="notification-header">${currentUser.name}</p>
+                    <p class="notification-body">${body}</p>
+                    <span class="notification-time">Just now</span>
+                </div>`;
+        } else if (item.category === 'manual') {
+            li.classList.add('manual');
+            let exploreButtonHTML = '';
+            if (item.link) {
+                exploreButtonHTML = `<a href="${item.link}" target="_blank" class="explore-btn">Explore</a>`;
+            }
+            li.innerHTML = `
+                <img src="${item.imageUrl}" class="manual-notification-img" alt="${item.title}" onerror="this.style.display='none'">
+                <div class="manual-notification-content">
+                    <p class="notification-header">${item.title}</p>
                 </div>
-            </li>`;
+                <div class="manual-notification-footer">
+                    <span class="notification-time">${new Date(item.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+                    ${exploreButtonHTML}
+                </div>`;
+        }
+        list.appendChild(li);
     });
     feather.replace();
 }
