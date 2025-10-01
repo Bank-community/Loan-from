@@ -10,8 +10,6 @@ const PRIME_MEMBERS = ["Prince rama", "Amit kumar", "Mithilesh Sahni"];
  * @param {firebase.database.Database} database - Firebase database ka instance.
  * @returns {Promise<object>} - Processed data ka object.
  */
-// === YAHAN BADLAV KIYA GAYA HAI ===
-// Function ka naam theek kar diya gaya hai taaki user-main.js ise call kar sake
 export async function fetchAndProcessData(database) {
     try {
         const snapshot = await database.ref().once('value');
@@ -26,6 +24,13 @@ export async function fetchAndProcessData(database) {
         const allActiveLoansRaw = data.activeLoans || {};
         const penaltyWalletRaw = data.penaltyWallet || {};
         const adminSettingsRaw = data.admin || {};
+        
+        // === YAHAN BADLAV KIYA GAYA HAI ===
+        // Notification data ko fetch karein
+        const notificationsRaw = (data.admin && data.admin.notifications) || {};
+        const manualNotificationsRaw = notificationsRaw.manual || {};
+        const automatedQueueRaw = notificationsRaw.automatedQueue || {};
+        // === BADLAV SAMAPT ===
 
         // Data ko process karne ka process shuru karein
         const processedMembers = {};
@@ -93,7 +98,12 @@ export async function fetchAndProcessData(database) {
             allTransactions,
             penaltyWalletData: penaltyWalletRaw,
             adminSettings: adminSettingsRaw,
-            communityStats
+            communityStats,
+            // === YAHAN BADLAV KIYA GAYA HAI ===
+            // Notification data ko bhi return karein
+            manualNotifications: manualNotificationsRaw,
+            automatedQueue: automatedQueueRaw,
+            // === BADLAV SAMAPT ===
         };
 
     } catch (error) {
@@ -139,3 +149,4 @@ function calculateCommunityStats(processedMembers, allTransactions, allActiveLoa
         totalLoanDisbursed: allTransactions.filter(tx => tx.type === 'Loan Taken').reduce((sum, tx) => sum + tx.amount, 0)
     };
 }
+
