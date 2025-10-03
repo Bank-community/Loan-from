@@ -155,28 +155,18 @@
     async function initializeApp() {
         const loader = document.getElementById('loader');
         try {
-            // Aapka original configuration fetch karne ka tarika
             const response = await fetch('/api/config');
-            if (!response.ok) {
-                throw new Error('Configuration API se fetch nahi ho saki.');
-            }
+            if (!response.ok) throw new Error('Configuration API se fetch nahi ho saki.');
             const config = await response.json();
-
-            if (!firebase.apps.length) {
-                firebase.initializeApp(config.firebase);
-            }
-            
+            if (!firebase.apps.length) firebase.initializeApp(config.firebase);
             setupPasswordPrompt();
-
-        } catch (error)
-        {
+        } catch (error) {
             console.error("Initialization Error:", error);
-            loader.innerHTML = `<b>Initialization Error:</b> ${error.message}<br><br>Please ensure the configuration API is working correctly.`;
+            loader.innerHTML = `<b>Initialization Error:</b> ${error.message}`;
         }
     }
 
     function setupPasswordPrompt() {
-        // Aapka original authentication/password ka tarika
         const passwordInput = document.getElementById('passwordInput');
         const passwordSubmit = document.getElementById('passwordSubmit');
         const passwordError = document.getElementById('passwordError');
@@ -187,12 +177,7 @@
         passwordContainer.classList.remove('hidden');
         passwordInput.focus();
 
-        passwordSubmit.addEventListener('click', checkPassword);
-        passwordInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') checkPassword();
-        });
-
-        async function checkPassword() {
+        const checkPassword = async () => {
             const enteredPassword = passwordInput.value;
             if (!enteredPassword) return;
 
@@ -203,14 +188,12 @@
             try {
                 const membersSnapshot = await firebase.database().ref('members').once('value');
                 allMembers = membersSnapshot.val() || {};
-                
                 const isValidPin = Object.values(allMembers).some(member => member.password === enteredPassword);
 
                 if (isValidPin) {
                     passwordContainer.classList.add('hidden');
                     loader.classList.remove('hidden');
-                    // PIN sahi hone ke baad data process hoga
-                    processFirebaseData(); 
+                    await processFirebaseData();
                 } else {
                     passwordError.textContent = "Incorrect PIN";
                     passwordInput.value = "";
@@ -225,26 +208,36 @@
                 passwordSubmit.disabled = false;
                 passwordSubmit.textContent = "Enter";
             }
-        }
+        };
+
+        passwordSubmit.addEventListener('click', checkPassword);
+        passwordInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') checkPassword();
+        });
     }
     
-    // --- MUKHYA UPDATE: Data Fetching & Processing from new structure ---
+    // --- MUKHYA UPDATE: Data Fetching & Processing from new structure (Corrected) ---
     async function processFirebaseData() {
         const loader = document.getElementById('loader');
         try {
-            // 'allMembers' global variable pehle se authentication step me set ho chuka hai.
             const transactionsSnapshot = await firebase.database().ref('transactions').once('value');
             const rawTransactions = transactionsSnapshot.val() || {};
 
+            // Step 1: Member ID se Full Name ka map banayein
             const memberIdToNameMap = {};
-            // memberId se fullName ka map banayein.
-            Object.keys(allMembers).forEach(key => {
-                const member = allMembers[key];
-                if (member.memberId && member.fullName) {
-                    memberIdToNameMap[member.memberId] = member.fullName;
-                }
-            });
+            if (allMembers) {
+                Object.values(allMembers).forEach(member => {
+                    if (member && member.memberId && member.fullName) {
+                        memberIdToNameMap[member.memberId] = member.fullName;
+                    }
+                });
+            }
 
+            if (Object.keys(memberIdToNameMap).length === 0) {
+                console.error("MAPPING ERROR: Koi bhi member 'memberId' ke saath nahi mila. '/members' data structure check karein.");
+            }
+
+            // Step 2: Loan ID se Loan Type ka map banayein
             const loanIdToTypeMap = {};
             Object.values(rawTransactions).forEach(tx => {
                 if (tx.type === 'Loan Taken' && tx.linkedLoanId && tx.loanType) {
@@ -252,54 +245,58 @@
                 }
             });
 
+            // Step 3: Sabhi transactions ko process karke ek flat list banayein
             let flatTransactionList = [];
-            Object.keys(rawTransactions).forEach(txId => {
-                const tx = rawTransactions[txId];
+            let unmappedCount = 0;
+            Object.values(rawTransactions).forEach(tx => {
                 const memberName = memberIdToNameMap[tx.memberId];
-                
                 if (!memberName) {
-                    console.warn(`Transaction ${txId} for unknown memberId ${tx.memberId} skipped.`);
-                    return;
+                    unmappedCount++;
+                    return; // Member nahi mila, is transaction ko skip karein
                 }
 
                 const parsedDate = new Date(tx.date || tx.timestamp || 0);
-                if (isNaN(parsedDate.getTime())) {
-                     console.warn(`Invalid date for transaction ${txId}. Skipped.`);
-                     return;
-                }
+                if (isNaN(parsedDate.getTime())) return;
 
                 let processedTx = {
-                    Name: memberName,
-                    Date: parsedDate,
+                    Name: memberName, Date: parsedDate,
                     Loan: 0, Payment: 0, SipPayment: 0, ReturnAmount: 0,
                     Category: tx.type || 'Unknown'
                 };
-                
-                // Screenshot ke anusaar, SIP ka type "SIP Payment" ho sakta hai ya amount field se nikalna padega
+
                 const amount = parseFloat(tx.amount) || 0;
                 
-                if (tx.type === 'Loan Taken') {
-                    processedTx.Loan = amount;
-                    processedTx.Category = `Loan (${tx.loanType || 'General'})`;
-                } else if (tx.type === 'Loan Payment') {
-                    processedTx.Payment = parseFloat(tx.principalPaid) || 0;
-                    const loanType = loanIdToTypeMap[tx.paidForLoanId] || 'General';
-                    processedTx.Category = `Payment (${loanType})`;
-                } else if (tx.type === 'SIP Payment') {
-                    processedTx.SipPayment = amount;
-                    processedTx.Category = 'SIP';
-                } else if (amount > 0 && !tx.type) { // Agar type nahi hai, par amount hai, to SIP maanein
-                    processedTx.SipPayment = amount;
-                    processedTx.Category = 'SIP (deduced)';
-                } else if (tx.type === 'Return') { // Assuming a type for returns might exist
-                    processedTx.ReturnAmount = amount;
-                    processedTx.Category = 'Return';
+                switch (tx.type) {
+                    case 'Loan Taken':
+                        processedTx.Loan = amount;
+                        processedTx.Category = `Loan (${tx.loanType || 'General'})`;
+                        break;
+                    case 'Loan Payment':
+                        processedTx.Payment = parseFloat(tx.principalPaid) || 0;
+                        const loanType = loanIdToTypeMap[tx.paidForLoanId] || 'General';
+                        processedTx.Category = `Payment (${loanType})`;
+                        break;
+                    case 'SIP Payment':
+                        processedTx.SipPayment = amount;
+                        processedTx.Category = 'SIP';
+                        break;
+                    default:
+                        // Agar type nahi hai, par amount hai, to use SIP maanein
+                        if (amount > 0 && !tx.type) {
+                            processedTx.SipPayment = amount;
+                            processedTx.Category = 'SIP';
+                        }
+                        break;
                 }
 
-                if (processedTx.Loan > 0 || processedTx.Payment > 0 || processedTx.SipPayment > 0 || processedTx.ReturnAmount > 0) {
-                     flatTransactionList.push(processedTx);
+                if (processedTx.Loan > 0 || processedTx.Payment > 0 || processedTx.SipPayment > 0) {
+                    flatTransactionList.push(processedTx);
                 }
             });
+
+            if (unmappedCount > 0) {
+                console.warn(`WARNING: ${unmappedCount} transactions skip kiye gaye kyunki unka 'memberId' match nahi hua.`);
+            }
             
             flatTransactionList.sort((a, b) => a.Date - b.Date);
             allData = flatTransactionList;
@@ -329,9 +326,10 @@
         document.getElementById('typeFilter').addEventListener('change', updateDisplay);
         document.getElementById('imageModal').addEventListener('click', () => closeModal('imageModal'));
         document.getElementById('profilePictureContainer').addEventListener('click', (event) => {
-            if (event.target.tagName === 'IMG' && event.target.src !== defaultProfilePic && event.target.src) {
+            const img = event.target;
+            if (img.tagName === 'IMG' && img.src && img.src !== defaultProfilePic) {
                  event.stopPropagation();
-                openModal('imageModal', event.target.src);
+                openModal('imageModal', img.src);
             }
         });
         document.getElementById('sipStatusButton').addEventListener('click', () => {
@@ -340,13 +338,11 @@
         });
     }
 
-    // --- Modal, Filter, and other functions remain mostly unchanged ---
+    // --- Modal, Filter, and other utility functions ---
     function openModal(modalId, imageSrc = null) {
         const modal = document.getElementById(modalId);
         if(modal) {
-            if (modalId === 'imageModal' && imageSrc) {
-                modal.querySelector('#modalImage').src = imageSrc;
-            }
+            if (modalId === 'imageModal' && imageSrc) modal.querySelector('#modalImage').src = imageSrc;
             modal.classList.remove('hidden');
         }
     }
@@ -355,24 +351,17 @@
         const modal = document.getElementById(modalId);
         if(modal) {
             modal.classList.add('hidden');
-            if (modalId === 'imageModal') {
-                modal.querySelector('#modalImage').src = "";
-            }
+            if (modalId === 'imageModal') modal.querySelector('#modalImage').src = "";
         }
     }
     
     function populateNameFilter() {
         const nameFilter = document.getElementById("nameFilter");
-        const memberBalances = Object.values(allMembers).map(member => {
-            if (!member.fullName) return null;
-            const memberData = allData.filter(r => r.Name === member.fullName);
-            const balance = memberData.reduce((acc, r) => acc + r.Payment + r.SipPayment + r.ReturnAmount - r.Loan, 0);
-            return { name: member.fullName, balance: balance };
-        }).filter(Boolean); // null entries ko hata dein
-        
-        memberBalances.sort((a, b) => b.balance - a.balance);
+        const memberNames = Object.values(allMembers).map(m => m.fullName).filter(Boolean);
+        const uniqueNames = [...new Set(memberNames)];
+        uniqueNames.sort((a, b) => a.localeCompare(b));
         nameFilter.innerHTML = '<option value="all">All Members</option>';
-        memberBalances.forEach(({ name }) => {
+        uniqueNames.forEach(name => {
             nameFilter.innerHTML += `<option value="${name}">${name}</option>`;
         });
     }
@@ -392,21 +381,21 @@
     }
     
     function updateTopCards(selectedName) {
-        let totalSip = 0, totalReturn = 0, totalLoan = 0, totalPayment = 0, netAmount = 0, totalDays = 0;
         const dataForCards = selectedName === 'all' ? allData : allData.filter(row => row.Name === selectedName);
+        let totalSip = 0, totalReturn = 0, totalLoan = 0, totalPayment = 0;
 
+        dataForCards.forEach(row => {
+            totalSip += row.SipPayment;
+            totalReturn += row.ReturnAmount;
+            totalLoan += row.Loan;
+            totalPayment += row.Payment + row.SipPayment;
+        });
+
+        const netAmount = (totalPayment + totalReturn) - totalLoan;
+        let totalDays = 0;
         if (dataForCards.length > 0) {
-            dataForCards.forEach(row => {
-                totalSip += row.SipPayment;
-                totalReturn += row.ReturnAmount;
-                totalLoan += row.Loan;
-                totalPayment += row.Payment + row.SipPayment; // Loan payment + SIP
-            });
-            netAmount = (totalPayment + totalReturn) - totalLoan;
-            
-            const firstDate = dataForCards[0].Date; // Data is already sorted by date
-            const today = new Date();
-            totalDays = Math.round((today - firstDate) / (1000 * 60 * 60 * 24));
+            const firstDate = dataForCards[0].Date;
+            totalDays = Math.round((new Date() - firstDate) / (1000 * 60 * 60 * 24));
         }
 
         document.getElementById('totalSipValue').textContent = totalSip.toFixed(2);
@@ -415,43 +404,36 @@
         document.getElementById('totalLoanValue').textContent = totalLoan.toFixed(2);
         const netAmountEl = document.getElementById('netAmountValue');
         netAmountEl.textContent = netAmount.toFixed(2);
-        netAmountEl.parentElement.className = 'metric-card';
-        netAmountEl.classList.toggle('positive', netAmount >= 0);
-        netAmountEl.classList.toggle('negative', netAmount < 0);
+        netAmountEl.parentElement.classList.toggle('positive', netAmount >= 0);
+        netAmountEl.parentElement.classList.toggle('negative', netAmount < 0);
         document.getElementById('totalDaysValue').textContent = totalDays;
     }
 
     function updateTableHeader(type) {
         const tableHead = document.querySelector('#dataTable thead');
         const footLabel = document.getElementById('totalLabelCell');
-        const footVal1 = document.getElementById('totalValue1Cell');
-        const footVal2 = document.getElementById('totalValue2Cell');
-        const footVal3 = document.getElementById('totalValue3Cell');
+        const [footVal1, footVal2, footVal3] = [document.getElementById('totalValue1Cell'), document.getElementById('totalValue2Cell'), document.getElementById('totalValue3Cell')];
         
         footVal1.style.display = ''; footVal2.style.display = ''; footVal3.style.display = '';
         
         if (type === 'total_return') {
             tableHead.innerHTML = `<tr><th>Member</th><th>Total Return</th></tr>`;
-            footLabel.textContent = "Total:";
-            footLabel.colSpan = 1;
+            footLabel.textContent = "Total:"; footLabel.colSpan = 1;
             footVal1.className = 'positive';
             footVal2.style.display = 'none'; footVal3.style.display = 'none';
         } else {
             tableHead.innerHTML = `<tr><th>Date</th><th>Member</th><th>Amount</th><th>Category</th><th>Net Balance</th></tr>`;
-            footLabel.textContent = "Total:";
-            footLabel.colSpan = 2;
+            footLabel.textContent = "Total:"; footLabel.colSpan = 2;
         }
     }
 
-    function getFilteredTransactionData(nameFilter, typeFilter) {
-        const isAllNames = nameFilter === 'all';
-        let data = isAllNames ? allData : allData.filter(row => row.Name === nameFilter);
-        switch (typeFilter) {
+    function getFilteredTransactionData(name, type) {
+        const data = name === 'all' ? allData : allData.filter(r => r.Name === name);
+        switch (type) {
             case 'loan_history': return data.filter(r => r.Loan > 0);
             case 'members_invest': return data.filter(r => r.Payment > 0);
             case 'sip_payment': return data.filter(r => r.SipPayment > 0);
             case 'total_return': return data.filter(r => r.ReturnAmount > 0);
-            case 'all_transactions':
             default: return data;
         }
     }
@@ -477,8 +459,7 @@
             const netToShow = isCumulative ? runningBalance : (totalPayment - row.Loan);
 
             tbody.innerHTML += `<tr>
-                <td>${formatDate(row.Date)}</td>
-                <td>${row.Name}</td>
+                <td>${formatDate(row.Date)}</td><td>${row.Name}</td>
                 <td class="${amountClass}">${displayAmount.toFixed(2)}</td>
                 <td>${row.Category}</td>
                 <td class="${netToShow < 0 ? 'negative' : 'positive'}">${netToShow.toFixed(2)}</td>
@@ -490,52 +471,38 @@
     function calculateAndDisplayTotalReturn(returnData) {
         const tbody = document.querySelector("#dataTable tbody");
         tbody.innerHTML = "";
-        
         let totalReturn = 0;
         if (returnData.length === 0) {
             tbody.innerHTML = `<tr><td colspan="2">No return data available.</td></tr>`;
             document.getElementById("totalValue1Cell").textContent = "0.00"; return;
         }
-
         const returnByMember = returnData.reduce((acc, row) => {
             acc[row.Name] = (acc[row.Name] || 0) + row.ReturnAmount;
             return acc;
         }, {});
-
-        const sortedMembers = Object.entries(returnByMember).sort(([,a], [,b]) => b - a);
-
-        sortedMembers.forEach(([name, amount]) => {
+        Object.entries(returnByMember).sort(([,a], [,b]) => b - a).forEach(([name, amount]) => {
             tbody.innerHTML += `<tr><td>${name}</td><td class="positive">${amount.toFixed(2)}</td></tr>`;
             totalReturn += amount;
         });
-        
         document.getElementById("totalValue1Cell").textContent = totalReturn.toFixed(2);
     }
 
     function updateTransactionTotals(loanSum, paymentSum, finalBalance) {
-        const footVal1 = document.getElementById('totalValue1Cell');
-        const footVal2 = document.getElementById('totalValue2Cell');
-        const footVal3 = document.getElementById('totalValue3Cell');
-
-        footVal1.textContent = loanSum.toFixed(2);
-        footVal1.className = 'loan';
-        footVal2.textContent = paymentSum.toFixed(2);
-        footVal2.className = 'payment';
-        footVal3.textContent = finalBalance.toFixed(2);
-        footVal3.className = finalBalance < 0 ? "negative" : "positive";
+        const [footVal1, footVal2, footVal3] = [document.getElementById('totalValue1Cell'), document.getElementById('totalValue2Cell'), document.getElementById('totalValue3Cell')];
+        footVal1.textContent = loanSum.toFixed(2); footVal1.className = 'loan';
+        footVal2.textContent = paymentSum.toFixed(2); footVal2.className = 'payment';
+        footVal3.textContent = finalBalance.toFixed(2); footVal3.className = finalBalance < 0 ? "negative" : "positive";
     }
 
     function updateProfileSection(name) {
         const profileNameEl = document.getElementById("profileName");
         const profilePicContainer = document.getElementById("profilePictureContainer");
-
-        let profileImageUrl = defaultProfilePic;
-        let displayName = "Community Overview";
+        let displayName = "Community Overview", profileImageUrl = defaultProfilePic;
 
         if (name !== 'all') {
             const memberInfo = Object.values(allMembers).find(m => m.fullName === name);
             displayName = name;
-            profileImageUrl = (memberInfo && memberInfo.profilePicUrl) ? memberInfo.profilePicUrl : defaultProfilePic;
+            if (memberInfo && memberInfo.profilePicUrl) profileImageUrl = memberInfo.profilePicUrl;
         }
         
         profileNameEl.textContent = displayName;
@@ -544,10 +511,10 @@
     
     function populateSipStatusModal() {
         const listContainer = document.getElementById('sipStatusList');
-        if (!listContainer) return;
         listContainer.innerHTML = "";
-        const memberNames = Object.values(allMembers).map(m => m.fullName).filter(Boolean).sort();
+        const memberNames = [...new Set(Object.values(allMembers).map(m => m.fullName).filter(Boolean))].sort();
         const now = new Date(), currentMonth = now.getMonth(), currentYear = now.getFullYear(), currentDay = now.getDate();
+
         if (memberNames.length === 0) { listContainer.innerHTML = "No members found."; return; }
 
         memberNames.forEach(name => {
