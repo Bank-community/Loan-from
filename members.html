@@ -39,7 +39,6 @@
         #passwordSubmit:hover { background-color: #0056b3; }
         #passwordError { color: var(--negative-color); font-weight: bold; margin-top: 10px; font-size: 14px; min-height: 1em; }
         #dashboardContent { display: none; } #dashboardContent.visible { display: block; }
-        #dataTable tbody tr.highlight-recent-loan td { font-weight: bold; color: red; }
         .header { text-align: center; background-color: var(--primary-color); color: var(--text-light); padding: 10px 0; display: flex; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; width: 100%; z-index: 1001; height: 60px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .header img { width: 40px; height: 40px; margin-right: 10px; } .header h1 { font-size: 1.2em; margin: 0; font-weight: 500; }
         .profile-section { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); background: var(--profile-bg); color: var(--text-light); border-radius: 12px; box-shadow: var(--profile-shadow); width: 94%; max-width: 520px; z-index: 1000; padding: 15px; display: grid; grid-template-areas: "pic header buttons" "stats stats stats"; grid-template-columns: auto 1fr auto; grid-template-rows: auto 1fr; gap: 10px 15px; align-items: start; transition: top 0.3s ease; }
@@ -113,7 +112,6 @@
             <div class="profile-buttons-area">
                 <button id="sipStatusButton">SIP Status</button>
             </div>
-            
             <div class="profile-stats-grid">
                  <div class="metric-card" id="sipAmountCard"><span class="label">Total SIP</span><span id="totalSipValue" class="value">0</span></div>
                  <div class="metric-card" id="paymentAmountCard"><span class="label">Total Payment</span><span id="totalPaymentValue" class="value">0</span></div>
@@ -147,7 +145,7 @@
     let allMembers = {};
     const defaultProfilePic = 'https://i.postimg.cc/XNpR3cN1/20241030-065157.png';
 
-    // --- Initialization & Authentication Flow ---
+    // --- Initialization & Authentication ---
     document.addEventListener("DOMContentLoaded", () => {
         initializeApp();
     });
@@ -167,6 +165,7 @@
     }
 
     function setupPasswordPrompt() {
+        // Aapka original password system
         const passwordInput = document.getElementById('passwordInput');
         const passwordSubmit = document.getElementById('passwordSubmit');
         const passwordError = document.getElementById('passwordError');
@@ -186,14 +185,15 @@
             passwordSubmit.textContent = "Checking...";
 
             try {
+                // `allMembers` yahan fetch hota hai authentication ke liye
                 const membersSnapshot = await firebase.database().ref('members').once('value');
                 allMembers = membersSnapshot.val() || {};
-                const isValidPin = Object.values(allMembers).some(member => member.password === enteredPassword);
+                const isValidPin = Object.values(allMembers).some(member => member && member.password === enteredPassword);
 
                 if (isValidPin) {
                     passwordContainer.classList.add('hidden');
                     loader.classList.remove('hidden');
-                    await processFirebaseData();
+                    await processFirebaseData(); // PIN sahi hone par data process karein
                 } else {
                     passwordError.textContent = "Incorrect PIN";
                     passwordInput.value = "";
@@ -209,50 +209,48 @@
                 passwordSubmit.textContent = "Enter";
             }
         };
-
         passwordSubmit.addEventListener('click', checkPassword);
-        passwordInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') checkPassword();
-        });
+        passwordInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') checkPassword(); });
     }
     
-    // --- MUKHYA UPDATE: Data Fetching & Processing from new structure (Corrected) ---
+    // --- MUKHYA UPDATE: Sahi tarike se data process karne ke liye function ---
     async function processFirebaseData() {
         const loader = document.getElementById('loader');
         try {
-            const transactionsSnapshot = await firebase.database().ref('transactions').once('value');
+            // Step 1: Ek saath sabhi zaroori data fetch karein
+            const [transactionsSnapshot, activeLoansSnapshot] = await Promise.all([
+                firebase.database().ref('transactions').once('value'),
+                firebase.database().ref('activeLoans').once('value')
+            ]);
+
             const rawTransactions = transactionsSnapshot.val() || {};
+            const activeLoans = activeLoansSnapshot.val() || {};
+            
+            // `allMembers` password check ke dauran pehle hi load ho chuka hai.
 
-            // Step 1: Member ID se Full Name ka map banayein
+            // Step 2: Zaroori Maps banayein
             const memberIdToNameMap = {};
-            if (allMembers) {
-                Object.values(allMembers).forEach(member => {
-                    if (member && member.memberId && member.fullName) {
-                        memberIdToNameMap[member.memberId] = member.fullName;
-                    }
-                });
-            }
-
-            if (Object.keys(memberIdToNameMap).length === 0) {
-                console.error("MAPPING ERROR: Koi bhi member 'memberId' ke saath nahi mila. '/members' data structure check karein.");
-            }
-
-            // Step 2: Loan ID se Loan Type ka map banayein
-            const loanIdToTypeMap = {};
-            Object.values(rawTransactions).forEach(tx => {
-                if (tx.type === 'Loan Taken' && tx.linkedLoanId && tx.loanType) {
-                    loanIdToTypeMap[tx.linkedLoanId] = tx.loanType;
+            Object.values(allMembers).forEach(member => {
+                if (member && member.memberId && member.fullName) {
+                    memberIdToNameMap[member.memberId] = member.fullName;
                 }
             });
 
-            // Step 3: Sabhi transactions ko process karke ek flat list banayein
+            const loanIdToTypeMap = {};
+            Object.values(activeLoans).forEach(loan => {
+                if (loan && loan.loanId && loan.loanType) {
+                    loanIdToTypeMap[loan.loanId] = loan.loanType;
+                }
+            });
+
+            // Step 3: Sabhi transactions ko process karke flat list banayein
             let flatTransactionList = [];
             let unmappedCount = 0;
             Object.values(rawTransactions).forEach(tx => {
                 const memberName = memberIdToNameMap[tx.memberId];
                 if (!memberName) {
                     unmappedCount++;
-                    return; // Member nahi mila, is transaction ko skip karein
+                    return; // Agar memberId match nahi hua to skip karein
                 }
 
                 const parsedDate = new Date(tx.date || tx.timestamp || 0);
@@ -266,37 +264,27 @@
 
                 const amount = parseFloat(tx.amount) || 0;
                 
-                switch (tx.type) {
-                    case 'Loan Taken':
-                        processedTx.Loan = amount;
-                        processedTx.Category = `Loan (${tx.loanType || 'General'})`;
-                        break;
-                    case 'Loan Payment':
-                        processedTx.Payment = parseFloat(tx.principalPaid) || 0;
-                        const loanType = loanIdToTypeMap[tx.paidForLoanId] || 'General';
-                        processedTx.Category = `Payment (${loanType})`;
-                        break;
-                    case 'SIP Payment':
-                        processedTx.SipPayment = amount;
-                        processedTx.Category = 'SIP';
-                        break;
-                    default:
-                        // Agar type nahi hai, par amount hai, to use SIP maanein
-                        if (amount > 0 && !tx.type) {
-                            processedTx.SipPayment = amount;
-                            processedTx.Category = 'SIP';
-                        }
-                        break;
+                // Type ke anusaar data set karein
+                if (tx.type === 'Loan Taken') {
+                    processedTx.Loan = amount;
+                    processedTx.Category = `Loan (${tx.loanType || 'General'})`;
+                } else if (tx.type === 'Loan Payment') {
+                    processedTx.Payment = parseFloat(tx.principalPaid) || 0;
+                    // Sahi loan type ke liye activeLoans se map check karein
+                    const loanType = loanIdToTypeMap[tx.paidForLoanId] || 'General';
+                    processedTx.Category = `Payment (${loanType})`;
+                } else if (tx.type === 'SIP') { // Screenshot ke anusaar type "SIP" hai
+                    processedTx.SipPayment = amount;
+                    processedTx.Category = 'SIP';
                 }
-
+                
+                // Sirf unhi transaction ko add karein jinme koi value hai
                 if (processedTx.Loan > 0 || processedTx.Payment > 0 || processedTx.SipPayment > 0) {
                     flatTransactionList.push(processedTx);
                 }
             });
-
-            if (unmappedCount > 0) {
-                console.warn(`WARNING: ${unmappedCount} transactions skip kiye gaye kyunki unka 'memberId' match nahi hua.`);
-            }
+            
+            if (unmappedCount > 0) console.warn(`${unmappedCount} transactions skip kiye gaye (memberId not found).`);
             
             flatTransactionList.sort((a, b) => a.Date - b.Date);
             allData = flatTransactionList;
@@ -311,7 +299,9 @@
         }
     }
 
-    // --- Dashboard Initialization & Event Listeners ---
+    // Baaki sabhi functions (UI update, filters, modals, etc.) pehle jaise hi hain
+    // Isliye unme koi badlav nahi kiya gaya hai.
+    
     function initializeDashboard() {
         document.getElementById('dashboardContent').classList.add('visible');
         populateNameFilter();
@@ -338,7 +328,6 @@
         });
     }
 
-    // --- Modal, Filter, and other utility functions ---
     function openModal(modalId, imageSrc = null) {
         const modal = document.getElementById(modalId);
         if(modal) {
