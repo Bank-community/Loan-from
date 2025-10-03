@@ -30,7 +30,6 @@ const elements = {
     penaltyWalletModal: getElement('penaltyWalletModal'),
     memberProfileModal: getElement('memberProfileModal'),
     sipStatusModal: getElement('sipStatusModal'),
-    // notificationModal has been removed
     allMembersModal: getElement('allMembersModal'),
     passwordPromptModal: getElement('passwordPromptModal'),
     imageModal: getElement('imageModal'),
@@ -148,9 +147,10 @@ function renderProducts() {
         card.className = 'product-card';
         const price = parseFloat(product.price) || 0;
         const mrp = parseFloat(product.mrp) || 0;
-        const discount = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
         const whatsappMessage = encodeURIComponent(`Hello, I want to know more about ${product.name} priced at ₹${price.toLocaleString('en-IN')}.`);
         const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
+        
+        // === YAHAN BADLAV KIYA GAYA HAI ===
         card.innerHTML = `
             <div class="product-image-wrapper">
                 <img src="${product.imageUrl}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
@@ -160,7 +160,6 @@ function renderProducts() {
                 <div class="product-price-container">
                     <span class="product-price">₹${price.toLocaleString('en-IN')}</span>
                     ${mrp > price ? `<span class="product-mrp">₹${mrp.toLocaleString('en-IN')}</span>` : ''}
-                    ${discount > 0 ? `<span class="product-discount">${discount}% OFF</span>` : ''}
                 </div>
                 ${product.emi && Object.keys(product.emi).length > 0 ? `<a class="product-emi-link" data-product-id="${id}">View EMI Details</a>` : ''}
             </div>
@@ -171,6 +170,8 @@ function renderProducts() {
                 <a href="${product.exploreLink || '#'}" target="_blank" class="product-btn explore">Explore</a>
             </div>
         `;
+        // === BADLAV SAMAPT ===
+
         const emiLink = card.querySelector('.product-emi-link');
         if (emiLink) {
             emiLink.addEventListener('click', () => {
@@ -213,9 +214,16 @@ function displayHeaderButtons(buttons) {
     elements.headerActionsContainer.innerHTML = '';
     elements.staticHeaderButtonsContainer.innerHTML = '';
     if (Object.keys(buttons).length === 0) return;
+
+    // === YAHAN BADLAV KIYA GAYA HAI ===
+    const headerButtonsToExclude = ['Jarvis Ai', 'Gallery', 'Loan Calculator'];
+    const filteredButtons = Object.values(buttons).filter(btn => !headerButtonsToExclude.includes(btn.name));
+    // === BADLAV SAMAPT ===
+
     const buttonWrapper = document.createElement('div');
     buttonWrapper.className = 'dynamic-buttons-wrapper';
-    Object.values(buttons).sort((a,b) => (a.order || 0) - (b.order || 0)).forEach(btnData => {
+    
+    filteredButtons.sort((a,b) => (a.order || 0) - (b.order || 0)).forEach(btnData => {
         const isLink = btnData.url && !btnData.id;
         const element = document.createElement(isLink ? 'a' : 'button');
         element.className = `${btnData.base_class || 'civil-button'} ${btnData.style_preset || ''}`;
@@ -465,14 +473,11 @@ function attachDynamicButtonListeners() {
     if (viewBalanceBtn) viewBalanceBtn.onclick = showBalanceModal;
     if (viewPenaltyWalletBtn) viewPenaltyWalletBtn.onclick = showPenaltyWalletModal;
     
-    // === YAHAN BADLAV KIYA GAYA HAI ===
-    // Notification button ab naye page par redirect karega
     if (notificationBtn) {
         notificationBtn.onclick = () => {
             window.location.href = 'notifications.html';
         };
     }
-    // === BADLAV SAMAPT ===
 
     if (installBtn) installBtn.onclick = async () => {
         if (deferredInstallPrompt) {
@@ -633,21 +638,14 @@ function processAndShowNotifications() {
     }
 }
 
-// === YAHAN BADLAV KIYA GAYA HAI ===
-// displayNotifications function ko hata diya gaya hai, kyunki ab yeh naye page par handle hoga.
-// === BADLAV SAMAPT ===
-
 function showPopupNotification(type, data) {
     const container = getElement('notification-popup-container');
     if (!container) return;
     const popup = document.createElement('div');
     popup.className = 'notification-popup';
     
-    // === YAHAN BADLAV KIYA GAYA HAI ===
-    // Pop-up ko clickable banaya gaya hai
     popup.style.cursor = 'pointer';
     popup.onclick = () => { window.location.href = 'notifications.html'; };
-    // === BADLAV SAMAPT ===
 
     let contentHTML = '';
     if(type === 'transaction') {
@@ -676,7 +674,7 @@ function showPopupNotification(type, data) {
     }
     popup.innerHTML = `${contentHTML}<button class="notification-popup-close">&times;</button>`;
     popup.querySelector('.notification-popup-close').onclick = (e) => {
-        e.stopPropagation(); // Prevents the main click event from firing
+        e.stopPropagation(); 
         popup.classList.add('closing');
         popup.addEventListener('animationend', () => popup.remove(), { once: true });
     };
@@ -742,4 +740,5 @@ function showFullImage(src, alt) {
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
+
 
