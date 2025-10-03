@@ -12,7 +12,6 @@ let allAutomatedQueue = {};
 let allProducts = {};
 let currentMemberForFullView = null;
 let deferredInstallPrompt = null;
-// popupsHaveBeenShown variable ko hata diya gaya hai.
 
 // Element Cache
 const getElement = (id) => document.getElementById(id);
@@ -31,7 +30,7 @@ const elements = {
     penaltyWalletModal: getElement('penaltyWalletModal'),
     memberProfileModal: getElement('memberProfileModal'),
     sipStatusModal: getElement('sipStatusModal'),
-    notificationModal: getElement('notificationModal'),
+    // notificationModal has been removed
     allMembersModal: getElement('allMembersModal'),
     passwordPromptModal: getElement('passwordPromptModal'),
     imageModal: getElement('imageModal'),
@@ -42,6 +41,7 @@ const elements = {
 
 const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
 const WHATSAPP_NUMBER = '7903698180';
+const BANK_LOGO_URL = 'https://i.ibb.co/pjB1bQ7J/1752978674430.jpg';
 
 // --- Initialization ---
 export function initUI(database) {
@@ -82,18 +82,13 @@ export function showLoadingError(message) {
     }
 }
 
-// === YAHAN NAYA UTILITY FUNCTION JODA GAYA HAI ===
-/**
- * Current date ko YYYY-MM-DD format mein return karta hai, user ke local time zone ke hisab se.
- */
 function getTodayDateStringLocal() {
     const today = new Date();
     const year = today.getFullYear();
-    const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
     const day = today.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
-// === BADLAV SAMAPT ===
 
 // --- Display & Rendering Functions ---
 
@@ -465,16 +460,20 @@ function attachDynamicButtonListeners() {
     const installBtn = getElement('installAppBtn');
     const viewBalanceBtn = getElement('viewBalanceBtn');
     const viewPenaltyWalletBtn = getElement('viewPenaltyWalletBtn');
+    
     if (sipStatusBtn) sipStatusBtn.onclick = showSipStatusModal;
     if (viewBalanceBtn) viewBalanceBtn.onclick = showBalanceModal;
     if (viewPenaltyWalletBtn) viewPenaltyWalletBtn.onclick = showPenaltyWalletModal;
-    if (notificationBtn) notificationBtn.onclick = () => {
-        displayNotifications();
-        openModal(elements.notificationModal);
-        const dot = getElement('notificationDot');
-        if (dot) dot.style.display = 'none';
-        sessionStorage.setItem(`notificationsViewed_${new Date().toISOString().split('T')[0]}`, 'true');
-    };
+    
+    // === YAHAN BADLAV KIYA GAYA HAI ===
+    // Notification button ab naye page par redirect karega
+    if (notificationBtn) {
+        notificationBtn.onclick = () => {
+            window.location.href = 'notifications.html';
+        };
+    }
+    // === BADLAV SAMAPT ===
+
     if (installBtn) installBtn.onclick = async () => {
         if (deferredInstallPrompt) {
             deferredInstallPrompt.prompt();
@@ -594,12 +593,10 @@ function buildInfoSlider() {
     feather.replace();
 }
 
-// === YAHAN FUNCTION KO UPDATE KIYA GAYA HAI ===
 function processAndShowNotifications() {
-    const todayDateString = getTodayDateStringLocal(); // लोकल तारीख
+    const todayDateString = getTodayDateStringLocal();
     const sessionPopupsKey = `popupsShownToday_${todayDateString}`;
 
-    // Check if popups for this session have already been shown
     if (sessionStorage.getItem(sessionPopupsKey)) {
         return;
     }
@@ -607,7 +604,6 @@ function processAndShowNotifications() {
     let delay = 0;
     const baseDelay = 1500;
 
-    // 1. Today's Transaction Popups
     const todaysTransactions = allTransactions.filter(tx => {
         const txDate = new Date(tx.date);
         const txDateString = `${txDate.getFullYear()}-${(txDate.getMonth() + 1).toString().padStart(2, '0')}-${txDate.getDate().toString().padStart(2, '0')}`;
@@ -621,165 +617,38 @@ function processAndShowNotifications() {
         delay += todaysTransactions.length * baseDelay;
     }
 
-    // 2. Manual Notification Popups (Always show if they exist)
     Object.values(allManualNotifications).forEach((notif, index) => {
         setTimeout(() => showPopupNotification('manual', notif), delay + index * baseDelay);
     });
 
-    // Mark popups as shown for this session
     sessionStorage.setItem(sessionPopupsKey, 'true');
     
-    // Logic for notification bell dot remains the same
     const verifiedMemberId = localStorage.getItem('verifiedMemberId');
     if (!verifiedMemberId) return;
     const userReminders = Object.values(allAutomatedQueue).filter(item => item.memberId === verifiedMemberId && item.status === 'active');
-    const viewedToday = sessionStorage.getItem(`notificationsViewed_${todayDateString}`); // Use local date
+    
     const dot = getElement('notificationDot');
-    if (dot && (userReminders.length > 0 || Object.keys(allManualNotifications).length > 0) && !viewedToday) {
+    if (dot && (userReminders.length > 0 || Object.keys(allManualNotifications).length > 0)) {
         dot.style.display = 'block';
     }
 }
+
+// === YAHAN BADLAV KIYA GAYA HAI ===
+// displayNotifications function ko hata diya gaya hai, kyunki ab yeh naye page par handle hoga.
 // === BADLAV SAMAPT ===
-
-function displayNotifications() {
-    const list = getElement('notificationList');
-    if (!list) return;
-    list.innerHTML = '';
-    
-    const verifiedMemberId = localStorage.getItem('verifiedMemberId');
-    const currentUser = allMembersData.find(m => m.id === verifiedMemberId);
-
-    if (!currentUser) {
-         list.innerHTML = `<li class="no-notifications">Please verify your device to see notifications.</li>`;
-         return;
-    }
-    
-    let userReminders = Object.values(allAutomatedQueue)
-        .filter(item => item.memberId === verifiedMemberId && item.status === 'active');
-        
-    if (currentUser.sipStatus.paid === true) {
-        userReminders = userReminders.filter(item => !item.type.includes('SIP Payment Reminder'));
-    }
-
-    const finalReminders = userReminders.map(item => ({...item, category: 'reminder', date: Date.now()}));
-    
-    const manualNotifs = Object.values(allManualNotifications)
-        .map(item => ({...item, category: 'manual', date: item.createdAt}));
-
-    // === YAHAN BADLAV KIYA GAYA HAI ===
-    // Today's Transactions ko bhi notifications list mein shamil karein
-    const todayDateString = getTodayDateStringLocal();
-    const todaysTransactionsForList = allTransactions.filter(tx => {
-        const txDate = new Date(tx.date);
-        const txDateString = `${txDate.getFullYear()}-${(txDate.getMonth() + 1).toString().padStart(2, '0')}-${txDate.getDate().toString().padStart(2, '0')}`;
-        return txDateString === todayDateString;
-    }).map(tx => {
-        const member = allMembersData.find(m => m.id === tx.memberId);
-        let text = '', amount = '', typeClass = '';
-        switch(tx.type) {
-            case 'SIP': text = `<strong>${member?.name || 'Unknown'}</strong> paid their SIP.`; amount = `+ ₹${(tx.amount || 0).toLocaleString('en-IN')}`; typeClass = 'sip'; break;
-            case 'Loan Taken': text = `Loan disbursed to <strong>${member?.name || 'Unknown'}</strong>.`; amount = `- ₹${(tx.amount || 0).toLocaleString('en-IN')}`; typeClass = 'loan'; break;
-            case 'Loan Payment': text = `<strong>${member?.name || 'Unknown'}</strong> made a loan payment.`; amount = `+ ₹${(tx.principalPaid || 0).toLocaleString('en-IN')}`; typeClass = 'payment'; break;
-            case 'Extra Payment': text = `<strong>${member?.name || 'Unknown'}</strong> made an extra payment.`; amount = `+ ₹${(tx.amount || 0).toLocaleString('en-IN')}`; typeClass = 'sip'; break;
-            case 'Extra Withdraw': text = `<strong>${member?.name || 'Unknown'}</strong> withdrew money.`; amount = `- ₹${(tx.amount || 0).toLocaleString('en-IN')}`; typeClass = 'loan'; break;
-            default: text = `Transaction by <strong>${member?.name || 'Unknown'}</strong>.`; amount = `₹${(tx.amount || 0).toLocaleString('en-IN')}`; break;
-        }
-        return {
-            category: 'transaction',
-            header: text,
-            body: amount,
-            profilePicUrl: member?.profilePicUrl || DEFAULT_IMAGE,
-            createdAt: tx.timestamp || tx.date,
-            time: new Date(tx.timestamp || tx.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-        };
-    });
-    // === BADLAV SAMAPT ===
-
-    const allNotifs = [...finalReminders, ...manualNotifs, ...todaysTransactionsForList].sort((a,b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date)); // Sort by actual creation time
-
-    if (allNotifs.length === 0) {
-        list.innerHTML = `<li class="no-notifications">No new notifications.</li>`;
-        return;
-    }
-
-    allNotifs.forEach(item => {
-        const li = document.createElement('li');
-        li.className = 'notification-item';
-
-        let iconHTML = '', header = '', body = '', time = '';
-
-        if (item.category === 'reminder') {
-            li.classList.add('personal');
-            iconHTML = `<img src="${currentUser.displayImageUrl}" alt="${currentUser.name}" class="notification-img">`;
-            header = currentUser.name;
-            time = 'Just now'; // Reminders are always 'Just now' when displayed
-
-            if (item.type.includes('SIP Payment Reminder')) {
-                const today = new Date();
-                const currentDay = today.getDate();
-                const dueDate = 10;
-                const daysLeft = dueDate - currentDay;
-                const sipAmountHTML = `<strong style="color: red;">₹${currentUser.sipAmount || 500}</strong>`;
-                if (daysLeft > 1) {
-                    body = `${sipAmountHTML} SIP Payment. Only ${daysLeft} days left!`;
-                } else if (daysLeft === 1) {
-                    body = `${sipAmountHTML} SIP Payment. Only 1 day left!`;
-                } else { // daysLeft <= 0 or already passed
-                    body = `${sipAmountHTML} SIP Payment. Today is the last day!`;
-                }
-            } else {
-                body = item.type;
-            }
-        } else if (item.category === 'manual') {
-            li.classList.add('manual');
-            iconHTML = `<img src="${item.imageUrl}" class="manual-notification-img" alt="${item.title}" onerror="this.style.display='none'">`;
-            header = item.title;
-            // Manual notifications often have no specific body text, just a title and an image
-            time = new Date(item.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-            let exploreButtonHTML = '';
-            if (item.link) {
-                exploreButtonHTML = `<a href="${item.link}" target="_blank" class="explore-btn">Explore</a>`;
-            }
-
-            li.innerHTML = `
-                ${iconHTML}
-                <div class="manual-notification-content">
-                    <p class="notification-header">${header}</p>
-                </div>
-                <div class="manual-notification-footer">
-                    <span class="notification-time">${time}</span>
-                    ${exploreButtonHTML}
-                </div>`;
-            list.appendChild(li);
-            feather.replace(); // Feather icons for buttons if any
-            return; // Manual notifications handle their own innerHTML and are complete
-        } else if (item.category === 'transaction') {
-            li.classList.add('transaction-item'); // New class for transaction items
-            iconHTML = `<img src="${item.profilePicUrl}" alt="Profile" class="notification-img">`;
-            header = item.header; // This already contains member name and transaction type
-            body = item.body; // This already contains amount
-            time = item.time;
-        }
-
-        li.innerHTML = `
-            ${iconHTML}
-            <div class="notification-content">
-                <p class="notification-header">${header}</p>
-                ${body ? `<p class="notification-body">${body}</p>` : ''}
-                <span class="notification-time">${time}</span>
-            </div>`;
-        list.appendChild(li);
-    });
-    feather.replace();
-}
-
 
 function showPopupNotification(type, data) {
     const container = getElement('notification-popup-container');
     if (!container) return;
     const popup = document.createElement('div');
     popup.className = 'notification-popup';
+    
+    // === YAHAN BADLAV KIYA GAYA HAI ===
+    // Pop-up ko clickable banaya gaya hai
+    popup.style.cursor = 'pointer';
+    popup.onclick = () => { window.location.href = 'notifications.html'; };
+    // === BADLAV SAMAPT ===
+
     let contentHTML = '';
     if(type === 'transaction') {
         const member = allMembersData.find(m => m.id === data.memberId);
@@ -789,10 +658,8 @@ function showPopupNotification(type, data) {
             case 'SIP': text = `<p><strong>${member.name}</strong> paid their SIP.</p>`; amount = `+ ₹${(data.amount || 0).toLocaleString()}`; typeClass = 'sip'; break;
             case 'Loan Taken': text = `<p>Loan disbursed to <strong>${member.name}</strong>.</p>`; amount = `- ₹${(data.amount || 0).toLocaleString()}`; typeClass = 'loan'; break;
             case 'Loan Payment': text = `<p><strong>${member.name}</strong> made a loan payment.</p>`; amount = `+ ₹${(data.principalPaid || 0).toLocaleString()}`; typeClass = 'payment'; break;
-            // === YAHAN BADLAV KIYA GAYA HAI ===
             case 'Extra Payment': text = `<p><strong>${member.name}</strong> made an extra payment.</p>`; amount = `+ ₹${(data.amount || 0).toLocaleString()}`; typeClass = 'sip'; break;
             case 'Extra Withdraw': text = `<p><strong>${member.name}</strong> withdrew money.</p>`; amount = `- ₹${(data.amount || 0).toLocaleString()}`; typeClass = 'loan'; break;
-            // === BADLAV SAMAPT ===
             default: return;
         }
         contentHTML = `
@@ -808,7 +675,8 @@ function showPopupNotification(type, data) {
             </div>`;
     }
     popup.innerHTML = `${contentHTML}<button class="notification-popup-close">&times;</button>`;
-    popup.querySelector('.notification-popup-close').onclick = () => {
+    popup.querySelector('.notification-popup-close').onclick = (e) => {
+        e.stopPropagation(); // Prevents the main click event from firing
         popup.classList.add('closing');
         popup.addEventListener('animationend', () => popup.remove(), { once: true });
     };
@@ -874,5 +742,4 @@ function showFullImage(src, alt) {
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
-
 
