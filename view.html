@@ -168,11 +168,11 @@
                          </div>
                      </div>
                 </div>
-                <!-- *** NEW *** Loan History Card -->
+                <!-- *** UPDATED *** Loan History Card -->
                 <div class="stat-card p-6">
                     <h3 class="text-xl font-semibold text-gray-700 border-b pb-3 mb-4 flex items-center gap-3"><i class="fas fa-history text-indigo-500"></i> Loan History</h3>
                     <div id="loan-history-container" class="max-h-60 overflow-y-auto space-y-2 pr-2">
-                        <!-- Loan history items will be injected here -->
+                        <!-- Loan history items will be injected here by JS -->
                     </div>
                 </div>
             </div>
@@ -251,7 +251,6 @@
       </div>
   </div>
 
-  <!-- *** NEW *** Score Breakdown Modal -->
   <div id="scoreBreakdownModal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center p-4">
       <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
           <h3 class="text-xl font-bold text-center mb-4">Performance Score Breakdown</h3>
@@ -292,9 +291,7 @@
   </div>
 
   <script type="module">
-    // --- YAHAN BADLAV KIYA GAYA HAI ---
-    
-    // Global variables to store all data
+    // --- Global variables to store all data ---
     let currentMemberData = {};
     let allTransactions = []; 
     let allMembers = {};
@@ -334,7 +331,6 @@
             if (!memberId) { showError("No member ID provided."); return; }
 
             try {
-                // Fetch all data from the root reference
                 const snapshot = await db.ref().once('value');
                 if (!snapshot.exists()) throw new Error(`Database is empty.`);
                 
@@ -346,11 +342,9 @@
                 if (!currentMemberData) throw new Error(`Member with ID "${memberId}" not found.`);
                 currentMemberData.membershipId = memberId;
 
-                // Process all transactions from the global 'transactions' node
                 allTransactions = Object.values(allTransactionsData).map(tx => ({
                     ...tx,
                     date: new Date(tx.date),
-                    // Ensure amounts are numbers for calculations
                     amount: parseFloat(tx.amount) || 0,
                     interestPaid: parseFloat(tx.interestPaid) || 0,
                     principalPaid: parseFloat(tx.principalPaid) || 0,
@@ -382,7 +376,6 @@
             document.getElementById('aadhaar').textContent = data.aadhaar || 'N/A';
             document.getElementById('address').textContent = data.address || 'N/A';
             document.getElementById('joining-date').textContent = formatDate(data.joiningDate);
-            // Guarantor logic might need update if it's stored differently
             const guarantor = allMembers[data.guarantorId] || {};
             document.getElementById('guarantor-name').textContent = guarantor.fullName || data.guarantorName || 'N/A';
             document.getElementById('total-sip').textContent = `₹${totalSip.toLocaleString('en-IN')}`;
@@ -397,13 +390,13 @@
             document.getElementById('doc-document').src = data.documentUrl || DEFAULT_PROFILE_PIC;
             document.getElementById('doc-signature').src = data.signatureUrl || DEFAULT_PROFILE_PIC;
             
-            // Financial health calculations remain complex, but now use the correct data source
             scoreResultCache = calculatePerformanceScore(data.membershipId, new Date());
             const eligibilityResult = getLoanEligibility(data.membershipId, scoreResultCache.totalScore);
             document.getElementById('performance-score').textContent = scoreResultCache.totalScore.toFixed(2);
             document.getElementById('loan-eligibility').textContent = eligibilityResult.eligible ? `${eligibilityResult.multiplier.toFixed(2)}x` : eligibilityResult.reason;
             document.getElementById('loan-eligibility').className = `font-bold text-lg ${eligibilityResult.eligible ? 'text-green-600' : 'text-red-600 text-sm'}`;
 
+            // --- YAHAN BADLAV KIYA GAYA HAI ---
             populateLoanHistory(data.membershipId);
         }
         
@@ -415,8 +408,6 @@
         }
 
         function calculateLifetimeProfit(memberId) {
-            // Simplified: Total interest paid by this member on their loans
-            // A more complex profit-sharing model would require knowing all members' shares
             return allTransactions
                 .filter(tx => tx.memberId === memberId && tx.type === 'Loan Payment')
                 .reduce((sum, tx) => sum + tx.interestPaid, 0);
@@ -424,12 +415,10 @@
 
         function calculateTotalExtraBalance(memberId, lifetimeProfit) {
             const history = [];
-            // Assuming lifetime profit contributes to extra balance
             if (lifetimeProfit > 0) {
                  history.push({ type: 'profit', from: 'Community Loans', date: new Date(), amount: lifetimeProfit });
             }
 
-            // Manual adjustments and withdrawals
             const adjustments = allTransactions.filter(tx => 
                 tx.memberId === memberId && (tx.type === 'Extra Payment' || tx.type === 'Extra Withdraw')
             );
@@ -443,40 +432,74 @@
             return { total, history };
         }
         
+        // === YAHAN FUNCTION KO UPDATE KIYA GAYA HAI ===
         function populateLoanHistory(memberId) {
             const container = document.getElementById('loan-history-container');
-            const memberLoans = allTransactions.filter(tx => tx.memberId === memberId && tx.type === 'Loan Taken');
+            // Member ke sabhi loan transactions ko date ke hisaab se sort karein
+            const memberLoans = allTransactions
+                .filter(tx => tx.memberId === memberId && tx.type === 'Loan Taken')
+                .sort((a, b) => a.date - b.date);
             
             if (memberLoans.length === 0) {
                 container.innerHTML = '<p class="text-center text-gray-500 text-sm">No loan history found.</p>';
                 return;
             }
+
             container.innerHTML = '';
+            const loanTypeCounts = {}; // Har loan type ka count rakhne ke liye
+
             memberLoans.forEach(loan => {
                 const loanId = loan.transactionId;
-                const payments = allTransactions.filter(tx => tx.paidForLoanId === loanId);
-                const totalRepaid = payments.reduce((sum, p) => sum + p.principalPaid, 0);
-                const isPaid = totalRepaid >= loan.amount;
-                const repaymentDate = isPaid ? payments[payments.length - 1].date : null;
+                const loanType = loan.loanType || 'Standard Loan';
+                
+                // Loan type ka count badhayein
+                if (loanTypeCounts[loanType]) {
+                    loanTypeCounts[loanType]++;
+                } else {
+                    loanTypeCounts[loanType] = 1;
+                }
+                const occurrence = loanTypeCounts[loanType];
+                const ordinalSuffix = (n) => {
+                    const s = ["th", "st", "nd", "rd"], v = n % 100;
+                    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+                }
 
-                const daysToRepay = repaymentDate ? Math.round((repaymentDate - loan.date) / (1000 * 3600 * 24)) : null;
+                // Is loan ke liye kiye gaye sabhi payments ko dhundhein
+                const payments = allTransactions.filter(tx => tx.paidForLoanId === loanId && tx.type === 'Loan Payment');
+                const totalRepaid = payments.reduce((sum, p) => sum + p.principalPaid, 0);
+                const paymentCount = payments.length;
+
+                // Status aur color tay karein
+                const isPaid = totalRepaid >= loan.amount;
                 let status, color;
-                if(repaymentDate === null) { status = "Pending"; color = "text-yellow-600"; }
-                else { status = "Paid"; color = "text-green-600"; }
+
+                if (isPaid) {
+                    status = `Paid (${paymentCount} ${paymentCount > 1 ? 'times' : 'time'})`;
+                    color = "text-green-600";
+                } else {
+                    status = "Pending";
+                    color = "text-yellow-600";
+                }
 
                 const div = document.createElement('div');
                 div.className = 'info-item flex justify-between items-center text-sm';
-                div.innerHTML = `<div><p class="font-semibold">₹${loan.amount.toLocaleString('en-IN')}</p><p class="text-xs text-gray-400">${loan.date.toLocaleDateString('en-GB')}</p></div><div class="text-right"><p class="font-bold ${color}">${status}</p><p class="text-xs text-gray-400">${daysToRepay !== null ? `${daysToRepay} days` : ''}</p></div>`;
+                div.innerHTML = `
+                    <div>
+                        <p class="font-bold text-base">₹${loan.amount.toLocaleString('en-IN')}</p>
+                        <p class="text-xs text-gray-500">${loan.date.toLocaleDateString('en-GB')}</p>
+                        <p class="text-xs font-semibold text-indigo-600">${loanType} (${ordinalSuffix(occurrence)} time)</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold ${color}">${status}</p>
+                    </div>`;
                 container.appendChild(div);
             });
         }
-
+        // === BADLAV SAMAPT ===
 
         // --- EVENT LISTENERS & MODALS (No major changes needed here) ---
         setupEventListeners();
         function setupEventListeners() {
-             // ... (same as your original code)
-             // Image Viewer
             const imageViewerModal = document.getElementById('imageViewerModal');
             document.querySelectorAll('.document-thumbnail').forEach(img => img.addEventListener('click', () => {
                 document.getElementById('fullImageView').src = img.src;
@@ -484,7 +507,6 @@
             }));
             document.getElementById('closeImageViewer').addEventListener('click', () => imageViewerModal.classList.add('hidden'));
             
-            // Withdrawal Modal
             const withdrawalModal = document.getElementById('withdrawalModal');
             document.getElementById('withdraw-btn').addEventListener('click', () => {
                 document.getElementById('modal-available-balance').textContent = `₹${currentMemberData.extraBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
@@ -493,7 +515,6 @@
             document.getElementById('close-withdrawal-modal').addEventListener('click', () => withdrawalModal.classList.add('hidden'));
             document.getElementById('submit-withdrawal').addEventListener('click', submitWithdrawal);
 
-            // History Modal
             const historyModal = document.getElementById('historyModal');
             document.getElementById('view-history-btn').addEventListener('click', () => {
                 populateHistoryModal();
@@ -501,7 +522,6 @@
             });
             document.getElementById('close-history-modal').addEventListener('click', () => historyModal.classList.add('hidden'));
 
-            // Score Breakdown Modal
             const scoreModal = document.getElementById('scoreBreakdownModal');
             document.getElementById('score-info-btn').addEventListener('click', () => {
                 populateScoreBreakdownModal();
@@ -509,7 +529,6 @@
             });
             document.getElementById('close-score-modal').addEventListener('click', () => scoreModal.classList.add('hidden'));
 
-            // Card Result Modal
             const cardModal = document.getElementById('cardResultModal');
             document.getElementById('close-card-modal').addEventListener('click', () => cardModal.classList.add('hidden'));
             document.getElementById('download-card-btn').addEventListener('click', downloadCard);
@@ -535,19 +554,13 @@
                 historyList.appendChild(div);
             });
         }
-        function submitWithdrawal() { /* ... same as before ... */ }
-        async function showWithdrawalCard(amount) { /* ... same as before ... */ }
-
-        // --- Duplicated utility and complex calculation functions ---
-        // These functions will now work correctly as they depend on 'allTransactions' global variable
+        
+        // Duplicated utility and complex calculation functions
         function toDataURL(url) { return new Promise((resolve) => { if(!url || url.startsWith('data:')) { resolve(url); return; } const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; const targetUrl = url.includes('firebasestorage') ? proxyUrl + url : url; fetch(targetUrl).then(response => response.blob()).then(blob => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.onerror = () => resolve(url); reader.readAsDataURL(blob); }).catch(() => resolve(url)); }); }
         async function getCardAsBlob() { const cardElement = document.getElementById('withdrawalCard'); const canvas = await html2canvas(cardElement, { scale: 3, backgroundColor: null, useCORS: true }); return new Promise(resolve => canvas.toBlob(resolve, 'image/png')); }
         async function downloadCard() { const blob = await getCardAsBlob(); const link = document.createElement('a'); link.download = `withdrawal-${currentMemberData.fullName.replace(/\s+/g, '-')}.png`; link.href = URL.createObjectURL(blob); link.click(); URL.revokeObjectURL(link.href); }
         async function shareCard() { const blob = await getCardAsBlob(); const file = new File([blob], `withdrawal.png`, { type: 'image/png' }); if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: 'Withdrawal Receipt', text: `Withdrawal receipt for ${currentMemberData.fullName}.`}); } catch (error) { console.error('Share failed:', error); alert('Could not share the image.'); } } else { alert("Sharing is not supported."); } }
         
-        // Complex financial logic functions (Performance Score, Eligibility etc.)
-        // These are kept as placeholders as they are very complex and business-specific.
-        // They need to be fully implemented based on your exact business rules, using the now-available `allTransactions` data.
         function calculatePerformanceScore(memberId, untilDate) { return { totalScore: 75.00 }; /* Placeholder */ }
         function getLoanEligibility(memberId, score) { return { eligible: true, multiplier: 1.5 }; /* Placeholder */ }
         function populateScoreBreakdownModal() { /* Placeholder */ }
@@ -585,4 +598,5 @@
   </script>
 </body>
 </html>
+
 
