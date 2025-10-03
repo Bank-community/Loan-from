@@ -191,67 +191,15 @@ section { margin-bottom: 40px; padding: 25px; background-color: var(--card-bg); 
 .sip-status-badge { padding: 5px 12px; border-radius: 15px; font-size: 0.85em; font-weight: bold; color: white; min-width: 80px; text-align: center; }
 .sip-status-badge.paid { background-color: var(--success-color); }
 .sip-status-badge.not-paid { background-color: var(--danger-color); }
-#notificationModal .modal-content, #penaltyWalletModal .modal-content, #allMembersModal .modal-content { max-width: 500px; padding: 0; }
-#notificationModal h2, #penaltyWalletModal h2, #allMembersModal h2 { padding: 20px 20px 15px 20px; margin: 0; border-bottom: 1px solid var(--border-color); }
-.notification-list, .penalty-history-list { list-style: none; padding: 0; margin: 0; max-height: 65vh; overflow-y: auto; }
-.notification-item { display: flex; padding: 15px 20px; border-bottom: 1px solid var(--border-color); }
-.notification-item:last-child { border-bottom: none; }
-.notification-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; margin-right: 15px; flex-shrink: 0; }
-.notification-icon-wrapper { flex-shrink: 0; margin-right: 15px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; }
-.notification-icon-wrapper i { color: var(--primary-color); }
-.notification-content { flex-grow: 1; }
-.notification-header { font-size: 1em; font-weight: 600; color: var(--text-color); margin: 0; }
-.notification-body { font-size: 0.9em; margin: 2px 0 0 0; color: var(--light-text); }
-.notification-time { font-size: 0.8em; color: var(--light-text); margin-top: 4px; display: block; }
-.no-notifications, .no-penalty-history { padding: 40px 20px; text-align: center; color: var(--light-text); }
+
+/* === Notification Modal Styles Removed === */
+#penaltyWalletModal .modal-content, #allMembersModal .modal-content { max-width: 500px; padding: 0; }
+#penaltyWalletModal h2, #allMembersModal h2 { padding: 20px 20px 15px 20px; margin: 0; border-bottom: 1px solid var(--border-color); }
+.penalty-history-list { list-style: none; padding: 0; margin: 0; max-height: 65vh; overflow-y: auto; }
+.no-penalty-history { padding: 40px 20px; text-align: center; color: var(--light-text); }
 .view-history-btn { color: var(--primary-color); background: none; border: none; font-weight: 600; cursor: pointer; margin: 10px 0; }
 .penalty-history-list { display: none; }
 .penalty-history-list.visible { display: block; }
-
-/* === YAHAN BADLAV KIYA GAYA HAI === */
-.notification-item.manual {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0;
-    overflow: hidden;
-    background-color: #fdfdfd;
-}
-.manual-notification-img {
-    width: 100%;
-    height: auto;
-    max-height: 180px;
-    object-fit: cover;
-    display: block;
-    border-bottom: 1px solid var(--border-color);
-}
-.manual-notification-content {
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-}
-.manual-notification-footer {
-    padding: 0 15px 15px 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.explore-btn {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 0.9em;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background-color 0.2s ease;
-}
-.explore-btn:hover {
-    background-color: var(--primary-darker);
-}
-.notification-item.personal {
-    align-items: center;
-}
-/* === BADLAV SAMAPT === */
 
 footer { background-color: #343a40; color: #f8f9fa; padding: 25px 15px; margin-top: 50px; font-size: 0.95em; text-align: center; border-top: 5px solid var(--primary-color); }
 footer p { color: #f8f9fa; margin: 0; }
@@ -294,5 +242,4 @@ footer p { color: #f8f9fa; margin: 0; }
 @media (min-width: 992px) { .member-card { flex: 0 0 20%; max-width: 210px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
 @media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card { flex: 0 0 15%; max-width: 220px; } h2 { font-size: 2.2em; } }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
 
