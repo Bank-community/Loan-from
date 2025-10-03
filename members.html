@@ -61,10 +61,6 @@
         .filters { display: flex; justify-content: center; margin: 15px 10px; gap: 15px; flex-wrap: wrap; padding-top: 180px; }
         label { display: block; margin-bottom: 3px; font-weight: bold; font-size: 14px; }
         select { padding: 8px 10px; font-size: 14px; min-width: 160px; border: 1px solid #ccc; border-radius: 5px; background-color: #fff; }
-        .summary-container { width: 95%; max-width: 800px; margin: 15px auto 10px auto; background-color: #fff; border-radius: 8px; box-shadow: var(--card-shadow); padding: 15px 20px; border-left: 5px solid var(--primary-color); }
-        .summary-container.hidden { display: none; }
-        .table-footnote { font-size: 0.8em; color: #777; text-align: center; margin: 5px auto 15px auto; padding: 0 15px; }
-        .table-footnote.hidden { display: none; }
         .table-container { width: 100%; overflow-x: auto; margin: 0 auto 20px auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; background-color: white; box-shadow: var(--card-shadow); }
         th, td { padding: 8px 10px; border: 1px solid #e0e0e0; text-align: center; }
@@ -87,7 +83,7 @@
         #sipStatusModal .status-pending { color: var(--negative-color); }
         #sipStatusModal .status-due { color: var(--neutral-color); }
         @media only screen and (max-width: 1024px) { body { padding-top: 195px; } .filters { padding-top: 150px; } .profile-section { max-width: 95%; } }
-        @media only screen and (max-width: 600px) { body { padding-top: 205px; } .header { height: 55px; } .header h1 { font-size: 1em; } .profile-section { top: 65px; width: 95%; padding: 10px 12px; grid-template-columns: 55px 1fr auto; gap: 8px 10px; } .profile-picture { width: 50px; height: 50px; font-size: 22px; border-width: 2px; margin-top: 0;} .profile-header-area h3 { font-size: 16px; } .profile-buttons-area { flex-direction: row; gap: 6px; grid-column: 3; grid-row: 1; align-self: center; margin-top: 0;} .profile-stats-grid{ grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; } .metric-card{ min-height: 55px; padding: 5px 6px; border-radius: 4px; } .metric-card .label{ font-size: 9px; } .metric-card .value{ font-size: 12px; } .filters { padding-top: 165px; gap: 10px; margin-top: 15px; } label, select { font-size: 12px; min-width: 110px;} select { padding: 5px 6px; } .table-container { margin-top: 10px; } th { font-size: 11px; padding: 6px 8px; } td { font-size: 10px; padding: 5px 6px; } tfoot td { font-size: 11px; } .modal-content{ width: 95%; padding: 15px 20px; } .modal h2{ font-size: 16px; } #sipStatusModal .status-item{font-size: 13px;} .summary-container h3 { font-size: 1em; } .summary-stat .value { font-size: 1.1em; } }
+        @media only screen and (max-width: 600px) { body { padding-top: 205px; } .header { height: 55px; } .header h1 { font-size: 1em; } .profile-section { top: 65px; width: 95%; padding: 10px 12px; grid-template-columns: 55px 1fr auto; gap: 8px 10px; } .profile-picture { width: 50px; height: 50px; font-size: 22px; border-width: 2px; margin-top: 0;} .profile-header-area h3 { font-size: 16px; } .profile-buttons-area { flex-direction: row; gap: 6px; grid-column: 3; grid-row: 1; align-self: center; margin-top: 0;} .profile-stats-grid{ grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; } .metric-card{ min-height: 55px; padding: 5px 6px; border-radius: 4px; } .metric-card .label{ font-size: 9px; } .metric-card .value{ font-size: 12px; } .filters { padding-top: 165px; gap: 10px; margin-top: 15px; } label, select { font-size: 12px; min-width: 110px;} select { padding: 5px 6px; } .table-container { margin-top: 10px; } th { font-size: 11px; padding: 6px 8px; } td { font-size: 10px; padding: 5px 6px; } tfoot td { font-size: 11px; } .modal-content{ width: 95%; padding: 15px 20px; } .modal h2{ font-size: 16px; } #sipStatusModal .status-item{font-size: 13px;} }
         @media only screen and (max-width: 420px) { body { padding-top: 220px; } .profile-section { grid-template-columns: 50px 1fr auto; gap: 5px 8px; padding: 8px 10px; } .profile-picture { width: 45px; height: 45px; font-size: 20px; } .profile-header-area h3 { font-size: 15px; } .profile-stats-grid { grid-template-columns: repeat(2, 1fr); } .filters { padding-top: 180px; } }
     </style>
 </head>
@@ -119,85 +115,31 @@
             </div>
             
             <div class="profile-stats-grid">
-                 <div class="metric-card" id="sipAmountCard">
-                     <span class="label">Total SIP</span>
-                     <span id="totalSipValue" class="value">0</span>
-                 </div>
-                 <div class="metric-card" id="paymentAmountCard">
-                     <span class="label">Total Payment</span>
-                     <span id="totalPaymentValue" class="value">0</span>
-                 </div>
-                 <div class="metric-card" id="returnAmountCard">
-                     <span class="label">Total Return</span>
-                     <span id="totalReturnValue" class="value">0</span>
-                 </div>
-                 <div class="metric-card" id="loanAmountCard">
-                     <span class="label">Total Loan</span>
-                     <span id="totalLoanValue" class="value">0</span>
-                 </div>
-                 <div class="metric-card" id="netAmountCard">
-                     <span class="label">Net Amount</span>
-                     <span id="netAmountValue" class="value">0</span>
-                 </div>
-                 <div class="metric-card" id="daysCard">
-                     <span class="label">Total Days</span>
-                     <span id="totalDaysValue" class="value">0</span>
-                 </div>
+                 <div class="metric-card" id="sipAmountCard"><span class="label">Total SIP</span><span id="totalSipValue" class="value">0</span></div>
+                 <div class="metric-card" id="paymentAmountCard"><span class="label">Total Payment</span><span id="totalPaymentValue" class="value">0</span></div>
+                 <div class="metric-card" id="returnAmountCard"><span class="label">Total Return</span><span id="totalReturnValue" class="value">0</span></div>
+                 <div class="metric-card" id="loanAmountCard"><span class="label">Total Loan</span><span id="totalLoanValue" class="value">0</span></div>
+                 <div class="metric-card" id="netAmountCard"><span class="label">Net Amount</span><span id="netAmountValue" class="value">0</span></div>
+                 <div class="metric-card" id="daysCard"><span class="label">Total Days</span><span id="totalDaysValue" class="value">0</span></div>
             </div>
         </div>
 
         <div class="filters">
-             <div>
-                <label for="nameFilter">Select Name:</label>
-                <select id="nameFilter">
-                    <option value="all">All Members</option>
-                </select>
-            </div>
-             <div>
-                <label for="typeFilter">Filter Data By:</label>
-                <select id="typeFilter">
-                    <option value="all_transactions">All Transactions</option>
-                    <option value="members_invest">Loan Repayments</option>
-                    <option value="loan_history">Loan History</option>
-                    <option value="sip_payment">SIP Payments</option>
-                    <option value="total_return">Total Return</option>
-             </select>
-            </div>
+             <div><label for="nameFilter">Select Name:</label><select id="nameFilter"><option value="all">All Members</option></select></div>
+             <div><label for="typeFilter">Filter Data By:</label><select id="typeFilter"><option value="all_transactions">All Transactions</option><option value="members_invest">Loan Repayments</option><option value="loan_history">Loan History</option><option value="sip_payment">SIP Payments</option><option value="total_return">Total Return</option></select></div>
         </div>
         
         <div class="table-container">
             <table id="dataTable">
                 <thead></thead>
                 <tbody></tbody>
-                <tfoot>
-                    <tr>
-                        <td id="totalLabelCell" colspan="2">Total</td>
-                        <td id="totalValue1Cell">0</td>
-                        <td id="totalValue2Cell">0</td>
-                        <td id="totalValue3Cell">0</td>
-                    </tr>
-                </tfoot>
+                <tfoot><tr><td id="totalLabelCell" colspan="2">Total</td><td id="totalValue1Cell">0</td><td id="totalValue2Cell">0</td><td id="totalValue3Cell">0</td></tr></tfoot>
             </table>
         </div>
     </div>
 
-    <div id="imageModal" class="modal hidden">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('imageModal')">×</button>
-            <img id="modalImage" src="" alt="Profile Image Fullscreen">
-        </div>
-    </div>
-
-    <div id="sipStatusModal" class="modal hidden">
-         <div class="modal-content">
-             <button class="modal-close" onclick="closeModal('sipStatusModal')">×</button>
-             <h2>Current Month SIP Status</h2>
-             <div id="sipStatusList" class="status-list">
-                 Loading status...
-             </div>
-         </div>
-     </div>
-
+    <div id="imageModal" class="modal hidden"><div class="modal-content"><button class="modal-close" onclick="closeModal('imageModal')">×</button><img id="modalImage" src="" alt="Profile Image Fullscreen"></div></div>
+    <div id="sipStatusModal" class="modal hidden"><div class="modal-content"><button class="modal-close" onclick="closeModal('sipStatusModal')">×</button><h2>Current Month SIP Status</h2><div id="sipStatusList" class="status-list">Loading status...</div></div></div>
 
 <script>
     // --- Global variables ---
@@ -213,31 +155,28 @@
     async function initializeApp() {
         const loader = document.getElementById('loader');
         try {
-            // NOTE: Replace this with your actual Firebase config method
-            // For example, fetching from a secure endpoint or embedding it securely.
-            const firebaseConfig = {
-                apiKey: "YOUR_API_KEY",
-                authDomain: "YOUR_AUTH_DOMAIN",
-                databaseURL: "YOUR_DATABASE_URL",
-                projectId: "YOUR_PROJECT_ID",
-                storageBucket: "YOUR_STORAGE_BUCKET",
-                messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-                appId: "YOUR_APP_ID"
-            };
+            // Aapka original configuration fetch karne ka tarika
+            const response = await fetch('/api/config');
+            if (!response.ok) {
+                throw new Error('Configuration API se fetch nahi ho saki.');
+            }
+            const config = await response.json();
 
             if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
+                firebase.initializeApp(config.firebase);
             }
             
             setupPasswordPrompt();
 
-        } catch (error) {
+        } catch (error)
+        {
             console.error("Initialization Error:", error);
-            loader.innerHTML = `<b>Initialization Error:</b> ${error.message}<br><br>Please configure your Firebase settings inside the script.`;
+            loader.innerHTML = `<b>Initialization Error:</b> ${error.message}<br><br>Please ensure the configuration API is working correctly.`;
         }
     }
 
     function setupPasswordPrompt() {
+        // Aapka original authentication/password ka tarika
         const passwordInput = document.getElementById('passwordInput');
         const passwordSubmit = document.getElementById('passwordSubmit');
         const passwordError = document.getElementById('passwordError');
@@ -262,18 +201,16 @@
             passwordSubmit.textContent = "Checking...";
 
             try {
-                // Step 1: Fetch members data for authentication
                 const membersSnapshot = await firebase.database().ref('members').once('value');
                 allMembers = membersSnapshot.val() || {};
                 
-                // Step 2: Validate PIN against all members' passwords
                 const isValidPin = Object.values(allMembers).some(member => member.password === enteredPassword);
 
                 if (isValidPin) {
                     passwordContainer.classList.add('hidden');
                     loader.classList.remove('hidden');
-                    // Step 3: If valid, process the rest of the data
-                    await processFirebaseData();
+                    // PIN sahi hone ke baad data process hoga
+                    processFirebaseData(); 
                 } else {
                     passwordError.textContent = "Incorrect PIN";
                     passwordInput.value = "";
@@ -291,7 +228,7 @@
         }
     }
     
-    // --- MUKHYA UPDATE 1: Naye structure se data process karne ke liye function ---
+    // --- MUKHYA UPDATE: Data Fetching & Processing from new structure ---
     async function processFirebaseData() {
         const loader = document.getElementById('loader');
         try {
@@ -299,15 +236,15 @@
             const transactionsSnapshot = await firebase.database().ref('transactions').once('value');
             const rawTransactions = transactionsSnapshot.val() || {};
 
-            // Step 1: Member ID se Name ka map banayein taaki lookup tezi se ho.
             const memberIdToNameMap = {};
-            Object.values(allMembers).forEach(member => {
+            // memberId se fullName ka map banayein.
+            Object.keys(allMembers).forEach(key => {
+                const member = allMembers[key];
                 if (member.memberId && member.fullName) {
                     memberIdToNameMap[member.memberId] = member.fullName;
                 }
             });
 
-            // Step 2: Loan ID se Loan Type ka map banayein, taaki payment ke time type pata chale.
             const loanIdToTypeMap = {};
             Object.values(rawTransactions).forEach(tx => {
                 if (tx.type === 'Loan Taken' && tx.linkedLoanId && tx.loanType) {
@@ -315,66 +252,54 @@
                 }
             });
 
-            // Step 3: Sabhi transactions ko process karke ek flat list banayein.
             let flatTransactionList = [];
-            for (const txId in rawTransactions) {
+            Object.keys(rawTransactions).forEach(txId => {
                 const tx = rawTransactions[txId];
                 const memberName = memberIdToNameMap[tx.memberId];
                 
                 if (!memberName) {
-                    console.warn(`Transaction ${txId} ka memberId (${tx.memberId}) anjaan hai. Skip kiya ja raha hai.`);
-                    continue;
+                    console.warn(`Transaction ${txId} for unknown memberId ${tx.memberId} skipped.`);
+                    return;
                 }
 
-                let parsedDate = new Date(tx.date || 0);
+                const parsedDate = new Date(tx.date || tx.timestamp || 0);
                 if (isNaN(parsedDate.getTime())) {
-                    console.warn(`Transaction ${txId} ke liye galat date format. Skip kiya ja raha hai.`);
-                    continue;
+                     console.warn(`Invalid date for transaction ${txId}. Skipped.`);
+                     return;
                 }
 
                 let processedTx = {
                     Name: memberName,
                     Date: parsedDate,
-                    Loan: 0,
-                    Payment: 0,
-                    SipPayment: 0,
-                    ReturnAmount: 0,
-                    Category: tx.type || 'Unknown' // Default category
+                    Loan: 0, Payment: 0, SipPayment: 0, ReturnAmount: 0,
+                    Category: tx.type || 'Unknown'
                 };
-
-                switch (tx.type) {
-                    case 'Loan Taken':
-                        processedTx.Loan = parseFloat(tx.amount) || 0;
-                        processedTx.Category = `Loan (${tx.loanType || 'General'})`;
-                        break;
-                    case 'Loan Payment':
-                        processedTx.Payment = parseFloat(tx.principalPaid) || 0;
-                        const loanType = loanIdToTypeMap[tx.paidForLoanId] || 'General';
-                        processedTx.Category = `Payment (${loanType})`;
-                        break;
-                    case 'SIP Payment':
-                        processedTx.SipPayment = parseFloat(tx.amount) || 0;
-                        processedTx.Category = 'SIP';
-                        break;
-                    case 'Return':
-                         processedTx.ReturnAmount = parseFloat(tx.amount) || 0;
-                         processedTx.Category = 'Return';
-                         break;
-                    default:
-                        console.warn(`Anjaan transaction type: "${tx.type}" (ID: ${txId})`);
-                        // Agar amount hai lekin type anjaan hai, to ise SIP maan lein (request anusaar)
-                        if (tx.amount) {
-                            processedTx.SipPayment = parseFloat(tx.amount) || 0;
-                            processedTx.Category = 'SIP (Default)';
-                        }
-                        break;
+                
+                // Screenshot ke anusaar, SIP ka type "SIP Payment" ho sakta hai ya amount field se nikalna padega
+                const amount = parseFloat(tx.amount) || 0;
+                
+                if (tx.type === 'Loan Taken') {
+                    processedTx.Loan = amount;
+                    processedTx.Category = `Loan (${tx.loanType || 'General'})`;
+                } else if (tx.type === 'Loan Payment') {
+                    processedTx.Payment = parseFloat(tx.principalPaid) || 0;
+                    const loanType = loanIdToTypeMap[tx.paidForLoanId] || 'General';
+                    processedTx.Category = `Payment (${loanType})`;
+                } else if (tx.type === 'SIP Payment') {
+                    processedTx.SipPayment = amount;
+                    processedTx.Category = 'SIP';
+                } else if (amount > 0 && !tx.type) { // Agar type nahi hai, par amount hai, to SIP maanein
+                    processedTx.SipPayment = amount;
+                    processedTx.Category = 'SIP (deduced)';
+                } else if (tx.type === 'Return') { // Assuming a type for returns might exist
+                    processedTx.ReturnAmount = amount;
+                    processedTx.Category = 'Return';
                 }
 
-                // Sirf un transactions ko add karein jinme koi value ho
                 if (processedTx.Loan > 0 || processedTx.Payment > 0 || processedTx.SipPayment > 0 || processedTx.ReturnAmount > 0) {
                      flatTransactionList.push(processedTx);
                 }
-            }
+            });
             
             flatTransactionList.sort((a, b) => a.Date - b.Date);
             allData = flatTransactionList;
@@ -382,13 +307,12 @@
             initializeDashboard();
 
         } catch (error) {
-            console.error("Firebase data process karte samay error:", error);
+            console.error("Error processing Firebase data:", error);
             loader.innerHTML = `Error: ${error.message}`;
         } finally {
             loader.classList.add('hidden');
         }
     }
-
 
     // --- Dashboard Initialization & Event Listeners ---
     function initializeDashboard() {
@@ -416,10 +340,10 @@
         });
     }
 
-    // --- Modal Functions ---
+    // --- Modal, Filter, and other functions remain mostly unchanged ---
     function openModal(modalId, imageSrc = null) {
         const modal = document.getElementById(modalId);
-        if (modal) {
+        if(modal) {
             if (modalId === 'imageModal' && imageSrc) {
                 modal.querySelector('#modalImage').src = imageSrc;
             }
@@ -429,56 +353,41 @@
 
     function closeModal(modalId) {
         const modal = document.getElementById(modalId);
-        if (modal) {
+        if(modal) {
             modal.classList.add('hidden');
-             if (modalId === 'imageModal') {
-                 modal.querySelector('#modalImage').src = "";
-             }
+            if (modalId === 'imageModal') {
+                modal.querySelector('#modalImage').src = "";
+            }
         }
     }
     
-    // --- Filter Population ---
     function populateNameFilter() {
         const nameFilter = document.getElementById("nameFilter");
         const memberBalances = Object.values(allMembers).map(member => {
+            if (!member.fullName) return null;
             const memberData = allData.filter(r => r.Name === member.fullName);
             const balance = memberData.reduce((acc, r) => acc + r.Payment + r.SipPayment + r.ReturnAmount - r.Loan, 0);
             return { name: member.fullName, balance: balance };
-        });
+        }).filter(Boolean); // null entries ko hata dein
+        
         memberBalances.sort((a, b) => b.balance - a.balance);
         nameFilter.innerHTML = '<option value="all">All Members</option>';
         memberBalances.forEach(({ name }) => {
-            if (name) nameFilter.innerHTML += `<option value="${name}">${name}</option>`;
+            nameFilter.innerHTML += `<option value="${name}">${name}</option>`;
         });
     }
 
-    // --- Central Display Logic ---
     function updateDisplay() {
         const selectedName = document.getElementById('nameFilter').value;
         const selectedType = document.getElementById('typeFilter').value;
-        
         updateProfileSection(selectedName);
-        
-        const filteredData = getFilteredTransactionData(selectedName, selectedType);
-        
         updateTopCards(selectedName);
-
-        switch (selectedType) {
-            case 'total_return':
-                updateTableHeader('total_return');
-                calculateAndDisplayTotalReturn();
-                break;
-            case 'all_transactions':
-            case 'loan_history':
-            case 'members_invest':
-            case 'sip_payment':
-                updateTableHeader('all_transactions'); // Common header
-                displayTransactionData(filteredData, selectedType === 'all_transactions');
-                break;
-            default:
-                 updateTableHeader('default');
-                 document.querySelector("#dataTable tbody").innerHTML = `<tr><td colspan="5">Invalid filter.</td></tr>`;
-                 updateTransactionTotals(0, 0, 0);
+        const filteredData = getFilteredTransactionData(selectedName, selectedType);
+        updateTableHeader(selectedType === 'total_return' ? 'total_return' : 'all_transactions');
+        if (selectedType === 'total_return') {
+            calculateAndDisplayTotalReturn(filteredData);
+        } else {
+            displayTransactionData(filteredData, selectedType === 'all_transactions');
         }
     }
     
@@ -491,13 +400,11 @@
                 totalSip += row.SipPayment;
                 totalReturn += row.ReturnAmount;
                 totalLoan += row.Loan;
-                // Total Payment me loan payment aur sip dono shamil hain
-                totalPayment += row.Payment + row.SipPayment;
+                totalPayment += row.Payment + row.SipPayment; // Loan payment + SIP
             });
             netAmount = (totalPayment + totalReturn) - totalLoan;
-
-            const sortedDates = [...dataForCards].sort((a,b) => a.Date - b.Date);
-            const firstDate = sortedDates[0].Date;
+            
+            const firstDate = dataForCards[0].Date; // Data is already sorted by date
             const today = new Date();
             totalDays = Math.round((today - firstDate) / (1000 * 60 * 60 * 24));
         }
@@ -520,155 +427,102 @@
         const footVal1 = document.getElementById('totalValue1Cell');
         const footVal2 = document.getElementById('totalValue2Cell');
         const footVal3 = document.getElementById('totalValue3Cell');
-        let headers = [];
-
-        footLabel.style.display = '';
-        footVal1.style.display = '';
-        footVal2.style.display = '';
-        footVal3.style.display = '';
-
+        
+        footVal1.style.display = ''; footVal2.style.display = ''; footVal3.style.display = '';
+        
         if (type === 'total_return') {
-            headers = ["Sadasya", "Kul Return Payment"];
-            footLabel.textContent = "Kul Total:";
+            tableHead.innerHTML = `<tr><th>Member</th><th>Total Return</th></tr>`;
+            footLabel.textContent = "Total:";
             footLabel.colSpan = 1;
             footVal1.className = 'positive';
-            footVal2.style.display = 'none';
-            footVal3.style.display = 'none';
+            footVal2.style.display = 'none'; footVal3.style.display = 'none';
         } else {
-            headers = ["Date", "Member", "Amount", "Category", "Net Balance"];
+            tableHead.innerHTML = `<tr><th>Date</th><th>Member</th><th>Amount</th><th>Category</th><th>Net Balance</th></tr>`;
             footLabel.textContent = "Total:";
             footLabel.colSpan = 2;
-            footVal1.textContent = '0.00'; // Loan Total
-            footVal2.textContent = '0.00'; // Payment Total
-            footVal3.textContent = '0.00'; // Net Total
         }
-        
-        tableHead.innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
     }
 
-    // --- Data Filtering & Display ---
     function getFilteredTransactionData(nameFilter, typeFilter) {
         const isAllNames = nameFilter === 'all';
-        let nameFilteredData = isAllNames ? [...allData] : allData.filter(row => row.Name === nameFilter);
-
+        let data = isAllNames ? allData : allData.filter(row => row.Name === nameFilter);
         switch (typeFilter) {
-            case 'loan_history':
-                return nameFilteredData.filter(r => r.Loan > 0);
-            case 'members_invest':
-                 return nameFilteredData.filter(r => r.Payment > 0);
-            case 'sip_payment':
-                return nameFilteredData.filter(r => r.SipPayment > 0);
+            case 'loan_history': return data.filter(r => r.Loan > 0);
+            case 'members_invest': return data.filter(r => r.Payment > 0);
+            case 'sip_payment': return data.filter(r => r.SipPayment > 0);
+            case 'total_return': return data.filter(r => r.ReturnAmount > 0);
             case 'all_transactions':
-                 return nameFilteredData.filter(r => r.Loan > 0 || r.Payment > 0 || r.SipPayment > 0 || r.ReturnAmount > 0);
-            case 'total_return':
-                 return nameFilteredData.filter(r => r.ReturnAmount > 0);
-            default:
-                 return [];
+            default: return data;
         }
     }
-    
-    // --- MUKHYA UPDATE 2: Table display logic ab naye `Category` field ka istemal karega ---
-    function displayTransactionData(filteredData, isCumulative) {
+
+    function displayTransactionData(data, isCumulative) {
         const tbody = document.querySelector("#dataTable tbody");
         tbody.innerHTML = "";
         let loanSum = 0, paymentSum = 0, runningBalance = 0;
 
-        if (filteredData.length === 0) {
-            const colSpan = document.querySelectorAll('#dataTable thead th').length || 5;
-            tbody.innerHTML = `<tr><td colspan="${colSpan}">Is filter ke liye koi transaction nahi mila.</td></tr>`;
-            updateTransactionTotals(0, 0, 0);
-            return;
+        if (data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5">No transactions found for this filter.</td></tr>`;
+            updateTransactionTotals(0, 0, 0); return;
         }
 
-        filteredData.forEach(row => {
-            const totalTransactionPayment = row.Payment + row.SipPayment + row.ReturnAmount;
-            const transactionNet = totalTransactionPayment - row.Loan;
-            
+        data.forEach(row => {
+            const totalPayment = row.Payment + row.SipPayment + row.ReturnAmount;
             loanSum += row.Loan;
-            paymentSum += totalTransactionPayment;
-            runningBalance += transactionNet;
+            paymentSum += totalPayment;
+            runningBalance += (totalPayment - row.Loan);
             
-            const netToShow = isCumulative ? runningBalance : transactionNet;
-            const dateStr = formatDate(row.Date);
-
-            const displayAmount = row.Loan > 0 ? row.Loan : totalTransactionPayment;
+            const displayAmount = row.Loan > 0 ? row.Loan : totalPayment;
             const amountClass = row.Loan > 0 ? 'loan' : 'payment';
+            const netToShow = isCumulative ? runningBalance : (totalPayment - row.Loan);
 
-            tbody.innerHTML += `
-                <tr data-name="${row.Name}" data-date="${row.Date.toISOString()}">
-                    <td>${dateStr}</td>
-                    <td>${row.Name}</td>
-                    <td class="${amountClass}">${displayAmount.toFixed(2)}</td>
-                    <td>${row.Category}</td>
-                    <td class="${netToShow < 0 ? 'negative' : 'positive'}">${netToShow.toFixed(2)}</td>
-                </tr>`;
+            tbody.innerHTML += `<tr>
+                <td>${formatDate(row.Date)}</td>
+                <td>${row.Name}</td>
+                <td class="${amountClass}">${displayAmount.toFixed(2)}</td>
+                <td>${row.Category}</td>
+                <td class="${netToShow < 0 ? 'negative' : 'positive'}">${netToShow.toFixed(2)}</td>
+            </tr>`;
         });
         updateTransactionTotals(loanSum, paymentSum, runningBalance);
     }
     
-    function calculateAndDisplayTotalReturn() {
+    function calculateAndDisplayTotalReturn(returnData) {
         const tbody = document.querySelector("#dataTable tbody");
         tbody.innerHTML = "";
         
-        const selectedName = document.getElementById('nameFilter').value;
-        const returnData = getFilteredTransactionData(selectedName, 'total_return');
-
-        if (selectedName !== 'all') {
-            const totalReturn = returnData.reduce((sum, r) => sum + r.ReturnAmount, 0);
-             if (totalReturn > 0) {
-                tbody.innerHTML = `<tr>
-                    <td>${selectedName}</td>
-                    <td class="positive" style="font-weight:bold;">${totalReturn.toFixed(2)}</td>
-                </tr>`;
-                document.getElementById("totalValue1Cell").textContent = totalReturn.toFixed(2);
-             } else {
-                 tbody.innerHTML = `<tr><td colspan="2">Return data uplabdh nahi hai.</td></tr>`;
-                 document.getElementById("totalValue1Cell").textContent = "0.00";
-             }
-            return;
+        let totalReturn = 0;
+        if (returnData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="2">No return data available.</td></tr>`;
+            document.getElementById("totalValue1Cell").textContent = "0.00"; return;
         }
 
         const returnByMember = returnData.reduce((acc, row) => {
-            if (!acc[row.Name]) acc[row.Name] = 0;
-            acc[row.Name] += row.ReturnAmount;
+            acc[row.Name] = (acc[row.Name] || 0) + row.ReturnAmount;
             return acc;
         }, {});
 
         const sortedMembers = Object.entries(returnByMember).sort(([,a], [,b]) => b - a);
-        let overallReturnPaymentSum = 0;
 
-        if (sortedMembers.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="2">Return data uplabdh nahi hai.</td></tr>`;
-            document.getElementById("totalValue1Cell").textContent = "0.00";
-            return;
-        }
-
-        sortedMembers.forEach(([name, total]) => {
-            tbody.innerHTML += `<tr>
-                <td>${name}</td>
-                <td class="positive" style="font-weight:bold;">${total.toFixed(2)}</td>
-            </tr>`;
-            overallReturnPaymentSum += total;
+        sortedMembers.forEach(([name, amount]) => {
+            tbody.innerHTML += `<tr><td>${name}</td><td class="positive">${amount.toFixed(2)}</td></tr>`;
+            totalReturn += amount;
         });
         
-        document.getElementById("totalValue1Cell").textContent = overallReturnPaymentSum.toFixed(2);
+        document.getElementById("totalValue1Cell").textContent = totalReturn.toFixed(2);
     }
 
     function updateTransactionTotals(loanSum, paymentSum, finalBalance) {
-        const netSum = paymentSum - loanSum;
         const footVal1 = document.getElementById('totalValue1Cell');
         const footVal2 = document.getElementById('totalValue2Cell');
         const footVal3 = document.getElementById('totalValue3Cell');
 
         footVal1.textContent = loanSum.toFixed(2);
         footVal1.className = 'loan';
-
         footVal2.textContent = paymentSum.toFixed(2);
         footVal2.className = 'payment';
-
-        const balanceToShow = finalBalance !== undefined ? finalBalance : netSum;
-        footVal3.textContent = balanceToShow.toFixed(2);
-        footVal3.className = balanceToShow < 0 ? "negative" : "positive";
+        footVal3.textContent = finalBalance.toFixed(2);
+        footVal3.className = finalBalance < 0 ? "negative" : "positive";
     }
 
     function updateProfileSection(name) {
@@ -681,59 +535,36 @@
         if (name !== 'all') {
             const memberInfo = Object.values(allMembers).find(m => m.fullName === name);
             displayName = name;
-            profileImageUrl = memberInfo?.profilePicUrl || defaultProfilePic;
+            profileImageUrl = (memberInfo && memberInfo.profilePicUrl) ? memberInfo.profilePicUrl : defaultProfilePic;
         }
         
         profileNameEl.textContent = displayName;
         profilePicContainer.innerHTML = `<img src="${profileImageUrl}" alt="Profile of ${name}" onerror="this.onerror=null; this.src='${defaultProfilePic}';" style="cursor: ${profileImageUrl !== defaultProfilePic ? 'pointer' : 'default'}; object-fit: ${profileImageUrl === defaultProfilePic ? 'contain' : 'cover'};">`;
     }
     
-    // --- Utility functions ---
     function populateSipStatusModal() {
         const listContainer = document.getElementById('sipStatusList');
         if (!listContainer) return;
         listContainer.innerHTML = "";
-        
-        const memberNames = Object.values(allMembers)
-                                .map(m => m.fullName)
-                                .filter(Boolean) // Remove any undefined names
-                                .sort((a, b) => a.localeCompare(b));
-
-        const now = new Date();
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
-        const currentDay = now.getDate();
-
-        if (memberNames.length === 0) {
-             listContainer.innerHTML = "Koi sadasya nahi mila.";
-             return;
-        }
+        const memberNames = Object.values(allMembers).map(m => m.fullName).filter(Boolean).sort();
+        const now = new Date(), currentMonth = now.getMonth(), currentYear = now.getFullYear(), currentDay = now.getDate();
+        if (memberNames.length === 0) { listContainer.innerHTML = "No members found."; return; }
 
         memberNames.forEach(name => {
             const paidThisMonth = allData.some(r => r.Name === name && r.SipPayment > 0 && r.Date.getMonth() === currentMonth && r.Date.getFullYear() === currentYear);
-            
             let statusText, statusClass, statusIcon;
             if (paidThisMonth) { [statusText, statusClass, statusIcon] = ["Paid", "status-paid", "✅"]; } 
             else if (currentDay > 10) { [statusText, statusClass, statusIcon] = ["Pending", "status-pending", "❌"]; } 
             else { [statusText, statusClass, statusIcon] = ["Due", "status-due", "🔴"]; }
-            
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'status-item';
-            itemDiv.innerHTML = `<span>${name}</span><span class="${statusClass}">${statusIcon} ${statusText}</span>`;
-            listContainer.appendChild(itemDiv);
+            listContainer.innerHTML += `<div class="status-item"><span>${name}</span><span class="${statusClass}">${statusIcon} ${statusText}</span></div>`;
         });
     }
 
     function formatDate(date) {
         if (!(date instanceof Date) || isNaN(date)) return "Invalid Date";
-        try { return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); } 
-        catch (e) { 
-            const y = date.getFullYear(), m = String(date.getMonth() + 1).padStart(2, '0'), d = String(date.getDate()).padStart(2, '0');
-            return `${d}-${m}-${y}`; 
-        }
+        return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
     }
     
-    // Animation style for incorrect password
     const styleSheet = document.createElement("style");
     styleSheet.type = "text/css";
     styleSheet.innerText = `@keyframes shake { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); } 30%, 50%, 70% { transform: translateX(-4px); } 40%, 60% { transform: translateX(4px); } }`;
@@ -741,4 +572,5 @@
 </script>
 </body>
 </html>
+
 
