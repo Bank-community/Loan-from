@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Bank Community Loan</title>
+
+    <!-- Firebase Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        /* === Basic Setup === */
+        :root {
+            --primary-color: #007bff; --primary-darker: #0056b3; --text-color: #333;
+            --light-text: #555; --bg-color: #f4f7fc; --card-bg: #ffffff;
+            --border-color: #dee2e6; --shadow-color: rgba(0, 0, 0, 0.08);
+            --success-color: #28a745; --danger-color: #dc3545; --info-color: #17a2b8;
+        }
+        body {
+            font-family: 'Roboto', 'Arial', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        /* === Header === */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-darker));
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .header-back-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+        .header-title {
+            font-size: 1.25em;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* === Main Content === */
+        .notifications-container {
+            padding: 85px 15px 20px 15px; /* Add padding for the fixed header */
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .loading-state, .empty-state {
+            text-align: center;
+            color: var(--light-text);
+            font-size: 1.1em;
+            padding: 50px 20px;
+        }
+
+        /* === Notification Card Base Style === */
+        .notification-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === Manual Notification Card === */
+        .manual-card .card-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            padding: 15px;
+            margin: 0;
+            color: var(--primary-darker);
+        }
+        .manual-card .card-image {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+        .manual-card .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+        }
+        .manual-card .timestamp {
+            font-size: 0.8em;
+            color: var(--light-text);
+        }
+        .manual-card .explore-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+        .manual-card .explore-btn:hover {
+            background-color: var(--primary-darker);
+        }
+
+        /* === Other Notification Cards (Transaction/Reminder) === */
+        .activity-card {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .activity-card .profile-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .activity-card .card-content {
+            flex-grow: 1;
+        }
+        .activity-card .message {
+            margin: 0;
+            font-size: 1em;
+            line-height: 1.4;
+        }
+        .activity-card .amount {
+            font-weight: 700;
+        }
+        .activity-card .amount.sip, .activity-card .amount.payment { color: var(--success-color); }
+        .activity-card .amount.loan, .activity-card .amount.withdraw { color: var(--danger-color); }
+        .activity-card .timestamp {
+            display: block;
+            font-size: 0.8em;
+            color: var(--light-text);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <button class="header-back-btn" onclick="window.location.href = 'index.html'">
+            <i data-feather="arrow-left"></i>
+        </button>
+        <h1 class="header-title">Notifications</h1>
+    </header>
+
+    <main id="notificationsContainer" class="notifications-container">
+        <p class="loading-state">Loading notifications...</p>
+    </main>
+
+    <script>
+        const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            try {
+                const response = await fetch('/api/firebase-config');
+                if (!response.ok) throw new Error('Configuration failed to load.');
+                const firebaseConfig = await response.json();
+                if (!firebaseConfig.apiKey) throw new Error('Invalid config received');
+                
+                firebase.initializeApp(firebaseConfig);
+                
+                const auth = firebase.auth();
+                const database = firebase.database();
+
+                auth.onAuthStateChanged(user => {
+                    if (user) {
+                        loadAndRenderNotifications(database);
+                    } else {
+                        window.location.href = '/login.html';
+                    }
+                });
+            } catch (error) {
+                const container = document.getElementById('notificationsContainer');
+                container.innerHTML = `<p class="empty-state">❌ Error: ${error.message}</p>`;
+                console.error("Initialization failed:", error);
+            }
+        }
+
+        async function loadAndRenderNotifications(database) {
+            try {
+                const snapshot = await database.ref().once('value');
+                const data = snapshot.val();
+                if (!data) throw new Error("Could not read data from database.");
+
+                const members = data.members || {};
+                const transactions = data.transactions || {};
+                const manualNotifications = (data.admin && data.admin.notifications && data.admin.notifications.manual) || {};
+                const automatedQueue = (data.admin && data.admin.notifications && data.admin.notifications.automatedQueue) || {};
+                
+                const verifiedMemberId = localStorage.getItem('verifiedMemberId');
+                const currentUser = members[verifiedMemberId];
+
+                // 1. Process Manual Notifications
+                const manualNotifs = Object.values(manualNotifications).map(item => ({
+                    ...item,
+                    category: 'manual',
+                    date: new Date(item.createdAt)
+                }));
+
+                // 2. Process Personal Reminders
+                let userReminders = [];
+                if (currentUser) {
+                    const sipIsPaid = Object.values(transactions).some(tx => 
+                        tx.memberId === verifiedMemberId &&
+                        tx.type === 'SIP' &&
+                        new Date(tx.date).getMonth() === new Date().getMonth() &&
+                        new Date(tx.date).getFullYear() === new Date().getFullYear()
+                    );
+                    
+                    userReminders = Object.values(automatedQueue)
+                        .filter(item => item.memberId === verifiedMemberId && item.status === 'active')
+                        .filter(item => !(item.type.includes('SIP Payment Reminder') && sipIsPaid))
+                        .map(item => ({ ...item, category: 'reminder', date: new Date() }));
+                }
+
+                // 3. Process Today's Transactions
+                const today = new Date();
+                const todayDateString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                
+                const todaysTransactions = Object.values(transactions).filter(tx => {
+                    const txDate = new Date(tx.date);
+                    const txDateString = `${txDate.getFullYear()}-${String(txDate.getMonth() + 1).padStart(2, '0')}-${String(txDate.getDate()).padStart(2, '0')}`;
+                    return txDateString === todayDateString;
+                }).map(tx => ({ ...tx, category: 'transaction', date: new Date(tx.timestamp || tx.date) }));
+
+                // Combine and sort all notifications
+                const allNotifications = [...manualNotifs, ...userReminders, ...todaysTransactions]
+                    .sort((a, b) => b.date - a.date); // Sort by date, newest first
+
+                renderNotifications(allNotifications, members, currentUser);
+
+            } catch (error) {
+                const container = document.getElementById('notificationsContainer');
+                container.innerHTML = `<p class="empty-state">Could not load notifications. Please try again later.</p>`;
+                console.error("Failed to load notifications:", error);
+            }
+        }
+
+        function renderNotifications(notifications, allMembers, currentUser) {
+            const container = document.getElementById('notificationsContainer');
+            container.innerHTML = '';
+
+            if (notifications.length === 0) {
+                container.innerHTML = `<p class="empty-state">No new notifications.</p>`;
+                return;
+            }
+
+            notifications.forEach(item => {
+                let cardHtml = '';
+                switch (item.category) {
+                    case 'manual':
+                        cardHtml = createManualCard(item);
+                        break;
+                    case 'reminder':
+                        cardHtml = createReminderCard(item, currentUser);
+                        break;
+                    case 'transaction':
+                        const member = allMembers[item.memberId];
+                        if(member) cardHtml = createTransactionCard(item, member);
+                        break;
+                }
+                if (cardHtml) {
+                    container.insertAdjacentHTML('beforeend', cardHtml);
+                }
+            });
+
+            feather.replace();
+        }
+
+        function createManualCard(item) {
+            const time = new Date(item.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            return `
+                <div class="notification-card manual-card">
+                    <h2 class="card-title">${item.title}</h2>
+                    <img src="${item.imageUrl || DEFAULT_IMAGE}" class="card-image" alt="${item.title}" onerror="this.style.display='none';">
+                    <div class="card-footer">
+                        <span class="timestamp">${time}</span>
+                        ${item.link ? `<a href="${item.link}" target="_blank" class="explore-btn">Explore</a>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function createReminderCard(item, currentUser) {
+            let message = '';
+            if (item.type.includes('SIP Payment Reminder')) {
+                const sipAmountHTML = `<strong class="amount sip">₹${currentUser.sipAmount || 500}</strong>`;
+                message = `Hi ${currentUser.fullName}, this is a friendly reminder for your ${sipAmountHTML} SIP payment.`;
+            } else {
+                message = item.type;
+            }
+
+            return `
+                <div class="notification-card activity-card">
+                    <img src="${currentUser.profilePicUrl || DEFAULT_IMAGE}" alt="${currentUser.fullName}" class="profile-img">
+                    <div class="card-content">
+                        <p class="message">${message}</p>
+                        <span class="timestamp">Just now</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function createTransactionCard(tx, member) {
+            let message = '', amount = '', typeClass = '';
+            switch(tx.type) {
+                case 'SIP': 
+                    message = `<strong>${member.fullName}</strong> paid their SIP.`; 
+                    amount = `+ ₹${(tx.amount || 0).toLocaleString()}`; typeClass = 'sip'; break;
+                case 'Loan Taken': 
+                    message = `Loan disbursed to <strong>${member.fullName}</strong>.`; 
+                    amount = `- ₹${(tx.amount || 0).toLocaleString()}`; typeClass = 'loan'; break;
+                case 'Loan Payment': 
+                    message = `<strong>${member.fullName}</strong> made a loan payment.`; 
+                    amount = `+ ₹${(tx.principalPaid || 0).toLocaleString()}`; typeClass = 'payment'; break;
+                case 'Extra Payment': 
+                    message = `<strong>${member.fullName}</strong> made an extra payment.`; 
+                    amount = `+ ₹${(tx.amount || 0).toLocaleString()}`; typeClass = 'sip'; break;
+                case 'Extra Withdraw': 
+                    message = `<strong>${member.fullName}</strong> withdrew money.`; 
+                    amount = `- ₹${(tx.amount || 0).toLocaleString()}`; typeClass = 'withdraw'; break;
+                default: return '';
+            }
+            const time = new Date(tx.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+            return `
+                <div class="notification-card activity-card">
+                    <img src="${member.profilePicUrl || DEFAULT_IMAGE}" alt="${member.fullName}" class="profile-img">
+                    <div class="card-content">
+                        <p class="message">${message} <span class="amount ${typeClass}">${amount}</span></p>
+                        <span class="timestamp">${time}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+    </script>
+</body>
+</html>
+
