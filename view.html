@@ -291,9 +291,9 @@
   </div>
 
   <script type="module">
-    // --- YAHAN BADLAV KIYA GAYA HAI ---
+    // --- YAHAN SABHI BADLAV KIYE GAYE HAIN ---
     
-    // CONFIGURATION FOR FINANCIAL CALCULATOR (Aapka Original Logic)
+    // Aapka Original Configuration
     const CALC_CONFIG = {
         CAPITAL_WEIGHT: 0.40, CONSISTENCY_WEIGHT: 0.30, CREDIT_BEHAVIOR_WEIGHT: 0.30,
         CAPITAL_SCORE_DAYS: 180,
@@ -306,14 +306,8 @@
         INACTIVE_DAYS_LEVEL_2: 365, INACTIVE_PROFIT_MULTIPLIER_LEVEL_2: 0.75,
     };
     
-    // Global variables
-    let currentMemberData = {};
-    let allTransactions = []; 
-    let allMembers = {};
-    let balanceHistory = [];
-    let scoreResultCache = null;
+    let currentMemberData = {}, allTransactions = [], allMembers = {}, balanceHistory = [], scoreResultCache = null;
 
-    // --- AUTHENTICATION & APP INITIALIZATION ---
     async function checkAuthAndInitialize() {
         try {
             const response = await fetch('/api/config');
@@ -344,19 +338,15 @@
             const urlParams = new URLSearchParams(window.location.search);
             const memberId = urlParams.get('memberId');
             if (!memberId) { showError("No member ID provided."); return; }
-
             try {
                 const snapshot = await db.ref().once('value');
                 if (!snapshot.exists()) throw new Error(`Database is empty.`);
-                
                 const allData = snapshot.val();
                 allMembers = allData.members || {};
                 const allTransactionsData = allData.transactions || {};
-                
                 currentMemberData = allMembers[memberId];
                 if (!currentMemberData) throw new Error(`Member with ID "${memberId}" not found.`);
                 currentMemberData.membershipId = memberId;
-
                 allTransactions = Object.values(allTransactionsData).map(tx => ({
                     ...tx,
                     date: new Date(tx.date),
@@ -364,7 +354,6 @@
                     interestPaid: parseFloat(tx.interestPaid) || 0,
                     principalPaid: parseFloat(tx.principalPaid) || 0,
                 })).sort((a,b) => a.date - b.date);
-
                 populateProfileData(currentMemberData);
                 loaderContainer.classList.add('hidden');
                 profileContent.classList.remove('hidden');
@@ -375,15 +364,12 @@
         }
 
         function populateProfileData(data) {
-            const totalSip = calculateTotalSIP(data.membershipId);
-            const lifetimeProfit = calculateLifetimeProfit(data.membershipId); // Profit calculation ko yahan call karein
+            const totalSip = allTransactions.filter(tx => tx.memberId === data.membershipId && tx.type === 'SIP').reduce((sum, tx) => sum + tx.amount, 0);
+            const lifetimeProfit = calculateLifetimeProfit(data.membershipId);
             const balanceResult = calculateTotalExtraBalance(data.membershipId, lifetimeProfit);
             balanceHistory = balanceResult.history;
             currentMemberData.extraBalance = balanceResult.total;
-            
             const formatDate = (ds) => ds ? new Date(ds).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : "N/A";
-            
-            // UI elements ko update karein
             document.getElementById('profile-pic').src = data.profilePicUrl || DEFAULT_PROFILE_PIC;
             document.getElementById('profile-name').textContent = data.fullName || 'N/A';
             document.getElementById('membership-id').textContent = `ID: ${data.membershipId || 'N/A'}`;
@@ -397,16 +383,13 @@
             document.getElementById('total-sip').textContent = `₹${totalSip.toLocaleString('en-IN')}`;
             document.getElementById('lifetime-profit').textContent = `₹${lifetimeProfit.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             document.getElementById('extra-balance').textContent = `₹${balanceResult.total.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            
             const withdrawBtn = document.getElementById('withdraw-btn');
             withdrawBtn.disabled = balanceResult.total < 10;
             withdrawBtn.title = balanceResult.total < 10 ? "Minimum withdrawal is ₹10" : "";
-
             document.getElementById('doc-profile-pic').src = data.profilePicUrl || DEFAULT_PROFILE_PIC;
             document.getElementById('doc-document').src = data.documentUrl || DEFAULT_PROFILE_PIC;
             document.getElementById('doc-signature').src = data.signatureUrl || DEFAULT_PROFILE_PIC;
             
-            // Performance Score aur Loan Eligibility ko calculate aur display karein
             scoreResultCache = calculatePerformanceScore(data.membershipId, new Date());
             const eligibilityResult = getLoanEligibility(data.membershipId, scoreResultCache.totalScore);
             document.getElementById('performance-score').textContent = scoreResultCache.totalScore.toFixed(2);
@@ -416,38 +399,22 @@
             populateLoanHistory(data.membershipId);
         }
         
-        // --- FINANCIAL CALCULATION FUNCTIONS (Original Logic Restored & Adapted) ---
-        function calculateTotalSIP(memberId) {
-            return allTransactions
-                .filter(tx => tx.memberId === memberId && tx.type === 'SIP')
-                .reduce((sum, tx) => sum + tx.amount, 0);
-        }
-        
-        // Aapka Original Profit Calculation Logic, naye data structure ke liye adapt kiya gaya
+        // --- Sabhi Financial Calculation Functions (Sahi Logic Ke Saath) ---
+
         function calculateLifetimeProfit(memberId) {
             const member = allMembers[memberId];
             if (!member) return 0;
-            const memberFullName = member.fullName;
             let totalProfit = 0;
             const profitEvents = allTransactions.filter(r => r.type === 'Loan Payment' && r.interestPaid > 0);
             profitEvents.forEach(paymentRecord => {
-                const profit = paymentRecord.interestPaid * 0.90; // Assuming 10% is bank's commission
+                const profit = paymentRecord.interestPaid * 0.90;
                 if (profit <= 0) return;
-
-                const loanTakerMember = allMembers[paymentRecord.memberId];
-                if (!loanTakerMember) return;
-                
                 const loanRecord = allTransactions.find(tx => tx.transactionId === paymentRecord.paidForLoanId);
                 if (!loanRecord) return;
                 const loanDate = loanRecord.date;
-
                 let totalScoreInSnapshot = 0;
                 const snapshotScores = {};
-                const membersInSystemAtLoanDate = Object.keys(allMembers).filter(id => {
-                    const joinDate = allMembers[id].joiningDate;
-                    return joinDate && new Date(joinDate) <= loanDate;
-                });
-
+                const membersInSystemAtLoanDate = Object.keys(allMembers).filter(id => new Date(allMembers[id].joiningDate) <= loanDate);
                 membersInSystemAtLoanDate.forEach(id => {
                     const scoreObject = calculatePerformanceScore(id, loanDate);
                     if (scoreObject.totalScore > 0) {
@@ -455,11 +422,8 @@
                         totalScoreInSnapshot += scoreObject.totalScore;
                     }
                 });
-
                 if (totalScoreInSnapshot > 0 && snapshotScores[memberId]) {
                     let memberShare = (snapshotScores[memberId] / totalScoreInSnapshot) * profit;
-                    // Inactivity penalty (optional, aapke original logic se)
-                    // ... (yahan inactivity logic aa sakta hai)
                     if (memberShare > 0) totalProfit += memberShare;
                 }
             });
@@ -468,47 +432,46 @@
 
         function calculateTotalExtraBalance(memberId, lifetimeProfit) {
             const history = [];
-            if (lifetimeProfit > 0) {
-                 history.push({ type: 'profit', from: 'Community Loans', date: new Date(), amount: lifetimeProfit });
-            }
-            const adjustments = allTransactions.filter(tx => 
-                tx.memberId === memberId && (tx.type === 'Extra Payment' || tx.type === 'Extra Withdraw')
-            );
-            adjustments.forEach(tx => {
-                if (tx.type === 'Extra Payment') history.push({ type: 'manual_credit', from: 'Admin', date: tx.date, amount: tx.amount });
-                if (tx.type === 'Extra Withdraw') history.push({ type: 'withdrawal', from: 'User', date: tx.date, amount: -tx.amount });
-            });
+            if (lifetimeProfit > 0) history.push({ type: 'profit', from: 'Community Loans', date: new Date(), amount: lifetimeProfit });
+            allTransactions.filter(tx => tx.memberId === memberId && (tx.type === 'Extra Payment' || tx.type === 'Extra Withdraw'))
+                .forEach(tx => {
+                    if (tx.type === 'Extra Payment') history.push({ type: 'manual_credit', from: 'Admin', date: tx.date, amount: tx.amount });
+                    if (tx.type === 'Extra Withdraw') history.push({ type: 'withdrawal', from: 'User', date: tx.date, amount: -tx.amount });
+                });
             history.sort((a,b) => a.date - b.date);
-            const total = history.reduce((acc, item) => acc + item.amount, 0);
-            return { total, history };
+            return { total: history.reduce((acc, item) => acc + item.amount, 0), history };
         }
         
         function populateLoanHistory(memberId) {
             const container = document.getElementById('loan-history-container');
-            const memberLoans = allTransactions
-                .filter(tx => tx.memberId === memberId && tx.type === 'Loan Taken')
-                .sort((a, b) => a.date - b.date);
-            
+            const memberLoans = allTransactions.filter(tx => tx.memberId === memberId && tx.type === 'Loan Taken').sort((a, b) => b.date - a.date); // Sort by most recent first
             if (memberLoans.length === 0) {
                 container.innerHTML = '<p class="text-center text-gray-500 text-sm">No loan history found.</p>';
                 return;
             }
             container.innerHTML = '';
             const loanTypeCounts = {};
+            memberLoans.slice().reverse().forEach(loan => { // Count occurrences from oldest to newest
+                 const loanType = loan.loanType || 'Standard Loan';
+                 loanTypeCounts[loanType] = (loanTypeCounts[loanType] || 0) + 1;
+            });
+
+            const loanTypeCurrentCounts = {};
             memberLoans.forEach(loan => {
-                const loanId = loan.transactionId;
                 const loanType = loan.loanType || 'Standard Loan';
-                loanTypeCounts[loanType] = (loanTypeCounts[loanType] || 0) + 1;
-                const occurrence = loanTypeCounts[loanType];
+                if (!loanTypeCurrentCounts[loanType]) loanTypeCurrentCounts[loanType] = loanTypeCounts[loanType];
+                const occurrence = loanTypeCurrentCounts[loanType];
+                loanTypeCurrentCounts[loanType]--;
+
                 const ordinalSuffix = n => n + (["th","st","nd","rd"][((n+90)%100-10)%10-1]||"th");
                 
-                const payments = allTransactions.filter(tx => tx.paidForLoanId === loanId && tx.type === 'Loan Payment');
+                const payments = allTransactions.filter(tx => tx.paidForLoanId === loan.transactionId && tx.type === 'Loan Payment');
                 const totalRepaid = payments.reduce((sum, p) => sum + p.principalPaid, 0);
                 const isPaid = totalRepaid >= loan.amount;
                 
                 let status, color;
                 if (isPaid) {
-                    status = `Paid (${payments.length} time${payments.length > 1 ? 's' : ''})`;
+                    status = `Complete (${payments.length} time${payments.length > 1 ? 's' : ''})`;
                     color = "text-green-600";
                 } else {
                     status = "Pending";
@@ -517,32 +480,22 @@
 
                 const div = document.createElement('div');
                 div.className = 'info-item flex justify-between items-center text-sm';
-                div.innerHTML = `
-                    <div>
-                        <p class="font-bold text-base">₹${loan.amount.toLocaleString('en-IN')}</p>
-                        <p class="text-xs text-gray-500">${loan.date.toLocaleDateString('en-GB')}</p>
-                        <p class="text-xs font-semibold text-indigo-600">${loanType} (${ordinalSuffix(occurrence)} time)</p>
-                    </div>
-                    <div class="text-right"><p class="font-bold ${color}">${status}</p></div>`;
+                div.innerHTML = `<div><p class="font-bold text-base">₹${loan.amount.toLocaleString('en-IN')}</p><p class="text-xs text-gray-500">${loan.date.toLocaleDateString('en-GB')}</p><p class="text-xs font-semibold text-indigo-600">${loanType} (${ordinalSuffix(occurrence)} time)</p></div><div class="text-right"><p class="font-bold ${color}">${status}</p></div>`;
                 container.appendChild(div);
             });
         }
         
-        // --- PERFORMANCE SCORE LOGIC (Aapka Original, Detailed Logic) ---
         function calculatePerformanceScore(memberId, untilDate) {
             const member = allMembers[memberId];
             if (!member) return { totalScore: 0 };
             const joinDate = new Date(member.joiningDate);
             const membershipDays = (untilDate - joinDate) / (1000 * 3600 * 24);
             const isNewMemberRuleApplied = membershipDays < CALC_CONFIG.NEW_MEMBER_PROBATION_DAYS;
-            
             const capitalScore = calculateCapitalScore(memberId, untilDate);
             let consistencyScore = calculateConsistencyScore(memberId, untilDate);
             let creditScore = calculateCreditBehaviorScore(memberId, untilDate);
-            
             const originalConsistencyScore = consistencyScore;
             const originalCreditScore = creditScore;
-
             if (isNewMemberRuleApplied) {
                 consistencyScore *= 0.50;
                 creditScore *= 0.50;
@@ -555,18 +508,13 @@
             const daysToReview = CALC_CONFIG.CAPITAL_SCORE_DAYS;
             const startDate = new Date(untilDate.getTime() - daysToReview * 24 * 3600 * 1000);
             const memberTx = allTransactions.filter(tx => tx.memberId === memberId && tx.date <= untilDate);
-
             let balanceAtStart = 0;
             memberTx.filter(tx => tx.date < startDate).forEach(tx => {
                 if (tx.type === 'SIP' || tx.type === 'Extra Payment' || tx.type === 'Loan Payment') balanceAtStart += (tx.amount || tx.principalPaid || 0);
                 if (tx.type === 'Loan Taken' || tx.type === 'Extra Withdraw') balanceAtStart -= tx.amount;
             });
-
-            let weightedCapitalSum = 0;
-            let currentBalance = balanceAtStart;
-            let lastDate = startDate;
+            let weightedCapitalSum = 0, currentBalance = balanceAtStart, lastDate = startDate;
             const relevantTransactions = memberTx.filter(r => r.date >= startDate);
-            
             relevantTransactions.forEach(t => {
                 const daysDifference = (t.date - lastDate) / (1000 * 3600 * 24);
                 weightedCapitalSum += currentBalance * daysDifference;
@@ -575,23 +523,19 @@
                 lastDate = t.date;
             });
             weightedCapitalSum += currentBalance * ((untilDate - lastDate) / (1000 * 3600 * 24));
-            
             const averageDailyBalance = weightedCapitalSum / daysToReview;
-            const normalizedScore = Math.min(100, (averageDailyBalance / 50000) * 100);
+            // === YAHAN BADLAV KIYA GAYA HAI: 50000 ko 24000 kiya gaya hai ===
+            const normalizedScore = Math.min(100, (averageDailyBalance / 24000) * 100);
             return Math.max(0, isNaN(normalizedScore) ? 0 : normalizedScore);
         }
 
         function calculateConsistencyScore(memberId, untilDate) {
-            const oneYearAgo = new Date(untilDate);
-            oneYearAgo.setFullYear(untilDate.getFullYear() - 1);
+            const oneYearAgo = new Date(untilDate); oneYearAgo.setFullYear(untilDate.getFullYear() - 1);
             const memberTx = allTransactions.filter(tx => tx.memberId === memberId && tx.date >= oneYearAgo && tx.date <= untilDate);
-
             const sipHistory = {};
             memberTx.filter(r => r.type === 'SIP').forEach(r => {
                 const monthKey = `${r.date.getFullYear()}-${r.date.getMonth()}`;
-                if (!sipHistory[monthKey]) {
-                    sipHistory[monthKey] = r.date.getDate() <= CALC_CONFIG.SIP_ON_TIME_LIMIT ? 10 : 5;
-                }
+                if (!sipHistory[monthKey]) sipHistory[monthKey] = r.date.getDate() <= CALC_CONFIG.SIP_ON_TIME_LIMIT ? 10 : 5;
             });
             if (Object.keys(sipHistory).length === 0) return 0;
             const consistencyPoints = Object.values(sipHistory).reduce((a, b) => a + b, 0);
@@ -600,21 +544,59 @@
         }
 
         function calculateCreditBehaviorScore(memberId, untilDate) {
-            // This is a complex function. I'm adapting the logic to the new structure.
             const memberTx = allTransactions.filter(tx => tx.memberId === memberId && tx.date <= untilDate);
             const oneYearAgo = new Date(untilDate); oneYearAgo.setFullYear(untilDate.getFullYear() - 1);
             const memberLoans = memberTx.filter(r => r.type === 'Loan Taken' && r.date >= oneYearAgo);
-
-            // ... (The rest of your complex credit behavior logic will go here, adapted for the new data structure)
-            // For now, returning a placeholder to ensure the app runs.
-            return 85.00; 
+            const firstTransactionDate = memberTx[0]?.date;
+            if (!firstTransactionDate) return 0;
+            const membershipDays = (untilDate - firstTransactionDate) / (1000 * 3600 * 24);
+            if (memberLoans.length === 0) {
+                if (membershipDays < 30) return 40;
+                const sipData = memberTx.filter(r => r.type === 'SIP');
+                if (sipData.length === 0) return 40;
+                if (sipData.length === 1) return 60;
+                const sipsForAvg = sipData.slice(1);
+                const avgSipDay = sipsForAvg.reduce((sum, r) => sum + r.date.getDate(), 0) / sipsForAvg.length;
+                const dayScore = Math.max(0, (15 - avgSipDay) * 5 + 40);
+                return Math.min(100, dayScore);
+            }
+            let totalPoints = 0, loansProcessed = 0;
+            for (const loanRecord of memberLoans) {
+                let loanAmount = loanRecord.amount, amountRepaid = 0, repaymentDate = null;
+                let paymentsAfterLoan = allTransactions.filter(r => r.paidForLoanId === loanRecord.transactionId && r.type === 'Loan Payment');
+                for (const p of paymentsAfterLoan) {
+                    amountRepaid += p.principalPaid;
+                    if (amountRepaid >= loanAmount) {
+                        repaymentDate = p.date;
+                        break;
+                    }
+                }
+                loansProcessed++;
+                if (repaymentDate) {
+                    const daysToRepay = (repaymentDate - loanRecord.date) / (1000 * 3600 * 24);
+                    if (daysToRepay < 15) totalPoints += 5;
+                    else {
+                        if (daysToRepay <= 30) totalPoints += 25; else if (daysToRepay <= 60) totalPoints += 20;
+                        else if (daysToRepay <= 90) totalPoints += 15; else if (daysToRepay <= 100) totalPoints -= 5;
+                        else totalPoints -= 20;
+                    }
+                    if (loanAmount > 5000) totalPoints += 5;
+                    if (loanAmount > 10000) totalPoints += 5;
+                } else {
+                    totalPoints -= 40;
+                }
+            }
+            if (loansProcessed === 0) return 40;
+            const maxPossiblePoints = loansProcessed * 35;
+            const normalizedScore = (totalPoints / maxPossiblePoints) * 100;
+            return Math.max(0, Math.min(100, normalizedScore));
         }
 
+        // === LOAN ELIGIBILITY FUNCTION (Sahi Logic Ke Saath) ===
         function getLoanEligibility(memberId, score) {
             const memberTx = allTransactions.filter(r => r.memberId === memberId);
             let totalLoan = memberTx.filter(tx => tx.type === 'Loan Taken').reduce((s, tx) => s + tx.amount, 0);
             let totalPayment = memberTx.filter(tx => tx.type === 'Loan Payment').reduce((s, tx) => s + tx.principalPaid, 0);
-
             if (totalLoan > totalPayment) return { eligible: false, reason: 'Outstanding Loan' };
 
             const member = allMembers[memberId];
@@ -625,44 +607,44 @@
                  return { eligible: false, reason: `${daysLeft} days left` };
             }
             
-            // ... (Your original multiplier logic)
-            return { eligible: true, multiplier: 1.8 };
+            let multiplier;
+            if (score <= 50) {
+                multiplier = 1.0;
+            } else if (score > 50 && score <= 60) {
+                multiplier = 1.5;
+            } else if (score > 60 && score <= 80) {
+                multiplier = 1.8;
+            } else { // score > 80
+                multiplier = 2.0;
+            }
+            return { eligible: true, multiplier: multiplier };
         }
 
-        // --- EVENT LISTENERS & MODALS (unchanged) ---
+        // --- Baki ke sabhi functions (unchanged) ---
         setupEventListeners();
         function setupEventListeners() {
-            const imageViewerModal = document.getElementById('imageViewerModal');
             document.querySelectorAll('.document-thumbnail').forEach(img => img.addEventListener('click', () => {
                 document.getElementById('fullImageView').src = img.src;
-                imageViewerModal.classList.remove('hidden');
+                document.getElementById('imageViewerModal').classList.remove('hidden');
             }));
-            document.getElementById('closeImageViewer').addEventListener('click', () => imageViewerModal.classList.add('hidden'));
-            
-            const withdrawalModal = document.getElementById('withdrawalModal');
+            document.getElementById('closeImageViewer').addEventListener('click', () => document.getElementById('imageViewerModal').classList.add('hidden'));
             document.getElementById('withdraw-btn').addEventListener('click', () => {
                 document.getElementById('modal-available-balance').textContent = `₹${currentMemberData.extraBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                withdrawalModal.classList.remove('hidden');
+                document.getElementById('withdrawalModal').classList.remove('hidden');
             });
-            document.getElementById('close-withdrawal-modal').addEventListener('click', () => withdrawalModal.classList.add('hidden'));
+            document.getElementById('close-withdrawal-modal').addEventListener('click', () => document.getElementById('withdrawalModal').classList.add('hidden'));
             document.getElementById('submit-withdrawal').addEventListener('click', submitWithdrawal);
-
-            const historyModal = document.getElementById('historyModal');
             document.getElementById('view-history-btn').addEventListener('click', () => {
                 populateHistoryModal();
-                historyModal.classList.remove('hidden');
+                document.getElementById('historyModal').classList.remove('hidden');
             });
-            document.getElementById('close-history-modal').addEventListener('click', () => historyModal.classList.add('hidden'));
-
-            const scoreModal = document.getElementById('scoreBreakdownModal');
+            document.getElementById('close-history-modal').addEventListener('click', () => document.getElementById('historyModal').classList.add('hidden'));
             document.getElementById('score-info-btn').addEventListener('click', () => {
                 populateScoreBreakdownModal();
-                scoreModal.classList.remove('hidden');
+                document.getElementById('scoreBreakdownModal').classList.remove('hidden');
             });
-            document.getElementById('close-score-modal').addEventListener('click', () => scoreModal.classList.add('hidden'));
-
-            const cardModal = document.getElementById('cardResultModal');
-            document.getElementById('close-card-modal').addEventListener('click', () => cardModal.classList.add('hidden'));
+            document.getElementById('close-score-modal').addEventListener('click', () => document.getElementById('scoreBreakdownModal').classList.add('hidden'));
+            document.getElementById('close-card-modal').addEventListener('click', () => document.getElementById('cardResultModal').classList.add('hidden'));
             document.getElementById('download-card-btn').addEventListener('click', downloadCard);
             document.getElementById('share-card-btn').addEventListener('click', shareCard);
         }
@@ -676,11 +658,7 @@
             [...balanceHistory].reverse().forEach(item => {
                 const div = document.createElement('div');
                 const isCredit = item.amount > 0;
-                let title = item.type;
-                if(item.type === 'profit') title = 'Profit Share';
-                if(item.type === 'manual_credit') title = 'Manual Credit';
-                if(item.type === 'withdrawal') title = 'Withdrawal';
-                
+                let title = item.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
                 div.className = 'flex justify-between items-center p-3 bg-gray-50 rounded-lg';
                 div.innerHTML = `<div><p class="font-semibold text-gray-800">${title}</p><p class="text-xs text-gray-400">${item.date.toLocaleDateString('en-GB')}</p></div><span class="font-bold ${isCredit ? 'text-green-600' : 'text-red-600'}">${isCredit ? '+' : ''} ₹${item.amount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>`;
                 historyList.appendChild(div);
@@ -700,8 +678,7 @@
             }
             contentDiv.innerHTML = html;
         }
-        
-        function toDataURL(url) { return new Promise((resolve) => { if(!url || url.startsWith('data:')) { resolve(url); return; } const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; const targetUrl = url.includes('firebasestorage') ? proxyUrl + url : url; fetch(targetUrl).then(response => response.blob()).then(blob => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.onerror = () => resolve(url); reader.readAsDataURL(blob); }).catch(() => resolve(url)); }); }
+        function toDataURL(url) { return new Promise((resolve) => { if(!url || url.startsWith('data:')) { resolve(url); return; } const proxyUrl = 'https://corsproxy.io/?'; const targetUrl = url; fetch(proxyUrl + targetUrl).then(response => response.blob()).then(blob => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.onerror = () => resolve(url); reader.readAsDataURL(blob); }).catch(() => resolve(url)); }); }
         async function getCardAsBlob() { const cardElement = document.getElementById('withdrawalCard'); const canvas = await html2canvas(cardElement, { scale: 3, backgroundColor: null, useCORS: true }); return new Promise(resolve => canvas.toBlob(resolve, 'image/png')); }
         async function downloadCard() { const blob = await getCardAsBlob(); const link = document.createElement('a'); link.download = `withdrawal-${currentMemberData.fullName.replace(/\s+/g, '-')}.png`; link.href = URL.createObjectURL(blob); link.click(); URL.revokeObjectURL(link.href); }
         async function shareCard() { const blob = await getCardAsBlob(); const file = new File([blob], `withdrawal.png`, { type: 'image/png' }); if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: 'Withdrawal Receipt', text: `Withdrawal receipt for ${currentMemberData.fullName}.`}); } catch (error) { console.error('Share failed:', error); alert('Could not share the image.'); } } else { alert("Sharing is not supported."); } }
@@ -730,11 +707,9 @@
             document.getElementById('share-card-btn').classList.toggle('hidden', !navigator.share);
             document.getElementById('cardResultModal').classList.remove('hidden');
         }
-
-        // --- Start the application ---
+        
         loadAllData();
     }
-
     checkAuthAndInitialize();
   </script>
 </body>
