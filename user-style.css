@@ -96,6 +96,60 @@ section { margin-bottom: 40px; padding: 25px; background-color: var(--card-bg); 
 @media (min-width: 768px) { .action-cards { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 992px) { .action-cards { grid-template-columns: repeat(4, 1fr); max-width: 900px; margin-left: auto; margin-right: auto; } }
 @media (min-width: 1200px) { .action-cards { grid-template-columns: repeat(4, 1fr); max-width: 1100px; } }
+
+/* === YAHAN BADLAV KIYA GAYA HAI: Community Info Section Styles === */
+.info-slider-section {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+.info-slider-section h2 {
+    font-size: 1.7em;
+    padding: 0 20px;
+    margin-bottom: 20px;
+    justify-content: flex-start;
+    text-align: left;
+}
+.info-slider-container {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    padding: 20px 25px;
+    margin: 0 15px;
+}
+.info-card-slide {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 25px;
+}
+.info-card-slide:last-child {
+    margin-bottom: 0;
+}
+.info-card-slide h3 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.15em;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0 0 8px 0;
+}
+.info-card-slide h3 i {
+    color: var(--primary-color);
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+.info-card-slide p {
+    margin: 0;
+    padding-left: 36px; /* 24px icon width + 12px gap */
+    font-size: 0.95em;
+    line-height: 1.6;
+    color: var(--light-text);
+}
+/* === BADLAV SAMAPT === */
+
 .letter-slider-section h2 { text-align: center; }
 .slider-container { position: relative; max-width: 1000px; margin: 10px auto; overflow: hidden; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--card-bg); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .slides { display: flex; transition: transform 0.5s ease-in-out; }
@@ -242,4 +296,5 @@ footer p { color: #f8f9fa; margin: 0; }
 @media (min-width: 992px) { .member-card { flex: 0 0 20%; max-width: 210px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
 @media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card { flex: 0 0 15%; max-width: 220px; } h2 { font-size: 2.2em; } }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
 
