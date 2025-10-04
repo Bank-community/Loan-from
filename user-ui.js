@@ -1,5 +1,6 @@
 // user-ui.js
 // Is file ka kaam data ko screen par dikhana (render) aur sabhi user interactions (clicks, scrolls) ko handle karna hai.
+// BADLAV: Member card par balance agar negative ho to use alag style (negative-balance class) di gayi hai.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -114,6 +115,11 @@ function displayMembers(members) {
                 card.classList.add('colored-card');
             }
         }
+        
+        // === BADLAV START: NEGATIVE BALANCE KE LIYE CLASS ADD KARNA ===
+        const balance = member.balance || 0;
+        const balanceClass = balance < 0 ? 'negative-balance' : '';
+        // === BADLAV END ===
 
         card.innerHTML = `
             ${rankHTML}
@@ -122,7 +128,7 @@ function displayMembers(members) {
                 ${member.isPrime ? '<div class="prime-tag">Prime</div>' : ''}
             </div>
             <p class="member-name" title="${member.name}">${member.name}</p>
-            <p class="member-balance">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
+            <p class="member-balance ${balanceClass}">${balance.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
         `;
         card.onclick = () => showMemberProfileModal(member.id);
         elements.memberContainer.appendChild(card);
@@ -150,7 +156,6 @@ function renderProducts() {
         const whatsappMessage = encodeURIComponent(`Hello, I want to know more about ${product.name} priced at ₹${price.toLocaleString('en-IN')}.`);
         const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
         
-        // === YAHAN BADLAV KIYA GAYA HAI ===
         card.innerHTML = `
             <div class="product-image-wrapper">
                 <img src="${product.imageUrl}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
@@ -170,7 +175,6 @@ function renderProducts() {
                 <a href="${product.exploreLink || '#'}" target="_blank" class="product-btn explore">Explore</a>
             </div>
         `;
-        // === BADLAV SAMAPT ===
 
         const emiLink = card.querySelector('.product-emi-link');
         if (emiLink) {
@@ -215,10 +219,8 @@ function displayHeaderButtons(buttons) {
     elements.staticHeaderButtonsContainer.innerHTML = '';
     if (Object.keys(buttons).length === 0) return;
 
-    // === YAHAN BADLAV KIYA GAYA HAI ===
     const headerButtonsToExclude = ['Jarvis Ai', 'Gallery', 'Loan Calculator'];
     const filteredButtons = Object.values(buttons).filter(btn => !headerButtonsToExclude.includes(btn.name));
-    // === BADLAV SAMAPT ===
 
     const buttonWrapper = document.createElement('div');
     buttonWrapper.className = 'dynamic-buttons-wrapper';
@@ -740,5 +742,4 @@ function showFullImage(src, alt) {
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
-
 
