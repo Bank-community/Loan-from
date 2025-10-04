@@ -1,7 +1,6 @@
 // File: profit_logic.js
-// Version 2.0: Capital Score and Credit Behavior logic updated.
+// Version 2.1: New Member Rule ab Capital Score par bhi aadharit hai.
 // Yeh file system ka "dimag" hai. Ismein sabhi core calculation aur business logic hain.
-// Yeh file UI ko direct control nahi karti hai.
 
 // --- CONFIGURATION & NIYAM (RULES) ---
 export const CONFIG = {
@@ -13,8 +12,7 @@ export const CONFIG = {
     CONSISTENCY_WEIGHT: 0.30, 
     CREDIT_BEHAVIOR_WEIGHT: 0.30,
 
-    // *** NEW: Capital Score Target ***
-    // 180 din mein itna SIP jama karne par 100 points milenge.
+    // Capital Score Target
     CAPITAL_SCORE_TARGET_SIP: 24000, 
 
     // Loan Eligibility Tiers
@@ -25,16 +23,13 @@ export const CONFIG = {
     MINIMUM_MEMBERSHIP_DAYS: 60,
     MINIMUM_MEMBERSHIP_FOR_CREDIT_SCORE: 30,
     SIP_ON_TIME_LIMIT: 10,
-    // Personal loan ke liye niyam
     LOAN_TERM_BEST: 30, 
     LOAN_TERM_BETTER: 60, 
     LOAN_TERM_GOOD: 90,
-    // 10 Days Credit ke liye grace period
     TEN_DAY_CREDIT_GRACE_DAYS: 15,
-    // Business Loan ke liye niyam
     BUSINESS_LOAN_TERM_DAYS: 365,
 
-    // New member probation period (is dauran score ka prabhav kam hoga)
+    // New member probation period
     NEW_MEMBER_PROBATION_DAYS: 180,
 
     // Inactive Policy Tiers
@@ -48,8 +43,9 @@ export const CONFIG = {
 // --- CORE SCORE CALCULATION ENGINE ---
 
 /**
+ * *** YAHAN BADLAV KIYA GAYA HAI ***
  * Member ka poora performance score calculate karta hai.
- * Ab yeh 'activeLoansData' bhi leta hai taaki Credit Score sahi se nikala ja sake.
+ * Ab naye sadasyon ke liye Capital Score bhi 50% kam ho jayega.
  * @param {string} memberName - Member ka naam.
  * @param {Date} untilDate - Kis tarikh tak ka score nikalna hai.
  * @param {Array} allData - Sabhi transactions ka data.
@@ -59,27 +55,31 @@ export const CONFIG = {
 export function calculatePerformanceScore(memberName, untilDate, allData, activeLoansData) {
     const memberData = allData.filter(r => r.name === memberName);
     if (memberData.length === 0) {
-        return { totalScore: 0, capitalScore: 0, consistencyScore: 0, creditScore: 0, isNewMemberRuleApplied: false, originalConsistencyScore: 0, originalCreditScore: 0 };
+        return { totalScore: 0, capitalScore: 0, consistencyScore: 0, creditScore: 0, isNewMemberRuleApplied: false, originalCapitalScore: 0, originalConsistencyScore: 0, originalCreditScore: 0 };
     }
     
     const firstTransactionDate = memberData[0]?.date;
     const membershipDays = firstTransactionDate ? (untilDate - firstTransactionDate) / (1000 * 3600 * 24) : 0;
     const isNewMemberRuleApplied = membershipDays < CONFIG.NEW_MEMBER_PROBATION_DAYS;
 
-    const capitalScore = calculateCapitalScore(memberName, untilDate, allData);
+    // Pehle base scores calculate karo
+    let capitalScore = calculateCapitalScore(memberName, untilDate, allData);
     let consistencyScore = calculateConsistencyScore(memberData, untilDate);
-    // Credit score ko ab active loans ka data bhi chahiye
     let creditScore = calculateCreditBehaviorScore(memberName, untilDate, allData, activeLoansData);
 
+    // Niyam lagoo karne se pehle original scores store karo
+    const originalCapitalScore = capitalScore;
     const originalConsistencyScore = consistencyScore;
     const originalCreditScore = creditScore;
 
-    // Naye member ke liye score ka prabhav 50% kam kar diya jaata hai
+    // Agar member naya hai, to sabhi scores ka prabhav 50% kam kar do
     if (isNewMemberRuleApplied) {
+        capitalScore *= 0.50;       // <-- YEH FIX HAI
         consistencyScore *= 0.50;
         creditScore *= 0.50;
     }
 
+    // Weighted total score calculate karo
     const totalScore = (capitalScore * CONFIG.CAPITAL_WEIGHT) + 
                        (consistencyScore * CONFIG.CONSISTENCY_WEIGHT) + 
                        (creditScore * CONFIG.CREDIT_BEHAVIOR_WEIGHT);
@@ -90,13 +90,13 @@ export function calculatePerformanceScore(memberName, untilDate, allData, active
         consistencyScore, 
         creditScore, 
         isNewMemberRuleApplied, 
+        originalCapitalScore,       // <-- UI mein dikhane ke liye
         originalConsistencyScore, 
         originalCreditScore 
     };
 }
 
 /**
- * *** NAYA LOGIC ***
  * Capital score ab pichhle 180 dinon mein jama kiye gaye kul SIP amount par aadharit hai.
  * @param {string} memberName - Member ka naam.
  * @param {Date} untilDate - Kis tarikh tak ka score nikalna hai.
@@ -117,7 +117,7 @@ function calculateCapitalScore(memberName, untilDate, allData) {
 
     const normalizedScore = (totalSipAmount / CONFIG.CAPITAL_SCORE_TARGET_SIP) * 100;
     
-    return Math.min(100, Math.max(0, normalizedScore)); // Score ko 0 aur 100 ke beech rakhta hai.
+    return Math.min(100, Math.max(0, normalizedScore));
 }
 
 
@@ -150,8 +150,7 @@ function calculateConsistencyScore(memberData, untilDate) {
 }
 
 /**
- * *** NAYA LOGIC ***
- * Credit Behavior score ab Business Loan aur 10 Days Credit ko bhi handle karta hai.
+ * Credit Behavior score Business Loan aur 10 Days Credit ko bhi handle karta hai.
  * @param {string} memberName - Member ka naam.
  * @param {Date} untilDate - Kis tarikh tak ka score nikalna hai.
  * @param {Array} allData - Sabhi transactions ka data.
@@ -164,13 +163,10 @@ function calculateCreditBehaviorScore(memberName, untilDate, allData, activeLoan
     const oneYearAgo = new Date(untilDate);
     oneYearAgo.setFullYear(untilDate.getFullYear() - 1);
 
-    // Member ke sabhi active loans ko filter karo
     const memberActiveLoans = Object.values(activeLoansData).filter(loan => loan.memberName === memberName);
-
-    // Case 1: Agar member ne pichhle 1 saal mein koi loan nahi liya hai
     const loansInLastYear = memberData.filter(r => r.loan > 0 && r.date >= oneYearAgo);
+
     if (loansInLastYear.length === 0) {
-        // No-loan logic same rahega
         const firstTransactionDate = memberData[0]?.date;
         if (!firstTransactionDate) return 40;
         const membershipDays = (untilDate - firstTransactionDate) / (1000 * 3600 * 24);
@@ -184,17 +180,14 @@ function calculateCreditBehaviorScore(memberName, untilDate, allData, activeLoan
         return Math.min(100, dayScore);
     }
     
-    // Case 2: Agar member ne loan liya hai
     let totalPoints = 0;
     let loansProcessed = 0;
 
     for (const loanRecord of loansInLastYear) {
         loansProcessed++;
         
-        // Find the loan type from activeLoansData
         const loanDetails = memberActiveLoans.find(l => new Date(l.loanDate).getTime() === loanRecord.date.getTime() && l.originalAmount === loanRecord.loan);
 
-        // -- Business Loan Logic --
         if (loanDetails && loanDetails.loanType === 'Business Loan') {
             const loanStartDate = new Date(loanDetails.loanDate);
             const monthsPassed = (untilDate.getFullYear() - loanStartDate.getFullYear()) * 12 + (untilDate.getMonth() - loanStartDate.getMonth());
@@ -204,21 +197,20 @@ function calculateCreditBehaviorScore(memberName, untilDate, allData, activeLoan
                 checkMonth.setMonth(checkMonth.getMonth() + i);
                 
                 const hasPaidInterest = memberData.some(tx => 
-                    tx.returnAmount > 0 && // 'returnAmount' interest paid hai
+                    tx.returnAmount > 0 &&
                     new Date(tx.date).getFullYear() === checkMonth.getFullYear() &&
                     new Date(tx.date).getMonth() === checkMonth.getMonth()
                 );
                 if (hasPaidInterest) {
-                    totalPoints += 5; // Har mahine interest dene par bonus
+                    totalPoints += 5;
                 } else {
-                    totalPoints -= 10; // Missed payment par penalty
+                    totalPoints -= 10;
                 }
             }
             if ((untilDate - loanStartDate) / (1000 * 3600 * 24) > CONFIG.BUSINESS_LOAN_TERM_DAYS && loanDetails.status === 'Active') {
-                totalPoints -= 50; // 1 saal se zyada active rehne par bhaari penalty
+                totalPoints -= 50;
             }
         } 
-        // -- 10 Days Credit Logic --
         else if (loanDetails && loanDetails.loanType === '10 Days Credit') {
             if (loanDetails.status === 'Paid') {
                 const payments = memberData.filter(r => r.date > loanRecord.date && r.payment > 0);
@@ -233,15 +225,14 @@ function calculateCreditBehaviorScore(memberName, untilDate, allData, activeLoan
                 }
                 const daysToRepay = repaidDate ? (repaidDate - loanRecord.date) / (1000 * 3600 * 24) : Infinity;
                 if (daysToRepay <= CONFIG.TEN_DAY_CREDIT_GRACE_DAYS) {
-                    totalPoints += 15; // Samay par chukane par bonus
+                    totalPoints += 15;
                 } else {
-                    totalPoints -= 20; // Der se chukane par penalty
+                    totalPoints -= 20;
                 }
             } else {
-                totalPoints -= 30; // Abhi tak active hai to penalty
+                totalPoints -= 30;
             }
         }
-        // -- Personal Loan and other types Logic (Existing Logic) --
         else {
             let amountRepaid = 0;
             let repaymentDate = null;
@@ -260,7 +251,7 @@ function calculateCreditBehaviorScore(memberName, untilDate, allData, activeLoan
                 else if (daysToRepay <= CONFIG.LOAN_TERM_GOOD) totalPoints += 15;
                 else totalPoints -= 20;
             } else {
-                totalPoints -= 40; // Abhi tak active hai to penalty
+                totalPoints -= 40;
             }
         }
     }
@@ -274,7 +265,7 @@ function calculateCreditBehaviorScore(memberName, untilDate, allData, activeLoan
 }
 
 
-// --- OTHER CORE LOGIC FUNCTIONS (No changes needed below this line) ---
+// --- OTHER CORE LOGIC FUNCTIONS (No changes needed below) ---
 
 export function getLoanEligibility(memberName, score, allData) {
     const memberData = allData.filter(r => r.name === memberName);
