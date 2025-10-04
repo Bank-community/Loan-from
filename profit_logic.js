@@ -1,9 +1,9 @@
 // File: profit_logic.js
-// This file contains all the core calculation and business logic for the profit analytics system.
-// It is responsible for calculating scores, eligibility, and profit distributions without touching the DOM.
+// Version 2.0: Capital Score and Credit Behavior logic updated.
+// Yeh file system ka "dimag" hai. Ismein sabhi core calculation aur business logic hain.
+// Yeh file UI ko direct control nahi karti hai.
 
 // --- CONFIGURATION & NIYAM (RULES) ---
-// All business rules are defined here.
 export const CONFIG = {
     PASSWORD: "7536",
     DEFAULT_PROFILE_PIC: 'https://i.postimg.cc/XNpR3cN1/20241030-065157.png',
@@ -13,8 +13,9 @@ export const CONFIG = {
     CONSISTENCY_WEIGHT: 0.30, 
     CREDIT_BEHAVIOR_WEIGHT: 0.30,
 
-    // Capital Score Calculation Window
-    CAPITAL_SCORE_DAYS: 180,
+    // *** NEW: Capital Score Target ***
+    // 180 din mein itna SIP jama karne par 100 points milenge.
+    CAPITAL_SCORE_TARGET_SIP: 24000, 
 
     // Loan Eligibility Tiers
     LOAN_LIMIT_TIER1_SCORE: 50, LOAN_LIMIT_TIER2_SCORE: 60, LOAN_LIMIT_TIER3_SCORE: 80,
@@ -24,14 +25,17 @@ export const CONFIG = {
     MINIMUM_MEMBERSHIP_DAYS: 60,
     MINIMUM_MEMBERSHIP_FOR_CREDIT_SCORE: 30,
     SIP_ON_TIME_LIMIT: 10,
-    LOAN_FORMALITY_DAYS_LIMIT: 15,
-    LOAN_TERM_BEST: 30,
-    LOAN_TERM_BETTER: 60,
+    // Personal loan ke liye niyam
+    LOAN_TERM_BEST: 30, 
+    LOAN_TERM_BETTER: 60, 
     LOAN_TERM_GOOD: 90,
-    LOAN_TERM_LATE_FEE: 100,
+    // 10 Days Credit ke liye grace period
+    TEN_DAY_CREDIT_GRACE_DAYS: 15,
+    // Business Loan ke liye niyam
+    BUSINESS_LOAN_TERM_DAYS: 365,
 
-    // Probation period for new members
-    NEW_MEMBER_PROBATION_DAYS: 180, // Approx 6 months
+    // New member probation period (is dauran score ka prabhav kam hoga)
+    NEW_MEMBER_PROBATION_DAYS: 180,
 
     // Inactive Policy Tiers
     INACTIVE_DAYS_LEVEL_1: 180,
@@ -44,14 +48,15 @@ export const CONFIG = {
 // --- CORE SCORE CALCULATION ENGINE ---
 
 /**
- * Calculates a member's complete performance score based on capital, consistency, and credit behavior.
- * Applies a 50% score reduction on consistency and credit for members within their probation period.
- * @param {string} memberName - The name of the member.
- * @param {Date} untilDate - The date until which to calculate the score.
- * @param {Array} allData - The complete transaction dataset.
- * @returns {object} An object containing the total score and its components.
+ * Member ka poora performance score calculate karta hai.
+ * Ab yeh 'activeLoansData' bhi leta hai taaki Credit Score sahi se nikala ja sake.
+ * @param {string} memberName - Member ka naam.
+ * @param {Date} untilDate - Kis tarikh tak ka score nikalna hai.
+ * @param {Array} allData - Sabhi transactions ka data.
+ * @param {object} activeLoansData - Firebase se /activeLoans ka poora data.
+ * @returns {object} Score aur uske components ka object.
  */
-export function calculatePerformanceScore(memberName, untilDate, allData) {
+export function calculatePerformanceScore(memberName, untilDate, allData, activeLoansData) {
     const memberData = allData.filter(r => r.name === memberName);
     if (memberData.length === 0) {
         return { totalScore: 0, capitalScore: 0, consistencyScore: 0, creditScore: 0, isNewMemberRuleApplied: false, originalConsistencyScore: 0, originalCreditScore: 0 };
@@ -63,12 +68,13 @@ export function calculatePerformanceScore(memberName, untilDate, allData) {
 
     const capitalScore = calculateCapitalScore(memberName, untilDate, allData);
     let consistencyScore = calculateConsistencyScore(memberData, untilDate);
-    let creditScore = calculateCreditBehaviorScore(memberName, untilDate, allData);
+    // Credit score ko ab active loans ka data bhi chahiye
+    let creditScore = calculateCreditBehaviorScore(memberName, untilDate, allData, activeLoansData);
 
     const originalConsistencyScore = consistencyScore;
     const originalCreditScore = creditScore;
 
-    // Apply 50% score reduction for new members
+    // Naye member ke liye score ka prabhav 50% kam kar diya jaata hai
     if (isNewMemberRuleApplied) {
         consistencyScore *= 0.50;
         creditScore *= 0.50;
@@ -90,56 +96,42 @@ export function calculatePerformanceScore(memberName, untilDate, allData) {
 }
 
 /**
- * Calculates the capital score based on the average daily balance over the last 180 days.
- * @param {string} memberName - The name of the member.
- * @param {Date} untilDate - The date until which to calculate.
- * @param {Array} allData - The complete transaction dataset.
- * @returns {number} The calculated capital score (0-100).
+ * *** NAYA LOGIC ***
+ * Capital score ab pichhle 180 dinon mein jama kiye gaye kul SIP amount par aadharit hai.
+ * @param {string} memberName - Member ka naam.
+ * @param {Date} untilDate - Kis tarikh tak ka score nikalna hai.
+ * @param {Array} allData - Sabhi transactions ka data.
+ * @returns {number} Capital score (0-100).
  */
 function calculateCapitalScore(memberName, untilDate, allData) {
-    const daysToReview = CONFIG.CAPITAL_SCORE_DAYS;
+    const daysToReview = 180;
     const startDate = new Date(untilDate.getTime() - daysToReview * 24 * 3600 * 1000);
     
-    const data = allData.filter(r => r.date <= untilDate);
-    const memberData = data.filter(r => r.name === memberName);
+    const memberTransactions = allData.filter(r => 
+        r.name === memberName && 
+        r.date >= startDate && 
+        r.date <= untilDate
+    );
 
-    let balanceAtStart = 0;
-    memberData.filter(r => r.date < startDate).forEach(r => {
-        balanceAtStart += r.sipPayment + r.payment - r.loan;
-    });
+    const totalSipAmount = memberTransactions.reduce((sum, tx) => sum + tx.sipPayment, 0);
 
-    let weightedCapitalSum = 0;
-    let currentBalance = balanceAtStart;
-    let lastDate = startDate;
-
-    const relevantTransactions = memberData.filter(r => r.date >= startDate);
+    const normalizedScore = (totalSipAmount / CONFIG.CAPITAL_SCORE_TARGET_SIP) * 100;
     
-    relevantTransactions.forEach(t => {
-        const daysDifference = (t.date - lastDate) / (1000 * 3600 * 24);
-        weightedCapitalSum += currentBalance * daysDifference;
-        currentBalance += t.sipPayment + t.payment - t.loan;
-        lastDate = t.date;
-    });
-
-    weightedCapitalSum += currentBalance * ((untilDate - lastDate) / (1000 * 3600 * 24));
-    
-    const averageDailyBalance = weightedCapitalSum / daysToReview;
-    const normalizedScore = Math.min(100, (averageDailyBalance / 50000) * 100);
-    return Math.max(0, normalizedScore);
+    return Math.min(100, Math.max(0, normalizedScore)); // Score ko 0 aur 100 ke beech rakhta hai.
 }
 
+
 /**
- * Calculates consistency score based on on-time SIP payments in the last year.
- * @param {Array} memberData - The transaction data for a single member.
- * @param {Date} untilDate - The date until which to calculate.
- * @returns {number} The calculated consistency score (0-100).
+ * Consistency score calculate karta hai (is mein koi badlav nahi).
+ * @param {Array} memberData - Ek member ka transaction data.
+ * @param {Date} untilDate - Kis tarikh tak ka score nikalna hai.
+ * @returns {number} Consistency score (0-100).
  */
 function calculateConsistencyScore(memberData, untilDate) {
     const oneYearAgo = new Date(untilDate);
     oneYearAgo.setFullYear(untilDate.getFullYear() - 1);
     
     const recentMemberData = memberData.filter(r => r.date >= oneYearAgo);
-    
     if (recentMemberData.length === 0) return 0;
 
     const sipHistory = {};
@@ -158,93 +150,136 @@ function calculateConsistencyScore(memberData, untilDate) {
 }
 
 /**
- * Calculates credit behavior score based on loan repayment history in the last year.
- * @param {string} memberName - The name of the member.
- * @param {Date} untilDate - The date until which to calculate.
- * @param {Array} allData - The complete transaction dataset.
- * @returns {number} The calculated credit behavior score (0-100).
+ * *** NAYA LOGIC ***
+ * Credit Behavior score ab Business Loan aur 10 Days Credit ko bhi handle karta hai.
+ * @param {string} memberName - Member ka naam.
+ * @param {Date} untilDate - Kis tarikh tak ka score nikalna hai.
+ * @param {Array} allData - Sabhi transactions ka data.
+ * @param {object} activeLoansData - Firebase se /activeLoans ka poora data.
+ * @returns {number} Credit score (0-100).
  */
-function calculateCreditBehaviorScore(memberName, untilDate, allData) {
+function calculateCreditBehaviorScore(memberName, untilDate, allData, activeLoansData = {}) {
     const memberData = allData.filter(r => r.name === memberName && r.date <= untilDate);
     
     const oneYearAgo = new Date(untilDate);
     oneYearAgo.setFullYear(untilDate.getFullYear() - 1);
 
-    const memberLoans = memberData.filter(r => r.loan > 0 && r.date >= oneYearAgo);
+    // Member ke sabhi active loans ko filter karo
+    const memberActiveLoans = Object.values(activeLoansData).filter(loan => loan.memberName === memberName);
 
-    const firstTransactionDate = memberData[0]?.date;
-    if (!firstTransactionDate) return 0;
-
-    const membershipDays = (untilDate - firstTransactionDate) / (1000 * 3600 * 24);
-
-    if (memberLoans.length === 0) {
+    // Case 1: Agar member ne pichhle 1 saal mein koi loan nahi liya hai
+    const loansInLastYear = memberData.filter(r => r.loan > 0 && r.date >= oneYearAgo);
+    if (loansInLastYear.length === 0) {
+        // No-loan logic same rahega
+        const firstTransactionDate = memberData[0]?.date;
+        if (!firstTransactionDate) return 40;
+        const membershipDays = (untilDate - firstTransactionDate) / (1000 * 3600 * 24);
         if (membershipDays < CONFIG.MINIMUM_MEMBERSHIP_FOR_CREDIT_SCORE) return 40; 
+        
         const sipData = memberData.filter(r => r.sipPayment > 0);
-        if (sipData.length === 0) return 40; 
-        if (sipData.length === 1) return 60;
-        const sipsForAvg = sipData.slice(1);
-        const avgSipDay = sipsForAvg.reduce((sum, r) => sum + r.date.getDate(), 0) / sipsForAvg.length;
+        if (sipData.length < 2) return 60;
+        
+        const avgSipDay = sipData.slice(1).reduce((sum, r) => sum + r.date.getDate(), 0) / (sipData.length - 1);
         const dayScore = Math.max(0, (15 - avgSipDay) * 5 + 40);
         return Math.min(100, dayScore);
     }
-
+    
+    // Case 2: Agar member ne loan liya hai
     let totalPoints = 0;
     let loansProcessed = 0;
-    for (const loanRecord of memberLoans) {
-        let loanAmount = loanRecord.loan;
-        let paymentsAfterLoan = memberData.filter(r => r.date > loanRecord.date && (r.payment > 0 || r.sipPayment > 0));
-        let amountRepaid = 0;
-        let repaymentDate = null;
-        for (const p of paymentsAfterLoan) {
-            amountRepaid += p.payment + p.sipPayment;
-            if (amountRepaid >= loanAmount) {
-                repaymentDate = p.date;
-                break;
+
+    for (const loanRecord of loansInLastYear) {
+        loansProcessed++;
+        
+        // Find the loan type from activeLoansData
+        const loanDetails = memberActiveLoans.find(l => new Date(l.loanDate).getTime() === loanRecord.date.getTime() && l.originalAmount === loanRecord.loan);
+
+        // -- Business Loan Logic --
+        if (loanDetails && loanDetails.loanType === 'Business Loan') {
+            const loanStartDate = new Date(loanDetails.loanDate);
+            const monthsPassed = (untilDate.getFullYear() - loanStartDate.getFullYear()) * 12 + (untilDate.getMonth() - loanStartDate.getMonth());
+            
+            for (let i = 1; i <= monthsPassed; i++) {
+                const checkMonth = new Date(loanStartDate);
+                checkMonth.setMonth(checkMonth.getMonth() + i);
+                
+                const hasPaidInterest = memberData.some(tx => 
+                    tx.returnAmount > 0 && // 'returnAmount' interest paid hai
+                    new Date(tx.date).getFullYear() === checkMonth.getFullYear() &&
+                    new Date(tx.date).getMonth() === checkMonth.getMonth()
+                );
+                if (hasPaidInterest) {
+                    totalPoints += 5; // Har mahine interest dene par bonus
+                } else {
+                    totalPoints -= 10; // Missed payment par penalty
+                }
+            }
+            if ((untilDate - loanStartDate) / (1000 * 3600 * 24) > CONFIG.BUSINESS_LOAN_TERM_DAYS && loanDetails.status === 'Active') {
+                totalPoints -= 50; // 1 saal se zyada active rehne par bhaari penalty
+            }
+        } 
+        // -- 10 Days Credit Logic --
+        else if (loanDetails && loanDetails.loanType === '10 Days Credit') {
+            if (loanDetails.status === 'Paid') {
+                const payments = memberData.filter(r => r.date > loanRecord.date && r.payment > 0);
+                let repaidDate = null;
+                let amountRepaid = 0;
+                for (const p of payments) {
+                    amountRepaid += p.payment;
+                    if (amountRepaid >= loanRecord.loan) {
+                        repaidDate = p.date;
+                        break;
+                    }
+                }
+                const daysToRepay = repaidDate ? (repaidDate - loanRecord.date) / (1000 * 3600 * 24) : Infinity;
+                if (daysToRepay <= CONFIG.TEN_DAY_CREDIT_GRACE_DAYS) {
+                    totalPoints += 15; // Samay par chukane par bonus
+                } else {
+                    totalPoints -= 20; // Der se chukane par penalty
+                }
+            } else {
+                totalPoints -= 30; // Abhi tak active hai to penalty
             }
         }
-        loansProcessed++;
-        if (repaymentDate) {
-            const daysToRepay = (repaymentDate - loanRecord.date) / (1000 * 3600 * 24);
-            if (daysToRepay < CONFIG.LOAN_FORMALITY_DAYS_LIMIT) totalPoints += 5; 
-            else {
+        // -- Personal Loan and other types Logic (Existing Logic) --
+        else {
+            let amountRepaid = 0;
+            let repaymentDate = null;
+            const paymentsAfterLoan = memberData.filter(r => r.date > loanRecord.date && (r.payment > 0 || r.sipPayment > 0));
+            for (const p of paymentsAfterLoan) {
+                amountRepaid += p.payment + p.sipPayment;
+                if (amountRepaid >= loanRecord.loan) {
+                    repaymentDate = p.date;
+                    break;
+                }
+            }
+            if (repaymentDate) {
+                const daysToRepay = (repaymentDate - loanRecord.date) / (1000 * 3600 * 24);
                 if (daysToRepay <= CONFIG.LOAN_TERM_BEST) totalPoints += 25; 
                 else if (daysToRepay <= CONFIG.LOAN_TERM_BETTER) totalPoints += 20;
                 else if (daysToRepay <= CONFIG.LOAN_TERM_GOOD) totalPoints += 15;
-                else if (daysToRepay <= CONFIG.LOAN_TERM_LATE_FEE) totalPoints -= 5;
                 else totalPoints -= 20;
+            } else {
+                totalPoints -= 40; // Abhi tak active hai to penalty
             }
-            if(loanAmount > 5000) totalPoints += 5;
-            if(loanAmount > 10000) totalPoints += 5;
-        } else {
-            totalPoints -= 40;
         }
     }
+
     if (loansProcessed === 0) return 40;
-    const maxPossiblePoints = loansProcessed * 35; 
+    
+    const maxPossiblePoints = loansProcessed * 25; 
     const normalizedScore = (totalPoints / maxPossiblePoints) * 100;
+    
     return Math.max(0, Math.min(100, normalizedScore));
 }
 
 
-// --- OTHER CORE LOGIC FUNCTIONS ---
+// --- OTHER CORE LOGIC FUNCTIONS (No changes needed below this line) ---
 
-/**
- * Determines a member's loan eligibility and multiplier based on their score and account status.
- * @param {string} memberName - The name of the member.
- * @param {number} score - The member's performance score.
- * @param {Array} allData - The complete transaction dataset.
- * @returns {object} An object indicating eligibility, multiplier, and reason if not eligible.
- */
 export function getLoanEligibility(memberName, score, allData) {
     const memberData = allData.filter(r => r.name === memberName);
-    
-    let totalLoan = 0, totalPayment = 0;
-    memberData.forEach(r => {
-        totalLoan += r.loan;
-        totalPayment += r.payment + r.sipPayment;
-    });
-    
-    if (totalLoan > totalPayment) return { eligible: false, reason: 'Outstanding Loan' };
+    let totalCapital = memberData.reduce((sum, r) => sum + r.sipPayment + r.payment - r.loan, 0);
+    if (totalCapital < 0) return { eligible: false, reason: 'Outstanding Loan' };
 
     const firstSip = memberData.find(r => r.sipPayment > 0);
     if (!firstSip) return { eligible: false, reason: 'No SIP yet' };
@@ -262,13 +297,7 @@ export function getLoanEligibility(memberName, score, allData) {
     return { eligible: true, multiplier: Math.max(LOAN_LIMIT_TIER1_MAX, multiplier) };
 }
 
-/**
- * Calculates how the profit from a single loan payment event is distributed among members.
- * @param {object} paymentRecord - The transaction record for the loan payment.
- * @param {Array} allData - The complete transaction dataset.
- * @returns {object|null} The distribution details or null if not applicable.
- */
-export function calculateProfitDistribution(paymentRecord, allData) {
+export function calculateProfitDistribution(paymentRecord, allData, activeLoansData) {
     const profit = paymentRecord.returnAmount * 0.90; 
     if (profit <= 0) return null;
 
@@ -281,7 +310,7 @@ export function calculateProfitDistribution(paymentRecord, allData) {
     const membersInSystemAtLoanDate = [...new Set(allData.filter(r => r.date <= loanDate).map(r => r.name))];
     
     membersInSystemAtLoanDate.forEach(name => {
-        const scoreObject = calculatePerformanceScore(name, loanDate, allData);
+        const scoreObject = calculatePerformanceScore(name, loanDate, allData, activeLoansData);
         if (scoreObject.totalScore > 0) {
             snapshotScores[name] = scoreObject;
             totalScoreInSnapshot += scoreObject.totalScore;
@@ -314,16 +343,10 @@ export function calculateProfitDistribution(paymentRecord, allData) {
     return { profit, relevantLoan, distribution: distribution.sort((a,b) => b.share - a.share) };
 }
 
-/**
- * Calculates the total profit earned by a single member across all events.
- * @param {string} memberName - The name of the member.
- * @param {Array} allData - The complete transaction dataset.
- * @returns {number} The total profit earned.
- */
-export function calculateTotalProfitForMember(memberName, allData) {
+export function calculateTotalProfitForMember(memberName, allData, activeLoansData) {
     return allData.reduce((totalProfit, transaction) => {
         if (transaction.returnAmount > 0) {
-            const result = calculateProfitDistribution(transaction, allData);
+            const result = calculateProfitDistribution(transaction, allData, activeLoansData);
             const memberShare = result?.distribution.find(d => d.name === memberName);
             if (memberShare) totalProfit += memberShare.share;
         }
@@ -331,16 +354,9 @@ export function calculateTotalProfitForMember(memberName, allData) {
     }, 0);
 }
 
-
-// --- UTILITY FUNCTIONS ---
-
-/**
- * Formats a Date object into a readable string (e.g., "04 Oct 2025").
- * @param {Date} date - The date to format.
- * @returns {string} The formatted date string.
- */
 export function formatDate(date) { 
     if (!(date instanceof Date) || isNaN(date)) return "N/A"; 
-    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); 
+    return date.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); 
 }
+
 
