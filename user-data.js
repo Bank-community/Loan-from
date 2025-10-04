@@ -1,6 +1,7 @@
 // user-data.js
 // Is file ka kaam sirf Firebase se data laana aur use process karna hai.
 // Yeh admin panel ke data structure ke saath sync rehta hai.
+// BADLAV: Balance calculation mein active loans ka outstanding amount ghataaya gaya hai.
 
 const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
 const PRIME_MEMBERS = ["Prince rama", "Amit kumar", "Mithilesh Sahni"];
@@ -27,14 +28,12 @@ export async function fetchAndProcessData(database) {
         const notificationsRaw = (data.admin && data.admin.notifications) || {};
         const manualNotificationsRaw = notificationsRaw.manual || {};
         const automatedQueueRaw = notificationsRaw.automatedQueue || {};
-        
-        // === YAHAN BADLAV KIYA GAYA HAI: Product Data Fetch Karna ===
         const allProductsRaw = data.products || {};
-        // === BADLAV SAMAPT ===
 
         // Data ko process karne ka process shuru karein
         const processedMembers = {};
         const allTransactions = Object.values(allTransactionsRaw);
+        const allActiveLoans = Object.values(allActiveLoansRaw);
 
         // Sabhi approved members par loop chalayein
         for (const memberId in allMembersRaw) {
@@ -43,27 +42,35 @@ export async function fetchAndProcessData(database) {
 
             // Har member ke liye alag se transactions filter karein
             const memberTransactions = allTransactions.filter(tx => tx.memberId === memberId);
-
-            // Calculation bilkul admin panel jaisi
-            let accountBalance = 0;
-            let totalReturn = 0; // Kul byaj
+            
+            // === BADLAV START: BALANCE CALCULATION LOGIC UPDATE ===
+            // 1. Kul jama rashi (deposits) ki ganana karein
+            let depositBalance = 0;
+            let totalReturn = 0;
             let loanCount = 0;
 
             memberTransactions.forEach(tx => {
                 if (tx.type === 'SIP' || tx.type === 'Extra Payment') {
-                    accountBalance += parseFloat(tx.amount || 0);
+                    depositBalance += parseFloat(tx.amount || 0);
                 } else if (tx.type === 'Extra Withdraw') {
-                    accountBalance -= parseFloat(tx.amount || 0);
+                    depositBalance -= parseFloat(tx.amount || 0);
                 }
-                
                 if (tx.type === 'Loan Payment') {
                     totalReturn += parseFloat(tx.interestPaid || 0);
                 }
-
                 if (tx.type === 'Loan Taken') {
                     loanCount++;
                 }
             });
+
+            // 2. Sadasya ke sabhi active loans ka kul bakaya (outstanding) nikalein
+            const memberActiveLoans = allActiveLoans.filter(loan => loan.memberId === memberId && loan.status === 'Active');
+            const totalOutstandingLoan = memberActiveLoans.reduce((sum, loan) => sum + parseFloat(loan.outstandingAmount || 0), 0);
+            
+            // 3. Antim balance (Total Deposit - Total Outstanding Loan)
+            const finalBalance = depositBalance - totalOutstandingLoan;
+            // === BADLAV END ===
+
 
             const now = new Date();
             const currentMonthSip = memberTransactions.find(tx => 
@@ -74,10 +81,10 @@ export async function fetchAndProcessData(database) {
 
             // Processed data ko object mein save karein
             processedMembers[memberId] = {
-                ...member, // Original data bhi rakhein
+                ...member,
                 id: memberId,
                 name: member.fullName,
-                balance: accountBalance,
+                balance: finalBalance, // Yahan naya balance set kiya gaya hai
                 totalReturn: totalReturn,
                 loanCount: loanCount,
                 displayImageUrl: member.profilePicUrl || DEFAULT_IMAGE,
@@ -101,14 +108,12 @@ export async function fetchAndProcessData(database) {
             communityStats,
             manualNotifications: manualNotificationsRaw,
             automatedQueue: automatedQueueRaw,
-            // === YAHAN BADLAV KIYA GAYA HAI: Product Data Return Karna ===
             allProducts: allProductsRaw,
-            // === BADLAV SAMAPT ===
         };
 
     } catch (error) {
         console.error('Data processing failed:', error);
-        throw error; // Error ko aage pass karein taaki UI mein dikhaya ja sake
+        throw error;
     }
 }
 
@@ -138,16 +143,15 @@ function calculateCommunityStats(processedMembers, allTransactions, allActiveLoa
     const penaltyIncomes = Object.values(penaltyWallet.incomes || {});
     const penaltyExpenses = Object.values(penaltyWallet.expenses || {});
     const totalPenaltyIncomes = penaltyIncomes.reduce((sum, income) => sum + income.amount, 0);
-    const totalPenaltyExpenses = penaltyExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+    const totalPenaltyExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
 
     return {
         totalSipAmount,
         totalCurrentLoanAmount,
-        netReturnAmount: totalInterestReceived - penaltyFromInterest, // 10% kaatne ke baad
+        netReturnAmount: totalInterestReceived - penaltyFromInterest,
         availableCommunityBalance: totalSipAmount - totalCurrentLoanAmount,
         totalPenaltyBalance: totalPenaltyIncomes - totalPenaltyExpenses,
         totalLoanDisbursed: allTransactions.filter(tx => tx.type === 'Loan Taken').reduce((sum, tx) => sum + tx.amount, 0)
     };
 }
-
 
