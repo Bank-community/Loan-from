@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => initializeAppAndAuth());
  */
 async function initializeAppAndAuth() {
     try {
-        const response = await fetch('/api/config');
+        const response = await fetch('/api/firebase-config');
         if (!response.ok) throw new Error('Configuration failed to load from /api/config.');
         const firebaseConfig = await response.json();
         
