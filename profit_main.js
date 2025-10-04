@@ -1,11 +1,11 @@
 // File: profit_main.js
-// Version 2.0: Ab activeLoans data ko fetch karta hai aur naye logic ke liye use pass karta hai.
+// Version 2.1: New Member Score display aur Profit Event Details modal ko theek kiya gaya.
 // Yeh file application ka mukhya controller hai.
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-import * as logic from './profit_logic.js'; // Logic file se sabhi functions import karo
+import * as logic from './profit_logic.js';
 
 // --- GLOBAL VARIABLES ---
 let allData = [], memberDataMap = new Map(), memberNames = [], activeLoansData = {};
@@ -15,12 +15,9 @@ let db, auth;
 // --- INITIALIZATION ---
 document.addEventListener("DOMContentLoaded", () => initializeAppAndAuth());
 
-/**
- * Config fetch karta hai, Firebase shuru karta hai, aur authentication listener set karta hai.
- */
 async function initializeAppAndAuth() {
     try {
-        const response = await fetch('/api/firebase-config'); // Sahi API file ka naam
+        const response = await fetch('/api/firebase-config');
         if (!response.ok) throw new Error('Configuration failed to load from /api/firebase-config.');
         const firebaseConfig = await response.json();
         
@@ -43,9 +40,6 @@ async function initializeAppAndAuth() {
     }
 }
 
-/**
- * Authenticated users ke liye PIN prompt set karta hai.
- */
 function setupPasswordPrompt() {
     const passwordContainer = document.getElementById('passwordPromptContainer');
     const passwordInput = document.getElementById('passwordInput');
@@ -68,17 +62,11 @@ function setupPasswordPrompt() {
     passwordInput.addEventListener('keydown', (e) => e.key === 'Enter' && checkPassword());
 }
 
-// --- DATA FETCHING AND PROCESSING (UPDATED) ---
-
-/**
- * *** NAYA LOGIC ***
- * Ab /members, /transactions, aur /activeLoans, teeno ko fetch karta hai.
- */
+// --- DATA FETCHING AND PROCESSING ---
 async function loadAndProcessData() {
     document.getElementById('loader').querySelector('span').textContent = 'Loading and processing data...';
 
     try {
-        // 1. Teeno zaroori data ko ek saath fetch karo
         const membersRef = ref(db, 'members');
         const transactionsRef = ref(db, 'transactions');
         const activeLoansRef = ref(db, 'activeLoans');
@@ -95,9 +83,8 @@ async function loadAndProcessData() {
 
         const members = membersSnapshot.val();
         const transactions = transactionsSnapshot.val();
-        activeLoansData = activeLoansSnapshot.exists() ? activeLoansSnapshot.val() : {}; // Store active loans data globally
+        activeLoansData = activeLoansSnapshot.exists() ? activeLoansSnapshot.val() : {};
         
-        // 2. Member data ke liye ek Map banao (approved members ke liye)
         for (const memberId in members) {
             if (members[memberId].status === 'Approved') {
                  memberDataMap.set(memberId, {
@@ -107,7 +94,6 @@ async function loadAndProcessData() {
             }
         }
         
-        // 3. Transactions ko process karke `allData` format mein badlo
         const processedTransactions = [];
         let idCounter = 0;
         for (const txId in transactions) {
@@ -151,7 +137,6 @@ async function loadAndProcessData() {
 
 
 // --- UI and Display Functions ---
-// (Neeche ke functions ab logic functions ko activeLoansData pass karenge)
 
 function initializeDashboard() {
     document.getElementById('dashboardContent').classList.remove('visually-hidden');
@@ -175,7 +160,6 @@ function setupEventListeners() {
         document.getElementById('fullProfileImage').src = document.getElementById('profileImage').src;
         imageModal.classList.remove('visually-hidden');
     });
-    document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', handleLanguageToggle));
 }
 
 function populateMemberFilter() {
@@ -222,7 +206,6 @@ function updateProfileCard(name) {
         totalCapital = dataToShow.reduce((sum, r) => sum + r.sipPayment + r.payment - r.loan, 0);
         totalLoan = dataToShow.reduce((sum, r) => sum + r.loan, 0);
         
-        // Pass activeLoansData to logic functions
         totalProfitEarned = logic.calculateTotalProfitForMember(name, allData, activeLoansData);
         const memberScores = logic.calculatePerformanceScore(name, new Date(), allData, activeLoansData);
         const score = memberScores.totalScore;
@@ -256,7 +239,6 @@ function populateProfitLog() {
         return;
     }
     profitEvents.forEach(paymentRecord => {
-        // Pass activeLoansData
         const result = logic.calculateProfitDistribution(paymentRecord, allData, activeLoansData);
         if (result && result.profit > 0) {
             const row = document.createElement('tr');
@@ -336,27 +318,49 @@ function displayEligibilityRanking() {
     document.getElementById('eligibilityRankModal').classList.remove('visually-hidden');
 }
 
-// --- The rest of the UI functions (modals, charts, etc.) remain unchanged ---
-// --- They will now work correctly with the new data passed to them ---
-
+/**
+ * *** YAHAN DONO BADLAV KIYE GAYE HAIN ***
+ * Sabhi prakar ke "Details" modal ke liye content generate karta hai.
+ * @param {object} details - Details object jismein 'type' aur zaroori data ho.
+ */
 function showCalculationDetails(details) {
     const titleEl = document.getElementById('calculationDetailsTitle');
     const contentEl = document.getElementById('calculationDetailsContent');
     let html = '';
+
+    // --- FIX 1: New Member Capital Score Display ---
     if (details.type === 'score') {
         const { name, scores } = details.member;
         titleEl.textContent = `Score Calculation for ${name}`;
-        html = `<div class="calc-row"><span class="calc-label">Capital Score (SIP Target)</span> <span class="calc-value">${scores.capitalScore.toFixed(2)}</span></div><div class="calc-formula">(Total SIP in 180d / ₹${logic.CONFIG.CAPITAL_SCORE_TARGET_SIP}) * 100</div>`;
+        
         if (scores.isNewMemberRuleApplied) {
+            // Naye sadasya ke liye: Base score aur 50% reduction dono dikhao
+            html = `<div class="calc-row"><span class="calc-label">Capital Score (Base)</span> <span class="calc-value">${scores.originalCapitalScore.toFixed(2)}</span></div>`;
+            html += `<div class="calc-row"><span class="calc-label" style="color:var(--negative-color);">New Member Rule (x50%)</span> <span class="calc-value">${scores.capitalScore.toFixed(2)}</span></div>`;
+            
             html += `<div class="calc-row"><span class="calc-label">Consistency Score (Base)</span> <span class="calc-value">${scores.originalConsistencyScore.toFixed(2)}</span></div>`;
             html += `<div class="calc-row"><span class="calc-label" style="color:var(--negative-color);">New Member Rule (x50%)</span> <span class="calc-value">${scores.consistencyScore.toFixed(2)}</span></div>`;
+
             html += `<div class="calc-row"><span class="calc-label">Credit Behavior (Base)</span> <span class="calc-value">${scores.originalCreditScore.toFixed(2)}</span></div>`;
             html += `<div class="calc-row"><span class="calc-label" style="color:var(--negative-color);">New Member Rule (x50%)</span> <span class="calc-value">${scores.creditScore.toFixed(2)}</span></div>`;
+
         } else {
+            // Purane sadasya ke liye
+            html = `<div class="calc-row"><span class="calc-label">Capital Score (SIP Target)</span> <span class="calc-value">${scores.capitalScore.toFixed(2)}</span></div><div class="calc-formula">(Total SIP in 180d / ₹${logic.CONFIG.CAPITAL_SCORE_TARGET_SIP}) * 100</div>`;
             html += `<div class="calc-row"><span class="calc-label">Consistency Score (1-Yr)</span> <span class="calc-value">${scores.consistencyScore.toFixed(2)}</span></div>`;
             html += `<div class="calc-row"><span class="calc-label">Credit Behavior (1-Yr)</span> <span class="calc-value">${scores.creditScore.toFixed(2)}</span></div>`;
         }
+        
         html += `<hr><div class="calc-row"><span class="calc-label">Weighted Capital (40%)</span> <span class="calc-value">${(scores.capitalScore * logic.CONFIG.CAPITAL_WEIGHT).toFixed(2)}</span></div><div class="calc-row"><span class="calc-label">Weighted Consistency (30%)</span> <span class="calc-value">${(scores.consistencyScore * logic.CONFIG.CONSISTENCY_WEIGHT).toFixed(2)}</span></div><div class="calc-row"><span class="calc-label">Weighted Credit (30%)</span> <span class="calc-value">${(scores.creditScore * logic.CONFIG.CREDIT_BEHAVIOR_WEIGHT).toFixed(2)}</span></div><div class="calc-final">Total Score: ${scores.totalScore.toFixed(2)}</div>`;
+    
+    // --- FIX 2: Profit Event Details Display ---
+    } else if (details.type === 'profit_event') {
+        const { member, profitEvent } = details;
+        titleEl.textContent = `Profit Share for ${member.name}`;
+        const sharePercentage = (member.totalSnapshotScore > 0) ? (member.snapshotScore / member.totalSnapshotScore) * 100 : 0;
+        const initialShare = (sharePercentage / 100) * profitEvent.profit;
+        html = `<div class="calc-row"><span class="calc-label">Loan From</span> <span class="calc-value">${profitEvent.relevantLoan.name}</span></div><div class="calc-row"><span class="calc-label">Total Profit from Loan</span> <span class="calc-value">₹${profitEvent.profit.toFixed(2)}</span></div><hr><div class="calc-row"><span class="calc-label">Your Score (at loan time)</span> <span class="calc-value">${member.snapshotScore.toFixed(2)}</span></div><div class="calc-row"><span class="calc-label">Total Community Score</span> <span class="calc-value">${member.totalSnapshotScore.toFixed(2)}</span></div><div class="calc-row"><span class="calc-label">Your Share (%)</span> <span class="calc-value">${sharePercentage.toFixed(2)}%</span></div><div class="calc-formula">(Your Score / Total Score) * 100</div><hr><div class="calc-row"><span class="calc-label">Initial Share</span> <span class="calc-value">₹${initialShare.toFixed(2)}</span></div>${member.multiplier !== 1 ? `<div class="calc-row"><span class="calc-label">Inactive Policy (x${member.multiplier})</span> <span class="calc-value">- ₹${(initialShare - member.share).toFixed(2)}</span></div>` : ''}<div class="calc-final">Final Profit: ₹${member.share.toFixed(2)}</div>`;
+    
     } else if (details.type === 'total_profit') {
         titleEl.textContent = `Total Profit for ${details.memberName}`;
         let profitBreakdownHtml = '';
@@ -371,6 +375,7 @@ function showCalculationDetails(details) {
         });
         if (!profitBreakdownHtml) profitBreakdownHtml = '<div class="calc-row"><span class="calc-label">No profit earned yet.</span></div>';
         html = `${profitBreakdownHtml}<div class="calc-final">Total Profit: ₹${totalProfit.toFixed(2)}</div>`;
+
     } else if (details.type === 'eligibility') {
         const { name, score, eligibility } = details.member;
         titleEl.textContent = `Eligibility for ${name}`;
@@ -420,11 +425,5 @@ function showDistributionModal(profitEvent) {
     }
     modal.classList.remove('visually-hidden');
 }
-
-
-// AI functions remain the same
-async function getGeminiExplanation(promptText, source = 'default') { try { let apiEndpoint = '/api/getAiExplanation'; if (source === 'profit_system') apiEndpoint = '/api/getProfitAiExplanation'; const response = await fetch(apiEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ promptText: promptText }) }); if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.details || 'AI request failed.'); } const data = await response.json(); return data.explanation; } catch (error) { console.error("Frontend AI Error:", error); throw error; } }
-async function generateAndShowExplanation(promptGenerator, source = 'default') { const resultDiv = document.getElementById('aiExplanationResult'); const langToggleContainer = document.getElementById('languageToggleContainer'); resultDiv.innerHTML = `<div class="ai-loader"><div class="spinner"></div><span>AI aapke liye jankari taiyar kar raha hai...</span></div>`; langToggleContainer.classList.add('hidden'); document.getElementById('aiExplainModal').classList.remove('visually-hidden'); const initialPrompt = promptGenerator(); try { const explanation = await getGeminiExplanation(initialPrompt, source); resultDiv.innerHTML = marked.parse(explanation); resultDiv.dataset.originalText = explanation; resultDiv.dataset.source = source; langToggleContainer.classList.remove('hidden'); } catch (error) { resultDiv.innerHTML = `<p style="color: var(--negative-color);"><strong>Error:</strong> AI se jawab nahi mil saka.</p><p style="font-size:0.8em; color: var(--text-light);">${error.message}</p>`; } }
-async function handleLanguageToggle(event) { const targetLang = event.target.dataset.lang; const resultDiv = document.getElementById('aiExplanationResult'); const textToTranslate = resultDiv.dataset.originalText; if (!textToTranslate) return; const langFullName = targetLang === 'hi' ? 'Hindi' : 'English'; const translationPrompt = `Translate the following text into ${langFullName}. Provide only the translated text, without any additional formatting or introductory phrases:\n\n"${textToTranslate}"`; resultDiv.innerHTML = `<div class="ai-loader"><div class="spinner"></div></div>`; try { const sourceForTranslation = resultDiv.dataset.source || 'default'; const translatedText = await getGeminiExplanation(translationPrompt, sourceForTranslation); resultDiv.innerHTML = marked.parse(translatedText); } catch (error) { resultDiv.innerHTML = `<p style="color: var(--negative-color);"><strong>Error:</strong> Translation fail ho gaya.</p>`; } }
 
 
