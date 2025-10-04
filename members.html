@@ -57,17 +57,17 @@
         #accountBalanceCard .value.negative { color: #f7c8c8; }
         #loanDueCard .value { color: #f7c8c8; }
         
+        /* BADLAV: Filter layout ab mobile ke liye bhi behtar hai */
         .filters { 
             display: flex; 
             justify-content: space-between; 
             align-items: center;
             margin: 15px; 
-            gap: 15px; 
-            flex-wrap: wrap; 
+            gap: 10px; /* Gap kam kiya gaya hai */
+            flex-wrap: nowrap; /* Wrap nahi hoga */
         }
         .filter-item {
-            flex-grow: 1;
-            min-width: 150px;
+            flex: 1; /* Dono items barabar space lenge */
         }
 
         label { display: block; margin-bottom: 3px; font-weight: bold; font-size: 14px; }
@@ -107,7 +107,8 @@
             th,td { padding: 8px 10px; } 
         }
         @media only screen and (max-width: 420px) {
-            .filters { flex-direction: column; align-items: stretch; }
+            label { font-size: 12px; }
+            select { font-size: 12px; padding: 6px 8px; }
         }
     </style>
 </head>
@@ -194,6 +195,7 @@
         </div>
     </div>
 
+    <!-- Modals -->
     <div id="imageModal" class="modal hidden">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('imageModal')">×</button>
@@ -240,7 +242,6 @@
         }
     }
 
-    // === BADLAV: Galti theek kar di gayi hai. Ab yeh function poora hai. ===
     function setupPasswordPrompt() {
         const passwordInput = document.getElementById('passwordInput');
         const passwordSubmit = document.getElementById('passwordSubmit');
@@ -441,12 +442,14 @@
         const tfoot = table.querySelector('tfoot');
         tbody.innerHTML = "";
 
+        // BADLAV: Transaction table ka header ab 6 column ka hoga
         thead.innerHTML = `
             <tr>
                 <th>Date</th>
                 <th>Description</th>
                 <th style="text-align: right;">Debit (₹)</th>
-                <th style="text-align: right;">Credit (₹)</th>
+                <th style="text-align: right;">Principal (₹)</th>
+                <th style="text-align: right;">Interest (₹)</th>
                 <th style="text-align: right;">Balance (₹)</th>
             </tr>`;
         
@@ -454,7 +457,8 @@
             <tr>
                 <td colspan="2" style="text-align: right; font-weight: bold;">Total</td>
                 <td id="totalDebitCell" style="text-align: right;">0.00</td>
-                <td id="totalCreditCell" style="text-align: right;">0.00</td>
+                <td id="totalPrincipalCell" style="text-align: right;">0.00</td>
+                <td id="totalInterestCell" style="text-align: right;">0.00</td>
                 <td></td>
             </tr>`;
         
@@ -463,20 +467,22 @@
             : allTransactions.filter(tx => tx.memberId === selectedMemberId);
 
         let runningBalance = 0;
-        let totalDebit = 0;
-        let totalCredit = 0;
+        let totalDebit = 0, totalPrincipal = 0, totalInterest = 0;
 
         const statementLines = [];
         memberTransactions.forEach(tx => {
-            let line = { date: new Date(tx.date), description: '', debit: 0, credit: 0, type: tx.type };
+            let line = { date: new Date(tx.date), description: '', debit: 0, principal: 0, interest: 0, type: tx.type };
+            
+            // BADLAV: Loan Payment ko alag alag handle kiya jayega
             switch (tx.type) {
-                case 'SIP': line.description = 'SIP Payment'; line.credit = tx.amount || 0; break;
+                case 'SIP': line.description = 'SIP Payment'; line.principal = tx.amount || 0; break;
                 case 'Loan Taken': line.description = `${tx.loanType || 'Loan'} Taken`; line.debit = tx.amount || 0; break;
-                case 'Loan Payment': const p = tx.principalPaid || 0; const i = tx.interestPaid || 0; line.description = `Loan Payment (P: ${p}, I: ${i})`; line.credit = p + i; break;
-                case 'Extra Payment': line.description = 'Extra Amount Deposited'; line.credit = tx.amount || 0; break;
+                case 'Loan Payment': line.description = `Loan Payment`; line.principal = tx.principalPaid || 0; line.interest = tx.interestPaid || 0; break;
+                case 'Extra Payment': line.description = 'Extra Amount Deposited'; line.principal = tx.amount || 0; break;
                 case 'Extra Withdraw': line.description = 'Extra Amount Withdrawn'; line.debit = tx.amount || 0; break;
             }
-            runningBalance += line.credit - line.debit;
+            const credit = line.principal + line.interest;
+            runningBalance += credit - line.debit;
             line.balance = runningBalance;
             statementLines.push(line);
         });
@@ -490,7 +496,7 @@
         });
 
         if (filteredLines.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No matching transactions found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No matching transactions found.</td></tr>`;
             tfoot.style.display = 'none';
             return;
         }
@@ -498,20 +504,23 @@
         tfoot.style.display = '';
         filteredLines.forEach(line => {
             totalDebit += line.debit;
-            totalCredit += line.credit;
+            totalPrincipal += line.principal;
+            totalInterest += line.interest;
             tbody.innerHTML += `
                 <tr>
                     <td>${formatDate(line.date)}</td>
                     <td>${line.description}</td>
-                    <td class="debit" style="text-align: right;">${line.debit > 0 ? line.debit.toLocaleString('en-IN', {minimumFractionDigits: 2}) : '-'}</td>
-                    <td class="credit" style="text-align: right;">${line.credit > 0 ? line.credit.toLocaleString('en-IN', {minimumFractionDigits: 2}) : '-'}</td>
-                    <td style="text-align: right; font-weight: 500;">${line.balance.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                    <td class="debit" style="text-align: right;">${line.debit > 0 ? f(line.debit) : '-'}</td>
+                    <td class="credit" style="text-align: right;">${line.principal > 0 ? f(line.principal) : '-'}</td>
+                    <td class="credit" style="text-align: right;">${line.interest > 0 ? f(line.interest) : '-'}</td>
+                    <td style="text-align: right; font-weight: 500;">${f(line.balance)}</td>
                 </tr>
             `;
         });
         
-        document.getElementById('totalDebitCell').textContent = totalDebit.toLocaleString('en-IN', {minimumFractionDigits: 2});
-        document.getElementById('totalCreditCell').textContent = totalCredit.toLocaleString('en-IN', {minimumFractionDigits: 2});
+        document.getElementById('totalDebitCell').textContent = f(totalDebit);
+        document.getElementById('totalPrincipalCell').textContent = f(totalPrincipal);
+        document.getElementById('totalInterestCell').textContent = f(totalInterest);
     }
 
     function displayActiveLoansData(selectedMemberId) {
@@ -521,11 +530,13 @@
         const tfoot = table.querySelector('tfoot');
         tbody.innerHTML = "";
         
+        // BADLAV: Active Loans ke header me "Member Name" joda gaya
         thead.innerHTML = `
             <tr>
+                <th>Member Name</th>
                 <th>Loan Date</th>
                 <th>Loan Type</th>
-                <th style="text-align: right;">Original Amount (₹)</th>
+                <th style="text-align: right;">Original (₹)</th>
                 <th style="text-align: right;">Outstanding (₹)</th>
             </tr>`;
 
@@ -536,17 +547,20 @@
             : allActiveLoans.filter(loan => loan.memberId === selectedMemberId && loan.status === 'Active');
 
         if (memberActiveLoans.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No active loans found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No active loans found.</td></tr>`;
             return;
         }
 
         memberActiveLoans.forEach(loan => {
+            // Member ka naam `allMembers` se prapt karein
+            const memberName = allMembers[loan.memberId] ? allMembers[loan.memberId].fullName : 'Unknown';
             tbody.innerHTML += `
                 <tr>
+                    <td>${memberName}</td>
                     <td>${formatDate(new Date(loan.loanDate))}</td>
                     <td>${loan.loanType}</td>
-                    <td style="text-align: right;">${(loan.originalAmount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                    <td class="debit" style="text-align: right; font-weight: bold;">${(loan.outstandingAmount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                    <td style="text-align: right;">${f(loan.originalAmount)}</td>
+                    <td class="debit" style="text-align: right; font-weight: bold;">${f(loan.outstandingAmount)}</td>
                 </tr>
             `;
         });
@@ -611,6 +625,11 @@
     function formatDate(date) {
         if (!(date instanceof Date) || isNaN(date)) return "N/A";
         return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+    
+    // Currency format karne ke liye ek chhota helper function
+    function f(num) {
+        return (num || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
     }
 
 </script>
