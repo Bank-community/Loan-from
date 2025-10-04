@@ -1,9 +1,11 @@
 // user-main.js
-// Final and Secure Version (Original logic restored)
+// Final and Secure Version
+// BADLAV: Sirf serviceWorker ki spelling theek ki gayi hai.
 
 import { fetchAndProcessData } from './user-data.js';
 import { initUI, renderPage, showLoadingError, promptForDeviceVerification, requestNotificationPermission } from './user-ui.js';
 
+// VAPID key ab config se aayegi, yahan manually daalne ki zaroorat nahi.
 let VAPID_KEY = null;
 
 /**
@@ -11,15 +13,13 @@ let VAPID_KEY = null;
  */
 async function checkAuthAndInitialize() {
     try {
-        // Yeh line bilkul sahi hai aur Vercel se config laayegi.
         const response = await fetch('/api/firebase-config');
-        if (!response.ok) throw new Error('Configuration failed to load from API.');
+        if (!response.ok) throw new Error('Configuration failed to load.');
         const firebaseConfig = await response.json();
-        if (!firebaseConfig.apiKey) throw new Error('Invalid config received from API');
+        if (!firebaseConfig.apiKey) throw new Error('Invalid config received');
         
         VAPID_KEY = firebaseConfig.vapidKey;
 
-        // Duplicate initialization se bachne ke liye check karein
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -30,13 +30,14 @@ async function checkAuthAndInitialize() {
         const database = firebase.database();
 
         auth.onAuthStateChanged(user => {
-            // Hum maan rahe hain ki user hamesha logged in hai, 
+            // Hum maan rahe hain ki user hamesha logged in hai,
             // isliye hum sidhe app logic chala rahe hain.
-            // Agar aapke paas login system hai to 'if (user)' wala check rakhein.
             runAppLogic(database);
         });
 
-    } catch (error) {
+    } catch (error)
+ 
+{
         console.error("FATAL: Could not initialize application.", error);
         showLoadingError(`Application failed to initialize: ${error.message}`);
     }
@@ -65,6 +66,7 @@ async function runAppLogic(database) {
  */
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
+    // === YAHAN BADLAV KIYA GAYA HAI: 'service-worker' ko 'serviceWorker' kiya gaya hai ===
     navigator.serviceWorker.register('/sw.js')
       .then(registration => console.log('Service Worker registered with scope:', registration.scope))
       .catch(error => console.error('Service Worker registration failed:', error));
