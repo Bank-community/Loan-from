@@ -1,5 +1,5 @@
 // user-ui.js
-// Is file mein minus balance ko handle karne ka logic daala gaya hai.
+// BADLAV: displayHeaderButtons function ko theek kiya gaya hai taaki woh Firebase se saare button dynamically render kare.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -59,7 +59,10 @@ export function renderPage(data) {
     allAutomatedQueue = data.automatedQueue || {};
     allProducts = data.allProducts || {};
 
-    displayHeaderButtons((data.adminSettings && data.adminSettings.header_buttons) || {});
+    // === YAHAN BADLAV KIYA GAYA HAI: Naye data structure se buttons pass karna ===
+    displayHeaderButtons(data.headerButtons || {});
+    // === BADLAV SAMAPT ===
+    
     const approvedMembers = allMembersData.filter(m => m.status === 'Approved');
     displayMembers(approvedMembers);
 
@@ -90,6 +93,69 @@ function getTodayDateStringLocal() {
 
 // --- Display & Rendering Functions ---
 
+// === YAHAN BADA BADLAV KIYA GAYA HAI: YEH FUNCTION AB FIREBASE SE SAARE BUTTON RENDER KAREGA ===
+function displayHeaderButtons(buttons) {
+    if (!elements.headerActionsContainer || !elements.staticHeaderButtonsContainer) return;
+    
+    // Containers ko poori tarah khaali karein
+    elements.headerActionsContainer.innerHTML = '';
+    elements.staticHeaderButtonsContainer.innerHTML = '';
+    
+    if (Object.keys(buttons).length === 0) {
+        elements.headerActionsContainer.innerHTML = '<p class="loading-text" style="color: white;">No actions configured.</p>';
+        return;
+    }
+
+    const buttonWrapper = document.createElement('div');
+    buttonWrapper.className = 'dynamic-buttons-wrapper';
+
+    // Buttons ko unke 'order' ke hisaab se sort karein
+    Object.values(buttons).sort((a, b) => (a.order || 99) - (b.order || 99)).forEach(btnData => {
+        // Yadi url 'auto' hai, to use id se modal kholne wala button banayein
+        const isAutoUrl = btnData.url === 'auto';
+        const isLink = btnData.url && !isAutoUrl;
+        
+        const element = document.createElement(isLink ? 'a' : 'button');
+        element.className = `${btnData.base_class || 'civil-button'} ${btnData.style_preset || ''}`;
+        
+        if (btnData.id) {
+            element.id = btnData.id;
+        }
+
+        if (isLink) {
+            element.href = btnData.url;
+            if (btnData.target) element.target = btnData.target;
+        }
+
+        element.innerHTML = `${btnData.icon_svg || ''}<b>${btnData.name || ''}</b>` + (btnData.id === 'notificationBtn' ? '<span id="notificationDot" class="notification-dot"></span>' : '');
+        
+        // CSS Styles ko dynamically apply karein
+        Object.assign(element.style, {
+            backgroundColor: btnData.transparent ? 'transparent' : (btnData.color || 'var(--primary-color)'),
+            color: btnData.textColor || 'white',
+            width: btnData.width || 'auto',
+            height: btnData.height || 'auto',
+            borderRadius: btnData.borderRadius || '50px',
+            borderColor: btnData.borderColor,
+            borderWidth: btnData.borderWidth,
+            borderStyle: (parseFloat(btnData.borderWidth) > 0 || btnData.style_preset === 'btn-outline') ? 'solid' : 'none'
+        });
+
+        // Bank Members ke neeche waale static buttons ko alag karein
+        if (['viewBalanceBtn', 'viewPenaltyWalletBtn'].includes(btnData.id)) {
+            elements.staticHeaderButtonsContainer.appendChild(element);
+        } else {
+            buttonWrapper.appendChild(element);
+        }
+    });
+    
+    elements.headerActionsContainer.appendChild(buttonWrapper);
+    
+    // Naye buttons ke liye event listeners attach karein
+    attachDynamicButtonListeners();
+}
+// === BADLAV SAMAPT ===
+
 function displayMembers(members) {
     if (!elements.memberContainer) return;
     elements.memberContainer.innerHTML = '';
@@ -114,7 +180,6 @@ function displayMembers(members) {
             }
         }
 
-        // YAHAN BADLAV KIYA GAYA HAI: Negative balance ke liye class add karna
         const isNegative = (member.balance || 0) < 0;
         const balanceClass = isNegative ? 'negative-balance' : '';
 
@@ -133,9 +198,6 @@ function displayMembers(members) {
     observeElements(document.querySelectorAll('.animate-on-scroll'));
 }
 
-// Baaki sabhi functions (renderProducts, showEmiModal, etc.) aapke original code jaise hi hain.
-// Main unhein yahan dobara nahi likh raha hoon taaki code chhota rahe.
-// Poora code wahi hai jo aapne diya tha, sirf upar wala function badla hai.
 function renderProducts() {
     const container = elements.productsContainer;
     if (!container) return;
@@ -211,43 +273,6 @@ function showEmiModal(emiOptions, productName, productPrice) {
         list.innerHTML = '<li>No EMI options available for this product.</li>';
     }
     openModal(modal);
-}
-
-function displayHeaderButtons(buttons) {
-    if (!elements.headerActionsContainer || !elements.staticHeaderButtonsContainer) return;
-    elements.headerActionsContainer.innerHTML = '';
-    elements.staticHeaderButtonsContainer.innerHTML = '';
-    if (Object.keys(buttons).length === 0) return;
-
-    const headerButtonsToExclude = ['Jarvis Ai', 'Gallery', 'Loan Calculator'];
-    const filteredButtons = Object.values(buttons).filter(btn => !headerButtonsToExclude.includes(btn.name));
-    
-    const buttonWrapper = document.createElement('div');
-    buttonWrapper.className = 'dynamic-buttons-wrapper';
-    
-    filteredButtons.sort((a,b) => (a.order || 0) - (b.order || 0)).forEach(btnData => {
-        const isLink = btnData.url && !btnData.id;
-        const element = document.createElement(isLink ? 'a' : 'button');
-        element.className = `${btnData.base_class || 'civil-button'} ${btnData.style_preset || ''}`;
-        if (btnData.id) element.id = btnData.id;
-        if (isLink) {
-            element.href = btnData.url;
-            if (btnData.target) element.target = btnData.target;
-        }
-        element.innerHTML = `${btnData.icon_svg || ''}<b>${btnData.name || ''}</b>` + (btnData.id === 'notificationBtn' ? '<span id="notificationDot" class="notification-dot"></span>' : '');
-        Object.assign(element.style, {
-            backgroundColor: btnData.transparent ? 'transparent' : btnData.color, color: btnData.textColor, width: btnData.width, height: btnData.height,
-            borderRadius: btnData.borderRadius, borderColor: btnData.borderColor, borderWidth: btnData.borderWidth,
-            borderStyle: (parseFloat(btnData.borderWidth) > 0 || btnData.style_preset === 'btn-outline') ? 'solid' : 'none'
-        });
-        if (['viewBalanceBtn', 'viewPenaltyWalletBtn'].includes(btnData.id)) {
-            elements.staticHeaderButtonsContainer.appendChild(element);
-        } else {
-            buttonWrapper.appendChild(element);
-        }
-    });
-    elements.headerActionsContainer.appendChild(buttonWrapper);
-    attachDynamicButtonListeners();
 }
 
 function displayCustomCards(cards) {
