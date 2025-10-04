@@ -1,5 +1,5 @@
 // user-data.js
-// Is file mein balance calculation ko theek kiya gaya hai.
+// BADLAV: Ab yah admin panel se header_buttons ka data bhi laayega.
 
 const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
 const PRIME_MEMBERS = ["Prince rama", "Amit kumar", "Mithilesh Sahni"];
@@ -22,10 +22,13 @@ export async function fetchAndProcessData(database) {
         const allActiveLoansRaw = data.activeLoans || {};
         const penaltyWalletRaw = data.penaltyWallet || {};
         const adminSettingsRaw = data.admin || {};
-        const notificationsRaw = (data.admin && data.admin.notifications) || {};
+        const notificationsRaw = adminSettingsRaw.notifications || {};
         const manualNotificationsRaw = notificationsRaw.manual || {};
         const automatedQueueRaw = notificationsRaw.automatedQueue || {};
         const allProductsRaw = data.products || {};
+        // === YAHAN BADLAV KIYA GAYA HAI: header_buttons ko alag se fetch karna ===
+        const headerButtonsRaw = adminSettingsRaw.header_buttons || {};
+        // === BADLAV SAMAPT ===
 
         const processedMembers = {};
         const allTransactions = Object.values(allTransactionsRaw);
@@ -55,11 +58,9 @@ export async function fetchAndProcessData(database) {
                 }
             });
 
-            // YAHAN BADLAV KIYA GAYA HAI: Member ke bakaaya loan ko calculate karna.
             const memberActiveLoans = allActiveLoans.filter(loan => loan.memberId === memberId && loan.status === 'Active');
             const totalOutstandingLoan = memberActiveLoans.reduce((sum, loan) => sum + parseFloat(loan.outstandingAmount || 0), 0);
             
-            // Final balance (Jama - Bakaaya Loan)
             const finalBalance = depositBalance - totalOutstandingLoan;
 
             const now = new Date();
@@ -73,7 +74,7 @@ export async function fetchAndProcessData(database) {
                 ...member,
                 id: memberId,
                 name: member.fullName,
-                balance: finalBalance, // Update kiya gaya balance
+                balance: finalBalance,
                 totalReturn: totalReturn,
                 loanCount: loanCount,
                 displayImageUrl: member.profilePicUrl || DEFAULT_IMAGE,
@@ -96,6 +97,9 @@ export async function fetchAndProcessData(database) {
             manualNotifications: manualNotificationsRaw,
             automatedQueue: automatedQueueRaw,
             allProducts: allProductsRaw,
+            // === YAHAN BADLAV KIYA GAYA HAI: header_buttons ko return object mein jodna ===
+            headerButtons: headerButtonsRaw,
+            // === BADLAV SAMAPT ===
         };
 
     } catch (error) {
