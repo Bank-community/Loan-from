@@ -2,7 +2,7 @@
 
 export default function handler(request, response) {
   // This securely accesses the key from Vercel's environment variables
-  const apiKey = process.env.IMGBB_API_KEY;
+  const apiKey = process.env.IMGBB_API_KEY_FORM;
 
   if (!apiKey) {
     return response.status(500).json({ error: 'IMGBB API key is not configured on the server.' });
