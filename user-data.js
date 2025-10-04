@@ -1,5 +1,5 @@
 // user-data.js
-// Is file ka kaam sirf Firebase se data laana aur use process karna hai.
+// Is file ka kaam sirf Firebase se data laana aur use process karna hai. 
 // BADLAV: Balance calculation mein active loans ka outstanding amount ghataaya gaya hai.
 
 const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
