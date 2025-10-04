@@ -1,6 +1,5 @@
 // user-data.js
-// Is file ka kaam sirf Firebase se data laana aur use process karna hai. 
-// BADLAV: Balance calculation mein active loans ka outstanding amount ghataaya gaya hai.
+// Is file mein balance calculation ko theek kiya gaya hai.
 
 const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
 const PRIME_MEMBERS = ["Prince rama", "Amit kumar", "Mithilesh Sahni"];
@@ -56,9 +55,11 @@ export async function fetchAndProcessData(database) {
                 }
             });
 
+            // YAHAN BADLAV KIYA GAYA HAI: Member ke bakaaya loan ko calculate karna.
             const memberActiveLoans = allActiveLoans.filter(loan => loan.memberId === memberId && loan.status === 'Active');
             const totalOutstandingLoan = memberActiveLoans.reduce((sum, loan) => sum + parseFloat(loan.outstandingAmount || 0), 0);
             
+            // Final balance (Jama - Bakaaya Loan)
             const finalBalance = depositBalance - totalOutstandingLoan;
 
             const now = new Date();
@@ -72,7 +73,7 @@ export async function fetchAndProcessData(database) {
                 ...member,
                 id: memberId,
                 name: member.fullName,
-                balance: finalBalance,
+                balance: finalBalance, // Update kiya gaya balance
                 totalReturn: totalReturn,
                 loanCount: loanCount,
                 displayImageUrl: member.profilePicUrl || DEFAULT_IMAGE,
@@ -103,6 +104,9 @@ export async function fetchAndProcessData(database) {
     }
 }
 
+/**
+ * Poore community ke liye aarthik (financial) stats calculate karta hai.
+ */
 function calculateCommunityStats(processedMembers, allTransactions, allActiveLoans, penaltyWallet) {
     let totalSipAmount = 0;
     allTransactions.forEach(tx => {
@@ -126,7 +130,7 @@ function calculateCommunityStats(processedMembers, allTransactions, allActiveLoa
     const penaltyIncomes = Object.values(penaltyWallet.incomes || {});
     const penaltyExpenses = Object.values(penaltyWallet.expenses || {});
     const totalPenaltyIncomes = penaltyIncomes.reduce((sum, income) => sum + income.amount, 0);
-    const totalPenaltyExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+    const totalPenaltyExpenses = penaltyExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
     return {
         totalSipAmount,
