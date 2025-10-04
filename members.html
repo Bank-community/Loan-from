@@ -57,7 +57,6 @@
         #accountBalanceCard .value.negative { color: #f7c8c8; }
         #loanDueCard .value { color: #f7c8c8; }
         
-        /* BADLAV: Filter layout ke liye CSS */
         .filters { 
             display: flex; 
             justify-content: space-between; 
@@ -67,8 +66,8 @@
             flex-wrap: wrap; 
         }
         .filter-item {
-            flex-grow: 1; /* Taki items barabar space lein */
-            min-width: 150px; /* Chhoti screen par minimum width */
+            flex-grow: 1;
+            min-width: 150px;
         }
 
         label { display: block; margin-bottom: 3px; font-weight: bold; font-size: 14px; }
@@ -93,7 +92,7 @@
         #sipStatusModal .status-paid { color: var(--positive-color); }
         #sipStatusModal .status-pending { color: var(--negative-color); }
         #sipStatusModal .status-due { color: var(--neutral-color); }
-        /* Responsive Styles */
+        
         @media only screen and (max-width: 600px) { 
             body { padding-top: 250px; } 
             .header { height: 55px; } .header h1 { font-size: 1em; } 
@@ -104,11 +103,11 @@
             .profile-stats-grid{ grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; } 
             .metric-card{ min-height: 55px; padding: 5px 6px; border-radius: 4px; } 
             .metric-card .label{ font-size: 9px; } .metric-card .value{ font-size: 12px; } 
-            .filters { margin: 15px 10px; /* Thoda margin badhaya */ } 
+            .filters { margin: 15px 10px; } 
             th,td { padding: 8px 10px; } 
         }
         @media only screen and (max-width: 420px) {
-            .filters { flex-direction: column; align-items: stretch; } /* Chhoti screen par stack karega */
+            .filters { flex-direction: column; align-items: stretch; }
         }
     </style>
 </head>
@@ -178,7 +177,6 @@
                 <label for="typeFilter">Filter Data By:</label>
                 <select id="typeFilter">
                     <option value="all">All Transactions</option>
-                    <!-- BADLAV: Active Loans ka naya filter option -->
                     <option value="active_loans">Active Loans</option>
                     <option value="loan">Loan History</option>
                     <option value="payment">Payment History</option>
@@ -196,7 +194,6 @@
         </div>
     </div>
 
-    <!-- Modals (koi badlav nahi) -->
     <div id="imageModal" class="modal hidden">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('imageModal')">×</button>
@@ -243,18 +240,24 @@
         }
     }
 
+    // === BADLAV: Galti theek kar di gayi hai. Ab yeh function poora hai. ===
     function setupPasswordPrompt() {
         const passwordInput = document.getElementById('passwordInput');
         const passwordSubmit = document.getElementById('passwordSubmit');
-        // ... (baaki ka code waisa hi hai)
-        
+        const passwordError = document.getElementById('passwordError');
+        const passwordContainer = document.getElementById('passwordPromptContainer');
+        const loader = document.getElementById('loader');
+
+        loader.classList.add('hidden');
+        passwordContainer.classList.remove('hidden');
+        passwordInput.focus();
+
         passwordSubmit.addEventListener('click', checkPassword);
         passwordInput.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') checkPassword();
         });
-        
+
         async function checkPassword() {
-            // ... (Yeh function pehle jaisa hi hai)
             const enteredPassword = passwordInput.value;
             if (!enteredPassword) return;
 
@@ -336,9 +339,9 @@
     }
 
     function setupEventListeners() {
-        document.getElementById('memberFilter').addEventListener('change', updateDisplay); 
+        document.getElementById('memberFilter').addEventListener('change', updateDisplay);
         document.getElementById('typeFilter').addEventListener('change', updateDisplay);
-        // ... (baaki ke event listeners pehle jaise hi hain)
+        
         document.getElementById('imageModal').addEventListener('click', () => closeModal('imageModal'));
         document.getElementById('profilePictureContainer').addEventListener('click', (event) => {
             if (event.target.tagName === 'IMG' && event.target.src !== defaultProfilePic && event.target.src) {
@@ -369,7 +372,6 @@
         updateProfileSection(selectedMemberId);
         updateTopCards(selectedMemberId);
         
-        // BADLAV: Agar 'Active Loans' chuna gaya hai, to alag function call hoga
         if (selectedType === 'active_loans') {
             displayActiveLoansData(selectedMemberId);
         } else {
@@ -378,7 +380,6 @@
     }
     
     function updateProfileSection(selectedMemberId) {
-        // ... (Yeh function pehle jaisa hi hai)
         const profileNameEl = document.getElementById("profileName");
         const profilePicContainer = document.getElementById("profilePictureContainer");
 
@@ -416,17 +417,13 @@
 
         const loanDue = memberActiveLoans.reduce((sum, loan) => sum + loan.outstandingAmount, 0);
 
-        // === BADLAV START: Joining Date ka naya logic ===
         let joiningDate = '-';
         if (selectedMemberId !== 'all') {
-            // Sirf SIP transactions ko filter karo
             const sipTransactions = memberTransactions.filter(tx => tx.type === 'SIP');
             if (sipTransactions.length > 0) {
-                // Pehle SIP transaction ki date ko joining date maano
                 joiningDate = formatDate(new Date(sipTransactions[0].date));
             }
         }
-        // === BADLAV END ===
 
         document.getElementById('totalSipValue').textContent = `₹${totalSip.toLocaleString('en-IN')}`;
         document.getElementById('interestPaidValue').textContent = `₹${interestPaid.toLocaleString('en-IN')}`;
@@ -444,7 +441,6 @@
         const tfoot = table.querySelector('tfoot');
         tbody.innerHTML = "";
 
-        // Transaction table ka header set karein
         thead.innerHTML = `
             <tr>
                 <th>Date</th>
@@ -454,7 +450,6 @@
                 <th style="text-align: right;">Balance (₹)</th>
             </tr>`;
         
-        // Transaction table ka footer visible karein
         tfoot.innerHTML = `
             <tr>
                 <td colspan="2" style="text-align: right; font-weight: bold;">Total</td>
@@ -474,7 +469,6 @@
         const statementLines = [];
         memberTransactions.forEach(tx => {
             let line = { date: new Date(tx.date), description: '', debit: 0, credit: 0, type: tx.type };
-            // ... (transaction processing logic pehle jaisa hi hai)
             switch (tx.type) {
                 case 'SIP': line.description = 'SIP Payment'; line.credit = tx.amount || 0; break;
                 case 'Loan Taken': line.description = `${tx.loanType || 'Loan'} Taken`; line.debit = tx.amount || 0; break;
@@ -497,11 +491,11 @@
 
         if (filteredLines.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No matching transactions found.</td></tr>`;
-            tfoot.style.display = 'none'; // No data, no footer
+            tfoot.style.display = 'none';
             return;
         }
 
-        tfoot.style.display = ''; // Show footer if data exists
+        tfoot.style.display = '';
         filteredLines.forEach(line => {
             totalDebit += line.debit;
             totalCredit += line.credit;
@@ -520,7 +514,6 @@
         document.getElementById('totalCreditCell').textContent = totalCredit.toLocaleString('en-IN', {minimumFractionDigits: 2});
     }
 
-    // === BADLAV START: Active Loans table dikhane ke liye naya function ===
     function displayActiveLoansData(selectedMemberId) {
         const table = document.getElementById('dataTable');
         const thead = table.querySelector('thead');
@@ -528,7 +521,6 @@
         const tfoot = table.querySelector('tfoot');
         tbody.innerHTML = "";
         
-        // Active Loans ke liye naya header
         thead.innerHTML = `
             <tr>
                 <th>Loan Date</th>
@@ -537,11 +529,10 @@
                 <th style="text-align: right;">Outstanding (₹)</th>
             </tr>`;
 
-        // Active loans ke liye footer ki zaroorat nahi
         tfoot.innerHTML = '';
 
         const memberActiveLoans = (selectedMemberId === 'all')
-            ? allActiveLoans
+            ? allActiveLoans.filter(loan => loan.status === 'Active')
             : allActiveLoans.filter(loan => loan.memberId === selectedMemberId && loan.status === 'Active');
 
         if (memberActiveLoans.length === 0) {
@@ -560,12 +551,9 @@
             `;
         });
     }
-    // === BADLAV END ===
-
 
     // === UTILITY FUNCTIONS ===
     function populateSipStatusModal() {
-       // ... (Yeh function pehle jaisa hi hai)
         const listContainer = document.getElementById('sipStatusList');
         listContainer.innerHTML = "";
         
