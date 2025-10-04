@@ -1,4 +1,4 @@
-// user-data.js
+
 // Is file ka kaam sirf Firebase se data laana aur use process karna hai.
 // Yeh admin panel ke data structure ke saath sync rehta hai.
 // BADLAV: Balance calculation mein active loans ka outstanding amount ghataaya gaya hai.
