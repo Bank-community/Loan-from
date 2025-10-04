@@ -80,7 +80,7 @@
         #sipStatusModal .status-pending { color: var(--negative-color); }
         #sipStatusModal .status-due { color: var(--neutral-color); }
         /* Responsive Styles */
-        @media only screen and (max-width: 600px) { body { padding-top: 250px; } .header { height: 55px; } .header h1 { font-size: 1em; } .profile-section { top: 65px; width: 95%; padding: 10px 12px; grid-template-columns: 55px 1fr auto; gap: 8px 10px; } .profile-picture { width: 50px; height: 50px; font-size: 22px; border-width: 2px; margin-top: 0;} .profile-header-area h3 { font-size: 16px; } .profile-buttons-area { flex-direction: row; gap: 6px; grid-column: 3; grid-row: 1; align-self: center; margin-top: 0;} .profile-stats-grid{ grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; } .metric-card{ min-height: 55px; padding: 5px 6px; border-radius: 4px; } .metric-card .label{ font-size: 9px; } .metric-card .value{ font-size: 12px; } .filters { margin-top: 15px; } th,td { padding: 8px 10px; } }
+        @media only screen and (max-width: 600px) { body { padding-top: 250px; } .header { height: 55px; } .header h1 { font-size: 1em; } .profile-section { top: 65px; width: 95%; padding: 10px 12px; grid-template-columns: 55px 1fr auto; gap: 8px 10px; } .profile-picture { width: 50px; height: 50px; font-size: 22px; border-width: 2px; margin-top: 0;} .profile-header-area h3 { font-size: 16px; } .profile-buttons-area { flex-direction: row; gap: 6px; grid-column: 3; grid-row: 1; align-self: center; margin-top: 0;} .profile-stats-grid{ grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; } .metric-card{ min-height: 55px; padding: 5px 6px; border-radius: 4px; } .metric-card .label{ font-size: 9px; } .metric-card .value{ font-size: 12px; } .filters { margin-top: 15px; flex-direction: column; align-items: center; } th,td { padding: 8px 10px; } }
     </style>
 </head>
 <body>
@@ -110,7 +110,6 @@
                 <button id="sipStatusButton">SIP Status</button>
             </div>
             
-            <!-- BADLAV: Dashboard cards ab naye data ke anusaar hain -->
             <div class="profile-stats-grid">
                  <div class="metric-card" id="totalSipCard">
                      <span class="label">Total SIP</span>
@@ -139,8 +138,14 @@
             </div>
         </div>
 
-        <!-- BADLAV: Name filter hata diya gaya hai -->
+        <!-- BADLAV: Member filter wapas joda gaya hai -->
         <div class="filters">
+             <div>
+                <label for="memberFilter">Select Member:</label>
+                <select id="memberFilter">
+                    <option value="all">All Members</option>
+                </select>
+            </div>
              <div>
                 <label for="typeFilter">Filter Data By:</label>
                 <select id="typeFilter">
@@ -154,7 +159,6 @@
         
         <div class="table-container">
             <table id="dataTable">
-                <!-- BADLAV: Table ka structure ab bank statement jaisa hai -->
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -170,7 +174,7 @@
                         <td colspan="2" style="text-align: right; font-weight: bold;">Total</td>
                         <td id="totalDebitCell" style="text-align: right;">0.00</td>
                         <td id="totalCreditCell" style="text-align: right;">0.00</td>
-                        <td></td> <!-- Balance column in footer is empty -->
+                        <td></td>
                     </tr>
                 </tfoot>
             </table>
@@ -194,25 +198,21 @@
 
 <script>
     // === GLOBAL VARIABLES ===
-    // In variables mein hum user ka data store karenge
-    let loggedInMember = null;
-    let loggedInMemberId = null;
-    let userTransactions = [];
-    let userActiveLoans = [];
-    let allApprovedMembers = {};
+    let allMembers = {};
+    let allTransactions = [];
+    let allActiveLoans = [];
+    // User jo PIN dalega, use is variable me store karenge
+    let loggedInUserPassword = null; 
     const defaultProfilePic = 'https://i.ibb.co/xSNPXDc8/1753150042002.jpg';
 
     // === INITIALIZATION & AUTHENTICATION ===
-    // Page load hone par yeh function chalega
     document.addEventListener("DOMContentLoaded", () => {
         initializeApp();
     });
 
-    // Firebase ko Vercel se config lekar initialize karega
     async function initializeApp() {
         const loader = document.getElementById('loader');
         try {
-            // Yeh aapke Vercel server se Firebase config laayega, ismein koi badlav nahi
             const response = await fetch('/api/config');
             if (!response.ok) throw new Error('Configuration API could not be fetched.');
             const config = await response.json();
@@ -221,7 +221,6 @@
                 firebase.initializeApp(config.firebase);
             }
             
-            // Password prompt setup karega
             setupPasswordPrompt();
 
         } catch (error) {
@@ -230,8 +229,8 @@
         }
     }
 
-    // Password/PIN wala prompt dikhayega
     function setupPasswordPrompt() {
+        // Is function me koi badlav nahi kiya gaya hai
         const passwordInput = document.getElementById('passwordInput');
         const passwordSubmit = document.getElementById('passwordSubmit');
         const passwordError = document.getElementById('passwordError');
@@ -247,7 +246,6 @@
             if (event.key === 'Enter') checkPassword();
         });
 
-        // === BADLAV: Password check karne ka naya logic ===
         async function checkPassword() {
             const enteredPassword = passwordInput.value;
             if (!enteredPassword) return;
@@ -257,22 +255,14 @@
             passwordSubmit.textContent = "Checking...";
 
             try {
-                // Step 1: 'members' node se sabhi members ka data fetch karein
                 const membersSnapshot = await firebase.database().ref('members').once('value');
                 const allMembersData = membersSnapshot.val() || {};
                 
-                // Step 2: Sahi member ko unke password se dhundein
-                loggedInMemberId = Object.keys(allMembersData).find(id => allMembersData[id].password === enteredPassword);
-                
-                if (loggedInMemberId) {
-                    loggedInMember = allMembersData[loggedInMemberId];
-                    
-                    // Sabhi approved members ko alag se store karein (SIP Status ke liye)
-                    allApprovedMembers = Object.fromEntries(
-                        Object.entries(allMembersData).filter(([id, member]) => member.status === 'Approved')
-                    );
+                // Check karein ki kya koi member is password se exist karta hai
+                const isValidUser = Object.values(allMembersData).some(member => member.password === enteredPassword);
 
-                    // Agar PIN sahi hai, toh data process karna shuru karein
+                if (isValidUser) {
+                    loggedInUserPassword = enteredPassword; // Password ko store karein
                     passwordContainer.classList.add('hidden');
                     loader.classList.remove('hidden');
                     await processFirebaseData();
@@ -291,26 +281,23 @@
         }
     }
     
-    // === BADLAV: Data fetch karne aur filter karne ka poora naya logic ===
+    // === DATA FETCH & PROCESSING ===
     async function processFirebaseData() {
-        if (!loggedInMemberId) return;
-
         try {
-            // Step 1: Top-level se saare transactions aur active loans fetch karein
+            // Step 1: Firebase se saara zaroori data ek saath fetch karein
+            const membersSnapshot = await firebase.database().ref('members').once('value');
             const transactionsSnapshot = await firebase.database().ref('transactions').once('value');
             const activeLoansSnapshot = await firebase.database().ref('activeLoans').once('value');
-            const allTransactions = transactionsSnapshot.val() || {};
-            const allActiveLoans = activeLoansSnapshot.val() || {};
 
-            // Step 2: Sirf logged-in user ka data filter karein
-            userTransactions = Object.values(allTransactions)
-                .filter(tx => tx.memberId === loggedInMemberId)
-                .sort((a, b) => new Date(a.date) - new Date(b.date)); // Date ke anusaar sort karein
+            allMembers = membersSnapshot.val() || {};
+            
+            // Sabhi transactions ko ek single array me convert karein
+            allTransactions = Object.values(transactionsSnapshot.val() || {})
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            allActiveLoans = Object.values(activeLoansSnapshot.val() || {});
 
-            userActiveLoans = Object.values(allActiveLoans)
-                .filter(loan => loan.memberId === loggedInMemberId && loan.status === 'Active');
-
-            // Step 3: Dashboard ko data ke saath initialize karein
+            // Step 2: Dashboard ko data ke saath initialize karein
             initializeDashboard();
 
         } catch (error) {
@@ -322,13 +309,32 @@
     // === DASHBOARD INITIALIZATION ===
     function initializeDashboard() {
         document.getElementById('dashboardContent').classList.add('visible');
+        populateMemberFilter(); // BADLAV: Member filter ko populate karein
         setupEventListeners();
-        updateDisplay(); // Display ko update karein
+        updateDisplay(); 
         document.getElementById('loader').classList.add('hidden');
     }
 
+    // BADLAV: Member filter dropdown ko members list se bharne ka function
+    function populateMemberFilter() {
+        const memberFilter = document.getElementById('memberFilter');
+        memberFilter.innerHTML = '<option value="all">All Members</option>';
+
+        // Sirf approved members ko filter me add karein
+        const approvedMembers = Object.values(allMembers)
+            .filter(member => member.status === 'Approved')
+            .sort((a, b) => a.fullName.localeCompare(b.fullName));
+
+        approvedMembers.forEach(member => {
+            const option = document.createElement('option');
+            option.value = member.membershipId; // Value me unki ID store karein
+            option.textContent = member.fullName;
+            memberFilter.appendChild(option);
+        });
+    }
+
     function setupEventListeners() {
-        // Name filter hata diya gaya hai, sirf type filter bacha hai
+        document.getElementById('memberFilter').addEventListener('change', updateDisplay); // BADLAV
         document.getElementById('typeFilter').addEventListener('change', updateDisplay);
         document.getElementById('imageModal').addEventListener('click', () => closeModal('imageModal'));
         document.getElementById('profilePictureContainer').addEventListener('click', (event) => {
@@ -342,7 +348,6 @@
             openModal('sipStatusModal');
         });
 
-        // Dynamic body padding based on profile section height
         const profileSection = document.getElementById('profileSection');
         const resizeObserver = new ResizeObserver(entries => {
             for (let entry of entries) {
@@ -354,31 +359,44 @@
     }
 
     // === CENTRAL DISPLAY LOGIC ===
-    // Yeh function poore page ko naye data se update karega
     function updateDisplay() {
-        updateProfileSection();
-        updateTopCards();
-        displayTransactionData();
+        const selectedMemberId = document.getElementById('memberFilter').value; // BADLAV
+        
+        updateProfileSection(selectedMemberId);
+        updateTopCards(selectedMemberId);
+        displayTransactionData(selectedMemberId);
     }
     
-    // === BADLAV: Profile section ko update karne ka naya logic ===
-    function updateProfileSection() {
-        if (!loggedInMember) return;
-        
-        document.getElementById("profileName").textContent = loggedInMember.fullName;
-        
+    function updateProfileSection(selectedMemberId) {
+        const profileNameEl = document.getElementById("profileName");
         const profilePicContainer = document.getElementById("profilePictureContainer");
-        const profileImageUrl = loggedInMember.profilePicUrl || defaultProfilePic;
-        profilePicContainer.innerHTML = `<img src="${profileImageUrl}" alt="Profile image" onerror="this.onerror=null; this.src='${defaultProfilePic}';">`;
+
+        if (selectedMemberId === 'all') {
+            profileNameEl.textContent = "Community Overview";
+            profilePicContainer.innerHTML = `<img src="${defaultProfilePic}" alt="Community Logo">`;
+        } else {
+            const member = allMembers[selectedMemberId];
+            if (member) {
+                profileNameEl.textContent = member.fullName;
+                const profileImageUrl = member.profilePicUrl || defaultProfilePic;
+                profilePicContainer.innerHTML = `<img src="${profileImageUrl}" alt="Profile image" onerror="this.onerror=null; this.src='${defaultProfilePic}';">`;
+            }
+        }
     }
 
-    // === BADLAV: Dashboard cards ko update karne ka naya logic ===
-    function updateTopCards() {
-        if (!loggedInMember) return;
+    function updateTopCards(selectedMemberId) {
+        // Filter data based on selected member
+        const memberTransactions = (selectedMemberId === 'all') 
+            ? allTransactions 
+            : allTransactions.filter(tx => tx.memberId === selectedMemberId);
+        
+        const memberActiveLoans = (selectedMemberId === 'all')
+            ? allActiveLoans
+            : allActiveLoans.filter(loan => loan.memberId === selectedMemberId);
 
         let totalSip = 0, interestPaid = 0, accountBalance = 0, totalLoanTaken = 0;
         
-        userTransactions.forEach(tx => {
+        memberTransactions.forEach(tx => {
             if (tx.type === 'SIP') totalSip += tx.amount || 0;
             if (tx.type === 'Loan Payment') interestPaid += tx.interestPaid || 0;
             if (tx.type === 'Extra Payment') accountBalance += tx.amount || 0;
@@ -386,33 +404,40 @@
             if (tx.type === 'Loan Taken') totalLoanTaken += tx.amount || 0;
         });
 
-        const loanDue = userActiveLoans.reduce((sum, loan) => sum + loan.outstandingAmount, 0);
+        const loanDue = memberActiveLoans.reduce((sum, loan) => sum + loan.outstandingAmount, 0);
+
+        // Joining Date sirf single member ke liye dikhayein
+        let joiningDate = '-';
+        if (selectedMemberId !== 'all' && allMembers[selectedMemberId]) {
+            joiningDate = formatDate(new Date(allMembers[selectedMemberId].joiningDate));
+        }
 
         document.getElementById('totalSipValue').textContent = `₹${totalSip.toLocaleString('en-IN')}`;
         document.getElementById('interestPaidValue').textContent = `₹${interestPaid.toLocaleString('en-IN')}`;
-        const accountBalanceEl = document.getElementById('accountBalanceValue');
-        accountBalanceEl.textContent = `₹${accountBalance.toLocaleString('en-IN')}`;
-        accountBalanceEl.parentElement.classList.toggle('positive', accountBalance >= 0);
-        accountBalanceEl.parentElement.classList.toggle('negative', accountBalance < 0);
+        document.getElementById('accountBalanceValue').textContent = `₹${accountBalance.toLocaleString('en-IN')}`;
         document.getElementById('loanDueValue').textContent = `₹${loanDue.toLocaleString('en-IN')}`;
         document.getElementById('totalLoanValue').textContent = `₹${totalLoanTaken.toLocaleString('en-IN')}`;
-        document.getElementById('joiningDateValue').textContent = formatDate(new Date(loggedInMember.joiningDate));
+        document.getElementById('joiningDateValue').textContent = joiningDate;
     }
 
-    // === BADLAV: Transaction table dikhane ka poora naya logic ===
-    function displayTransactionData() {
+    function displayTransactionData(selectedMemberId) {
         const tbody = document.querySelector("#dataTable tbody");
-        const filter = document.getElementById('typeFilter').value;
+        const typeFilter = document.getElementById('typeFilter').value;
         tbody.innerHTML = "";
-        
+
+        // Filter transactions based on selected member
+        const memberTransactions = (selectedMemberId === 'all')
+            ? allTransactions
+            : allTransactions.filter(tx => tx.memberId === selectedMemberId);
+
         let runningBalance = 0;
         let totalDebit = 0;
         let totalCredit = 0;
 
         const statementLines = [];
 
-        userTransactions.forEach(tx => {
-            let line = { date: new Date(tx.date), description: '', debit: 0, credit: 0 };
+        memberTransactions.forEach(tx => {
+            let line = { date: new Date(tx.date), description: '', debit: 0, credit: 0, type: tx.type };
             
             switch (tx.type) {
                 case 'SIP':
@@ -426,7 +451,7 @@
                 case 'Loan Payment':
                     const principal = tx.principalPaid || 0;
                     const interest = tx.interestPaid || 0;
-                    line.description = `Loan Payment (Principal: ${principal}, Interest: ${interest})`;
+                    line.description = `Loan Payment (P: ${principal}, I: ${interest})`;
                     line.credit = principal + interest;
                     break;
                 case 'Extra Payment':
@@ -439,18 +464,16 @@
                     break;
             }
             
-            // Account balance alag se calculate hota hai, statement balance alag se
             runningBalance += line.credit - line.debit;
             line.balance = runningBalance;
             statementLines.push(line);
         });
 
-        // Filter logic
         const filteredLines = statementLines.filter(line => {
-            if (filter === 'all') return true;
-            if (filter === 'loan' && line.debit > 0 && line.description.toLowerCase().includes('loan')) return true;
-            if (filter === 'payment' && line.credit > 0 && line.description.toLowerCase().includes('payment')) return true;
-            if (filter === 'sip' && line.credit > 0 && line.description.toLowerCase().includes('sip')) return true;
+            if (typeFilter === 'all') return true;
+            if (typeFilter === 'loan' && line.type === 'Loan Taken') return true;
+            if (typeFilter === 'payment' && line.type === 'Loan Payment') return true;
+            if (typeFilter === 'sip' && line.type === 'SIP') return true;
             return false;
         });
 
@@ -479,47 +502,40 @@
         document.getElementById('totalCreditCell').textContent = totalCredit.toLocaleString('en-IN', {minimumFractionDigits: 2});
     }
 
-    // === UTILITY FUNCTIONS (Kuch badlav ke saath) ===
-    async function populateSipStatusModal() {
+    // === UTILITY FUNCTIONS ===
+    function populateSipStatusModal() {
         const listContainer = document.getElementById('sipStatusList');
         listContainer.innerHTML = "";
         
-        try {
-            // SIP status ke liye transactions dobara fetch karna behtar hai
-            const transactionsSnapshot = await firebase.database().ref('transactions').once('value');
-            const allTransactions = transactionsSnapshot.val() || {};
-            const allTxArray = Object.values(allTransactions);
+        const approvedMembers = Object.values(allMembers)
+            .filter(member => member.status === 'Approved')
+            .sort((a, b) => a.fullName.localeCompare(b.fullName));
+            
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        const currentDay = now.getDate();
 
-            const members = Object.values(allApprovedMembers).sort((a, b) => a.fullName.localeCompare(b.fullName));
-            const now = new Date();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-            const currentDay = now.getDate();
+        if (approvedMembers.length === 0) { listContainer.innerHTML = "No approved members found."; return; }
 
-            if (members.length === 0) { listContainer.innerHTML = "No approved members found."; return; }
+        approvedMembers.forEach(member => {
+            const paidThisMonth = allTransactions.some(tx => 
+                tx.memberId === member.membershipId && 
+                tx.type === 'SIP' && 
+                new Date(tx.date).getMonth() === currentMonth && 
+                new Date(tx.date).getFullYear() === currentYear
+            );
+            
+            let statusText, statusClass, statusIcon;
+            if (paidThisMonth) { [statusText, statusClass, statusIcon] = ["Paid", "status-paid", "✅"]; } 
+            else if (currentDay > 10) { [statusText, statusClass, statusIcon] = ["Pending", "status-pending", "❌"]; } 
+            else { [statusText, statusClass, statusIcon] = ["Due", "status-due", "🔴"]; }
 
-            members.forEach(member => {
-                const paidThisMonth = allTxArray.some(tx => 
-                    tx.memberId === member.membershipId && 
-                    tx.type === 'SIP' && 
-                    new Date(tx.date).getMonth() === currentMonth && 
-                    new Date(tx.date).getFullYear() === currentYear
-                );
-                
-                let statusText, statusClass, statusIcon;
-                if (paidThisMonth) { [statusText, statusClass, statusIcon] = ["Paid", "status-paid", "✅"]; } 
-                else if (currentDay > 10) { [statusText, statusClass, statusIcon] = ["Pending", "status-pending", "❌"]; } 
-                else { [statusText, statusClass, statusIcon] = ["Due", "status-due", "🔴"]; }
-
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'status-item';
-                itemDiv.innerHTML = `<span>${member.fullName}</span><span class="${statusClass}">${statusIcon} ${statusText}</span>`;
-                listContainer.appendChild(itemDiv);
-            });
-        } catch (error) {
-            listContainer.innerHTML = "Error loading SIP status.";
-            console.error("Error fetching data for SIP modal:", error);
-        }
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'status-item';
+            itemDiv.innerHTML = `<span>${member.fullName}</span><span class="${statusClass}">${statusIcon} ${statusText}</span>`;
+            listContainer.appendChild(itemDiv);
+        });
     }
 
     function openModal(modalId, imageSrc = null) {
@@ -546,7 +562,6 @@
         if (!(date instanceof Date) || isNaN(date)) return "N/A";
         return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
     }
-
 </script>
 </body>
 </html>
