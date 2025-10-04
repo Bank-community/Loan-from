@@ -1,11 +1,9 @@
 // user-main.js
-// Final and Secure Version
-// BADLAV: Sirf serviceWorker ki spelling theek ki gayi hai.
+// Is file mein serviceWorker ki spelling theek kar di gayi hai.
 
 import { fetchAndProcessData } from './user-data.js';
 import { initUI, renderPage, showLoadingError, promptForDeviceVerification, requestNotificationPermission } from './user-ui.js';
 
-// VAPID key ab config se aayegi, yahan manually daalne ki zaroorat nahi.
 let VAPID_KEY = null;
 
 /**
@@ -21,7 +19,7 @@ async function checkAuthAndInitialize() {
         VAPID_KEY = firebaseConfig.vapidKey;
 
         if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+          firebase.initializeApp(firebaseConfig);
         }
         
         registerServiceWorker();
@@ -30,14 +28,12 @@ async function checkAuthAndInitialize() {
         const database = firebase.database();
 
         auth.onAuthStateChanged(user => {
-            // Hum maan rahe hain ki user hamesha logged in hai,
-            // isliye hum sidhe app logic chala rahe hain.
+            // Hum maan rahe hain ki user hamesha logged in hai.
+            // Yadi aapke paas login system hai to 'if(user)' condition rakhein.
             runAppLogic(database);
         });
 
-    } catch (error)
- 
-{
+    } catch (error) {
         console.error("FATAL: Could not initialize application.", error);
         showLoadingError(`Application failed to initialize: ${error.message}`);
     }
@@ -52,7 +48,6 @@ async function runAppLogic(database) {
 
         if (processedData) {
             initUI(database);
-            // verifyDeviceAndSetupNotifications(database, processedData.processedMembers);
             renderPage(processedData);
         }
     } catch (error) {
@@ -66,12 +61,14 @@ async function runAppLogic(database) {
  */
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    // === YAHAN BADLAV KIYA GAYA HAI: 'service-worker' ko 'serviceWorker' kiya gaya hai ===
+    // YAHAN Galti Thi: 'service-worker' ko 'serviceWorker' kar diya gaya hai.
     navigator.serviceWorker.register('/sw.js')
       .then(registration => console.log('Service Worker registered with scope:', registration.scope))
       .catch(error => console.error('Service Worker registration failed:', error));
   }
 }
+
+// Baaki ka code waisa hi hai jaisa aapne diya tha...
 
 /**
  * Device ko verify aur notifications ke liye setup karta hai.
