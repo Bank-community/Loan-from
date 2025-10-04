@@ -1,6 +1,5 @@
 // user-ui.js
-// Is file ka kaam data ko screen par dikhana (render) aur sabhi user interactions (clicks, scrolls) ko handle karna hai.
-// BADLAV: Member card par balance agar negative ho to use alag style (negative-balance class) di gayi hai.
+// Is file mein minus balance ko handle karne ka logic daala gaya hai.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -14,7 +13,6 @@ let allProducts = {};
 let currentMemberForFullView = null;
 let deferredInstallPrompt = null;
 
-// Element Cache
 const getElement = (id) => document.getElementById(id);
 const elements = {
     memberContainer: getElement('memberContainer'),
@@ -115,11 +113,10 @@ function displayMembers(members) {
                 card.classList.add('colored-card');
             }
         }
-        
-        // === BADLAV START: NEGATIVE BALANCE KE LIYE CLASS ADD KARNA ===
-        const balance = member.balance || 0;
-        const balanceClass = balance < 0 ? 'negative-balance' : '';
-        // === BADLAV END ===
+
+        // YAHAN BADLAV KIYA GAYA HAI: Negative balance ke liye class add karna
+        const isNegative = (member.balance || 0) < 0;
+        const balanceClass = isNegative ? 'negative-balance' : '';
 
         card.innerHTML = `
             ${rankHTML}
@@ -128,7 +125,7 @@ function displayMembers(members) {
                 ${member.isPrime ? '<div class="prime-tag">Prime</div>' : ''}
             </div>
             <p class="member-name" title="${member.name}">${member.name}</p>
-            <p class="member-balance ${balanceClass}">${balance.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
+            <p class="member-balance ${balanceClass}">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
         `;
         card.onclick = () => showMemberProfileModal(member.id);
         elements.memberContainer.appendChild(card);
@@ -136,6 +133,9 @@ function displayMembers(members) {
     observeElements(document.querySelectorAll('.animate-on-scroll'));
 }
 
+// Baaki sabhi functions (renderProducts, showEmiModal, etc.) aapke original code jaise hi hain.
+// Main unhein yahan dobara nahi likh raha hoon taaki code chhota rahe.
+// Poora code wahi hai jo aapne diya tha, sirf upar wala function badla hai.
 function renderProducts() {
     const container = elements.productsContainer;
     if (!container) return;
@@ -221,7 +221,7 @@ function displayHeaderButtons(buttons) {
 
     const headerButtonsToExclude = ['Jarvis Ai', 'Gallery', 'Loan Calculator'];
     const filteredButtons = Object.values(buttons).filter(btn => !headerButtonsToExclude.includes(btn.name));
-
+    
     const buttonWrapper = document.createElement('div');
     buttonWrapper.className = 'dynamic-buttons-wrapper';
     
@@ -742,4 +742,5 @@ function showFullImage(src, alt) {
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
+
 
