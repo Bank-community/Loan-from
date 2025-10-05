@@ -1,8 +1,11 @@
 /*
 BADLAV:
-1. Product card ka background halka gradient kiya gaya hai.
-2. Community Info section ko horizontal scrollable cards mein badla gaya hai.
-3. Prime Members card ke liye naye styles jode gaye hain.
+1. Product section ka background dark gradient kiya gaya hai aur radius 0 kiya gaya hai.
+2. Product card aur buttons ke radius ko update kiya gaya hai.
+3. Explore button ki padding kam ki gayi hai.
+4. EMI link ka rang dark red kiya gaya hai.
+5. Community Info container mein spacing (padding) jodi gayi hai.
+6. Product section ke headline (h2) ko mota kiya gaya hai.
 */
 
 :root {
@@ -63,16 +66,21 @@ header h4 { color: rgba(255, 255, 255, 0.9); margin: 0 0 20px 0; font-weight: 40
 
 section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px var(--shadow-color); border: 1px solid var(--border-color); }
 
+/* === PRODUCTS SECTION UPDATE START === */
 .products-section { 
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-darker));
-    padding: 15px 0 25px 0;
+    background: linear-gradient(135deg, #2d3748, #1a202c); /* Dark Gradient Background */
+    padding: 25px 0; /* Thoda padding badhaya gaya */
+    border-radius: 0; /* Kone seedhe kiye gaye */
+    margin-bottom: 25px;
+    box-shadow: none;
+    border: none;
 }
 .products-section h2 { 
     color: white;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
     margin-bottom: 25px; 
     padding: 0 15px;
-    font-weight: 900;
+    font-weight: 900; /* Headline ko Mota kiya gaya */
 }
 .products-container { 
     display: flex;
@@ -88,10 +96,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .product-card { 
     flex: 0 0 160px;
     width: 160px;
-    /* === PRODUCT CARD BACKGROUND UPDATE START === */
-    background: linear-gradient(145deg, #ffffff, #f7f7f7);
-    /* === PRODUCT CARD BACKGROUND UPDATE END === */
-    border-radius: 12px; 
+    background-color: var(--card-bg); 
+    border-radius: 0; /* Card ke kone seedhe kiye gaye */
     box-shadow: 0 5px 15px rgba(0,0,0,0.07); 
     border: 1px solid var(--border-color); 
     overflow: hidden; 
@@ -128,19 +134,38 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .product-discount { display: none; }
 .product-emi-link { 
     font-size: 0.8em; 
-    color: var(--primary-color); 
+    color: #B91C1C; /* Dark Red Color */
+    font-weight: 600; /* Thoda mota kiya gaya */
     text-decoration: underline; 
     cursor: pointer; 
     margin-top: 5px; 
 }
-
 .product-actions { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; padding: 12px; border-top: 1px solid var(--border-color); }
-.product-btn { padding: 10px; border-radius: 8px; text-align: center; font-weight: 600; text-decoration: none; transition: background-color 0.3s ease; display: flex; align-items: center; justify-content: center; }
-.product-btn.whatsapp { background-color: #e8f5e9; }
+.product-btn { 
+    border-radius: 5px; /* Button ke kone halke gol kiye gaye */
+    text-align: center; 
+    font-weight: 600; 
+    text-decoration: none; 
+    transition: background-color 0.3s ease; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+.product-btn.whatsapp { 
+    background-color: #e8f5e9; 
+    padding: 8px; /* Padding ko aakarshan ke liye adjust kiya */
+}
 .product-btn.whatsapp:hover { background-color: #dcedc8; }
 .product-btn.whatsapp img { width: 22px; height: 22px; }
-.product-btn.explore { background-color: var(--primary-color); color: white; }
+.product-btn.explore { 
+    background-color: var(--primary-color); 
+    color: white; 
+    padding: 8px 10px; /* Padding/Height kam ki gayi */
+    font-size: 0.9em;
+}
 .product-btn.explore:hover { background-color: var(--primary-darker); }
+/* === PRODUCTS SECTION UPDATE END === */
+
 .action-cards-section { padding-left: 20px; padding-right: 20px; }
 .action-cards-section h2 { text-align: center; margin-bottom: 30px; }
 .action-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 30px; }
@@ -182,17 +207,17 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     display: flex;
     overflow-x: auto;
     gap: 15px;
-    padding: 10px 20px;
+    padding: 10px 20px; /* Card ko chipakne se bachane ke liye padding */
     margin: 0;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;
+    -ms-overflow-style: none; 
     scroll-snap-type: x mandatory;
 }
 .info-slider-container::-webkit-scrollbar {
-    display: none; /* Safari and Chrome */
+    display: none;
 }
 .info-card-slide {
-    flex: 0 0 280px; /* Card ki width set karega */
+    flex: 0 0 280px;
     background-color: var(--card-bg);
     border-radius: 12px;
     padding: 20px;
@@ -224,7 +249,6 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     color: var(--light-text);
     flex-grow: 1;
 }
-/* Prime Members Card ke liye Styles */
 .prime-members-list {
     display: flex;
     flex-direction: column;
@@ -396,4 +420,5 @@ footer p { color: #f8f9fa; margin: 0; }
 @media (min-width: 992px) { .member-card { flex: 0 0 20%; max-width: 210px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
 @media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card { flex: 0 0 15%; max-width: 220px; } h2 { font-size: 2.2em; } }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
 
