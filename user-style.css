@@ -97,7 +97,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     flex: 0 0 160px;
     width: 160px;
     background-color: var(--card-bg); 
-    border-radius: 0; /* Card ke kone seedhe kiye gaye */
+    border-radius: 4px; /* Card ke kone seedhe kiye gaye */
     box-shadow: 0 5px 15px rgba(0,0,0,0.07); 
     border: 1px solid var(--border-color); 
     overflow: hidden; 
