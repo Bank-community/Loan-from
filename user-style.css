@@ -1,3 +1,10 @@
+/*
+BADLAV:
+1. Product card ka background halka gradient kiya gaya hai.
+2. Community Info section ko horizontal scrollable cards mein badla gaya hai.
+3. Prime Members card ke liye naye styles jode gaye hain.
+*/
+
 :root {
     --primary-color: #007bff; --primary-darker: #0056b3; --secondary-color: #25D366;
     --secondary-darker: #128C7E; --text-color: #333; --light-text: #555;
@@ -81,7 +88,9 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .product-card { 
     flex: 0 0 160px;
     width: 160px;
-    background-color: var(--card-bg); 
+    /* === PRODUCT CARD BACKGROUND UPDATE START === */
+    background: linear-gradient(145deg, #ffffff, #f7f7f7);
+    /* === PRODUCT CARD BACKGROUND UPDATE END === */
     border-radius: 12px; 
     box-shadow: 0 5px 15px rgba(0,0,0,0.07); 
     border: 1px solid var(--border-color); 
@@ -154,6 +163,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 @media (min-width: 768px) { .action-cards { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 992px) { .action-cards { grid-template-columns: repeat(4, 1fr); max-width: 900px; margin-left: auto; margin-right: auto; } }
 @media (min-width: 1200px) { .action-cards { grid-template-columns: repeat(4, 1fr); max-width: 1100px; } }
+
+/* === COMMUNITY INFO SECTION UPDATE START === */
 .info-slider-section {
     background: transparent;
     border: none;
@@ -168,19 +179,28 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     text-align: left;
 }
 .info-slider-container {
-    background-color: var(--card-bg);
-    border-radius: 12px;
-    box-shadow: 0 4px 15px var(--shadow-color);
-    padding: 20px 25px;
-    margin: 0 15px;
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 10px 20px;
+    margin: 0;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scroll-snap-type: x mandatory;
+}
+.info-slider-container::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
 }
 .info-card-slide {
+    flex: 0 0 280px; /* Card ki width set karega */
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    border: 1px solid var(--border-color);
+    scroll-snap-align: start;
     display: flex;
     flex-direction: column;
-    margin-bottom: 25px;
-}
-.info-card-slide:last-child {
-    margin-bottom: 0;
 }
 .info-card-slide h3 {
     display: flex;
@@ -189,7 +209,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     font-size: 1.15em;
     font-weight: 600;
     color: var(--text-color);
-    margin: 0 0 8px 0;
+    margin: 0 0 10px 0;
 }
 .info-card-slide h3 i {
     color: var(--primary-color);
@@ -199,11 +219,36 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 .info-card-slide p {
     margin: 0;
-    padding-left: 36px;
     font-size: 0.95em;
     line-height: 1.6;
     color: var(--light-text);
+    flex-grow: 1;
 }
+/* Prime Members Card ke liye Styles */
+.prime-members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 5px;
+}
+.prime-member-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.prime-member-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-color);
+}
+.prime-member-item span {
+    font-weight: 500;
+    color: var(--text-color);
+}
+/* === COMMUNITY INFO SECTION UPDATE END === */
+
 .letter-slider-section h2 { text-align: center; }
 .slider-container { position: relative; max-width: 1000px; margin: 10px auto; overflow: hidden; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--card-bg); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .slides { display: flex; transition: transform 0.5s ease-in-out; }
@@ -232,11 +277,9 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .member-card:hover img.member-photo { transform: scale(1.05); }
 .member-name { font-size: 1em; font-weight: 600; margin: 8px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-color); }
 .member-balance { background-color: var(--primary-color); color: white; padding: 8px 10px; margin-top: auto; border-radius: 8px; font-size: 0.9em; font-weight: bold; display: block; width: 90%; box-sizing: border-box; text-align: center; margin-left: auto; margin-right: auto; }
-/* === YAHAN BADLAV KIYA GAYA HAI: NEGATIVE BALANCE KE LIYE STYLE === */
 .member-balance.negative-balance {
     background-color: var(--danger-color);
 }
-/* === BADLAV SAMAPT === */
 .prime-tag { position: absolute; bottom: 8px; right: 8px; background-color: var(--prime-color); color: var(--text-color); padding: 4px 9px; border-radius: 6px; font-size: 11px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); line-height: 1; z-index: 2; }
 .rank-icon { position: absolute; top: -10px; left: -10px; width: 40px; height: 40px; z-index: 2; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); background: white; border-radius: 50%; padding: 2px; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
 .colored-card .member-name { color: #ffffff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
