@@ -1,5 +1,8 @@
 // user-ui.js
-// BADLAV: displayHeaderButtons function ko theek kiya gaya hai taaki woh Firebase se saare button dynamically render kare.
+// BADLAV:
+// 1. WhatsApp message ab product link aur EMI details ke saath jaayega.
+// 2. buildInfoSlider function ko Community Info cards ko horizontal scroll mein dikhane ke liye update kiya gaya hai.
+// 3. Ek naya Prime Members card bhi Community Info mein joda gaya hai.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -59,9 +62,7 @@ export function renderPage(data) {
     allAutomatedQueue = data.automatedQueue || {};
     allProducts = data.allProducts || {};
 
-    // === YAHAN BADLAV KIYA GAYA HAI: Naye data structure se buttons pass karna ===
     displayHeaderButtons(data.headerButtons || {});
-    // === BADLAV SAMAPT ===
     
     const approvedMembers = allMembersData.filter(m => m.status === 'Approved');
     displayMembers(approvedMembers);
@@ -70,7 +71,7 @@ export function renderPage(data) {
     displayCommunityLetters((data.adminSettings && data.adminSettings.community_letters) || {});
     updateInfoCards(approvedMembers.length, communityStats.totalLoanDisbursed || 0);
     startHeaderDisplayRotator(approvedMembers, communityStats);
-    buildInfoSlider();
+    buildInfoSlider(); // YEH FUNCTION AB NAYE CARD LAYOUT BANAYEGA
     processAndShowNotifications();
     renderProducts();
 
@@ -93,11 +94,9 @@ function getTodayDateStringLocal() {
 
 // --- Display & Rendering Functions ---
 
-// === YAHAN BADA BADLAV KIYA GAYA HAI: YEH FUNCTION AB FIREBASE SE SAARE BUTTON RENDER KAREGA ===
 function displayHeaderButtons(buttons) {
     if (!elements.headerActionsContainer || !elements.staticHeaderButtonsContainer) return;
     
-    // Containers ko poori tarah khaali karein
     elements.headerActionsContainer.innerHTML = '';
     elements.staticHeaderButtonsContainer.innerHTML = '';
     
@@ -109,9 +108,7 @@ function displayHeaderButtons(buttons) {
     const buttonWrapper = document.createElement('div');
     buttonWrapper.className = 'dynamic-buttons-wrapper';
 
-    // Buttons ko unke 'order' ke hisaab se sort karein
     Object.values(buttons).sort((a, b) => (a.order || 99) - (b.order || 99)).forEach(btnData => {
-        // Yadi url 'auto' hai, to use id se modal kholne wala button banayein
         const isAutoUrl = btnData.url === 'auto';
         const isLink = btnData.url && !isAutoUrl;
         
@@ -129,7 +126,6 @@ function displayHeaderButtons(buttons) {
 
         element.innerHTML = `${btnData.icon_svg || ''}<b>${btnData.name || ''}</b>` + (btnData.id === 'notificationBtn' ? '<span id="notificationDot" class="notification-dot"></span>' : '');
         
-        // CSS Styles ko dynamically apply karein
         Object.assign(element.style, {
             backgroundColor: btnData.transparent ? 'transparent' : (btnData.color || 'var(--primary-color)'),
             color: btnData.textColor || 'white',
@@ -141,7 +137,6 @@ function displayHeaderButtons(buttons) {
             borderStyle: (parseFloat(btnData.borderWidth) > 0 || btnData.style_preset === 'btn-outline') ? 'solid' : 'none'
         });
 
-        // Bank Members ke neeche waale static buttons ko alag karein
         if (['viewBalanceBtn', 'viewPenaltyWalletBtn'].includes(btnData.id)) {
             elements.staticHeaderButtonsContainer.appendChild(element);
         } else {
@@ -151,10 +146,8 @@ function displayHeaderButtons(buttons) {
     
     elements.headerActionsContainer.appendChild(buttonWrapper);
     
-    // Naye buttons ke liye event listeners attach karein
     attachDynamicButtonListeners();
 }
-// === BADLAV SAMAPT ===
 
 function displayMembers(members) {
     if (!elements.memberContainer) return;
@@ -179,7 +172,7 @@ function displayMembers(members) {
                 card.classList.add('colored-card');
             }
         }
-
+        
         const isNegative = (member.balance || 0) < 0;
         const balanceClass = isNegative ? 'negative-balance' : '';
 
@@ -215,7 +208,23 @@ function renderProducts() {
         card.className = 'product-card';
         const price = parseFloat(product.price) || 0;
         const mrp = parseFloat(product.mrp) || 0;
-        const whatsappMessage = encodeURIComponent(`Hello, I want to know more about ${product.name} priced at ₹${price.toLocaleString('en-IN')}.`);
+
+        // === WHATSAPP MESSAGE UPDATE START ===
+        let emiText = '';
+        if (product.emi && Object.keys(product.emi).length > 0) {
+            const firstEmiOption = Object.entries(product.emi).sort((a,b) => parseInt(a[0]) - parseInt(b[0]))[0];
+            const months = parseInt(firstEmiOption[0]);
+            const interestRate = parseFloat(firstEmiOption[1]);
+            const totalAmount = price * (1 + interestRate / 100);
+            const monthlyEmi = Math.ceil(totalAmount / months);
+            emiText = `\n\n*EMI Details:* Starts from ₹${monthlyEmi.toLocaleString('en-IN')}/month at ${interestRate}% interest for ${months} months.`;
+        }
+
+        const productLink = product.exploreLink || 'Not available';
+        const finalMessage = `Hello, I want to know more about *${product.name}*.\n\n*Price:* ₹${price.toLocaleString('en-IN')}\n*Product Link:* ${productLink}${emiText}`;
+        const whatsappMessage = encodeURIComponent(finalMessage);
+        // === WHATSAPP MESSAGE UPDATE END ===
+        
         const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
         
         card.innerHTML = `
@@ -610,20 +619,56 @@ function startHeaderDisplayRotator(members, stats) {
     setInterval(showNextAd, 6000);
 }
 
+// === COMMUNITY INFO SLIDER UPDATE START ===
 function buildInfoSlider() {
     if (!elements.infoSlider) return;
     elements.infoSlider.innerHTML = '';
+    
+    // Static info cards ki list
     const infoCards = [
         { icon: 'dollar-sign', title: 'Fund Deposit', text: 'Sabhi sadasya milkar fund jama karte hain <strong>(Every Month SIP)</strong> ke roop mein.' },
         { icon: 'gift', title: 'Loan Provision', text: 'Zarooratmand sadasya ko usi fund se <strong>loan</strong> diya jaata hai.' },
         { icon: 'calendar', title: 'Loan Duration', text: 'Loan keval <strong>1 mahine</strong> ke liye hota hai (nyunatam byaj par).' },
         { icon: 'percent', title: 'Interest Rate', text: 'Avadhi aur rashi ke anusaar byaj darein badal sakti hain.' }
     ];
+
+    // Prime members ko dhoondhein
+    const primeMembers = allMembersData.filter(member => member.isPrime);
+    
+    // Yadi prime members hain to unka card banayein
+    if (primeMembers.length > 0) {
+        let primeMembersHTML = '';
+        primeMembers.forEach(pm => {
+            primeMembersHTML += `
+                <div class="prime-member-item">
+                    <img src="${pm.displayImageUrl}" alt="${pm.name}" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
+                    <span>${pm.name}</span>
+                </div>
+            `;
+        });
+
+        // Prime members card ko list mein pehle number par jodein
+        infoCards.unshift({
+            icon: 'award',
+            title: 'Prime Members',
+            htmlContent: `<div class="prime-members-list">${primeMembersHTML}</div>`
+        });
+    }
+    
+    // Sabhi cards ko render karein
     infoCards.forEach(card => {
-        elements.infoSlider.innerHTML += `<div class="info-card-slide"><h3 class="flex items-center justify-center gap-2"><i data-feather="${card.icon}"></i> ${card.title}</h3><p>${card.text}</p></div>`;
+        let content = card.text ? `<p>${card.text}</p>` : card.htmlContent;
+        elements.infoSlider.innerHTML += `
+            <div class="info-card-slide">
+                <h3><i data-feather="${card.icon}"></i> ${card.title}</h3>
+                ${content}
+            </div>`;
     });
+    
     feather.replace();
 }
+// === COMMUNITY INFO SLIDER UPDATE END ===
+
 
 function processAndShowNotifications() {
     const todayDateString = getTodayDateStringLocal();
@@ -767,5 +812,4 @@ function showFullImage(src, alt) {
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
-
 
