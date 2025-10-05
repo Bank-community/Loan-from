@@ -1,11 +1,8 @@
 /*
-BADLAV:
-1. Product section ka background dark gradient kiya gaya hai aur radius 0 kiya gaya hai.
-2. Product card aur buttons ke radius ko update kiya gaya hai.
-3. Explore button ki padding kam ki gayi hai.
-4. EMI link ka rang dark red kiya gaya hai.
-5. Community Info container mein spacing (padding) jodi gayi hai.
-6. Product section ke headline (h2) ko mota kiya gaya hai.
+FINAL UPDATE:
+1. Community Info section ki spacing theek ki gayi hai.
+2. Prime Member card ka naam bold aur center kiya gaya hai.
+3. Info cards mein image ke liye naya style joda gaya hai.
 */
 
 :root {
@@ -66,11 +63,11 @@ header h4 { color: rgba(255, 255, 255, 0.9); margin: 0 0 20px 0; font-weight: 40
 
 section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px var(--shadow-color); border: 1px solid var(--border-color); }
 
-/* === PRODUCTS SECTION UPDATE START === */
+/* === PRODUCTS SECTION UPDATE === */
 .products-section { 
-    background: linear-gradient(135deg, #2d3748, #1a202c); /* Dark Gradient Background */
-    padding: 25px 0; /* Thoda padding badhaya gaya */
-    border-radius: 0; /* Kone seedhe kiye gaye */
+    background: linear-gradient(135deg, #2d3748, #1a202c);
+    padding: 25px 0;
+    border-radius: 0;
     margin-bottom: 25px;
     box-shadow: none;
     border: none;
@@ -80,7 +77,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
     margin-bottom: 25px; 
     padding: 0 15px;
-    font-weight: 900; /* Headline ko Mota kiya gaya */
+    font-weight: 700;
 }
 .products-container { 
     display: flex;
@@ -97,7 +94,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     flex: 0 0 160px;
     width: 160px;
     background-color: var(--card-bg); 
-    border-radius: 8px; /* Card ke kone seedhe kiye gaye */
+    border-radius: 4px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.07); 
     border: 1px solid var(--border-color); 
     overflow: hidden; 
@@ -134,15 +131,15 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .product-discount { display: none; }
 .product-emi-link { 
     font-size: 0.8em; 
-    color: #B91C1C; /* Dark Red Color */
-    font-weight: 600; /* Thoda mota kiya gaya */
+    color: #B91C1C;
+    font-weight: 600;
     text-decoration: underline; 
     cursor: pointer; 
     margin-top: 5px; 
 }
 .product-actions { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; padding: 12px; border-top: 1px solid var(--border-color); }
 .product-btn { 
-    border-radius: 5px; /* Button ke kone halke gol kiye gaye */
+    border-radius: 5px;
     text-align: center; 
     font-weight: 600; 
     text-decoration: none; 
@@ -153,18 +150,17 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 .product-btn.whatsapp { 
     background-color: #e8f5e9; 
-    padding: 8px; /* Padding ko aakarshan ke liye adjust kiya */
+    padding: 8px;
 }
 .product-btn.whatsapp:hover { background-color: #dcedc8; }
 .product-btn.whatsapp img { width: 22px; height: 22px; }
 .product-btn.explore { 
     background-color: var(--primary-color); 
     color: white; 
-    padding: 8px 10px; /* Padding/Height kam ki gayi */
+    padding: 8px 10px;
     font-size: 0.9em;
 }
 .product-btn.explore:hover { background-color: var(--primary-darker); }
-/* === PRODUCTS SECTION UPDATE END === */
 
 .action-cards-section { padding-left: 20px; padding-right: 20px; }
 .action-cards-section h2 { text-align: center; margin-bottom: 30px; }
@@ -189,16 +185,16 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 @media (min-width: 992px) { .action-cards { grid-template-columns: repeat(4, 1fr); max-width: 900px; margin-left: auto; margin-right: auto; } }
 @media (min-width: 1200px) { .action-cards { grid-template-columns: repeat(4, 1fr); max-width: 1100px; } }
 
-/* === COMMUNITY INFO SECTION UPDATE START === */
+/* === COMMUNITY INFO SECTION UPDATE === */
 .info-slider-section {
     background: transparent;
     border: none;
     box-shadow: none;
-    padding: 0;
+    padding: 0 20px; /* Section mein padding jodi gayi */
 }
 .info-slider-section h2 {
     font-size: 1.7em;
-    padding: 0 20px;
+    padding: 0; /* yahan se padding hatayi gayi */
     margin-bottom: 20px;
     justify-content: flex-start;
     text-align: left;
@@ -207,7 +203,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     display: flex;
     overflow-x: auto;
     gap: 15px;
-    padding: 10px 20px; /* Card ko chipakne se bachane ke liye padding */
+    padding: 10px 0; /* yahan se padding hatayi gayi */
     margin: 0;
     scrollbar-width: none;
     -ms-overflow-style: none; 
@@ -249,29 +245,39 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     color: var(--light-text);
     flex-grow: 1;
 }
-.prime-members-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 5px;
+/* Card mein image ke liye naya style */
+.info-card-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
 }
-.prime-member-item {
+/* Prime Member Card ke liye naya Style */
+.prime-member-card {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 5px;
+    text-align: center;
+    width: 100%;
+    flex-grow: 1;
 }
-.prime-member-item img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+.prime-member-card img {
+    width: 100%;
+    height: 150px;
     object-fit: cover;
-    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 5px;
 }
-.prime-member-item span {
-    font-weight: 500;
+.prime-member-card span {
+    font-weight: bold; /* Naam ko bold kiya gaya */
+    font-size: 1.1em;
     color: var(--text-color);
 }
-/* === COMMUNITY INFO SECTION UPDATE END === */
+
 
 .letter-slider-section h2 { text-align: center; }
 .slider-container { position: relative; max-width: 1000px; margin: 10px auto; overflow: hidden; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--card-bg); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
