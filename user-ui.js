@@ -1,7 +1,7 @@
 // user-ui.js
 // FINAL UPDATE:
-// 1. buildInfoSlider function ab har card ke liye ek optional imageUrl property ko support karta hai.
-// 2. Prime Member ke liye alag card banega aur aakhir mein dikhega.
+// 1. buildInfoSlider function mein card ka layout theek kiya gaya hai (Text upar, Image neeche).
+// 2. "Fund Deposit" card mein aapka diya gaya image URL set kar diya gaya hai.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -628,25 +628,25 @@ function buildInfoSlider() {
             icon: 'dollar-sign', 
             title: 'Fund Deposit', 
             text: 'Sabhi sadasya milkar fund jama karte hain <strong>(Every Month SIP)</strong> ke roop mein.',
-            imageUrl: 'https://i.ibb.co/hJVpWtGx/20251005-084202.png' // <-- YAHAN IMAGE KA URL PASTE KAREIN
+            imageUrl: 'https://i.ibb.co/PZjrLyRX/20251005-085406.png' // <-- AAPKA DIYA HUA URL
         },
         { 
             icon: 'gift', 
             title: 'Loan Provision', 
             text: 'Zarooratmand sadasya ko usi fund se <strong>loan</strong> diya jaata hai.',
-            imageUrl: '' // <-- YAHAN IMAGE KA URL PASTE KAREIN
+            imageUrl: ''
         },
         { 
             icon: 'calendar', 
             title: 'Loan Duration', 
             text: 'Loan keval <strong>1 mahine</strong> ke liye hota hai (nyunatam byaj par).',
-            imageUrl: '' // <-- YAHAN IMAGE KA URL PASTE KAREIN
+            imageUrl: ''
         },
         { 
             icon: 'percent', 
             title: 'Interest Rate', 
             text: 'Avadhi aur rashi ke anusaar byaj darein badal sakti hain.',
-            imageUrl: '' // <-- YAHAN IMAGE KA URL PASTE KAREIN
+            imageUrl: ''
         }
     ];
 
@@ -672,9 +672,9 @@ function buildInfoSlider() {
         
         elements.infoSlider.innerHTML += `
             <div class="info-card-slide">
-                ${imageHTML}
                 <h3><i data-feather="${card.icon}"></i> ${card.title}</h3>
                 ${content}
+                ${imageHTML} 
             </div>`;
     });
     
