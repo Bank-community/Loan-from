@@ -634,19 +634,19 @@ function buildInfoSlider() {
             icon: 'gift', 
             title: 'Loan Provision', 
             text: 'Zarooratmand sadasya ko usi fund se <strong>loan</strong> diya jaata hai.',
-            imageUrl: ''
+            imageUrl: 'https://i.ibb.co/WNkzG5rm/20251005-100155.png'
         },
         { 
             icon: 'calendar', 
             title: 'Loan Duration', 
             text: 'Loan keval <strong>1 mahine</strong> ke liye hota hai (nyunatam byaj par).',
-            imageUrl: ''
+            imageUrl: 'https://i.ibb.co/bjkNcWrv/20251005-100324.png'
         },
         { 
             icon: 'percent', 
             title: 'Interest Rate', 
             text: 'Avadhi aur rashi ke anusaar byaj darein badal sakti hain.',
-            imageUrl: ''
+            imageUrl: 'https://i.ibb.co/3ypdpzWR/20251005-095800.png'
         }
     ];
 
