@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bank Community Loan - UPI Payment</title>
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- QR Code generation library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -23,14 +25,13 @@
             appearance: none;
             width: 100%;
             height: 8px;
-            background: #d1d5db;
+            background: #e5e7eb; /* gray-200 */
             border-radius: 5px;
             outline: none;
-            opacity: 0.7;
-            transition: opacity .2s;
+            transition: background .2s;
         }
         input[type=range]:hover {
-            opacity: 1;
+            background: #d1d5db; /* gray-300 */
         }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
@@ -48,93 +49,102 @@
             cursor: pointer;
             border-radius: 50%;
         }
+        /* Custom class to prevent layout shift during message display */
+        #message:empty {
+            min-height: 24px; /* Adjust based on font size and line height */
+        }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen py-8">
+<body class="bg-white">
 
-    <div class="w-full max-w-lg mx-4 bg-white rounded-xl shadow-lg p-6 md:p-8">
+    <div class="w-full max-w-lg mx-auto bg-white p-6 min-h-screen flex flex-col md:min-h-0 md:my-8 md:rounded-xl md:shadow-lg">
         
-        <div class="text-center mb-6">
+        <header class="text-center mb-6">
             <img src="https://i.ibb.co/m5TkbLgF/1000027139.png" alt="Bank Community Loan Logo" class="mx-auto h-20 w-auto mb-4">
             <h1 class="text-2xl md:text-3xl font-bold text-indigo-800">BANK COMMUNITY LOAN</h1>
             <p class="text-gray-500 mt-2">Prince Kumar ko Payment Karein</p>
-        </div>
+        </header>
 
-        <div id="default-payment" class="fade-in">
-            <div class="bg-gray-50 rounded-lg p-4 md:p-6">
-                <p class="text-center font-semibold text-gray-700 text-lg mb-4">Scan and Pay ₹<span id="display-amount">500</span></p>
-                <div class="flex flex-col md:flex-row items-center justify-center gap-6">
-                    <div id="qrcode" class="flex justify-center p-3 bg-white rounded-lg shadow-md"></div>
-                    
-                    <div class="w-full md:w-auto">
-                        <ul class="space-y-3 text-gray-600">
-                            <li class="flex items-center gap-3">
-                                <svg class="h-6 w-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>
-                                <span>UPI App खोलें</span>
-                            </li>
-                            <li class="flex items-center gap-3">
-                                <svg class="h-6 w-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5zM13.5 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5z" /></svg>
-                                <span>QR कोड स्कैन करें</span>
-                            </li>
-                            <li class="flex items-center gap-3">
-                                <svg class="h-6 w-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-                                <span>Payment कन्फर्म करें</span>
-                            </li>
-                            <li class="flex items-center gap-3">
-                                 <svg class="h-6 w-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                                <span>Screenshot ग्रुप में भेजें</span>
-                            </li>
-                        </ul>
+        <main class="flex-grow">
+            <!-- Default Payment Section -->
+            <section id="default-payment" class="fade-in text-center">
+                <p class="font-semibold text-gray-700 text-lg mb-4">Scan karke ₹<span id="display-amount">500</span> Pay Karein</p>
+                
+                <!-- QR Code Container -->
+                <div id="qrcode" class="flex justify-center p-3 bg-white rounded-lg border shadow-md w-fit mx-auto"></div>
+                
+                <!-- Payment Instructions with Icons -->
+                <div class="mt-6">
+                    <div class="flex items-center justify-center space-x-2 text-gray-600">
+                        <!-- Step 1 Icon -->
+                        <svg class="h-8 w-8 text-indigo-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                        
+                        <!-- Step 2 Icon -->
+                        <svg class="h-8 w-8 text-indigo-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5zM13.5 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5z" /></svg>
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                        
+                        <!-- Step 3 Icon -->
+                        <svg class="h-8 w-8 text-indigo-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+
+                        <!-- Step 4 Icon -->
+                        <svg class="h-8 w-8 text-indigo-700" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    </div>
+                     <p class="text-center text-xs text-gray-500 mt-2">
+                        UPI App kholen → Scan Karen → Payment Karen → Group mein bhejें
+                    </p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button id="download-btn" class="w-full bg-gray-700 text-white font-semibold py-3 px-4 rounded-lg hover:bg-gray-800 flex items-center justify-center space-x-2">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span>Download Generic QR</span>
+                    </button>
+                     <button id="copy-upi-btn" class="w-full bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-lg hover:bg-gray-300 flex items-center justify-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy UPI ID</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Custom Amount Section -->
+            <section class="mt-6 pt-6 border-t">
+                <p class="text-center text-gray-600 font-semibold">Ya apni marzi ka amount bharein (Min. ₹500)</p>
+                <div class="mt-4">
+                    <label for="amount" class="sr-only">Amount (₹)</label>
+                    <div class="relative rounded-md shadow-sm">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
+                            <span class="text-gray-500 sm:text-sm">₹</span>
+                        </div>
+                        <input type="number" id="amount" class="block w-full rounded-md border-gray-300 pl-7 pr-12 py-3 focus:border-indigo-500 focus:ring-indigo-500 sm:text-lg" placeholder="500.00">
                     </div>
                 </div>
-            </div>
-
-            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button id="download-btn" class="w-full bg-gray-700 text-white font-semibold py-3 px-4 rounded-lg hover:bg-gray-800 flex items-center justify-center space-x-2">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    <span>Download Generic QR</span>
-                </button>
-                 <button id="copy-upi-btn" class="w-full bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-lg hover:bg-gray-300 flex items-center justify-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                    <span>Copy UPI ID</span>
-                </button>
-            </div>
-        </div>
-
-        <div class="mt-6 pt-6 border-t">
-            <p class="text-center text-gray-600 font-semibold">या अपनी मर्ज़ी का अमाउंट भरें (Min. ₹500)</p>
-            <div class="mt-4">
-                <label for="amount" class="block text-sm font-medium text-gray-700">Amount (₹)</label>
-                <div class="mt-1 relative rounded-md shadow-sm">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
-                        <span class="text-gray-500 sm:text-sm">₹</span>
-                    </div>
-                    <input type="number" id="amount" class="block w-full rounded-md border-gray-300 pl-7 pr-12 py-3 focus:border-indigo-500 focus:ring-indigo-500 sm:text-lg" placeholder="500.00">
+                <div class="mt-4">
+                     <input type="range" id="amount-slider" min="500" max="5000" step="100" value="500" class="w-full">
+                     <div class="flex justify-between text-xs text-gray-500 mt-1">
+                         <span>₹500</span>
+                         <span>₹5000</span>
+                     </div>
                 </div>
-            </div>
-            <div class="mt-4">
-                 <input type="range" id="amount-slider" min="500" max="5000" step="100" value="500" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                 <div class="flex justify-between text-xs text-gray-500 mt-1">
-                     <span>₹500</span>
-                     <span>₹5000</span>
-                 </div>
-            </div>
-            <div class="mt-6">
-                <button id="generate-btn" class="w-full bg-indigo-800 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700">
-                    Custom Amount का QR जेनरेट करें
-                </button>
-            </div>
-        </div>
-
-        <div id="confirmation-section" class="mt-6 text-center fade-in">
-             <p class="text-gray-600 mt-6">Payment के बाद, नीचे क्लिक करके ग्रुप में कन्फर्म करें।</p>
+                <div class="mt-6">
+                    <button id="generate-btn" class="w-full bg-indigo-800 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700">
+                        Custom Amount ka QR Banayein
+                    </button>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="mt-6 pt-6 border-t text-center fade-in">
+             <p class="text-gray-600">Payment ke baad, group mein confirm karein.</p>
              <a id="whatsapp-confirm-link" href="#" target="_blank" class="mt-4 inline-block w-full bg-green-500 text-white font-bold py-4 px-4 rounded-lg hover:bg-green-600 transition-colors duration-300 flex items-center justify-center space-x-3">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                <span>Send WhatsApp Confirmation</span>
+                <span>WhatsApp par Confirmation Bhejein</span>
             </a>
-        </div>
+        </footer>
         
-        <div id="message" class="mt-4 text-center text-red-500 font-medium"></div>
+        <div id="message" class="text-center font-medium mt-4"></div>
 
     </div>
 
@@ -181,6 +191,14 @@
                 amountSlider.value = Math.min(value, 5000);
             }
         });
+        amountInput.addEventListener('blur', (e) => {
+            if (e.target.value < minAmount) {
+                 messageDiv.textContent = `Minimum amount is ₹${minAmount}.`;
+                 messageDiv.className = 'text-center font-medium mt-4 text-red-500';
+                 e.target.value = minAmount;
+                 amountSlider.value = minAmount;
+            }
+        });
 
         // --- FUNCTIONS ---
         function handleGeneration(presetAmount = null) {
@@ -190,6 +208,7 @@
 
             if (isNaN(amountValue) || amountValue < minAmount) {
                 messageDiv.textContent = `Please enter a valid amount. Minimum is ₹${minAmount}.`;
+                messageDiv.className = 'text-center font-medium mt-4 text-red-500';
                 return;
             }
             
@@ -208,8 +227,8 @@
             qrCodeContainer.innerHTML = ''; 
             new QRCode(qrCodeContainer, {
                 text: url,
-                width: 180,
-                height: 180,
+                width: 200,
+                height: 200,
                 colorDark: "#000000",
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
@@ -223,73 +242,110 @@
         }
 
         function copyUpiIdToClipboard() {
-            navigator.clipboard.writeText(upiId).then(() => {
-                messageDiv.textContent = 'UPI ID Copied!';
-                messageDiv.className = 'mt-4 text-center text-green-500 font-medium'; // Success color
-                setTimeout(() => { 
-                    messageDiv.textContent = '';
-                    messageDiv.className = 'mt-4 text-center text-red-500 font-medium'; // Revert color
-                }, 2000);
-            }).catch(err => {
-                messageDiv.textContent = 'Failed to copy UPI ID.';
-            });
+            // Using the clipboard API for modern browsers
+            if (navigator.clipboard) {
+                 navigator.clipboard.writeText(upiId).then(() => {
+                    showMessage('UPI ID Copied!', 'success');
+                }).catch(err => {
+                    showMessage('Failed to copy UPI ID.', 'error');
+                });
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement("textarea");
+                textArea.value = upiId;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showMessage('UPI ID Copied!', 'success');
+                } catch (err) {
+                    showMessage('Failed to copy UPI ID.', 'error');
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+        
+        function showMessage(msg, type = 'error') {
+            messageDiv.textContent = msg;
+            if (type === 'success') {
+                messageDiv.className = 'text-center font-medium mt-4 text-green-500';
+            } else {
+                messageDiv.className = 'text-center font-medium mt-4 text-red-500';
+            }
+            setTimeout(() => { 
+                messageDiv.textContent = '';
+            }, 3000);
         }
 
         function handleDownloadFormattedQR() {
-            messageDiv.textContent = ''; 
             const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&cu=INR`;
-
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
+            const logoImage = new Image();
+            logoImage.crossOrigin = "Anonymous"; // Important for cross-domain images
+            logoImage.src = 'https://i.ibb.co/m5TkbLgF/1000027139.png';
             
-            const canvasSize = 400;
-            const qrCodeSize = 280;
-            const padding = (canvasSize - qrCodeSize) / 2;
-            const headlineText = 'Bank Community Loan';
-            const headlineHeight = 60;
+            logoImage.onload = () => {
+                const canvasSize = 512;
+                const qrCodeSize = 380;
+                const padding = (canvasSize - qrCodeSize) / 2;
+                const headerHeight = 100;
 
-            canvas.width = canvasSize;
-            canvas.height = canvasSize + headlineHeight;
+                canvas.width = canvasSize;
+                canvas.height = canvasSize + headerHeight;
 
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#4A5568';
-            ctx.lineWidth = 8;
-            ctx.strokeRect(0, 0, canvas.width, canvas.height);
+                // 1. Draw background
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            ctx.fillStyle = '#1A202C';
-            ctx.font = 'bold 28px Inter, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(headlineText, canvas.width / 2, 40);
+                // 2. Draw Header with Logo and Text
+                ctx.fillStyle = '#3730a3'; // Indigo-800
+                ctx.fillRect(0, 0, canvas.width, headerHeight);
+                
+                const logoSize = 60;
+                ctx.drawImage(logoImage, (canvas.width / 2) - (logoSize / 2), 10, logoSize, logoSize);
+                
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 20px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Scan to Pay', canvas.width / 2, headerHeight - 15);
 
-            const tempQrContainer = document.createElement('div');
-            new QRCode(tempQrContainer, {
-                text: upiUrl,
-                width: qrCodeSize,
-                height: qrCodeSize,
-                correctLevel: QRCode.CorrectLevel.H
-            });
+                // 3. Generate QR code in a temporary element
+                const tempQrContainer = document.createElement('div');
+                new QRCode(tempQrContainer, {
+                    text: upiUrl,
+                    width: qrCodeSize,
+                    height: qrCodeSize,
+                    correctLevel: QRCode.CorrectLevel.H
+                });
 
-            setTimeout(() => {
-                const qrCanvas = tempQrContainer.querySelector('canvas');
-                if (qrCanvas) {
-                    const qrYPosition = headlineHeight + padding / 2;
-                    ctx.drawImage(qrCanvas, padding, qrYPosition);
-                    
-                    const dataUrl = canvas.toDataURL('image/png');
-                    const link = document.createElement('a');
-                    link.href = dataUrl;
-                    link.download = `Bank-Community-Loan-UPI-QR.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                } else {
-                    messageDiv.textContent = "QR Download failed. Please try again.";
-                }
-            }, 100);
+                // 4. Draw the QR code onto the main canvas (needs a timeout for QRCode.js to render)
+                setTimeout(() => {
+                    const qrCanvas = tempQrContainer.querySelector('canvas');
+                    if (qrCanvas) {
+                        ctx.drawImage(qrCanvas, padding, headerHeight + padding / 2);
+                        
+                        // 5. Trigger download
+                        const dataUrl = canvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.href = dataUrl;
+                        link.download = `Bank-Community-Loan-UPI-QR.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    } else {
+                        showMessage("QR Download failed. Please try again.");
+                    }
+                }, 100);
+            };
+            logoImage.onerror = () => {
+                 showMessage("Could not load logo for QR download.");
+            }
         }
 
     </script>
 
 </body>
 </html>
+
