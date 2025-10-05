@@ -1,8 +1,7 @@
 // user-ui.js
 // BADLAV:
-// 1. WhatsApp message ab product link aur EMI details ke saath jaayega.
-// 2. buildInfoSlider function ko Community Info cards ko horizontal scroll mein dikhane ke liye update kiya gaya hai.
-// 3. Prime Members card ab list ke AAKHIR mein dikhega.
+// 1. buildInfoSlider function ko update kiya gaya hai taaki har ek prime member ke liye alag card banaye.
+// 2. Prime Members ke cards ab list ke AAKHIR mein dikhenge.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -631,22 +630,18 @@ function buildInfoSlider() {
 
     const primeMembers = allMembersData.filter(member => member.isPrime);
     
+    // Har ek prime member ke liye alag card banayein aur unhe list ke aakhir mein jodein
     if (primeMembers.length > 0) {
-        let primeMembersHTML = '';
         primeMembers.forEach(pm => {
-            primeMembersHTML += `
-                <div class="prime-member-item">
-                    <img src="${pm.displayImageUrl}" alt="${pm.name}" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
-                    <span>${pm.name}</span>
-                </div>
-            `;
-        });
-
-        // Prime members card ko list ke AAKHIR mein jodein
-        infoCards.push({
-            icon: 'award',
-            title: 'Prime Members',
-            htmlContent: `<div class="prime-members-list">${primeMembersHTML}</div>`
+            infoCards.push({
+                icon: 'award',
+                title: 'Prime Member',
+                htmlContent: `
+                    <div class="prime-member-card">
+                        <img src="${pm.displayImageUrl}" alt="${pm.name}" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
+                        <span>${pm.name}</span>
+                    </div>`
+            });
         });
     }
     
@@ -662,7 +657,6 @@ function buildInfoSlider() {
     feather.replace();
 }
 // === COMMUNITY INFO SLIDER UPDATE END ===
-
 
 function processAndShowNotifications() {
     const todayDateString = getTodayDateStringLocal();
