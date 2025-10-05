@@ -2,7 +2,7 @@
 // BADLAV:
 // 1. WhatsApp message ab product link aur EMI details ke saath jaayega.
 // 2. buildInfoSlider function ko Community Info cards ko horizontal scroll mein dikhane ke liye update kiya gaya hai.
-// 3. Ek naya Prime Members card bhi Community Info mein joda gaya hai.
+// 3. Prime Members card ab list ke AAKHIR mein dikhega.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -71,7 +71,7 @@ export function renderPage(data) {
     displayCommunityLetters((data.adminSettings && data.adminSettings.community_letters) || {});
     updateInfoCards(approvedMembers.length, communityStats.totalLoanDisbursed || 0);
     startHeaderDisplayRotator(approvedMembers, communityStats);
-    buildInfoSlider(); // YEH FUNCTION AB NAYE CARD LAYOUT BANAYEGA
+    buildInfoSlider();
     processAndShowNotifications();
     renderProducts();
 
@@ -209,7 +209,6 @@ function renderProducts() {
         const price = parseFloat(product.price) || 0;
         const mrp = parseFloat(product.mrp) || 0;
 
-        // === WHATSAPP MESSAGE UPDATE START ===
         let emiText = '';
         if (product.emi && Object.keys(product.emi).length > 0) {
             const firstEmiOption = Object.entries(product.emi).sort((a,b) => parseInt(a[0]) - parseInt(b[0]))[0];
@@ -223,7 +222,6 @@ function renderProducts() {
         const productLink = product.exploreLink || 'Not available';
         const finalMessage = `Hello, I want to know more about *${product.name}*.\n\n*Price:* ₹${price.toLocaleString('en-IN')}\n*Product Link:* ${productLink}${emiText}`;
         const whatsappMessage = encodeURIComponent(finalMessage);
-        // === WHATSAPP MESSAGE UPDATE END ===
         
         const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
         
@@ -624,18 +622,15 @@ function buildInfoSlider() {
     if (!elements.infoSlider) return;
     elements.infoSlider.innerHTML = '';
     
-    // Static info cards ki list
-    const infoCards = [
+    let infoCards = [
         { icon: 'dollar-sign', title: 'Fund Deposit', text: 'Sabhi sadasya milkar fund jama karte hain <strong>(Every Month SIP)</strong> ke roop mein.' },
         { icon: 'gift', title: 'Loan Provision', text: 'Zarooratmand sadasya ko usi fund se <strong>loan</strong> diya jaata hai.' },
         { icon: 'calendar', title: 'Loan Duration', text: 'Loan keval <strong>1 mahine</strong> ke liye hota hai (nyunatam byaj par).' },
         { icon: 'percent', title: 'Interest Rate', text: 'Avadhi aur rashi ke anusaar byaj darein badal sakti hain.' }
     ];
 
-    // Prime members ko dhoondhein
     const primeMembers = allMembersData.filter(member => member.isPrime);
     
-    // Yadi prime members hain to unka card banayein
     if (primeMembers.length > 0) {
         let primeMembersHTML = '';
         primeMembers.forEach(pm => {
@@ -647,15 +642,14 @@ function buildInfoSlider() {
             `;
         });
 
-        // Prime members card ko list mein pehle number par jodein
-        infoCards.unshift({
+        // Prime members card ko list ke AAKHIR mein jodein
+        infoCards.push({
             icon: 'award',
             title: 'Prime Members',
             htmlContent: `<div class="prime-members-list">${primeMembersHTML}</div>`
         });
     }
     
-    // Sabhi cards ko render karein
     infoCards.forEach(card => {
         let content = card.text ? `<p>${card.text}</p>` : card.htmlContent;
         elements.infoSlider.innerHTML += `
@@ -812,4 +806,5 @@ function showFullImage(src, alt) {
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
+
 
