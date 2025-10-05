@@ -1,7 +1,7 @@
 // user-ui.js
-// BADLAV:
-// 1. buildInfoSlider function ko update kiya gaya hai taaki har ek prime member ke liye alag card banaye.
-// 2. Prime Members ke cards ab list ke AAKHIR mein dikhenge.
+// FINAL UPDATE:
+// 1. buildInfoSlider function ab har card ke liye ek optional imageUrl property ko support karta hai.
+// 2. Prime Member ke liye alag card banega aur aakhir mein dikhega.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -621,16 +621,37 @@ function buildInfoSlider() {
     if (!elements.infoSlider) return;
     elements.infoSlider.innerHTML = '';
     
+    // === YAHAN AAP APNE CARD KE LIYE IMAGE URL DAAL SAKTE HAIN ===
+    // Agar aap kisi card mein image nahi chahte, to imageUrl ko khaali ('') chhod dein.
     let infoCards = [
-        { icon: 'dollar-sign', title: 'Fund Deposit', text: 'Sabhi sadasya milkar fund jama karte hain <strong>(Every Month SIP)</strong> ke roop mein.' },
-        { icon: 'gift', title: 'Loan Provision', text: 'Zarooratmand sadasya ko usi fund se <strong>loan</strong> diya jaata hai.' },
-        { icon: 'calendar', title: 'Loan Duration', text: 'Loan keval <strong>1 mahine</strong> ke liye hota hai (nyunatam byaj par).' },
-        { icon: 'percent', title: 'Interest Rate', text: 'Avadhi aur rashi ke anusaar byaj darein badal sakti hain.' }
+        { 
+            icon: 'dollar-sign', 
+            title: 'Fund Deposit', 
+            text: 'Sabhi sadasya milkar fund jama karte hain <strong>(Every Month SIP)</strong> ke roop mein.',
+            imageUrl: '' // <-- YAHAN IMAGE KA URL PASTE KAREIN
+        },
+        { 
+            icon: 'gift', 
+            title: 'Loan Provision', 
+            text: 'Zarooratmand sadasya ko usi fund se <strong>loan</strong> diya jaata hai.',
+            imageUrl: '' // <-- YAHAN IMAGE KA URL PASTE KAREIN
+        },
+        { 
+            icon: 'calendar', 
+            title: 'Loan Duration', 
+            text: 'Loan keval <strong>1 mahine</strong> ke liye hota hai (nyunatam byaj par).',
+            imageUrl: '' // <-- YAHAN IMAGE KA URL PASTE KAREIN
+        },
+        { 
+            icon: 'percent', 
+            title: 'Interest Rate', 
+            text: 'Avadhi aur rashi ke anusaar byaj darein badal sakti hain.',
+            imageUrl: '' // <-- YAHAN IMAGE KA URL PASTE KAREIN
+        }
     ];
 
     const primeMembers = allMembersData.filter(member => member.isPrime);
     
-    // Har ek prime member ke liye alag card banayein aur unhe list ke aakhir mein jodein
     if (primeMembers.length > 0) {
         primeMembers.forEach(pm => {
             infoCards.push({
@@ -646,9 +667,12 @@ function buildInfoSlider() {
     }
     
     infoCards.forEach(card => {
+        const imageHTML = card.imageUrl ? `<img src="${card.imageUrl}" class="info-card-image" alt="${card.title}" loading="lazy" onerror="this.style.display='none';">` : '';
         let content = card.text ? `<p>${card.text}</p>` : card.htmlContent;
+        
         elements.infoSlider.innerHTML += `
             <div class="info-card-slide">
+                ${imageHTML}
                 <h3><i data-feather="${card.icon}"></i> ${card.title}</h3>
                 ${content}
             </div>`;
