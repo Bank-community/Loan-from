@@ -628,7 +628,7 @@ function buildInfoSlider() {
             icon: 'dollar-sign', 
             title: 'Fund Deposit', 
             text: 'Sabhi sadasya milkar fund jama karte hain <strong>(Every Month SIP)</strong> ke roop mein.',
-            imageUrl: '' // <-- YAHAN IMAGE KA URL PASTE KAREIN
+            imageUrl: 'https://i.ibb.co/hJVpWtGx/20251005-084202.png' // <-- YAHAN IMAGE KA URL PASTE KAREIN
         },
         { 
             icon: 'gift', 
