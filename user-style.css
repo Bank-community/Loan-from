@@ -1,9 +1,8 @@
 /*
 FINAL UPDATE:
-1. Top 3 sadasyon ke liye naya professional card design (ranked-member-card) joda gaya hai.
-2. Purana rank-icon style hata diya gaya hai.
-3. Prime Member card ka naam bold aur center kiya gaya hai.
-4. Info cards mein image ke liye naya style joda gaya hai.
+1. Ranked card ki height ko normal card ke barabar kar diya gaya hai.
+2. Member ki photo ab card frame ke peeche dikhegi (z-index theek kiya gaya).
+3. Ranked card ke andar text aur photo ki positioning ko naye size ke hisab se adjust kiya gaya hai.
 */
 
 :root {
@@ -64,7 +63,6 @@ header h4 { color: rgba(255, 255, 255, 0.9); margin: 0 0 20px 0; font-weight: 40
 
 section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px var(--shadow-color); border: 1px solid var(--border-color); }
 
-/* === PRODUCTS SECTION UPDATE === */
 .products-section { 
     background: linear-gradient(135deg, #2d3748, #1a202c);
     padding: 25px 0;
@@ -186,16 +184,15 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 @media (min-width: 992px) { .action-cards { grid-template-columns: repeat(4, 1fr); max-width: 900px; margin-left: auto; margin-right: auto; } }
 @media (min-width: 1200px) { .action-cards { grid-template-columns: repeat(4, 1fr); max-width: 1100px; } }
 
-/* === COMMUNITY INFO SECTION UPDATE === */
 .info-slider-section {
     background: transparent;
     border: none;
     box-shadow: none;
-    padding: 0 20px; /* Section mein padding jodi gayi */
+    padding: 0 20px;
 }
 .info-slider-section h2 {
     font-size: 1.7em;
-    padding: 0; /* yahan se padding hatayi gayi */
+    padding: 0;
     margin-bottom: 20px;
     justify-content: flex-start;
     text-align: left;
@@ -204,7 +201,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     display: flex;
     overflow-x: auto;
     gap: 15px;
-    padding: 10px 0; /* yahan se padding hatayi gayi */
+    padding: 10px 0;
     margin: 0;
     scrollbar-width: none;
     -ms-overflow-style: none; 
@@ -246,16 +243,14 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     color: var(--light-text);
     flex-grow: 1;
 }
-/* Card mein image ke liye naya style */
 .info-card-image {
     width: 100%;
     aspect-ratio: 5 / 6;
     object-fit: cover;
     border-radius: 8px;
-    display: block; /* यह लाइन जोड़ें */
-    margin: 0 auto 15px; /* margin-top और margin-bottom को इस एक लाइन से बदल दें */
+    display: block;
+    margin: 0 auto 15px;
 }
-/* Prime Member Card ke liye naya Style */
 .prime-member-card {
     display: flex;
     align-items: center;
@@ -275,7 +270,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     margin-bottom: 5px;
 }
 .prime-member-card span {
-    font-weight: bold; /* Naam ko bold kiya gaya */
+    font-weight: bold;
     font-size: 1.1em;
     color: var(--text-color);
 }
@@ -303,42 +298,42 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .member-slider::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 4px; border: 2px solid #e0f2f7; }
 .member-slider::-webkit-scrollbar-thumb:hover { background-color: var(--primary-darker); }
 
-/* === NAYE CARD KA CSS START HOTA HAI === */
+/* === NAYE CARD KA CSS START HOTA HAI (UPDATED) === */
 .ranked-member-card {
     position: relative;
-    flex: 0 0 170px; /* Card ki chaurai */
-    width: 170px;
-    height: 255px; /* Card ki unchai */
+    /* Normal card se size milane ke liye flex properties ka istemal */
+    flex: 0 0 45%; 
+    max-width: 160px;
+    aspect-ratio: 1 / 1.5; /* Card ke background image ka anupat */
     cursor: pointer;
     transition: transform 0.3s ease;
-    -webkit-tap-highlight-color: transparent; /* Mobile par tap highlight hatata hai */
+    -webkit-tap-highlight-color: transparent;
 }
 .ranked-member-card:hover {
     transform: translateY(-5px) scale(1.02);
 }
-.ranked-card-bg {
+.ranked-card-bg { /* Card ka frame */
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
-    pointer-events: none; /* Isse background image par click nahi hoga */
+    pointer-events: none;
+    z-index: 2; /* Frame ko photo ke upar rakha gaya hai */
 }
-.ranked-member-photo {
+.ranked-member-photo { /* Member ki photo */
     position: absolute;
-    z-index: 2;
-    width: 78%;
-    height: 48%;
-    top: 10%;
-    left: 11%;
+    width: 79%;
+    height: 49%;
+    top: 9.5%;
+    left: 10.5%;
     object-fit: cover;
     border-radius: 12px;
-    border: 2px solid #0056b3;
+    z-index: 1; /* Photo ko frame ke peeche rakha gaya hai */
 }
 .ranked-prime-tag {
     position: absolute;
-    z-index: 4;
+    z-index: 3;
     bottom: 37%;
     right: 15%;
     background: linear-gradient(45deg, #FFD700, #FFA500);
@@ -378,8 +373,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     margin: 0;
     padding: 5px 0;
     font-size: 1.2em;
-    font-weight: 800; /* Bold se bhi zyada mota */
-    color: #332400; /* Dark Brown/Gold */
+    font-weight: 800;
+    color: #332400;
     text-align: center;
     text-shadow: 1px 1px 1px rgba(255,255,255,0.3);
 }
@@ -414,7 +409,6 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     background-color: var(--danger-color);
 }
 .prime-tag { position: absolute; bottom: 8px; right: 8px; background-color: var(--prime-color); color: var(--text-color); padding: 4px 9px; border-radius: 6px; font-size: 11px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); line-height: 1; z-index: 2; }
-/* .rank-icon { display:none; } */ /* Purana rank icon ab use nahi hoga */
 .colored-card .member-name { color: #ffffff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
 .colored-card .member-balance { box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
 #customCardsSection { background: none; border: none; box-shadow: none; padding: 0; margin-top: -20px; }
@@ -524,9 +518,10 @@ footer p { color: #f8f9fa; margin: 0; }
 @keyframes slideInNotification { to { opacity: 1; transform: translateX(0); } }
 @keyframes fadeOutNotification { from { opacity: 1; } to { opacity: 0; transform: translateX(110%); } }
 @keyframes slideOutNotification { to { opacity: 0; transform: translateX(110%); } }
-@media (min-width: 576px) { header h1 { font-size: 2.4em; } .member-card { flex: 0 0 30%; max-width: 180px; } h2 { font-size: 1.9em; } .info-card-slide { flex: 0 0 320px; } }
-@media (min-width: 768px) { header h1 { font-size: 2.6em; } .member-card { flex: 0 0 22%; max-width: 200px; } h2 { font-size: 2em; } }
-@media (min-width: 992px) { .member-card { flex: 0 0 20%; max-width: 210px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
-@media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card { flex: 0 0 15%; max-width: 220px; } h2 { font-size: 2.2em; } }
+@media (min-width: 576px) { header h1 { font-size: 2.4em; } .member-card, .ranked-member-card { flex: 0 0 30%; max-width: 180px; } h2 { font-size: 1.9em; } .info-card-slide { flex: 0 0 320px; } }
+@media (min-width: 768px) { header h1 { font-size: 2.6em; } .member-card, .ranked-member-card { flex: 0 0 22%; max-width: 200px; } h2 { font-size: 2em; } }
+@media (min-width: 992px) { .member-card, .ranked-member-card { flex: 0 0 20%; max-width: 210px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
+@media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card, .ranked-member-card { flex: 0 0 15%; max-width: 220px; } h2 { font-size: 2.2em; } }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
 
