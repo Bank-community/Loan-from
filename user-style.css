@@ -1,8 +1,9 @@
 /*
 FINAL UPDATE:
-1. Community Info section ki spacing theek ki gayi hai.
-2. Prime Member card ka naam bold aur center kiya gaya hai.
-3. Info cards mein image ke liye naya style joda gaya hai.
+1. Top 3 sadasyon ke liye naya professional card design (ranked-member-card) joda gaya hai.
+2. Purana rank-icon style hata diya gaya hai.
+3. Prime Member card ka naam bold aur center kiya gaya hai.
+4. Info cards mein image ke liye naya style joda gaya hai.
 */
 
 :root {
@@ -254,8 +255,6 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     display: block; /* यह लाइन जोड़ें */
     margin: 0 auto 15px; /* margin-top और margin-bottom को इस एक लाइन से बदल दें */
 }
-
-}
 /* Prime Member Card ke liye naya Style */
 .prime-member-card {
     display: flex;
@@ -303,7 +302,108 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .member-slider::-webkit-scrollbar-track { background: #e0f2f7; border-radius: 4px;}
 .member-slider::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 4px; border: 2px solid #e0f2f7; }
 .member-slider::-webkit-scrollbar-thumb:hover { background-color: var(--primary-darker); }
-.member-card { position: relative; background-color: var(--card-bg); border-radius: 12px; flex: 0 0 45%; max-width: 160px; text-align: center; padding: 12px; box-shadow: 0 5px 10px var(--shadow-color); transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; cursor: pointer; border: 1px solid var(--border-color); box-sizing: border-box; overflow: visible; display: flex; flex-direction: column; align-items: center; }
+
+/* === NAYE CARD KA CSS START HOTA HAI === */
+.ranked-member-card {
+    position: relative;
+    flex: 0 0 170px; /* Card ki chaurai */
+    width: 170px;
+    height: 255px; /* Card ki unchai */
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    -webkit-tap-highlight-color: transparent; /* Mobile par tap highlight hatata hai */
+}
+.ranked-member-card:hover {
+    transform: translateY(-5px) scale(1.02);
+}
+.ranked-card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none; /* Isse background image par click nahi hoga */
+}
+.ranked-member-photo {
+    position: absolute;
+    z-index: 2;
+    width: 78%;
+    height: 48%;
+    top: 10%;
+    left: 11%;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 2px solid #0056b3;
+}
+.ranked-prime-tag {
+    position: absolute;
+    z-index: 4;
+    bottom: 37%;
+    right: 15%;
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    color: #4C2F00;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transform: rotate(-10deg);
+}
+.ranked-member-name {
+    position: absolute;
+    z-index: 3;
+    width: 90%;
+    top: 63%;
+    left: 5%;
+    margin: 0;
+    padding: 0;
+    font-size: 1.1em;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ranked-member-balance {
+    position: absolute;
+    z-index: 3;
+    width: 80%;
+    bottom: 9%;
+    left: 10%;
+    margin: 0;
+    padding: 5px 0;
+    font-size: 1.2em;
+    font-weight: 800; /* Bold se bhi zyada mota */
+    color: #332400; /* Dark Brown/Gold */
+    text-align: center;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.3);
+}
+/* === NAYE CARD KA CSS SAMAPT HOTA HAI === */
+
+
+.member-card { 
+    position: relative; 
+    background-color: var(--card-bg); 
+    border-radius: 12px; 
+    flex: 0 0 45%; 
+    max-width: 160px; 
+    text-align: center; 
+    padding: 12px; 
+    box-shadow: 0 5px 10px var(--shadow-color); 
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; 
+    cursor: pointer; 
+    border: 1px solid var(--border-color); 
+    box-sizing: border-box; 
+    overflow: visible; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
 .member-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); }
 .member-photo-container { width: 100%; aspect-ratio: 1 / 1; border-radius: 8px; overflow: hidden; margin-bottom: 12px; background-color: #f0f0f0; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; }
 .member-card img.member-photo { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
@@ -314,7 +414,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     background-color: var(--danger-color);
 }
 .prime-tag { position: absolute; bottom: 8px; right: 8px; background-color: var(--prime-color); color: var(--text-color); padding: 4px 9px; border-radius: 6px; font-size: 11px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); line-height: 1; z-index: 2; }
-.rank-icon { position: absolute; top: -10px; left: -10px; width: 40px; height: 40px; z-index: 2; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); background: white; border-radius: 50%; padding: 2px; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+/* .rank-icon { display:none; } */ /* Purana rank icon ab use nahi hoga */
 .colored-card .member-name { color: #ffffff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
 .colored-card .member-balance { box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
 #customCardsSection { background: none; border: none; box-shadow: none; padding: 0; margin-top: -20px; }
@@ -429,5 +529,4 @@ footer p { color: #f8f9fa; margin: 0; }
 @media (min-width: 992px) { .member-card { flex: 0 0 20%; max-width: 210px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
 @media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card { flex: 0 0 15%; max-width: 220px; } h2 { font-size: 2.2em; } }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
 
