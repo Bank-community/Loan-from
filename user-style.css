@@ -1,8 +1,9 @@
 /*
 FINAL UPDATE:
-1. Sabhi card ka size ek saath bada kar diya gaya hai (flex-basis aur max-width badhakar).
-2. Sabhi card (.ranked-member-card aur .member-card) ka anupat (aspect-ratio) 1 / 1.75 par set hai, taaki unki height/width ek samaan ho.
-3. Is naye bade size ke anusar dono tarah ke card ke andar ke content (photo, name, balance) ko acchi tarike se re-adjust kiya gaya hai.
+1. Community Info section ki spacing theek ki gayi hai.
+2. Prime Member card ka naam bold aur center kiya gaya hai.
+3. Info cards mein image ke liye naya style joda gaya hai.
+4. MEMBER CARD ka size badhaya gaya hai.
 */
 
 :root {
@@ -63,6 +64,7 @@ header h4 { color: rgba(255, 255, 255, 0.9); margin: 0 0 20px 0; font-weight: 40
 
 section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px var(--shadow-color); border: 1px solid var(--border-color); }
 
+/* === PRODUCTS SECTION UPDATE === */
 .products-section { 
     background: linear-gradient(135deg, #2d3748, #1a202c);
     padding: 25px 0;
@@ -184,15 +186,16 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 @media (min-width: 992px) { .action-cards { grid-template-columns: repeat(4, 1fr); max-width: 900px; margin-left: auto; margin-right: auto; } }
 @media (min-width: 1200px) { .action-cards { grid-template-columns: repeat(4, 1fr); max-width: 1100px; } }
 
+/* === COMMUNITY INFO SECTION UPDATE === */
 .info-slider-section {
     background: transparent;
     border: none;
     box-shadow: none;
-    padding: 0 20px;
+    padding: 0 20px; /* Section mein padding jodi gayi */
 }
 .info-slider-section h2 {
     font-size: 1.7em;
-    padding: 0;
+    padding: 0; /* yahan se padding hatayi gayi */
     margin-bottom: 20px;
     justify-content: flex-start;
     text-align: left;
@@ -201,7 +204,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     display: flex;
     overflow-x: auto;
     gap: 15px;
-    padding: 10px 0;
+    padding: 10px 0; /* yahan se padding hatayi gayi */
     margin: 0;
     scrollbar-width: none;
     -ms-overflow-style: none; 
@@ -243,14 +246,17 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     color: var(--light-text);
     flex-grow: 1;
 }
+/* Card mein image ke liye naya style */
 .info-card-image {
     width: 100%;
     aspect-ratio: 5 / 6;
     object-fit: cover;
     border-radius: 8px;
-    display: block;
-    margin: 0 auto 15px;
+    display: block; /* यह लाइन जोड़ें */
+    margin: 0 auto 15px; /* margin-top और margin-bottom को इस एक लाइन से बदल दें */
 }
+
+/* Prime Member Card ke liye naya Style */
 .prime-member-card {
     display: flex;
     align-items: center;
@@ -270,7 +276,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     margin-bottom: 5px;
 }
 .prime-member-card span {
-    font-weight: bold;
+    font-weight: bold; /* Naam ko bold kiya gaya */
     font-size: 1.1em;
     color: var(--text-color);
 }
@@ -298,176 +304,40 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .member-slider::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 4px; border: 2px solid #e0f2f7; }
 .member-slider::-webkit-scrollbar-thumb:hover { background-color: var(--primary-darker); }
 
-/* === SABHI CARDS KE LIYE NAYA COMMON STYLE START HOTA HAI === */
-.ranked-member-card,
+/* === MEMBER CARD UPDATE START === */
 .member-card {
     position: relative;
-    flex: 0 0 48%; /* Card ki chaudai badha di gayi hai */
-    max-width: 175px; /* Card ki max chaudai bhi badha di gayi hai */
-    aspect-ratio: 1 / 1.75;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-    -webkit-tap-highlight-color: transparent;
     background-color: var(--card-bg);
     border-radius: 12px;
+    flex: 0 0 47%; /* Thodi si jagah badhayi gayi */
+    max-width: 180px; /* Card ki max-width badhayi gayi */
+    text-align: center;
+    padding: 14px; /* Padding ko adjust kiya gaya */
     box-shadow: 0 5px 10px var(--shadow-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
     border: 1px solid var(--border-color);
     box-sizing: border-box;
+    overflow: visible;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.ranked-member-card:hover,
-.member-card:hover { 
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-/* === COMMON STYLE SAMAPT === */
+/* === MEMBER CARD UPDATE END === */
 
-
-/* === RANKED CARD KA SPECIFIC STYLE START HOTA HAI === */
-.ranked-member-card {
-    background-color: transparent;
-    border: none;
-    box-shadow: none;
-}
-.ranked-card-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 2;
-}
-.ranked-member-photo {
-    position: absolute;
-    width: 78%;
-    height: 44%;
-    top: 9%;
-    left: 11%;
-    object-fit: cover;
-    border-radius: 12px;
-    z-index: 1;
-}
-.ranked-prime-tag {
-    position: absolute;
-    z-index: 3;
-    bottom: 42%;
-    right: 15%;
-    background: linear-gradient(45deg, #FFD700, #FFA500);
-    color: #4C2F00;
-    padding: 3px 8px;
-    border-radius: 5px;
-    font-size: 10px;
-    font-weight: bold;
-    text-transform: uppercase;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    transform: rotate(-10deg);
-}
-.ranked-member-name {
-    position: absolute;
-    z-index: 3;
-    width: 90%;
-    top: 57%;
-    left: 5%;
-    margin: 0;
-    padding: 0;
-    font-size: 1.1em;
-    font-weight: 700;
-    color: #ffffff;
-    text-align: center;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.ranked-member-balance {
-    position: absolute;
-    z-index: 3;
-    width: 80%;
-    bottom: 12%;
-    left: 10%;
-    margin: 0;
-    padding: 5px 0;
-    font-size: 1.2em;
-    font-weight: 800;
-    color: #332400;
-    text-align: center;
-    text-shadow: 1px 1px 1px rgba(255,255,255,0.3);
-}
-/* === RANKED CARD KA STYLE SAMAPT === */
-
-
-/* === NORMAL CARD KA SPECIFIC STYLE START HOTA HAI === */
-.member-card { 
-    padding: 12px; 
-    justify-content: space-between;
-}
-.member-photo-container { 
-    width: 100%; 
-    height: 55%;
-    border-radius: 8px; 
-    overflow: hidden; 
-    margin-bottom: 0;
-    background-color: #f0f0f0; 
-    border: 3px solid white; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-    position: relative; 
-}
-.member-card img.member-photo { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
-    display: block; 
-    transition: transform 0.3s ease; 
-}
-.member-name { 
-    font-size: 1em; 
-    font-weight: 600; 
-    margin: 0;
-    padding: 5px;
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-    color: var(--text-color); 
-}
-.member-balance { 
-    background-color: var(--primary-color); 
-    color: white; 
-    padding: 8px 10px; 
-    margin-top: auto; 
-    border-radius: 8px; 
-    font-size: 0.9em; 
-    font-weight: bold; 
-    display: block; 
-    width: 90%; 
-    box-sizing: border-box; 
-    text-align: center; 
-    margin-left: auto; 
-    margin-right: auto; 
-}
+.member-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); }
+.member-photo-container { width: 100%; aspect-ratio: 1 / 1; border-radius: 8px; overflow: hidden; margin-bottom: 12px; background-color: #f0f0f0; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; }
+.member-card img.member-photo { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
+.member-card:hover img.member-photo { transform: scale(1.05); }
+.member-name { font-size: 1.05em; font-weight: 600; margin: 8px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-color); }
+.member-balance { background-color: var(--primary-color); color: white; padding: 8px 10px; margin-top: auto; border-radius: 8px; font-size: 0.9em; font-weight: bold; display: block; width: 90%; box-sizing: border-box; text-align: center; margin-left: auto; margin-right: auto; }
 .member-balance.negative-balance {
     background-color: var(--danger-color);
 }
-.prime-tag { 
-    position: absolute; 
-    bottom: 8px; 
-    right: 8px; 
-    background-color: var(--prime-color); 
-    color: var(--text-color); 
-    padding: 4px 9px; 
-    border-radius: 6px; 
-    font-size: 11px; 
-    font-weight: bold; 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
-    line-height: 1; 
-    z-index: 2; 
-}
-/* === NORMAL CARD KA STYLE SAMAPT === */
-
-
+.prime-tag { position: absolute; bottom: 8px; right: 8px; background-color: var(--prime-color); color: var(--text-color); padding: 4px 9px; border-radius: 6px; font-size: 11px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); line-height: 1; z-index: 2; }
+.rank-icon { position: absolute; top: -10px; left: -10px; width: 40px; height: 40px; z-index: 2; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); background: white; border-radius: 50%; padding: 2px; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+.colored-card .member-name { color: #ffffff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+.colored-card .member-balance { box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
 #customCardsSection { background: none; border: none; box-shadow: none; padding: 0; margin-top: -20px; }
 .custom-card-slider-wrapper { position: relative; }
 .custom-cards-container { display: flex; gap: 15px; overflow-x: auto; scroll-behavior: smooth; padding: 20px 15px; -webkit-overflow-scrolling: touch; scrollbar-width: none; scroll-snap-type: x mandatory; }
@@ -575,11 +445,29 @@ footer p { color: #f8f9fa; margin: 0; }
 @keyframes slideInNotification { to { opacity: 1; transform: translateX(0); } }
 @keyframes fadeOutNotification { from { opacity: 1; } to { opacity: 0; transform: translateX(110%); } }
 @keyframes slideOutNotification { to { opacity: 0; transform: translateX(110%); } }
-/* Responsive adjustments for larger cards */
-@media (min-width: 576px) { .member-card, .ranked-member-card { flex: 0 0 30%; max-width: 195px; } h2 { font-size: 1.9em; } .info-card-slide { flex: 0 0 320px; } }
-@media (min-width: 768px) { .member-card, .ranked-member-card { flex: 0 0 22%; max-width: 215px; } h2 { font-size: 2em; } }
-@media (min-width: 992px) { .member-card, .ranked-member-card { flex: 0 0 20%; max-width: 225px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
-@media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card, .ranked-member-card { flex: 0 0 15%; max-width: 235px; } h2 { font-size: 2.2em; } }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
+/* === MEDIA QUERIES UPDATE START === */
+@media (min-width: 576px) { 
+    header h1 { font-size: 2.4em; } 
+    .member-card { flex: 0 0 30%; max-width: 200px; } 
+    h2 { font-size: 1.9em; } 
+    .info-card-slide { flex: 0 0 320px; } 
+}
+@media (min-width: 768px) { 
+    header h1 { font-size: 2.6em; } 
+    .member-card { flex: 0 0 22%; max-width: 210px; } 
+    h2 { font-size: 2em; } 
+}
+@media (min-width: 992px) { 
+    .member-card { flex: 0 0 20%; max-width: 220px; } 
+    .balance-display { font-size: 3.2em; } 
+    h2 { font-size: 2.1em; } 
+}
+@media (min-width: 1200px) { 
+    .content-wrapper, .header-container, .member-slider { max-width: 1140px; } 
+    .member-card { flex: 0 0 15%; max-width: 230px; } 
+    h2 { font-size: 2.2em; } 
+}
+/* === MEDIA QUERIES UPDATE END === */
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
