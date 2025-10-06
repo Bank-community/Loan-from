@@ -1,8 +1,8 @@
 /*
 FINAL UPDATE:
-1. Sabhi card (.ranked-member-card aur .member-card) ka anupat (aspect-ratio) 1 / 1.75 par set kar diya gaya hai.
-2. Is naye anupat ke anusar dono tarah ke card ke andar ke content (photo, name, balance) ko acchi tarike se adjust kiya gaya hai.
-3. Member ki photo ab card frame ke peeche dikhegi (z-index theek kiya gaya).
+1. Sabhi card ka size ek saath bada kar diya gaya hai (flex-basis aur max-width badhakar).
+2. Sabhi card (.ranked-member-card aur .member-card) ka anupat (aspect-ratio) 1 / 1.75 par set hai, taaki unki height/width ek samaan ho.
+3. Is naye bade size ke anusar dono tarah ke card ke andar ke content (photo, name, balance) ko acchi tarike se re-adjust kiya gaya hai.
 */
 
 :root {
@@ -302,9 +302,9 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .ranked-member-card,
 .member-card {
     position: relative;
-    flex: 0 0 45%; 
-    max-width: 160px;
-    aspect-ratio: 1 / 1.75; /* <<--- AAPKE DWARA DIYA GAYA ANUPAT */
+    flex: 0 0 48%; /* Card ki chaudai badha di gayi hai */
+    max-width: 175px; /* Card ki max chaudai bhi badha di gayi hai */
+    aspect-ratio: 1 / 1.75;
     cursor: pointer;
     transition: transform 0.3s ease;
     -webkit-tap-highlight-color: transparent;
@@ -327,7 +327,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 
 /* === RANKED CARD KA SPECIFIC STYLE START HOTA HAI === */
 .ranked-member-card {
-    background-color: transparent; /* Ranked card ka background transparent rahega */
+    background-color: transparent;
     border: none;
     box-shadow: none;
 }
@@ -343,8 +343,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .ranked-member-photo {
     position: absolute;
     width: 78%;
-    height: 44%; /* Naye aspect-ratio ke liye adjust kiya gaya */
-    top: 9%;    /* Naye aspect-ratio ke liye adjust kiya gaya */
+    height: 44%;
+    top: 9%;
     left: 11%;
     object-fit: cover;
     border-radius: 12px;
@@ -353,7 +353,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .ranked-prime-tag {
     position: absolute;
     z-index: 3;
-    bottom: 42%; /* Naye aspect-ratio ke liye adjust kiya gaya */
+    bottom: 42%;
     right: 15%;
     background: linear-gradient(45deg, #FFD700, #FFA500);
     color: #4C2F00;
@@ -370,7 +370,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     position: absolute;
     z-index: 3;
     width: 90%;
-    top: 57%; /* Naye aspect-ratio ke liye adjust kiya gaya */
+    top: 57%;
     left: 5%;
     margin: 0;
     padding: 0;
@@ -387,7 +387,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     position: absolute;
     z-index: 3;
     width: 80%;
-    bottom: 12%; /* Naye aspect-ratio ke liye adjust kiya gaya */
+    bottom: 12%;
     left: 10%;
     margin: 0;
     padding: 5px 0;
@@ -403,14 +403,14 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 /* === NORMAL CARD KA SPECIFIC STYLE START HOTA HAI === */
 .member-card { 
     padding: 12px; 
-    justify-content: space-between; /* Content ko vertical space dega */
+    justify-content: space-between;
 }
 .member-photo-container { 
     width: 100%; 
-    height: 55%; /* Naye aspect-ratio ke liye adjust kiya gaya */
+    height: 55%;
     border-radius: 8px; 
     overflow: hidden; 
-    margin-bottom: 0; /* Margin hata diya gaya */
+    margin-bottom: 0;
     background-color: #f0f0f0; 
     border: 3px solid white; 
     box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
@@ -426,7 +426,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .member-name { 
     font-size: 1em; 
     font-weight: 600; 
-    margin: 0; /* Margin hata diya gaya */
+    margin: 0;
     padding: 5px;
     white-space: nowrap; 
     overflow: hidden; 
@@ -575,10 +575,11 @@ footer p { color: #f8f9fa; margin: 0; }
 @keyframes slideInNotification { to { opacity: 1; transform: translateX(0); } }
 @keyframes fadeOutNotification { from { opacity: 1; } to { opacity: 0; transform: translateX(110%); } }
 @keyframes slideOutNotification { to { opacity: 0; transform: translateX(110%); } }
-@media (min-width: 576px) { .member-card, .ranked-member-card { flex: 0 0 30%; max-width: 180px; } h2 { font-size: 1.9em; } .info-card-slide { flex: 0 0 320px; } }
-@media (min-width: 768px) { .member-card, .ranked-member-card { flex: 0 0 22%; max-width: 200px; } h2 { font-size: 2em; } }
-@media (min-width: 992px) { .member-card, .ranked-member-card { flex: 0 0 20%; max-width: 210px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
-@media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card, .ranked-member-card { flex: 0 0 15%; max-width: 220px; } h2 { font-size: 2.2em; } }
+/* Responsive adjustments for larger cards */
+@media (min-width: 576px) { .member-card, .ranked-member-card { flex: 0 0 30%; max-width: 195px; } h2 { font-size: 1.9em; } .info-card-slide { flex: 0 0 320px; } }
+@media (min-width: 768px) { .member-card, .ranked-member-card { flex: 0 0 22%; max-width: 215px; } h2 { font-size: 2em; } }
+@media (min-width: 992px) { .member-card, .ranked-member-card { flex: 0 0 20%; max-width: 225px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
+@media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card, .ranked-member-card { flex: 0 0 15%; max-width: 235px; } h2 { font-size: 2.2em; } }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
 
