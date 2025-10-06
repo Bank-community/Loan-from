@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             bannerText = `Free period ends in ${daysRemaining10} ${daysRemaining10 === 1 ? 'day' : 'days'}`;
                             break;
                         case 'Grocery Credit':
-                            cardImageUrl = "https://i.ibb.co/ZpkG8pKx/20251006-153417.png";
+                            cardImageUrl = "https://i.ibb.co/GyX2vmn/20251006-154317.png";
                             bannerClass = 'warning';
                             const dueDate30 = new Date(loanDate);
                             dueDate30.setDate(dueDate30.getDate() + 30);
@@ -343,7 +343,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     cardImageUrl = "https://i.ibb.co/bjWtdV0L/1757738358948.jpg";
                     break;
                 case 'Grocery Credit':
-                    cardImageUrl = "https://i.ibb.co/ZpkG8pKx/20251006-153417.png";
+                    cardImageUrl = "https://i.ibb.co/GyX2vmn/20251006-154317.png";
                     const today = new Date();
                     if (today.getDate() >= 1 && today.getDate() <= 10) {
                         extraContent = `<div class="cc-pay-now">Pay Now</div>`;
