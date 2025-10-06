@@ -1,7 +1,8 @@
 // user-ui.js
 // FINAL UPDATE:
-// 1. buildInfoSlider function mein card ka layout theek kiya gaya hai (Text upar, Image neeche).
-// 2. "Fund Deposit" card mein aapka diya gaya image URL set kar diya gaya hai.
+// 1. Top 3 sadasyon ke liye naya aur professional card design implement kiya gaya hai.
+// 2. buildInfoSlider function mein card ka layout theek kiya gaya hai (Text upar, Image neeche).
+// 3. "Fund Deposit" card mein aapka diya gaya image URL set kar diya gaya hai.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -42,6 +43,9 @@ const elements = {
 const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
 const WHATSAPP_NUMBER = '7903698180';
 const BANK_LOGO_URL = 'https://i.ibb.co/pjB1bQ7J/1752978674430.jpg';
+// === NAYA CARD IMAGE URL ===
+const RANKED_CARD_IMAGE_URL = 'https://i.ibb.co/vvTSnZh6/1759764912786.png';
+
 
 // --- Initialization ---
 export function initUI(database) {
@@ -62,7 +66,7 @@ export function renderPage(data) {
     allProducts = data.allProducts || {};
 
     displayHeaderButtons(data.headerButtons || {});
-    
+
     const approvedMembers = allMembersData.filter(m => m.status === 'Approved');
     displayMembers(approvedMembers);
 
@@ -95,10 +99,10 @@ function getTodayDateStringLocal() {
 
 function displayHeaderButtons(buttons) {
     if (!elements.headerActionsContainer || !elements.staticHeaderButtonsContainer) return;
-    
+
     elements.headerActionsContainer.innerHTML = '';
     elements.staticHeaderButtonsContainer.innerHTML = '';
-    
+
     if (Object.keys(buttons).length === 0) {
         elements.headerActionsContainer.innerHTML = '<p class="loading-text" style="color: white;">No actions configured.</p>';
         return;
@@ -110,10 +114,10 @@ function displayHeaderButtons(buttons) {
     Object.values(buttons).sort((a, b) => (a.order || 99) - (b.order || 99)).forEach(btnData => {
         const isAutoUrl = btnData.url === 'auto';
         const isLink = btnData.url && !isAutoUrl;
-        
+
         const element = document.createElement(isLink ? 'a' : 'button');
         element.className = `${btnData.base_class || 'civil-button'} ${btnData.style_preset || ''}`;
-        
+
         if (btnData.id) {
             element.id = btnData.id;
         }
@@ -124,7 +128,7 @@ function displayHeaderButtons(buttons) {
         }
 
         element.innerHTML = `${btnData.icon_svg || ''}<b>${btnData.name || ''}</b>` + (btnData.id === 'notificationBtn' ? '<span id="notificationDot" class="notification-dot"></span>' : '');
-        
+
         Object.assign(element.style, {
             backgroundColor: btnData.transparent ? 'transparent' : (btnData.color || 'var(--primary-color)'),
             color: btnData.textColor || 'white',
@@ -142,12 +146,13 @@ function displayHeaderButtons(buttons) {
             buttonWrapper.appendChild(element);
         }
     });
-    
+
     elements.headerActionsContainer.appendChild(buttonWrapper);
-    
+
     attachDynamicButtonListeners();
 }
 
+// === YAHAN BADLAV KIYA GAYA HAI ===
 function displayMembers(members) {
     if (!elements.memberContainer) return;
     elements.memberContainer.innerHTML = '';
@@ -156,39 +161,42 @@ function displayMembers(members) {
         return;
     }
 
-    const medalURLs = ["https://www.svgrepo.com/show/452215/gold-medal.svg", "https://www.svgrepo.com/show/452101/silver-medal.svg", "https://www.svgrepo.com/show/452174/bronze-medal.svg"];
-
     members.forEach((member, index) => {
         const card = document.createElement('div');
-        card.className = 'member-card animate-on-scroll';
-        let rankHTML = '';
-
-        if (index < 3) {
-            rankHTML = `<img src="${medalURLs[index]}" class="rank-icon" alt="Medal">`;
-            const rankColor = ['gold', 'silver', 'bronze'][index];
-            if (cardColors[rankColor]) {
-                card.style.backgroundColor = cardColors[rankColor];
-                card.classList.add('colored-card');
-            }
-        }
         
-        const isNegative = (member.balance || 0) < 0;
-        const balanceClass = isNegative ? 'negative-balance' : '';
+        // Top 3 sadasyon ke liye naya design
+        if (index < 3) {
+            card.className = 'ranked-member-card animate-on-scroll';
+            card.innerHTML = `
+                <img src="${RANKED_CARD_IMAGE_URL}" class="ranked-card-bg" alt="Card background">
+                <img src="${member.displayImageUrl}" alt="${member.name}" class="ranked-member-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
+                ${member.isPrime ? '<div class="ranked-prime-tag">PRIME</div>' : ''}
+                <p class="ranked-member-name">${member.name}</p>
+                <p class="ranked-member-balance">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
+            `;
+        } 
+        // Baaki sadasyon ke liye purana design
+        else {
+            card.className = 'member-card animate-on-scroll';
+            const isNegative = (member.balance || 0) < 0;
+            const balanceClass = isNegative ? 'negative-balance' : '';
 
-        card.innerHTML = `
-            ${rankHTML}
-            <div class="member-photo-container">
-                <img src="${member.displayImageUrl}" alt="${member.name}" class="member-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
-                ${member.isPrime ? '<div class="prime-tag">Prime</div>' : ''}
-            </div>
-            <p class="member-name" title="${member.name}">${member.name}</p>
-            <p class="member-balance ${balanceClass}">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
-        `;
+            card.innerHTML = `
+                <div class="member-photo-container">
+                    <img src="${member.displayImageUrl}" alt="${member.name}" class="member-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
+                    ${member.isPrime ? '<div class="prime-tag">Prime</div>' : ''}
+                </div>
+                <p class="member-name" title="${member.name}">${member.name}</p>
+                <p class="member-balance ${balanceClass}">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
+            `;
+        }
+
         card.onclick = () => showMemberProfileModal(member.id);
         elements.memberContainer.appendChild(card);
     });
     observeElements(document.querySelectorAll('.animate-on-scroll'));
 }
+// === BADLAV SAMAPT ===
 
 function renderProducts() {
     const container = elements.productsContainer;
@@ -824,5 +832,4 @@ function showFullImage(src, alt) {
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
-
 
