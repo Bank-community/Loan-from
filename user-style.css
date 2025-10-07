@@ -341,8 +341,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .framed-member-photo {
     position: absolute;
     top: 7.5%;
-    left: 12.5%;
-    width: 90%; /* Photo thodi patli ki gayi */
+    left: 12%;
+    width: 75%; /* Photo thodi patli ki gayi */
     height: 50%;
     object-fit: cover;
     border-radius: 8px; /* Radius thoda kam kiya */
@@ -423,8 +423,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .normal-framed-photo {
     position: absolute;
     top: 7.5%;
-    left: 12.5%;
-    width: 90%;
+    left: 12%;
+    width: 75%;
     height: 50%;
     object-fit: cover;
     border-radius: 8px;
