@@ -307,7 +307,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     gap: 5px; /* Gap kam kiya gaya */
     overflow-x: auto; 
     scroll-behavior: smooth; 
-    padding: 25px 5px; /* Left/Right padding kam ki gayi */
+    padding: 30px 5px; /* Left/Right padding kam ki gayi */
     -webkit-overflow-scrolling: touch; 
     scrollbar-width: thin; 
     scrollbar-color: var(--primary-color) #e0f2f7; 
@@ -325,7 +325,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .framed-card-wrapper {
     flex: 0 0 auto; /* Flex-basis auto kiya gaya taki width kaam kare */
     width: 180px;
-    height: 295px;
+    height: 300px;
     cursor: pointer;
     transition: transform 0.3s ease;
 }
@@ -341,7 +341,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .framed-member-photo {
     position: absolute;
     top: 7.5%;
-    left: 11%;
+    left: 9%;
     width: 85%; /* Photo thodi patli ki gayi */
     height: 60%;
     object-fit: cover;
