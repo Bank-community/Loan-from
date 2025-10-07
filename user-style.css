@@ -341,7 +341,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .framed-member-photo {
     position: absolute;
     top: 7.5%;
-    left: 11%;
+    left: 15%;
     width: 76%; /* Photo thodi patli ki gayi */
     height: 50%;
     object-fit: cover;
@@ -360,7 +360,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 /* Font size aur position adjust ki gayi */
 .framed-member-name {
     position: absolute;
-    bottom: 24%;
+    bottom: 26%;
     width: 100%;
     left: 0;
     color: white;
@@ -385,7 +385,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .framed-prime-tag {
     position: absolute;
     bottom: 34%;
-    right: 15%; /* Position adjust ki gayi */
+    right: 12%; /* Position adjust ki gayi */
     background-color: var(--prime-color);
     color: var(--text-color);
     padding: 2px 6px;
@@ -423,7 +423,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .normal-framed-photo {
     position: absolute;
     top: 7.5%;
-    left: 11%;
+    left: 15%;
     width: 76%;
     height: 50%;
     object-fit: cover;
@@ -456,7 +456,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 .normal-framed-name {
     position: absolute;
-    bottom: 24%;
+    bottom: 26%;
     width: 100%;
     left: 0;
     color: white; 
@@ -491,7 +491,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .normal-prime-tag {
     position: absolute;
     bottom: 34%;
-    right: 15%;
+    right: 12%;
     background-color: var(--prime-color);
     color: var(--text-color);
     padding: 2px 6px;
