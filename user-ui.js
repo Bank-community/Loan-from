@@ -1,7 +1,9 @@
+// user-ui.js
+
 // FINAL UPDATE:
 // 1. buildInfoSlider function mein card ka layout theek kiya gaya hai (Text upar, Image neeche).
 // 2. "Fund Deposit" card mein aapka diya gaya image URL set kar diya gaya hai.
-// 3. TOP 3 MEMBER CARDS ke liye naye frame links set kiye gaye hain.
+// 3. Top 3 member cards mein custom frame background image set ki gayi hai.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -156,27 +158,30 @@ function displayMembers(members) {
         return;
     }
 
-    // === YAHAN BADLAV KIYA GAYA HAI ===
-    const medalURLs = [
-        "https://www.svgrepo.com/show/452215/gold-medal.svg",   // 1st Card (Pahle jaisa)
-        "https://i.ibb.co/MxphKkV5/20251007-053941.png",       // 2nd Card (Naya link)
-        "https://i.ibb.co/ZzL1SJYn/20251007-053807.png"        // 3rd Card (Naya link)
-    ];
-    // === BADLAV SAMAPT ===
+    const medalURLs = ["https://www.svgrepo.com/show/452215/gold-medal.svg", "https://www.svgrepo.com/show/452101/silver-medal.svg", "https://www.svgrepo.com/show/452174/bronze-medal.svg"];
 
     members.forEach((member, index) => {
         const card = document.createElement('div');
         card.className = 'member-card animate-on-scroll';
         let rankHTML = '';
 
+        // === YAHAN BADLAV KIYA GAYA HAI: Top 3 members ke liye custom frame set karna ===
         if (index < 3) {
             rankHTML = `<img src="${medalURLs[index]}" class="rank-icon" alt="Medal">`;
-            const rankColor = ['gold', 'silver', 'bronze'][index];
-            if (cardColors[rankColor]) {
-                card.style.backgroundColor = cardColors[rankColor];
-                card.classList.add('colored-card');
+            const rankType = ['gold', 'silver', 'bronze'][index];
+    
+            const frameImageUrls = {
+                gold: 'https://i.ibb.co/vvTSnZh6/1759764912786.png',
+                silver: 'https://i.ibb.co/MxphKkV5/20251007-053941.png',
+                bronze: 'https://i.ibb.co/ZzL1SJYn/20251007-053807.png'
+            };
+    
+            if (frameImageUrls[rankType]) {
+                card.style.backgroundImage = `url(${frameImageUrls[rankType]})`;
+                card.classList.add('framed-card'); // CSS mein special styling ke liye naya class
             }
         }
+        // === BADLAV SAMAPT ===
         
         const isNegative = (member.balance || 0) < 0;
         const balanceClass = isNegative ? 'negative-balance' : '';
@@ -622,19 +627,16 @@ function startHeaderDisplayRotator(members, stats) {
     setInterval(showNextAd, 6000);
 }
 
-// === COMMUNITY INFO SLIDER UPDATE START ===
 function buildInfoSlider() {
     if (!elements.infoSlider) return;
     elements.infoSlider.innerHTML = '';
     
-    // === YAHAN AAP APNE CARD KE LIYE IMAGE URL DAAL SAKTE HAIN ===
-    // Agar aap kisi card mein image nahi chahte, to imageUrl ko khaali ('') chhod dein.
     let infoCards = [
         { 
             icon: 'dollar-sign', 
             title: 'Fund Deposit', 
             text: 'Sabhi sadasya milkar fund jama karte hain <strong>(Every Month SIP)</strong> ke roop mein.',
-            imageUrl: 'https://i.ibb.co/LzBMSjTy/20251005-091714.png' // <-- AAPKA DIYA HUA URL
+            imageUrl: 'https://i.ibb.co/LzBMSjTy/20251005-091714.png'
         },
         { 
             icon: 'gift', 
@@ -686,7 +688,6 @@ function buildInfoSlider() {
     
     feather.replace();
 }
-// === COMMUNITY INFO SLIDER UPDATE END ===
 
 function processAndShowNotifications() {
     const todayDateString = getTodayDateStringLocal();
@@ -830,4 +831,3 @@ function showFullImage(src, alt) {
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
-
