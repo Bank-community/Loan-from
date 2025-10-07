@@ -1,10 +1,9 @@
-// user-ui.js
-
 // FINAL UPDATE:
 // 1. Top 3 cards ke liye HTML structure ko layering ke liye badla gaya hai (Photo neeche, Frame upar).
 // 2. Framed cards aur Normal cards ke liye alag-alag classes ka istemal kiya gaya hai.
 // 3. Rank medals/badges hata diye gaye hain.
 // 4. Amount ke colors ko set karne ka logic update kiya gaya hai.
+// 5. [USER REQUEST] Normal card (Rank 4+) ke liye naya frame-based design aur ranking number system joda gaya hai.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -67,7 +66,8 @@ export function renderPage(data) {
     displayHeaderButtons(data.headerButtons || {});
     
     const approvedMembers = allMembersData.filter(m => m.status === 'Approved');
-    displayMembers(approvedMembers);
+    // Pass adminSettings to displayMembers to get the normal card frame URL
+    displayMembers(approvedMembers, data.adminSettings || {});
 
     displayCustomCards((data.adminSettings && data.adminSettings.custom_cards) || {});
     displayCommunityLetters((data.adminSettings && data.adminSettings.community_letters) || {});
@@ -151,7 +151,7 @@ function displayHeaderButtons(buttons) {
     attachDynamicButtonListeners();
 }
 
-function displayMembers(members) {
+function displayMembers(members, adminSettings) {
     if (!elements.memberContainer) return;
     elements.memberContainer.innerHTML = '';
     if (!members || members.length === 0) {
@@ -159,14 +159,16 @@ function displayMembers(members) {
         return;
     }
 
+    // Naya normal card frame URL database se lein, fallback URL bhi dein
+    const normalCardFrameUrl = adminSettings.normal_card_frame_url || 'https://i.ibb.co/Y7LYKDcb/20251007-103318.png';
+
     members.forEach((member, index) => {
         const isNegative = (member.balance || 0) < 0;
 
-        // === YAHAN BADLAV KIYA GAYA HAI: Top 3 aur Normal cards ke liye alag alag HTML ===
         if (index < 3) {
-            // TOP 3 FRAMED CARDS
+            // === TOP 3 FRAMED CARDS (KOI BADLAV NAHI) ===
             const card = document.createElement('div');
-            card.className = 'framed-card-wrapper animate-on-scroll'; // Naya wrapper class
+            card.className = 'framed-card-wrapper animate-on-scroll'; 
             const rankType = ['gold', 'silver', 'bronze'][index];
             const frameImageUrls = {
                 gold: 'https://i.ibb.co/8L3P0Ctv/20251007-080918.png',
@@ -178,13 +180,8 @@ function displayMembers(members) {
 
             card.innerHTML = `
                 <div class="framed-card-content">
-                    <!-- Layer 1: Profile Picture -->
                     <img src="${member.displayImageUrl}" alt="${member.name}" class="framed-member-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
-                    
-                    <!-- Layer 2: Frame Image -->
                     <img src="${frameImageUrls[rankType]}" alt="${rankType} frame" class="card-frame-image">
-
-                    <!-- Layer 3: Text Content -->
                     <p class="framed-member-name" title="${member.name}">${member.name}</p>
                     <p class="framed-member-balance ${balanceClass}">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
                     ${member.isPrime ? '<div class="framed-prime-tag">Prime</div>' : ''}
@@ -194,23 +191,40 @@ function displayMembers(members) {
             elements.memberContainer.appendChild(card);
 
         } else {
-            // NORMAL CARDS
+            // === NORMAL CARDS (RANK 4+) KE LIYE NAYA DESIGN ===
             const card = document.createElement('div');
-            card.className = 'member-card animate-on-scroll';
+            card.className = 'normal-framed-card-wrapper animate-on-scroll';
             const balanceClass = isNegative ? 'negative-balance' : '';
+            
+            // Ranking number ke liye Suffix (4th, 5th, etc.)
+            const getRankSuffix = (i) => {
+                const j = i % 10, k = i % 100;
+                if (j === 1 && k !== 11) return "st";
+                if (j === 2 && k !== 12) return "nd";
+                if (j === 3 && k !== 13) return "rd";
+                return "th";
+            };
+            const rank = index + 1;
+            const rankText = rank + getRankSuffix(rank);
 
             card.innerHTML = `
-                <div class="member-photo-container">
-                    <img src="${member.displayImageUrl}" alt="${member.name}" class="member-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
-                    ${member.isPrime ? '<div class="prime-tag">Prime</div>' : ''}
+                <div class="normal-card-content">
+                    <!-- Layer 1: Frame Image -->
+                    <img src="${normalCardFrameUrl}" alt="Card Frame" class="normal-card-frame-image">
+                    
+                    <!-- Layer 2: Profile Picture -->
+                    <img src="${member.displayImageUrl}" alt="${member.name}" class="normal-framed-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
+                    
+                    <!-- Layer 3: Text Content & Rank -->
+                    <div class="normal-card-rank">${rankText}</div>
+                    <p class="normal-framed-name" title="${member.name}">${member.name}</p>
+                    <p class="normal-framed-balance ${balanceClass}">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
+                    ${member.isPrime ? '<div class="normal-prime-tag">Prime</div>' : ''}
                 </div>
-                <p class="member-name" title="${member.name}">${member.name}</p>
-                <p class="member-balance ${balanceClass}">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
             `;
             card.onclick = () => showMemberProfileModal(member.id);
             elements.memberContainer.appendChild(card);
         }
-        // === BADLAV SAMAPT ===
     });
     observeElements(document.querySelectorAll('.animate-on-scroll'));
 }
@@ -845,5 +859,4 @@ function showFullImage(src, alt) {
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
-
 
