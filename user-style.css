@@ -311,9 +311,9 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     background-color: var(--card-bg);
     border-radius: 10px;
     flex: 0 0 45%;
-    max-width: 170px;
+    max-width: 190px; /* UPDATED: चौड़ाई बढ़ाई गई */
     text-align: center;
-    padding: 10px; /* UPDATED: Height kam karne ke liye padding kam ki gayi */
+    padding: 8px; /* UPDATED: ऊंचाई कम करने के लिए पैडिंग घटाई गई */
     box-shadow: 0 5px 10px var(--shadow-color);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
@@ -329,7 +329,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     aspect-ratio: 1 / 1;
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 8px; /* UPDATED: Height kam karne ke liye margin kam kiya gaya */
+    margin-bottom: 6px; /* UPDATED: ऊंचाई कम करने के लिए मार्जिन घटाया गया */
     background-color: #f0f0f0;
     border: 3px solid white;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -340,7 +340,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .member-name { 
     font-size: 1em; 
     font-weight: 600; 
-    margin: 4px 0; /* UPDATED: Height kam karne ke liye margin kam kiya gaya */
+    margin: 2px 0; /* UPDATED: ऊंचाई कम करने के लिए मार्जिन घटाया गया */
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: ellipsis; 
@@ -349,7 +349,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .member-balance { 
     background-color: var(--primary-color); 
     color: white; 
-    padding: 6px 10px; /* UPDATED: Height kam karne ke liye padding kam ki gayi */
+    padding: 5px 10px; /* UPDATED: ऊंचाई कम करने के लिए पैडिंग घटाई गई */
     margin-top: auto; 
     border-radius: 8px; 
     font-size: 0.9em; 
@@ -581,4 +581,3 @@ footer p { color: #f8f9fa; margin: 0; }
 @media (min-width: 992px) { .member-card { flex: 0 0 20%; max-width: 210px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
 @media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card { flex: 0 0 15%; max-width: 220px; } h2 { font-size: 2.2em; } }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
