@@ -1,6 +1,6 @@
 // user-data.js
-// FINAL BADLAV: Member card par dikhne wala balance ab (Total SIP - Total Active Loan) hoga.
-// Extra Payment aur Extra Withdraw ko is calculation se hata diya gaya hai.
+// FINAL BADLAV: "Community Funds" modal mein "Total SIP Amount" ki calculation theek kar di gayi hai.
+// Ab yeh sirf SIP amount ko jodega, Extra Payment/Withdraw ko nahi.
 
 const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
 const PRIME_MEMBERS = ["Prince rama", "Amit kumar", "Mithilesh Sahni"];
@@ -39,7 +39,6 @@ export async function fetchAndProcessData(database) {
 
             const memberTransactions = allTransactions.filter(tx => tx.memberId === memberId);
             
-            // === YAHAN FINAL BADLAV KIYA GAYA HAI ===
             let totalSipAmount = 0;
             let totalReturn = 0;
             let loanCount = 0;
@@ -57,13 +56,10 @@ export async function fetchAndProcessData(database) {
                 }
             });
 
-            // Sirf active loan ka amount calculate karein
             const memberActiveLoans = allActiveLoans.filter(loan => loan.memberId === memberId && loan.status === 'Active');
             const totalOutstandingLoan = memberActiveLoans.reduce((sum, loan) => sum + parseFloat(loan.outstandingAmount || 0), 0);
             
-            // Card par dikhane ke liye final balance: (Total SIP) - (Total Active Loan)
             const displayBalanceOnCard = totalSipAmount - totalOutstandingLoan;
-            // === BADLAV SAMAPT ===
 
             const now = new Date();
             const currentMonthSip = memberTransactions.find(tx => 
@@ -76,7 +72,7 @@ export async function fetchAndProcessData(database) {
                 ...member,
                 id: memberId,
                 name: member.fullName,
-                balance: displayBalanceOnCard, // Yahan 'balance' ab aapke naye formula se aa raha hai
+                balance: displayBalanceOnCard,
                 totalReturn: totalReturn,
                 loanCount: loanCount,
                 displayImageUrl: member.profilePicUrl || DEFAULT_IMAGE,
@@ -112,12 +108,21 @@ export async function fetchAndProcessData(database) {
  * Poore community ke liye aarthik (financial) stats calculate karta hai.
  */
 function calculateCommunityStats(processedMembers, allTransactions, allActiveLoans, penaltyWallet) {
-    let totalSipAmount = 0;
+    // === YAHAN BADLAV KIYA GAYA HAI ===
+    let totalPureSipAmount = 0; // Yeh sirf SIP ko jodega
+    let totalCommunityDeposits = 0; // Yeh SIP, Extra Payment, aur Extra Withdraw sabko jodega/ghatayega
+
     allTransactions.forEach(tx => {
+        // Sirf SIP amount ke liye alag se calculation
+        if (tx.type === 'SIP') {
+            totalPureSipAmount += parseFloat(tx.amount || 0);
+        }
+        
+        // Community balance ke liye sabhi deposit/withdraw ka calculation
         if (tx.type === 'SIP' || tx.type === 'Extra Payment') {
-            totalSipAmount += parseFloat(tx.amount || 0);
+            totalCommunityDeposits += parseFloat(tx.amount || 0);
         } else if (tx.type === 'Extra Withdraw') {
-            totalSipAmount -= parseFloat(tx.amount || 0);
+            totalCommunityDeposits -= parseFloat(tx.amount || 0);
         }
     });
 
@@ -137,13 +142,14 @@ function calculateCommunityStats(processedMembers, allTransactions, allActiveLoa
     const totalPenaltyExpenses = penaltyExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
     return {
-        totalSipAmount,
+        totalSipAmount: totalPureSipAmount, // UI ko ab sirf SIP ka total bheja jayega
         totalCurrentLoanAmount,
         netReturnAmount: totalInterestReceived - penaltyFromInterest,
-        availableCommunityBalance: totalSipAmount - totalCurrentLoanAmount,
+        availableCommunityBalance: totalCommunityDeposits - totalCurrentLoanAmount, // Available balance pehle ki tarah sahi calculate hoga
         totalPenaltyBalance: totalPenaltyIncomes - totalPenaltyExpenses,
         totalLoanDisbursed: allTransactions.filter(tx => tx.type === 'Loan Taken').reduce((sum, tx) => sum + tx.amount, 0)
     };
+    // === BADLAV SAMAPT ===
 }
 
 
