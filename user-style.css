@@ -7,6 +7,7 @@ FINAL UPDATE:
 5. Framed cards ka size bada kiya gaya hai aur content ko frame ke upar position kiya gaya hai.
 6. Rank medals/badges hata diye gaye hain.
 7. Name/Amount/Prime tag ko frame par aakhri baar aache se set kiya gaya hai.
+8. Normal card aur Framed card ka CSS puri tarah se alag kar diya gaya hai.
 */
 
 :root {
@@ -302,7 +303,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .member-slider::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 4px; border: 2px solid #e0f2f7; }
 .member-slider::-webkit-scrollbar-thumb:hover { background-color: var(--primary-darker); }
 
-/* Normal Member Card (White) */
+/* === NORMAL CARD KE LIYE ALAG CSS === */
 .member-card {
     position: relative;
     background-color: var(--card-bg);
@@ -332,52 +333,68 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     position: relative;
 }
-.member-card img.member-photo { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
-.member-card:hover img.member-photo { transform: scale(1.05); }
+.member-card .member-photo { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
+.member-card:hover .member-photo { transform: scale(1.05); }
 .member-name { font-size: 1em; font-weight: 600; margin: 8px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-color); }
 .member-balance { background-color: var(--primary-color); color: white; padding: 8px 10px; margin-top: auto; border-radius: 8px; font-size: 0.9em; font-weight: bold; display: block; width: 90%; box-sizing: border-box; text-align: center; margin-left: auto; margin-right: auto; }
 .member-balance.negative-balance { background-color: var(--danger-color); }
+.prime-tag {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background-color: var(--prime-color);
+    color: var(--text-color);
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    line-height: 1;
+    z-index: 2;
+}
 
-/* === NAYE STYLES CUSTOM FRAME CARDS KE LIYE (FINAL UPDATE) === */
-.framed-card {
-    flex: 0 0 60%; /* Normal card se bada */
-    max-width: 230px; /* Normal card se bada */
-    height: 340px; /* Normal card se lamba */
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    border: none;
-    box-shadow: none;
-    background-color: transparent !important;
-    padding: 0;
-    transition: transform 0.3s ease, filter 0.3s ease;
+/* === FRAMED CARD KE LIYE ALAG CSS (FINAL UPDATE) === */
+.framed-card-wrapper {
+    flex: 0 0 55%; /* Bada size */
+    max-width: 220px; /* Bada size */
+    height: 330px; /* Lambai */
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }
-.framed-card:hover {
+.framed-card-wrapper:hover {
     transform: translateY(-8px) scale(1.03);
-    filter: brightness(1.1);
-    box-shadow: none;
 }
-.framed-card .member-photo-container {
+.framed-card-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+/* Layer 1: Profile Photo */
+.framed-member-photo {
     position: absolute;
-    top: 21%; /* Frame ke upar se space */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 82%; /* Photo ka size bada kiya */
-    aspect-ratio: 1 / 1;
-    margin-bottom: 0;
-    box-shadow: none;
-    border-radius: 12px;
-    background-color: transparent;
-}
-.framed-card .member-photo-container.no-border {
-    border: none;
-}
-.framed-card .member-photo {
+    top: 17.5%; /* Frame ke andar fit karne ke liye */
+    left: 9%;   /* Frame ke andar fit karne ke liye */
+    width: 82%; /* Photo ka size */
+    height: 50%; /* Photo ki lambai */
+    object-fit: cover;
     border-radius: 10px;
+    z-index: 1; /* Sabse neeche */
 }
-.framed-card .member-name {
+/* Layer 2: Frame Image */
+.card-frame-image {
     position: absolute;
-    bottom: 27%; /* Name ko upar kiya */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2; /* Photo ke upar */
+    pointer-events: none; /* Click ko photo tak jaane de */
+}
+/* Layer 3: Text & Tags */
+.framed-member-name {
+    position: absolute;
+    bottom: 23%; /* Name ki position */
     width: 100%;
     left: 0;
     color: white;
@@ -385,44 +402,47 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     margin: 0;
     padding: 0 10px;
     box-sizing: border-box;
-    font-size: 1.2em; /* Font size thoda bada */
+    font-size: 1.25em;
     font-weight: 700;
+    z-index: 3; /* Sabse upar */
 }
-.framed-card .member-balance {
+.framed-member-balance {
     position: absolute;
-    bottom: 11%; /* Amount ko upar kiya */
+    bottom: 10%; /* Amount ki position */
     width: 100%;
     left: 0;
-    background: transparent;
     font-weight: 700;
-    font-size: 1.3em; /* Font size thoda bada */
-    padding: 0;
-    margin: 0;
+    font-size: 1.35em;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    z-index: 3; /* Sabse upar */
 }
-.framed-card .prime-tag {
+.framed-prime-tag {
     position: absolute;
-    bottom: 38%; /* Picture ke andar neeche set kiya */
-    right: 12%;
+    bottom: 30%; /* Picture ke andar neeche */
+    right: 15%;
+    background-color: var(--prime-color);
+    color: var(--text-color);
     padding: 3px 8px;
+    border-radius: 6px;
     font-size: 10px;
-    z-index: 5;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 3; /* Sabse upar */
 }
-/* Amount ke liye alag-alag colors */
-.framed-card .member-balance.balance-gold {
+/* Amount ke alag-alag colors */
+.framed-member-balance.balance-gold {
     color: #4b3200; 
 }
-.framed-card .member-balance.balance-silver {
+.framed-member-balance.balance-silver {
     color: white;
 }
-.framed-card .member-balance.balance-bronze {
+.framed-member-balance.balance-bronze {
     color: #ffeb3b; 
 }
-.framed-card .member-balance.negative-balance {
+.framed-member-balance.negative-balance {
     color: #ffc4c4; 
     text-shadow: 1px 1px 2px #000;
 }
-/* === NAYE STYLES SAMAPT === */
 
 
 #customCardsSection { background: none; border: none; box-shadow: none; padding: 0; margin-top: -20px; }
@@ -532,7 +552,7 @@ footer p { color: #f8f9fa; margin: 0; }
 @keyframes slideInNotification { to { opacity: 1; transform: translateX(0); } }
 @keyframes fadeOutNotification { from { opacity: 1; } to { opacity: 0; transform: translateX(110%); } }
 @keyframes slideOutNotification { to { opacity: 0; transform: translateX(110%); } }
-@media (min-width: 576px) { .member-card { flex: 0 0 30%; max-width: 180px; } h2 { font-size: 1.9em; } .info-card-slide { flex: 0 0 320px; } .framed-card { flex: 0 0 35%; max-width: 250px; height: 370px;} }
+@media (min-width: 576px) { .member-card { flex: 0 0 30%; max-width: 180px; } h2 { font-size: 1.9em; } .info-card-slide { flex: 0 0 320px; } .framed-card-wrapper { flex: 0 0 35%; max-width: 250px; height: 375px;} }
 @media (min-width: 768px) { .member-card { flex: 0 0 22%; max-width: 200px; } h2 { font-size: 2em; } }
 @media (min-width: 992px) { .member-card { flex: 0 0 20%; max-width: 210px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
 @media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card { flex: 0 0 15%; max-width: 220px; } h2 { font-size: 2.2em; } }
