@@ -397,8 +397,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 /* Layer 1: Profile Photo */
 .framed-member-photo {
     position: absolute;
-    top: 15.5%; /* UPDATED: Photo ko thoda upar kiya */
-    left: 9%;
+    top: 10.5%; /* UPDATED: Photo ko thoda upar kiya */
+    left: 8%;
     width: 82%;
     height: 50%;
     object-fit: cover;
@@ -418,7 +418,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 /* Layer 3: Text & Tags */
 .framed-member-name {
     position: absolute;
-    bottom: 25%; /* UPDATED: Name ko thoda upar kiya */
+    bottom: 28%; /* UPDATED: Name ko thoda upar kiya */
     width: 100%;
     left: 0;
     color: white;
@@ -432,7 +432,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 .framed-member-balance {
     position: absolute;
-    bottom: 8%; /* UPDATED: Amount ko thoda neeche kiya */
+    bottom: 6%; /* UPDATED: Amount ko thoda neeche kiya */
     width: 100%;
     left: 0;
     font-weight: 700;
@@ -442,8 +442,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 .framed-prime-tag {
     position: absolute;
-    bottom: 35%; /* UPDATED: Prime tag ko kaafi upar kiya */
-    right: 16%; /* UPDATED: Thoda left mein adjust kiya */
+    bottom: 40%; /* UPDATED: Prime tag ko kaafi upar kiya */
+    right: 12%; /* UPDATED: Thoda left mein adjust kiya */
     background-color: var(--prime-color);
     color: var(--text-color);
     padding: 3px 8px;
