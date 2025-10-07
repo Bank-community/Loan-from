@@ -4,6 +4,9 @@
 // 1. buildInfoSlider function mein card ka layout theek kiya gaya hai (Text upar, Image neeche).
 // 2. "Fund Deposit" card mein aapka diya gaya image URL set kar diya gaya hai.
 // 3. Top 3 member cards mein custom frame background image set ki gayi hai.
+// 4. Rank medals/badges hata diye gaye hain.
+// 5. Framed cards ka size badha diya gaya hai aur amount ke colors badal diye gaye hain.
+// 6. Framed card ke photo container se border hata diya gaya hai.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -158,40 +161,36 @@ function displayMembers(members) {
         return;
     }
 
-    const medalURLs = ["https://www.svgrepo.com/show/452215/gold-medal.svg", "https://www.svgrepo.com/show/452101/silver-medal.svg", "https://www.svgrepo.com/show/452174/bronze-medal.svg"];
-
     members.forEach((member, index) => {
         const card = document.createElement('div');
         card.className = 'member-card animate-on-scroll';
-        let rankHTML = '';
+        
+        const isNegative = (member.balance || 0) < 0;
+        let balanceClass = isNegative ? 'negative-balance' : '';
+        let photoContainerClass = '';
 
-        // === YAHAN BADLAV KIYA GAYA HAI: Top 3 members ke liye custom frame set karna ===
+        // === YAHAN BADLAV KIYA GAYA HAI: Top 3 members ke liye naya setup ===
         if (index < 3) {
-            rankHTML = `<img src="${medalURLs[index]}" class="rank-icon" alt="Medal">`;
             const rankType = ['gold', 'silver', 'bronze'][index];
-    
             const frameImageUrls = {
                 gold: 'https://i.ibb.co/vvTSnZh6/1759764912786.png',
                 silver: 'https://i.ibb.co/MxphKkV5/20251007-053941.png',
                 bronze: 'https://i.ibb.co/ZzL1SJYn/20251007-053807.png'
             };
-    
-            if (frameImageUrls[rankType]) {
-                card.style.backgroundImage = `url(${frameImageUrls[rankType]})`;
-                card.classList.add('framed-card'); // CSS mein special styling ke liye naya class
-            }
+            
+            card.style.backgroundImage = `url(${frameImageUrls[rankType]})`;
+            card.classList.add('framed-card');
+            
+            balanceClass += ` balance-${rankType}`; // Amount ke color ke liye class
+            photoContainerClass = 'no-border'; // Photo se border hatane ke liye class
         }
         // === BADLAV SAMAPT ===
-        
-        const isNegative = (member.balance || 0) < 0;
-        const balanceClass = isNegative ? 'negative-balance' : '';
 
         card.innerHTML = `
-            ${rankHTML}
-            <div class="member-photo-container">
+            <div class="member-photo-container ${photoContainerClass}">
                 <img src="${member.displayImageUrl}" alt="${member.name}" class="member-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
-                ${member.isPrime ? '<div class="prime-tag">Prime</div>' : ''}
             </div>
+             ${member.isPrime ? '<div class="prime-tag">Prime</div>' : ''}
             <p class="member-name" title="${member.name}">${member.name}</p>
             <p class="member-balance ${balanceClass}">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
         `;
@@ -831,3 +830,4 @@ function showFullImage(src, alt) {
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
+
