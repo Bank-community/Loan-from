@@ -9,6 +9,7 @@ FINAL UPDATE:
 7. Name/Amount/Prime tag ko frame par aakhri baar aache se set kiya gaya hai.
 8. [USER REQUEST] Normal card (Rank 4+) ke liye naya frame-based design aur ranking number system joda gaya hai.
 9. [USER REQUEST 2] Normal card mein profile photo ki layering (z-index) theek ki gayi hai.
+10. [USER REQUEST 3] Normal card ka size aur style ko Top 3 card ke "Same to Same" kiya gaya hai. Rank number ka color black kiya gaya hai. Name ka color white with shadow kiya gaya hai.
 */
 
 :root {
@@ -385,10 +386,11 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 
 
 /* === NORMAL FRAMED CARD (RANK 4+) === */
+/* UPDATED: Wrapper ka size Top 3 jaisa kiya gaya */
 .normal-framed-card-wrapper {
-    flex: 0 0 48%; /* Flexbox size */
-    max-width: 200px; /* Max chauḍai */
-    height: 300px; /* Unchai */
+    flex: 0 0 55%;
+    max-width: 220px;
+    height: 330px;
     cursor: pointer;
     transition: transform 0.3s ease;
     position: relative;
@@ -405,13 +407,13 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 /* Layer 1: Profile Photo */
 .normal-framed-photo {
     position: absolute;
-    top: 8%;
-    left: 10%;
-    width: 80%;
-    height: 48%; /* Photo ka size */
+    top: 7.5%;
+    left: 12%;
+    width: 82%;
+    height: 50%;
     object-fit: cover;
-    border-radius: 12px; /* Photo ke kone rounded */
-    z-index: 1; /* UPDATED: Photo sabse peeche */
+    border-radius: 10px;
+    z-index: 1; /* Photo sabse peeche */
 }
 /* Layer 2: Frame Image */
 .normal-card-frame-image {
@@ -420,62 +422,62 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 2; /* UPDATED: Frame photo ke upar */
-    pointer-events: none; /* Click ko photo tak jaane de */
+    z-index: 2; /* Frame photo ke upar */
+    pointer-events: none;
 }
 /* Layer 3: Baaki Content */
 .normal-card-rank {
     position: absolute;
     top: 4.5%;
     left: 6%;
-    width: 18%; /* Badge/gole ka size */
-    height: 11%; /* Badge/gole ka size */
+    width: 18%; 
+    height: 11%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: black; /* UPDATED: Color black kiya gaya */
     font-size: 1.1em;
     font-weight: 700;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-    z-index: 3; /* UPDATED: Text frame ke upar */
+    text-shadow: 0 0 1px rgba(255,255,255,0.5); /* Halki si white shadow */
+    z-index: 3;
 }
 .normal-framed-name {
     position: absolute;
-    bottom: 23%;
+    bottom: 25%;
     width: 100%;
     left: 0;
-    color: #4B5563; /* Dark Grey text */
+    color: white; /* UPDATED: Color white kiya gaya */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9); /* UPDATED: Shadow joda gaya */
     margin: 0;
-    padding: 0 15px;
+    padding: 0 10px;
     box-sizing: border-box;
-    font-size: 1.15em;
+    font-size: 1.25em;
     font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    z-index: 3; /* UPDATED: Text frame ke upar */
+    z-index: 3;
 }
 .normal-framed-balance {
     position: absolute;
-    bottom: 5.5%;
-    left: 12%;
-    width: 76%;
-    height: 13%;
+    bottom: 4%;
+    width: 100%;
+    left: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: 700;
-    font-size: 1.25em;
+    font-size: 1.35em;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    z-index: 3; /* UPDATED: Text frame ke upar */
+    z-index: 3;
 }
 .normal-framed-balance.negative-balance {
-    color: #FECACA; /* Halka laal */
+    color: #FECACA;
 }
 .normal-prime-tag {
     position: absolute;
-    top: 9%;
+    bottom: 35%;
     right: 12%;
     background-color: var(--prime-color);
     color: var(--text-color);
@@ -484,7 +486,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     font-size: 10px;
     font-weight: bold;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    z-index: 3; /* UPDATED: Text frame ke upar */
+    z-index: 3;
 }
 
 
