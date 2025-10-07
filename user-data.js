@@ -1,5 +1,6 @@
 // user-data.js
-// BADLAV: Ab yah admin panel se header_buttons ka data bhi laayega.
+// FINAL BADLAV: Member card par dikhne wala balance ab (Total SIP - Total Active Loan) hoga.
+// Extra Payment aur Extra Withdraw ko is calculation se hata diya gaya hai.
 
 const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
 const PRIME_MEMBERS = ["Prince rama", "Amit kumar", "Mithilesh Sahni"];
@@ -26,9 +27,7 @@ export async function fetchAndProcessData(database) {
         const manualNotificationsRaw = notificationsRaw.manual || {};
         const automatedQueueRaw = notificationsRaw.automatedQueue || {};
         const allProductsRaw = data.products || {};
-        // === YAHAN BADLAV KIYA GAYA HAI: header_buttons ko alag se fetch karna ===
         const headerButtonsRaw = adminSettingsRaw.header_buttons || {};
-        // === BADLAV SAMAPT ===
 
         const processedMembers = {};
         const allTransactions = Object.values(allTransactionsRaw);
@@ -40,16 +39,16 @@ export async function fetchAndProcessData(database) {
 
             const memberTransactions = allTransactions.filter(tx => tx.memberId === memberId);
             
-            let depositBalance = 0;
+            // === YAHAN FINAL BADLAV KIYA GAYA HAI ===
+            let totalSipAmount = 0;
             let totalReturn = 0;
             let loanCount = 0;
 
             memberTransactions.forEach(tx => {
-                if (tx.type === 'SIP' || tx.type === 'Extra Payment') {
-                    depositBalance += parseFloat(tx.amount || 0);
-                } else if (tx.type === 'Extra Withdraw') {
-                    depositBalance -= parseFloat(tx.amount || 0);
+                if (tx.type === 'SIP') {
+                    totalSipAmount += parseFloat(tx.amount || 0);
                 }
+                
                 if (tx.type === 'Loan Payment') {
                     totalReturn += parseFloat(tx.interestPaid || 0);
                 }
@@ -58,10 +57,13 @@ export async function fetchAndProcessData(database) {
                 }
             });
 
+            // Sirf active loan ka amount calculate karein
             const memberActiveLoans = allActiveLoans.filter(loan => loan.memberId === memberId && loan.status === 'Active');
             const totalOutstandingLoan = memberActiveLoans.reduce((sum, loan) => sum + parseFloat(loan.outstandingAmount || 0), 0);
             
-            const finalBalance = depositBalance - totalOutstandingLoan;
+            // Card par dikhane ke liye final balance: (Total SIP) - (Total Active Loan)
+            const displayBalanceOnCard = totalSipAmount - totalOutstandingLoan;
+            // === BADLAV SAMAPT ===
 
             const now = new Date();
             const currentMonthSip = memberTransactions.find(tx => 
@@ -74,7 +76,7 @@ export async function fetchAndProcessData(database) {
                 ...member,
                 id: memberId,
                 name: member.fullName,
-                balance: finalBalance,
+                balance: displayBalanceOnCard, // Yahan 'balance' ab aapke naye formula se aa raha hai
                 totalReturn: totalReturn,
                 loanCount: loanCount,
                 displayImageUrl: member.profilePicUrl || DEFAULT_IMAGE,
@@ -97,9 +99,7 @@ export async function fetchAndProcessData(database) {
             manualNotifications: manualNotificationsRaw,
             automatedQueue: automatedQueueRaw,
             allProducts: allProductsRaw,
-            // === YAHAN BADLAV KIYA GAYA HAI: header_buttons ko return object mein jodna ===
             headerButtons: headerButtonsRaw,
-            // === BADLAV SAMAPT ===
         };
 
     } catch (error) {
