@@ -10,6 +10,7 @@ FINAL UPDATE:
 8. Normal card aur Framed card ka CSS puri tarah se alag kar diya gaya hai.
 9. [USER REQUEST] Normal card ki height kam ki gayi hai.
 10. [USER REQUEST] Framed card par elements (photo, name, amount, tag) ko re-adjust kiya gaya hai.
+11. [USER REQUEST 2] Normal card mein (Height, Width, Name, Picture, Amount) ko re-adjust kiya gaya hai.
 */
 
 :root {
@@ -309,11 +310,11 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .member-card {
     position: relative;
     background-color: var(--card-bg);
-    border-radius: 10px;
+    border-radius: 12px; /* Card ko thoda aur rounded kiya */
     flex: 0 0 45%;
-    max-width: 200px; /* UPDATED: चौड़ाई बढ़ाई गई */
+    max-width: 220px; /* UPDATED: Chauḍai badhai gayi */
     text-align: center;
-    padding: 4px; /* UPDATED: ऊंचाई कम करने के लिए पैडिंग घटाई गई */
+    padding: 0; /* UPDATED: Padding hatakar neeche elements se control kiya */
     box-shadow: 0 5px 10px var(--shadow-color);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
@@ -322,25 +323,26 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow: hidden; /* Amount background ko card ke andar rakhne ke liye */
 }
 .member-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); }
 .member-photo-container {
-    width: 100%;
+    width: calc(100% - 16px); /* UPDATED: Photo ke kinare thoda gap */
     aspect-ratio: 1 / 1;
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 6px; /* UPDATED: ऊंचाई कम करने के लिए मार्जिन घटाया गया */
+    margin-top: 8px; /* UPDATED: Upar se gap */
+    margin-bottom: 8px; /* UPDATED: Neeche se gap */
     background-color: #f0f0f0;
-    border: 3px solid white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     position: relative;
 }
 .member-card .member-photo { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
 .member-card:hover .member-photo { transform: scale(1.05); }
 .member-name { 
-    font-size: 1em; 
-    font-weight: 600; 
-    margin: 2px 0; /* UPDATED: ऊंचाई कम करने के लिए मार्जिन घटाया गया */
+    font-size: 1.1em; 
+    font-weight: 700; /* UPDATED: Name ko bold kiya gaya */
+    margin: 0 0 8px 0; /* UPDATED: Amount se pehle thoda gap */
+    padding: 0 10px;
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: ellipsis; 
@@ -349,17 +351,14 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .member-balance { 
     background-color: var(--primary-color); 
     color: white; 
-    padding: 5px 10px; /* UPDATED: ऊंचाई कम करने के लिए पैडिंग घटाई गई */
+    padding: 8px 10px; /* UPDATED: Thoda mota background */
     margin-top: auto; 
-    border-radius: 8px; 
-    font-size: 0.9em; 
-    font-weight: bold; 
+    font-size: 1.05em; /* UPDATED: Amount ka size badhaya gaya */
+    font-weight: 700; /* UPDATED: Amount ko bold kiya gaya */
     display: block; 
-    width: 90%; 
+    width: 100%; /* UPDATED: Puri chauḍai */
     box-sizing: border-box; 
     text-align: center; 
-    margin-left: auto; 
-    margin-right: auto; 
 }
 .member-balance.negative-balance { background-color: var(--danger-color); }
 .prime-tag {
@@ -581,3 +580,4 @@ footer p { color: #f8f9fa; margin: 0; }
 @media (min-width: 992px) { .member-card { flex: 0 0 20%; max-width: 210px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
 @media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card { flex: 0 0 15%; max-width: 220px; } h2 { font-size: 2.2em; } }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
