@@ -1,12 +1,10 @@
 // user-ui.js
 
 // FINAL UPDATE:
-// 1. buildInfoSlider function mein card ka layout theek kiya gaya hai (Text upar, Image neeche).
-// 2. "Fund Deposit" card mein aapka diya gaya image URL set kar diya gaya hai.
-// 3. Top 3 member cards mein custom frame background image set ki gayi hai.
-// 4. Rank medals/badges hata diye gaye hain.
-// 5. Framed cards ka size badha diya gaya hai aur amount ke colors badal diye gaye hain.
-// 6. Framed card ke photo container se border hata diya gaya hai.
+// 1. Top 3 cards ke liye HTML structure ko layering ke liye badla gaya hai (Photo neeche, Frame upar).
+// 2. Framed cards aur Normal cards ke liye alag-alag classes ka istemal kiya gaya hai.
+// 3. Rank medals/badges hata diye gaye hain.
+// 4. Amount ke colors ko set karne ka logic update kiya gaya hai.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -162,40 +160,57 @@ function displayMembers(members) {
     }
 
     members.forEach((member, index) => {
-        const card = document.createElement('div');
-        card.className = 'member-card animate-on-scroll';
-        
         const isNegative = (member.balance || 0) < 0;
-        let balanceClass = isNegative ? 'negative-balance' : '';
-        let photoContainerClass = '';
 
-        // === YAHAN BADLAV KIYA GAYA HAI: Top 3 members ke liye naya setup ===
+        // === YAHAN BADLAV KIYA GAYA HAI: Top 3 aur Normal cards ke liye alag alag HTML ===
         if (index < 3) {
+            // TOP 3 FRAMED CARDS
+            const card = document.createElement('div');
+            card.className = 'framed-card-wrapper animate-on-scroll'; // Naya wrapper class
             const rankType = ['gold', 'silver', 'bronze'][index];
             const frameImageUrls = {
                 gold: 'https://i.ibb.co/vvTSnZh6/1759764912786.png',
                 silver: 'https://i.ibb.co/MxphKkV5/20251007-053941.png',
                 bronze: 'https://i.ibb.co/ZzL1SJYn/20251007-053807.png'
             };
-            
-            card.style.backgroundImage = `url(${frameImageUrls[rankType]})`;
-            card.classList.add('framed-card');
-            
-            balanceClass += ` balance-${rankType}`; // Amount ke color ke liye class
-            photoContainerClass = 'no-border'; // Photo se border hatane ke liye class
+            let balanceClass = isNegative ? 'negative-balance' : '';
+            balanceClass += ` balance-${rankType}`;
+
+            card.innerHTML = `
+                <div class="framed-card-content">
+                    <!-- Layer 1: Profile Picture -->
+                    <img src="${member.displayImageUrl}" alt="${member.name}" class="framed-member-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
+                    
+                    <!-- Layer 2: Frame Image -->
+                    <img src="${frameImageUrls[rankType]}" alt="${rankType} frame" class="card-frame-image">
+
+                    <!-- Layer 3: Text Content -->
+                    <p class="framed-member-name" title="${member.name}">${member.name}</p>
+                    <p class="framed-member-balance ${balanceClass}">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
+                    ${member.isPrime ? '<div class="framed-prime-tag">Prime</div>' : ''}
+                </div>
+            `;
+            card.onclick = () => showMemberProfileModal(member.id);
+            elements.memberContainer.appendChild(card);
+
+        } else {
+            // NORMAL CARDS
+            const card = document.createElement('div');
+            card.className = 'member-card animate-on-scroll';
+            const balanceClass = isNegative ? 'negative-balance' : '';
+
+            card.innerHTML = `
+                <div class="member-photo-container">
+                    <img src="${member.displayImageUrl}" alt="${member.name}" class="member-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
+                    ${member.isPrime ? '<div class="prime-tag">Prime</div>' : ''}
+                </div>
+                <p class="member-name" title="${member.name}">${member.name}</p>
+                <p class="member-balance ${balanceClass}">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
+            `;
+            card.onclick = () => showMemberProfileModal(member.id);
+            elements.memberContainer.appendChild(card);
         }
         // === BADLAV SAMAPT ===
-
-        card.innerHTML = `
-            <div class="member-photo-container ${photoContainerClass}">
-                <img src="${member.displayImageUrl}" alt="${member.name}" class="member-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
-            </div>
-             ${member.isPrime ? '<div class="prime-tag">Prime</div>' : ''}
-            <p class="member-name" title="${member.name}">${member.name}</p>
-            <p class="member-balance ${balanceClass}">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
-        `;
-        card.onclick = () => showMemberProfileModal(member.id);
-        elements.memberContainer.appendChild(card);
     });
     observeElements(document.querySelectorAll('.animate-on-scroll'));
 }
@@ -830,4 +845,5 @@ function showFullImage(src, alt) {
 const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
 function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
+
 
