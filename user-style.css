@@ -3,7 +3,7 @@ FINAL UPDATE:
 1. Community Info section ki spacing theek ki gayi hai.
 2. Prime Member card ka naam bold aur center kiya gaya hai.
 3. Info cards mein image ke liye naya style joda gaya hai.
-4. MEMBER CARD ka size badhaya gaya hai.
+4. Top 3 member cards ke liye custom frame styles jode gaye hain.
 */
 
 :root {
@@ -64,7 +64,6 @@ header h4 { color: rgba(255, 255, 255, 0.9); margin: 0 0 20px 0; font-weight: 40
 
 section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px var(--shadow-color); border: 1px solid var(--border-color); }
 
-/* === PRODUCTS SECTION UPDATE === */
 .products-section { 
     background: linear-gradient(135deg, #2d3748, #1a202c);
     padding: 25px 0;
@@ -186,16 +185,15 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 @media (min-width: 992px) { .action-cards { grid-template-columns: repeat(4, 1fr); max-width: 900px; margin-left: auto; margin-right: auto; } }
 @media (min-width: 1200px) { .action-cards { grid-template-columns: repeat(4, 1fr); max-width: 1100px; } }
 
-/* === COMMUNITY INFO SECTION UPDATE === */
 .info-slider-section {
     background: transparent;
     border: none;
     box-shadow: none;
-    padding: 0 20px; /* Section mein padding jodi gayi */
+    padding: 0 20px;
 }
 .info-slider-section h2 {
     font-size: 1.7em;
-    padding: 0; /* yahan se padding hatayi gayi */
+    padding: 0;
     margin-bottom: 20px;
     justify-content: flex-start;
     text-align: left;
@@ -204,7 +202,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     display: flex;
     overflow-x: auto;
     gap: 15px;
-    padding: 10px 0; /* yahan se padding hatayi gayi */
+    padding: 10px 0;
     margin: 0;
     scrollbar-width: none;
     -ms-overflow-style: none; 
@@ -246,17 +244,14 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     color: var(--light-text);
     flex-grow: 1;
 }
-/* Card mein image ke liye naya style */
 .info-card-image {
     width: 100%;
     aspect-ratio: 5 / 6;
     object-fit: cover;
     border-radius: 8px;
-    display: block; /* यह लाइन जोड़ें */
-    margin: 0 auto 15px; /* margin-top और margin-bottom को इस एक लाइन से बदल दें */
+    display: block;
+    margin: 0 auto 15px;
 }
-
-/* Prime Member Card ke liye naya Style */
 .prime-member-card {
     display: flex;
     align-items: center;
@@ -276,7 +271,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     margin-bottom: 5px;
 }
 .prime-member-card span {
-    font-weight: bold; /* Naam ko bold kiya gaya */
+    font-weight: bold;
     font-size: 1.1em;
     color: var(--text-color);
 }
@@ -303,41 +298,76 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .member-slider::-webkit-scrollbar-track { background: #e0f2f7; border-radius: 4px;}
 .member-slider::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 4px; border: 2px solid #e0f2f7; }
 .member-slider::-webkit-scrollbar-thumb:hover { background-color: var(--primary-darker); }
-
-/* === MEMBER CARD UPDATE START === */
-.member-card {
-    position: relative;
-    background-color: var(--card-bg);
-    border-radius: 12px;
-    flex: 0 0 47%; /* Thodi si jagah badhayi gayi */
-    max-width: 180px; /* Card ki max-width badhayi gayi */
-    text-align: center;
-    padding: 14px; /* Padding ko adjust kiya gaya */
-    box-shadow: 0 5px 10px var(--shadow-color);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-    cursor: pointer;
-    border: 1px solid var(--border-color);
-    box-sizing: border-box;
-    overflow: visible;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-/* === MEMBER CARD UPDATE END === */
-
+.member-card { position: relative; background-color: var(--card-bg); border-radius: 12px; flex: 0 0 45%; max-width: 160px; text-align: center; padding: 12px; box-shadow: 0 5px 10px var(--shadow-color); transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; cursor: pointer; border: 1px solid var(--border-color); box-sizing: border-box; overflow: visible; display: flex; flex-direction: column; align-items: center; }
 .member-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); }
 .member-photo-container { width: 100%; aspect-ratio: 1 / 1; border-radius: 8px; overflow: hidden; margin-bottom: 12px; background-color: #f0f0f0; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; }
 .member-card img.member-photo { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
 .member-card:hover img.member-photo { transform: scale(1.05); }
-.member-name { font-size: 1.05em; font-weight: 600; margin: 8px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-color); }
+.member-name { font-size: 1em; font-weight: 600; margin: 8px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-color); }
 .member-balance { background-color: var(--primary-color); color: white; padding: 8px 10px; margin-top: auto; border-radius: 8px; font-size: 0.9em; font-weight: bold; display: block; width: 90%; box-sizing: border-box; text-align: center; margin-left: auto; margin-right: auto; }
-.member-balance.negative-balance {
-    background-color: var(--danger-color);
-}
+.member-balance.negative-balance { background-color: var(--danger-color); }
 .prime-tag { position: absolute; bottom: 8px; right: 8px; background-color: var(--prime-color); color: var(--text-color); padding: 4px 9px; border-radius: 6px; font-size: 11px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); line-height: 1; z-index: 2; }
 .rank-icon { position: absolute; top: -10px; left: -10px; width: 40px; height: 40px; z-index: 2; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); background: white; border-radius: 50%; padding: 2px; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
 .colored-card .member-name { color: #ffffff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
 .colored-card .member-balance { box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+
+/* === NAYE STYLES CUSTOM FRAME CARDS KE LIYE === */
+.framed-card {
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+    box-shadow: none;
+    background-color: transparent !important; /* Fallback color ko override karein */
+    padding: 15px 12px;
+    height: 235px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.framed-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+}
+.framed-card .member-photo-container {
+    width: calc(100% - 16px);
+    height: 120px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 25px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+.framed-card .member-photo {
+    border-radius: 6px;
+}
+.framed-card .member-name {
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    margin-top: 10px;
+    font-size: 1.05em;
+}
+.framed-card .member-balance {
+    background: transparent;
+    color: #1a202c;
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-top: 8px;
+    padding: 0;
+    width: 100%;
+    text-shadow: none;
+}
+.framed-card .member-balance.negative-balance {
+    background: transparent; /* Red background ko hatayein */
+    color: #ffdddd; /* Halka laal rang, jo frame par dikhe */
+    text-shadow: 1px 1px 2px #000;
+}
+.framed-card .prime-tag {
+    bottom: 5px;
+    right: 5px;
+}
+/* === NAYE STYLES SAMAPT === */
+
+
 #customCardsSection { background: none; border: none; box-shadow: none; padding: 0; margin-top: -20px; }
 .custom-card-slider-wrapper { position: relative; }
 .custom-cards-container { display: flex; gap: 15px; overflow-x: auto; scroll-behavior: smooth; padding: 20px 15px; -webkit-overflow-scrolling: touch; scrollbar-width: none; scroll-snap-type: x mandatory; }
@@ -445,29 +475,8 @@ footer p { color: #f8f9fa; margin: 0; }
 @keyframes slideInNotification { to { opacity: 1; transform: translateX(0); } }
 @keyframes fadeOutNotification { from { opacity: 1; } to { opacity: 0; transform: translateX(110%); } }
 @keyframes slideOutNotification { to { opacity: 0; transform: translateX(110%); } }
-
-/* === MEDIA QUERIES UPDATE START === */
-@media (min-width: 576px) { 
-    header h1 { font-size: 2.4em; } 
-    .member-card { flex: 0 0 30%; max-width: 200px; } 
-    h2 { font-size: 1.9em; } 
-    .info-card-slide { flex: 0 0 320px; } 
-}
-@media (min-width: 768px) { 
-    header h1 { font-size: 2.6em; } 
-    .member-card { flex: 0 0 22%; max-width: 210px; } 
-    h2 { font-size: 2em; } 
-}
-@media (min-width: 992px) { 
-    .member-card { flex: 0 0 20%; max-width: 220px; } 
-    .balance-display { font-size: 3.2em; } 
-    h2 { font-size: 2.1em; } 
-}
-@media (min-width: 1200px) { 
-    .content-wrapper, .header-container, .member-slider { max-width: 1140px; } 
-    .member-card { flex: 0 0 15%; max-width: 230px; } 
-    h2 { font-size: 2.2em; } 
-}
-/* === MEDIA QUERIES UPDATE END === */
+@media (min-width: 576px) { header h1 { font-size: 2.4em; } .member-card { flex: 0 0 30%; max-width: 180px; } h2 { font-size: 1.9em; } .info-card-slide { flex: 0 0 320px; } }
+@media (min-width: 768px) { header h1 { font-size: 2.6em; } .member-card { flex: 0 0 22%; max-width: 200px; } h2 { font-size: 2em; } }
+@media (min-width: 992px) { .member-card { flex: 0 0 20%; max-width: 210px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
+@media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card { flex: 0 0 15%; max-width: 220px; } h2 { font-size: 2.2em; } }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
