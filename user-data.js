@@ -1,6 +1,7 @@
 // user-data.js
-// FINAL BADLAV: "Community Funds" modal mein "Total SIP Amount" ki calculation theek kar di gayi hai.
-// Ab yeh sirf SIP amount ko jodega, Extra Payment/Withdraw ko nahi.
+// FINAL & CORRECTED UPDATE: "Available Community Balance" ki calculation ab
+// sirf (Total SIP Amount - Total Current Loan Amount) होगी। Extra transactions ka
+// is par koi asar nahi hoga.
 
 const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
 const PRIME_MEMBERS = ["Prince rama", "Amit kumar", "Mithilesh Sahni"];
@@ -108,21 +109,13 @@ export async function fetchAndProcessData(database) {
  * Poore community ke liye aarthik (financial) stats calculate karta hai.
  */
 function calculateCommunityStats(processedMembers, allTransactions, allActiveLoans, penaltyWallet) {
-    // === YAHAN BADLAV KIYA GAYA HAI ===
-    let totalPureSipAmount = 0; // Yeh sirf SIP ko jodega
-    let totalCommunityDeposits = 0; // Yeh SIP, Extra Payment, aur Extra Withdraw sabko jodega/ghatayega
+    // === YAHAN FINAL BADLAV KIYA GAYA HAI ===
+    let totalPureSipAmount = 0;
 
+    // Sirf 'SIP' transactions ko jodkar 'Total SIP Amount' banaya jayega.
     allTransactions.forEach(tx => {
-        // Sirf SIP amount ke liye alag se calculation
         if (tx.type === 'SIP') {
             totalPureSipAmount += parseFloat(tx.amount || 0);
-        }
-        
-        // Community balance ke liye sabhi deposit/withdraw ka calculation
-        if (tx.type === 'SIP' || tx.type === 'Extra Payment') {
-            totalCommunityDeposits += parseFloat(tx.amount || 0);
-        } else if (tx.type === 'Extra Withdraw') {
-            totalCommunityDeposits -= parseFloat(tx.amount || 0);
         }
     });
 
@@ -130,6 +123,10 @@ function calculateCommunityStats(processedMembers, allTransactions, allActiveLoa
         .filter(loan => loan.status === 'Active')
         .reduce((sum, loan) => sum + parseFloat(loan.outstandingAmount || 0), 0);
 
+    // 'Available Community Balance' ki calculation ko theek kiya gaya hai.
+    const availableCommunityBalance = totalPureSipAmount - totalCurrentLoanAmount;
+
+    // Baaki calculations jaise hain waise hi rahenge.
     const totalInterestReceived = allTransactions
         .filter(tx => tx.type === 'Loan Payment')
         .reduce((sum, tx) => sum + parseFloat(tx.interestPaid || 0), 0);
@@ -142,10 +139,10 @@ function calculateCommunityStats(processedMembers, allTransactions, allActiveLoa
     const totalPenaltyExpenses = penaltyExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
     return {
-        totalSipAmount: totalPureSipAmount, // UI ko ab sirf SIP ka total bheja jayega
+        totalSipAmount: totalPureSipAmount, // Modal mein dikhane ke liye
         totalCurrentLoanAmount,
         netReturnAmount: totalInterestReceived - penaltyFromInterest,
-        availableCommunityBalance: totalCommunityDeposits - totalCurrentLoanAmount, // Available balance pehle ki tarah sahi calculate hoga
+        availableCommunityBalance: availableCommunityBalance, // Sahi formula ke saath
         totalPenaltyBalance: totalPenaltyIncomes - totalPenaltyExpenses,
         totalLoanDisbursed: allTransactions.filter(tx => tx.type === 'Loan Taken').reduce((sum, tx) => sum + tx.amount, 0)
     };
