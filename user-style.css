@@ -311,9 +311,9 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     background-color: var(--card-bg);
     border-radius: 10px;
     flex: 0 0 45%;
-    max-width: 190px; /* UPDATED: चौड़ाई बढ़ाई गई */
+    max-width: 200px; /* UPDATED: चौड़ाई बढ़ाई गई */
     text-align: center;
-    padding: 8px; /* UPDATED: ऊंचाई कम करने के लिए पैडिंग घटाई गई */
+    padding: 4px; /* UPDATED: ऊंचाई कम करने के लिए पैडिंग घटाई गई */
     box-shadow: 0 5px 10px var(--shadow-color);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
