@@ -169,7 +169,7 @@ function displayMembers(members) {
             card.className = 'framed-card-wrapper animate-on-scroll'; // Naya wrapper class
             const rankType = ['gold', 'silver', 'bronze'][index];
             const frameImageUrls = {
-                gold: 'https://i.ibb.co/jPyXPNz7/20251007-074344.png',
+                gold: 'https://i.ibb.co/xt9cNfPv/1000071873.png',
                 silver: 'https://i.ibb.co/MxphKkV5/20251007-053941.png',
                 bronze: 'https://i.ibb.co/ZzL1SJYn/20251007-053807.png'
             };
