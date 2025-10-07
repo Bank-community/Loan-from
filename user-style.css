@@ -341,7 +341,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .framed-member-photo {
     position: absolute;
     top: 7.5%;
-    left: 8%;
+    left: 11%;
     width: 76%; /* Photo thodi patli ki gayi */
     height: 50%;
     object-fit: cover;
@@ -384,7 +384,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 .framed-prime-tag {
     position: absolute;
-    bottom: 32%;
+    bottom: 34%;
     right: 15%; /* Position adjust ki gayi */
     background-color: var(--prime-color);
     color: var(--text-color);
@@ -423,7 +423,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .normal-framed-photo {
     position: absolute;
     top: 7.5%;
-    left: 8%;
+    left: 11%;
     width: 76%;
     height: 50%;
     object-fit: cover;
@@ -490,7 +490,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 .normal-prime-tag {
     position: absolute;
-    bottom: 32%;
+    bottom: 34%;
     right: 15%;
     background-color: var(--prime-color);
     color: var(--text-color);
