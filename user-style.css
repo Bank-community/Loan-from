@@ -7,10 +7,7 @@ FINAL UPDATE:
 5. Framed cards ka size bada kiya gaya hai aur content ko frame ke upar position kiya gaya hai.
 6. Rank medals/badges hata diye gaye hain.
 7. Name/Amount/Prime tag ko frame par aakhri baar aache se set kiya gaya hai.
-8. Normal card aur Framed card ka CSS puri tarah se alag kar diya gaya hai.
-9. [USER REQUEST] Normal card ki height kam ki gayi hai.
-10. [USER REQUEST] Framed card par elements (photo, name, amount, tag) ko re-adjust kiya gaya hai.
-11. [USER REQUEST 2] Normal card mein (Height, Width, Name, Picture, Amount) ko re-adjust kiya gaya hai.
+8. [USER REQUEST] Normal card (Rank 4+) ke liye naya frame-based design aur ranking number system joda gaya hai.
 */
 
 :root {
@@ -306,81 +303,12 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .member-slider::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 4px; border: 2px solid #e0f2f7; }
 .member-slider::-webkit-scrollbar-thumb:hover { background-color: var(--primary-darker); }
 
-/* === NORMAL CARD KE LIYE ALAG CSS (UPDATED) === */
-.member-card {
-    position: relative;
-    background-color: var(--card-bg);
-    border-radius: 12px; /* Card ko thoda aur rounded kiya */
-    flex: 0 0 45%;
-    max-width: 220px; /* UPDATED: Chauḍai badhai gayi */
-    text-align: center;
-    padding: 0; /* UPDATED: Padding hatakar neeche elements se control kiya */
-    box-shadow: 0 5px 10px var(--shadow-color);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-    border: 1px solid var(--border-color);
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: hidden; /* Amount background ko card ke andar rakhne ke liye */
-}
-.member-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); }
-.member-photo-container {
-    width: calc(100% - 16px); /* UPDATED: Photo ke kinare thoda gap */
-    aspect-ratio: 1 / 1;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-top: 8px; /* UPDATED: Upar se gap */
-    margin-bottom: 8px; /* UPDATED: Neeche se gap */
-    background-color: #f0f0f0;
-    position: relative;
-}
-.member-card .member-photo { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
-.member-card:hover .member-photo { transform: scale(1.05); }
-.member-name { 
-    font-size: 1.1em; 
-    font-weight: 700; /* UPDATED: Name ko bold kiya gaya */
-    margin: 0 0 8px 0; /* UPDATED: Amount se pehle thoda gap */
-    padding: 0 10px;
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-    color: var(--text-color); 
-}
-.member-balance { 
-    background-color: var(--primary-color); 
-    color: white; 
-    padding: 8px 10px; /* UPDATED: Thoda mota background */
-    margin-top: auto; 
-    font-size: 1.05em; /* UPDATED: Amount ka size badhaya gaya */
-    font-weight: 700; /* UPDATED: Amount ko bold kiya gaya */
-    display: block; 
-    width: 100%; /* UPDATED: Puri chauḍai */
-    box-sizing: border-box; 
-    text-align: center; 
-}
-.member-balance.negative-balance { background-color: var(--danger-color); }
-.prime-tag {
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    background-color: var(--prime-color);
-    color: var(--text-color);
-    padding: 4px 9px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    line-height: 1;
-    z-index: 2;
-}
 
-/* === FRAMED CARD KE LIYE ALAG CSS (UPDATED) === */
+/* === TOP 3 FRAMED CARD (RANK 1-3) === */
 .framed-card-wrapper {
-    flex: 0 0 55%; /* Bada size */
-    max-width: 220px; /* Bada size */
-    height: 330px; /* Lambai */
+    flex: 0 0 55%;
+    max-width: 220px;
+    height: 330px;
     cursor: pointer;
     transition: transform 0.3s ease;
 }
@@ -393,31 +321,28 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     height: 100%;
     text-align: center;
 }
-/* Layer 1: Profile Photo */
 .framed-member-photo {
     position: absolute;
-    top: 7.5%; /* UPDATED: Photo ko thoda upar kiya */
+    top: 7.5%;
     left: 12%;
     width: 82%;
     height: 50%;
     object-fit: cover;
     border-radius: 10px;
-    z-index: 1; /* Sabse neeche */
+    z-index: 1;
 }
-/* Layer 2: Frame Image */
 .card-frame-image {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 2; /* Photo ke upar */
-    pointer-events: none; /* Click ko photo tak jaane de */
+    z-index: 2;
+    pointer-events: none;
 }
-/* Layer 3: Text & Tags */
 .framed-member-name {
     position: absolute;
-    bottom: 25%; /* UPDATED: Name ko thoda upar kiya */
+    bottom: 25%;
     width: 100%;
     left: 0;
     color: white;
@@ -427,22 +352,22 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     box-sizing: border-box;
     font-size: 1.25em;
     font-weight: 700;
-    z-index: 3; /* Sabse upar */
+    z-index: 3;
 }
 .framed-member-balance {
     position: absolute;
-    bottom: 4%; /* UPDATED: Amount ko thoda neeche kiya */
+    bottom: 4%;
     width: 100%;
     left: 2px;
     font-weight: 700;
     font-size: 1.35em;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    z-index: 3; /* Sabse upar */
+    z-index: 3;
 }
 .framed-prime-tag {
     position: absolute;
-    bottom: 35%; /* UPDATED: Prime tag ko kaafi upar kiya */
-    right: 12%; /* UPDATED: Thoda left mein adjust kiya */
+    bottom: 35%;
+    right: 12%;
     background-color: var(--prime-color);
     color: var(--text-color);
     padding: 3px 8px;
@@ -450,21 +375,114 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     font-size: 10px;
     font-weight: bold;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    z-index: 3; /* Sabse upar */
+    z-index: 3;
 }
-/* Amount ke alag-alag colors */
-.framed-member-balance.balance-gold {
-    color: #4b3200; 
+.framed-member-balance.balance-gold { color: #4b3200; }
+.framed-member-balance.balance-silver { color: white; }
+.framed-member-balance.balance-bronze { color: #ffeb3b; }
+.framed-member-balance.negative-balance { color: #ffc4c4; text-shadow: 1px 1px 2px #000; }
+
+
+/* === NORMAL FRAMED CARD (RANK 4+) === */
+.normal-framed-card-wrapper {
+    flex: 0 0 48%; /* Flexbox size */
+    max-width: 200px; /* Max chauḍai */
+    height: 300px; /* Unchai */
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    position: relative;
 }
-.framed-member-balance.balance-silver {
+.normal-framed-card-wrapper:hover {
+    transform: translateY(-8px) scale(1.03);
+}
+.normal-card-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+/* Layer 1: Frame Image */
+.normal-card-frame-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Frame sabse peeche */
+}
+/* Layer 2: Profile Photo */
+.normal-framed-photo {
+    position: absolute;
+    top: 8%;
+    left: 10%;
+    width: 80%;
+    height: 48%; /* Photo ka size */
+    object-fit: cover;
+    border-radius: 12px; /* Photo ke kone rounded */
+    z-index: 2; /* Frame ke upar */
+}
+/* Layer 3: Baaki Content */
+.normal-card-rank {
+    position: absolute;
+    top: 4.5%;
+    left: 6%;
+    width: 18%; /* Badge/gole ka size */
+    height: 11%; /* Badge/gole ka size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: white;
+    font-size: 1.1em;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+    z-index: 4; /* Sabse upar */
 }
-.framed-member-balance.balance-bronze {
-    color: #ffeb3b; 
+.normal-framed-name {
+    position: absolute;
+    bottom: 23%;
+    width: 100%;
+    left: 0;
+    color: #4B5563; /* Dark Grey text */
+    margin: 0;
+    padding: 0 15px;
+    box-sizing: border-box;
+    font-size: 1.15em;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    z-index: 3;
 }
-.framed-member-balance.negative-balance {
-    color: #ffc4c4; 
-    text-shadow: 1px 1px 2px #000;
+.normal-framed-balance {
+    position: absolute;
+    bottom: 5.5%;
+    left: 12%;
+    width: 76%;
+    height: 13%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.25em;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    z-index: 3;
+}
+.normal-framed-balance.negative-balance {
+    color: #FECACA; /* Halka laal */
+}
+.normal-prime-tag {
+    position: absolute;
+    top: 9%;
+    right: 12%;
+    background-color: var(--prime-color);
+    color: var(--text-color);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 3;
 }
 
 
@@ -580,4 +598,5 @@ footer p { color: #f8f9fa; margin: 0; }
 @media (min-width: 992px) { .member-card { flex: 0 0 20%; max-width: 210px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
 @media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card { flex: 0 0 15%; max-width: 220px; } h2 { font-size: 2.2em; } }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
 
