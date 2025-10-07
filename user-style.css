@@ -8,6 +8,7 @@ FINAL UPDATE:
 6. Rank medals/badges hata diye gaye hain.
 7. Name/Amount/Prime tag ko frame par aakhri baar aache se set kiya gaya hai.
 8. [USER REQUEST] Normal card (Rank 4+) ke liye naya frame-based design aur ranking number system joda gaya hai.
+9. [USER REQUEST 2] Normal card mein profile photo ki layering (z-index) theek ki gayi hai.
 */
 
 :root {
@@ -401,16 +402,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     height: 100%;
     text-align: center;
 }
-/* Layer 1: Frame Image */
-.normal-card-frame-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1; /* Frame sabse peeche */
-}
-/* Layer 2: Profile Photo */
+/* Layer 1: Profile Photo */
 .normal-framed-photo {
     position: absolute;
     top: 8%;
@@ -419,7 +411,17 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     height: 48%; /* Photo ka size */
     object-fit: cover;
     border-radius: 12px; /* Photo ke kone rounded */
-    z-index: 2; /* Frame ke upar */
+    z-index: 1; /* UPDATED: Photo sabse peeche */
+}
+/* Layer 2: Frame Image */
+.normal-card-frame-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2; /* UPDATED: Frame photo ke upar */
+    pointer-events: none; /* Click ko photo tak jaane de */
 }
 /* Layer 3: Baaki Content */
 .normal-card-rank {
@@ -435,7 +437,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     font-size: 1.1em;
     font-weight: 700;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-    z-index: 4; /* Sabse upar */
+    z-index: 3; /* UPDATED: Text frame ke upar */
 }
 .normal-framed-name {
     position: absolute;
@@ -451,7 +453,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    z-index: 3;
+    z-index: 3; /* UPDATED: Text frame ke upar */
 }
 .normal-framed-balance {
     position: absolute;
@@ -466,7 +468,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     font-weight: 700;
     font-size: 1.25em;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    z-index: 3;
+    z-index: 3; /* UPDATED: Text frame ke upar */
 }
 .normal-framed-balance.negative-balance {
     color: #FECACA; /* Halka laal */
@@ -482,7 +484,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     font-size: 10px;
     font-weight: bold;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    z-index: 3;
+    z-index: 3; /* UPDATED: Text frame ke upar */
 }
 
 
