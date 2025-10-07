@@ -311,7 +311,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     background-color: var(--card-bg);
     border-radius: 10px;
     flex: 0 0 45%;
-    max-width: 160px;
+    max-width: 170px;
     text-align: center;
     padding: 10px; /* UPDATED: Height kam karne ke liye padding kam ki gayi */
     box-shadow: 0 5px 10px var(--shadow-color);
@@ -418,7 +418,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 /* Layer 3: Text & Tags */
 .framed-member-name {
     position: absolute;
-    bottom: 23%; /* UPDATED: Name ko thoda upar kiya */
+    bottom: 25%; /* UPDATED: Name ko thoda upar kiya */
     width: 100%;
     left: 0;
     color: white;
