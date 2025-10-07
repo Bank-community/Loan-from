@@ -398,7 +398,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .framed-member-photo {
     position: absolute;
     top: 7.5%; /* UPDATED: Photo ko thoda upar kiya */
-    left: 4%;
+    left: 12%;
     width: 82%;
     height: 50%;
     object-fit: cover;
@@ -432,9 +432,9 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 .framed-member-balance {
     position: absolute;
-    bottom: 6%; /* UPDATED: Amount ko thoda neeche kiya */
+    bottom: 4%; /* UPDATED: Amount ko thoda neeche kiya */
     width: 100%;
-    left: 0;
+    left: 2px;
     font-weight: 700;
     font-size: 1.35em;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
