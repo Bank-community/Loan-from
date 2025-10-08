@@ -134,7 +134,6 @@
             font-size: 1.1em;
         }
 
-        /* === YAHAN INSTALL BUTTON KE LIYE NAYA CSS JODA GAYA HAI === */
         #install-btn {
             display: flex;
             align-items: center;
@@ -153,14 +152,13 @@
             box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
         #install-btn:hover {
-            background-color: #218838; /* Darker green */
+            background-color: #218838;
         }
         #install-btn img {
             width: 28px;
             height: 28px;
             margin-right: 12px;
         }
-        /* === CSS BADLAV SAMAPT === */
     </style>
 </head>
 <body>
@@ -173,23 +171,17 @@
     </header>
 
     <main id="notificationsContainer" class="notifications-container">
-        <!-- === YAHAN INSTALL BUTTON KE LIYE CONTAINER JODA GAYA HAI === -->
         <div id="install-container" style="display: none; margin-bottom: 15px;">
             <button id="install-btn">
                 <img src="https://i.ibb.co/pjB1bQ7J/1752978674430.jpg" alt="App Logo">
                 <span>BANK Install App</span>
             </button>
         </div>
-        <!-- === HTML BADLAV SAMAPT === -->
         <p class="loading-text">Loading notifications...</p>
     </main>
 
     <script>
         const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
-        
-        // === YAHAN PWA INSTALL LOGIC KE LIYE VARIABLE JODA GAYA HAI ===
-        let deferredInstallPrompt = null;
-        // === SCRIPT BADLAV SAMAPT ===
 
         async function initializeApp() {
             try {
@@ -213,32 +205,27 @@
             }
         }
 
-        // === YAHAN PWA INSTALL FUNCTION JODA GAYA HAI ===
+        // === YAHAN BADLAV KIYA GAYA HAI: PWA Install Logic ko update kiya gaya hai ===
         function setupPWAInstall() {
             const installContainer = document.getElementById('install-container');
             const installBtn = document.getElementById('install-btn');
 
-            window.addEventListener('beforeinstallprompt', (e) => {
-                // Mini-infobar ko aane se rokein
-                e.preventDefault();
-                // Event ko store karein taki baad me istemal kar sakein
-                deferredInstallPrompt = e;
-                // Ab install button ko dikhayein
+            // Check karein ki global deferredInstallPrompt maujood hai ya nahi
+            if (window.deferredInstallPrompt) {
                 if (installContainer) {
                     installContainer.style.display = 'block';
                 }
-            });
-
+            }
+            
             if (installBtn) {
                 installBtn.addEventListener('click', async () => {
-                    if (deferredInstallPrompt) {
-                        // Install prompt dikhayein
-                        deferredInstallPrompt.prompt();
-                        // User ke jawab ka intezar karein
-                        await deferredInstallPrompt.userChoice;
-                        // Prompt ka istemal ho chuka hai, use clear kar dein
-                        deferredInstallPrompt = null;
-                        // Install button ko wapas chhipa dein
+                    // Global prompt ka istemal karein
+                    const promptEvent = window.deferredInstallPrompt;
+                    if (promptEvent) {
+                        promptEvent.prompt();
+                        await promptEvent.userChoice;
+                        // Prompt ka istemal hone ke baad global variable ko clear kar dein
+                        window.deferredInstallPrompt = null;
                         if (installContainer) {
                             installContainer.style.display = 'none';
                         }
@@ -246,7 +233,8 @@
                 });
             }
         }
-        // === SCRIPT BADLAV SAMAPT ===
+        // === BADLAV SAMAPT ===
+
 
         function getTodayDateStringLocal() {
             const today = new Date();
@@ -330,13 +318,11 @@
                 return new Date(b.date) - new Date(a.date);
             });
 
-            // Container se loading text hata dein
             const loadingText = container.querySelector('.loading-text');
             if(loadingText) loadingText.remove();
             
             if (allNotifications.length === 0) {
                  if (container.children.length === 1 && container.querySelector('#install-container')) {
-                    // Sirf install button hai, koi notification nahi
                  } else if (container.children.length === 0) {
                     container.innerHTML += `<p class="no-notifications">No new notifications for you.</p>`;
                  }
@@ -432,12 +418,11 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             initializeApp();
-            // === YAHAN PWA INSTALL FUNCTION KO CALL KIYA GAYA HAI ===
             setupPWAInstall(); 
-            // === SCRIPT BADLAV SAMAPT ===
             feather.replace();
         });
     </script>
 </body>
 </html>
+
 
