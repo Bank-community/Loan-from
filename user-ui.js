@@ -183,8 +183,8 @@ function displayMembers(members, adminSettings) {
             const rankType = ['gold', 'silver', 'bronze'][index];
             const frameImageUrls = {
                 gold: 'https://ik.imagekit.io/kdtvm0r78/1764742107098.png',
-                silver: 'https://i.ibb.co/MxphKkV5/20251007-053941.png',
-                bronze: 'https://i.ibb.co/ZzL1SJYn/20251007-053807.png'
+                silver: 'https://ik.imagekit.io/kdtvm0r78/1764747268497.png',
+                bronze: 'https://ik.imagekit.io/kdtvm0r78/1764747301669.png'
             };
             let balanceClass = isNegative ? 'negative-balance' : '';
             balanceClass += ` balance-${rankType}`;
