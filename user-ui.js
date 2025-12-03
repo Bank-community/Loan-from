@@ -1,7 +1,7 @@
 // FINAL STRICT UPDATE:
-// 1. Special Cards (1-3) aur Normal Cards (4+) ke liye alag HTML structure.
-// 2. CSS classes (gold-text, gold-bg, etc.) ko sahi tarike se inject kiya gaya hai.
-// 3. Images fixed kar di gayi hain.
+// 1. Special Cards HTML structure optimized for "Name Plate" alignment.
+// 2. Header Buttons logic refined for Pill Shape.
+// 3. Wallet/Balance buttons targeted correctly.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -22,7 +22,7 @@ const getElement = (id) => document.getElementById(id);
 const elements = {
     memberContainer: getElement('memberContainer'),
     headerActionsContainer: getElement('headerActionsContainer'),
-    staticHeaderButtonsContainer: getElement('staticHeaderButtons'),
+    staticHeaderButtonsContainer: getElement('staticHeaderButtons'), // For Wallet/Balance
     customCardsContainer: getElement('customCardsContainer'),
     communityLetterSlides: getElement('communityLetterSlides'),
     totalMembersValue: getElement('totalMembersValue'),
@@ -127,6 +127,8 @@ function displayHeaderButtons(buttons) {
         const isLink = btnData.url && !isAutoUrl;
         
         const element = document.createElement(isLink ? 'a' : 'button');
+        
+        // Base class + Custom Style Preset
         element.className = `${btnData.base_class || 'civil-button'} ${btnData.style_preset || ''}`;
         
         if (btnData.id) {
@@ -138,19 +140,25 @@ function displayHeaderButtons(buttons) {
             if (btnData.target) element.target = btnData.target;
         }
 
+        // Inner HTML: Icon + Text (Flexbox handles alignment)
         element.innerHTML = `${btnData.icon_svg || ''}<b>${btnData.name || ''}</b>` + (btnData.id === 'notificationBtn' ? '<span id="notificationDot" class="notification-dot"></span>' : '');
         
-        Object.assign(element.style, {
-            backgroundColor: btnData.transparent ? 'transparent' : (btnData.color || 'var(--primary-color)'),
-            color: btnData.textColor || 'white',
-            width: btnData.width || 'auto',
-            height: btnData.height || 'auto',
-            borderRadius: btnData.borderRadius || '50px',
-            borderColor: btnData.borderColor,
-            borderWidth: btnData.borderWidth,
-            borderStyle: (parseFloat(btnData.borderWidth) > 0 || btnData.style_preset === 'btn-outline') ? 'solid' : 'none'
-        });
+        // Apply inline styles ONLY if they don't conflict with our new "Pill" design drastically.
+        // For Wallet/Balance buttons, we let CSS ID selectors take priority.
+        if (!['viewBalanceBtn', 'viewPenaltyWalletBtn'].includes(btnData.id)) {
+            Object.assign(element.style, {
+                backgroundColor: btnData.transparent ? 'transparent' : (btnData.color || 'var(--primary-color)'),
+                color: btnData.textColor || 'white',
+                // Width/Height removed to let padding define the Pill shape
+                borderColor: btnData.borderColor,
+                borderWidth: btnData.borderWidth,
+                borderStyle: (parseFloat(btnData.borderWidth) > 0 || btnData.style_preset === 'btn-outline') ? 'solid' : 'none'
+            });
+        }
 
+        // SEPARATION LOGIC:
+        // Wallet & Balance go to "Bank Members" section.
+        // Others go to Top Header.
         if (['viewBalanceBtn', 'viewPenaltyWalletBtn'].includes(btnData.id)) {
             elements.staticHeaderButtonsContainer.appendChild(element);
         } else {
@@ -173,7 +181,7 @@ function displayMembers(members, adminSettings) {
     const normalCardFrameUrl = adminSettings.normal_card_frame_url || 'https://i.ibb.co/Y7LYKDcb/20251007-103318.png';
 
     members.forEach((member, index) => {
-        // --- SPECIAL LOGIC FOR TOP 3 ---
+        // --- SPECIAL LOGIC FOR TOP 3 (Gold, Silver, Bronze) ---
         if (index < 3) {
             const card = document.createElement('div');
             card.className = 'framed-card-wrapper animate-on-scroll'; 
@@ -193,9 +201,12 @@ function displayMembers(members, adminSettings) {
                     <!-- Layer 2: Frame -->
                     <img src="${frameImageUrls[rankType]}" alt="${rankType} frame" class="card-frame-image">
                     
-                    <!-- Layer 3: Info (Using special colors) -->
+                    <!-- Layer 3: Info (Aligned to Plate) -->
                     <div class="framed-info-container">
+                        <!-- Text color class injected here -->
                         <p class="framed-member-name ${rankType}-text" title="${member.name}">${member.name}</p>
+                        
+                        <!-- Glow BG class injected here for Amount -->
                         <div class="framed-balance-badge ${rankType}-bg">
                             ${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}
                         </div>
@@ -902,5 +913,4 @@ function observeElements(elements) {
 }
 
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
-
 
