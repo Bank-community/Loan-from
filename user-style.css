@@ -249,7 +249,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .framed-member-photo { 
     position: absolute; 
     top: 6%; /* Photo ko frame ke andar fit karne ke liye adjust karein */
-    left: 6%; 
+    left: 12%; 
     width: 80%; 
     height: 50%; 
     object-fit: cover; 
@@ -299,7 +299,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     
     /* NIJJI ADJUSTMENT (Change this value to move Amount Up/Down) */
     /* Is value ko badhane se amount niche jayega, kam karne se upar */
-    margin-top: 10px; 
+    margin-top: 5px; 
 }
 
 /* Colors */
@@ -348,7 +348,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .normal-framed-photo { 
     position: absolute; 
     top: 6%; /* Photo ko upar/niche karne ke liye ise adjust karein */
-    left: 10%; /* Photo ko left/right center karne ke liye */
+    left: 4%; /* Photo ko left/right center karne ke liye */
     width: 80%; /* Photo ki chaudai */
     height: 50%; 
     object-fit: cover; 
