@@ -232,7 +232,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .framed-card-wrapper { 
     flex: 0 0 auto; 
     width: 200px; 
-    height: 330px; 
+    height: 340px; 
     cursor: pointer; 
     transition: transform 0.3s ease; 
     filter: drop-shadow(0 8px 15px rgba(0,0,0,0.2)); 
