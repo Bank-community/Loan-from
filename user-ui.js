@@ -182,7 +182,7 @@ function displayMembers(members, adminSettings) {
             card.className = 'framed-card-wrapper animate-on-scroll'; 
             const rankType = ['gold', 'silver', 'bronze'][index];
             const frameImageUrls = {
-                gold: 'https://i.ibb.co/8L3P0Ctv/20251007-080918.png',
+                gold: 'https://ik.imagekit.io/kdtvm0r78/1764742107098.png',
                 silver: 'https://i.ibb.co/MxphKkV5/20251007-053941.png',
                 bronze: 'https://i.ibb.co/ZzL1SJYn/20251007-053807.png'
             };
