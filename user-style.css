@@ -267,7 +267,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 .framed-info-container { 
     position: absolute; 
-    bottom: 16%; /* Ye pure naam aur amount ko upar/niche karta hai */
+    bottom: 15%; /* Ye pure naam aur amount ko upar/niche karta hai */
     left: 6%; 
     width: 90%; 
     z-index: 3; 
@@ -299,7 +299,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     
     /* NIJJI ADJUSTMENT (Change this value to move Amount Up/Down) */
     /* Is value ko badhane se amount niche jayega, kam karne se upar */
-    margin-top: 3px; 
+    margin-top: 5px; 
 }
 
 /* Colors */
@@ -348,7 +348,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .normal-framed-photo { 
     position: absolute; 
     top: 8%; /* Photo ko upar/niche karne ke liye ise adjust karein */
-    left: 12%; /* Photo ko left/right center karne ke liye */
+    left: 11%; /* Photo ko left/right center karne ke liye */
     width: 85%; /* Photo ki chaudai */
     height: 50%; 
     object-fit: cover; 
