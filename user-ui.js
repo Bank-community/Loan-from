@@ -1,5 +1,7 @@
-// FINAL FIX: Blank Page issue resolved.
-// Logic: Animate-on-scroll elements ko forcefully visible kiya jayega agar observer fail ho.
+// FINAL STRICT UPDATE:
+// 1. Special Cards (1-3) aur Normal Cards (4+) ke liye alag HTML structure.
+// 2. CSS classes (gold-text, gold-bg, etc.) ko sahi tarike se inject kiya gaya hai.
+// 3. Images fixed kar di gayi hain.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -13,7 +15,7 @@ let allProducts = {};
 let currentMemberForFullView = null;
 let deferredInstallPrompt = null;
 
-// Sound file path check (Ensure this file exists or change path)
+// Sound file path check
 const balanceClickSound = new Audio('/mixkit-clinking-coins-1993.wav');
 
 const getElement = (id) => document.getElementById(id);
@@ -42,16 +44,15 @@ const elements = {
 
 const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
 const WHATSAPP_NUMBER = '7903698180';
-const BANK_LOGO_URL = 'https://ik.imagekit.io/kdtvm0r78/IMG-20251202-WA0000.jpg'; // Updated Logo
+const BANK_LOGO_URL = 'https://ik.imagekit.io/kdtvm0r78/IMG-20251202-WA0000.jpg';
 
 // --- Initialization ---
 export function initUI(database) {
     setupEventListeners(database);
     setupPWA();
-    // Start observing but also set a timeout to force visibility
     observeElements(document.querySelectorAll('.animate-on-scroll'));
     
-    // FAILSAFE: Force elements to be visible after 500ms if observer is stuck
+    // FAILSAFE: Force visibility after a short delay
     setTimeout(() => {
         document.querySelectorAll('.animate-on-scroll').forEach(el => el.classList.add('is-visible'));
     }, 500);
@@ -82,13 +83,10 @@ export function renderPage(data) {
     processAndShowNotifications();
     renderProducts();
 
-    // Re-run feather icons and observer for new dynamic content
     feather.replace();
     
     const newAnimatedElements = document.querySelectorAll('.animate-on-scroll:not(.is-visible)');
     observeElements(newAnimatedElements);
-    
-    // FAILSAFE for dynamic content
     setTimeout(() => {
         newAnimatedElements.forEach(el => el.classList.add('is-visible'));
     }, 300);
@@ -175,26 +173,34 @@ function displayMembers(members, adminSettings) {
     const normalCardFrameUrl = adminSettings.normal_card_frame_url || 'https://i.ibb.co/Y7LYKDcb/20251007-103318.png';
 
     members.forEach((member, index) => {
-        const isNegative = (member.balance || 0) < 0;
-
+        // --- SPECIAL LOGIC FOR TOP 3 ---
         if (index < 3) {
             const card = document.createElement('div');
             card.className = 'framed-card-wrapper animate-on-scroll'; 
+            
             const rankType = ['gold', 'silver', 'bronze'][index];
             const frameImageUrls = {
                 gold: 'https://ik.imagekit.io/kdtvm0r78/1764742107098.png',
                 silver: 'https://ik.imagekit.io/kdtvm0r78/1764747268497.png',
                 bronze: 'https://ik.imagekit.io/kdtvm0r78/1764747301669.png'
             };
-            let balanceClass = isNegative ? 'negative-balance' : '';
-            balanceClass += ` balance-${rankType}`;
 
             card.innerHTML = `
                 <div class="framed-card-content">
+                    <!-- Layer 1: Photo -->
                     <img src="${member.displayImageUrl}" alt="${member.name}" class="framed-member-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
+                    
+                    <!-- Layer 2: Frame -->
                     <img src="${frameImageUrls[rankType]}" alt="${rankType} frame" class="card-frame-image">
-                    <p class="framed-member-name" title="${member.name}">${member.name}</p>
-                    <p class="framed-member-balance ${balanceClass}">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
+                    
+                    <!-- Layer 3: Info (Using special colors) -->
+                    <div class="framed-info-container">
+                        <p class="framed-member-name ${rankType}-text" title="${member.name}">${member.name}</p>
+                        <div class="framed-balance-badge ${rankType}-bg">
+                            ${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}
+                        </div>
+                    </div>
+                    
                     ${member.isPrime ? '<div class="framed-prime-tag">Prime</div>' : ''}
                 </div>
             `;
@@ -202,9 +208,9 @@ function displayMembers(members, adminSettings) {
             elements.memberContainer.appendChild(card);
 
         } else {
+            // --- LOGIC FOR NORMAL CARDS (Rank 4+) ---
             const card = document.createElement('div');
             card.className = 'normal-framed-card-wrapper animate-on-scroll';
-            const balanceClass = isNegative ? 'negative-balance' : '';
             
             const getRankSuffix = (i) => {
                 const j = i % 10, k = i % 100;
@@ -218,11 +224,22 @@ function displayMembers(members, adminSettings) {
 
             card.innerHTML = `
                 <div class="normal-card-content">
-                    <img src="${normalCardFrameUrl}" alt="Card Frame" class="normal-card-frame-image">
+                    <!-- Layer 1: Photo -->
                     <img src="${member.displayImageUrl}" alt="${member.name}" class="normal-framed-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
+                    
+                    <!-- Layer 2: Frame -->
+                    <img src="${normalCardFrameUrl}" alt="Card Frame" class="normal-card-frame-image">
+                    
+                    <!-- Layer 3: Rank & Info -->
                     <div class="normal-card-rank">${rankText}</div>
-                    <p class="normal-framed-name" title="${member.name}">${member.name}</p>
-                    <p class="normal-framed-balance ${balanceClass}">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
+                    
+                    <div class="normal-info-container">
+                        <p class="normal-framed-name" title="${member.name}">${member.name}</p>
+                        <div class="normal-framed-balance">
+                            ${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}
+                        </div>
+                    </div>
+
                     ${member.isPrime ? '<div class="normal-prime-tag">Prime</div>' : ''}
                 </div>
             `;
@@ -246,7 +263,7 @@ function renderProducts() {
     container.innerHTML = '';
     productEntries.forEach(([id, product]) => {
         const card = document.createElement('div');
-        card.className = 'product-card animate-on-scroll'; // Added animation class
+        card.className = 'product-card animate-on-scroll';
         const price = parseFloat(product.price) || 0;
         const mrp = parseFloat(product.mrp) || 0;
 
@@ -885,4 +902,5 @@ function observeElements(elements) {
 }
 
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
+
 
