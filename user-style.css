@@ -1,7 +1,8 @@
 /*
-ROYAL THEME & VISIBILITY FIX:
-1. animate-on-scroll ab default visible rahega taaki JS fail hone par blank page na aaye.
-2. JS load hote hi 'hidden-initially' class add karega animation ke liye.
+ROYAL THEME & EQUAL CARDS FIX:
+1. Cards ko fixed height aur width di gayi hai (Top 3 & Normal).
+2. Gold, Silver, Bronze, aur Normal ke liye specific Text & Shadow Colors.
+3. Photo aur Name ki positioning standardized ki gayi hai.
 */
 
 :root {
@@ -244,37 +245,138 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .header-container { display: flex; justify-content: space-between; align-items: center; padding: 0 25px 20px 25px; flex-wrap: wrap; gap: 15px; max-width: 1140px; margin: 0 auto; }
 .bank-headline { font-size: 1.8em; font-weight: 800; color: var(--primary-color); margin: 0; flex-grow: 1; text-transform: uppercase; letter-spacing: 1px; }
 .header-buttons-wrapper { display: flex; gap: 10px; }
-.member-slider { display: flex; gap: 10px; overflow-x: auto; scroll-behavior: smooth; padding: 30px 10px; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--accent-gold) #e0f2f7; max-width: 1140px; margin: 0 auto; }
+.member-slider { display: flex; gap: 15px; overflow-x: auto; scroll-behavior: smooth; padding: 30px 10px; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--accent-gold) #e0f2f7; max-width: 1140px; margin: 0 auto; }
 .member-slider::-webkit-scrollbar { height: 6px; }
 .member-slider::-webkit-scrollbar-track { background: #e0f2f7; border-radius: 4px;}
 .member-slider::-webkit-scrollbar-thumb { background-color: var(--accent-gold); border-radius: 4px; }
 .member-slider::-webkit-scrollbar-thumb:hover { background-color: #b8860b; }
 
-/* === TOP 3 FRAMED CARD === */
-.framed-card-wrapper { flex: 0 0 auto; width: 180px; height: 305px; cursor: pointer; transition: transform 0.3s ease; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2)); }
-.framed-card-wrapper:hover { transform: translateY(-8px) scale(1.02); filter: drop-shadow(0 8px 15px rgba(212, 175, 55, 0.4)); }
-.framed-card-content { position: relative; width: 100%; height: 100%; text-align: center; }
-.framed-member-photo { position: absolute; top: 7.5%; left: 9%; width: 85%; height: 60%; object-fit: cover; border-radius: 4px; z-index: 1; }
-.card-frame-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
-.framed-member-name { position: absolute; bottom: 26%; width: 100%; left: 0; color: white; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9); margin: 0; padding: 0 10px; box-sizing: border-box; font-size: 1.05em; font-weight: 700; z-index: 3; }
-.framed-member-balance { position: absolute; bottom: 5%; width: 100%; left: 4px; font-weight: 700; font-size: 1.1em; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); z-index: 3; }
-.framed-prime-tag { position: absolute; bottom: 35%; right: 11%; background-color: var(--prime-color); color: var(--text-color); padding: 2px 6px; border-radius: 5px; font-size: 9px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 3; border: 1px solid #fff; }
-.framed-member-balance.balance-gold { color: #FFF8DC; text-shadow: 0 0 5px #B8860B; }
-.framed-member-balance.balance-silver { color: white; }
-.framed-member-balance.balance-bronze { color: #ffeb3b; }
-.framed-member-balance.negative-balance { color: #ffc4c4; text-shadow: 1px 1px 2px #000; }
+/* === SHARED CARD STYLES === */
+/* Important: Same width/height for ALL cards to ensure uniformity */
+.framed-card-wrapper, .normal-framed-card-wrapper {
+    flex: 0 0 auto;
+    width: 200px;
+    height: 320px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.15));
+}
+.framed-card-wrapper:hover, .normal-framed-card-wrapper:hover {
+    transform: translateY(-8px) scale(1.02);
+    filter: drop-shadow(0 8px 15px rgba(212, 175, 55, 0.3));
+}
 
-/* === NORMAL FRAMED CARD (RANK 4+) === */
-.normal-framed-card-wrapper { flex: 0 0 auto; width: 180px; height: 305px; cursor: pointer; transition: transform 0.3s ease; position: relative; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
-.normal-framed-card-wrapper:hover { transform: translateY(-8px) scale(1.02); filter: drop-shadow(0 6px 12px rgba(0, 35, 102, 0.2)); }
-.normal-card-content { position: relative; width: 100%; height: 100%; text-align: center; }
-.normal-framed-photo { position: absolute; top: 7.5%; left: 10%; width: 85%; height: 60%; object-fit: cover; border-radius: 8px; z-index: 1; }
-.normal-card-frame-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
-.normal-card-rank { position: absolute; top: 4%; left: 5%; width: 18%; height: 11%; display: flex; align-items: center; justify-content: center; color: black; font-size: 0.9em; font-weight: 700; text-shadow: 0 0 1px rgba(255,255,255,0.5); z-index: 3; }
-.normal-framed-name { position: absolute; bottom: 26%; width: 100%; left: 0; color: white; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9); margin: 0; padding: 0 10px; box-sizing: border-box; font-size: 1.05em; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 3; }
-.normal-framed-balance { position: absolute; bottom: 5%; width: 100%; left: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.1em; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); z-index: 3; }
-.normal-framed-balance.negative-balance { color: #FECACA; }
-.normal-prime-tag { position: absolute; bottom: 35%; right: 11%; background-color: var(--prime-color); color: var(--text-color); padding: 2px 6px; border-radius: 5px; font-size: 9px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 3; }
+.framed-card-content, .normal-card-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.card-frame-image, .normal-card-frame-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Photo Styling */
+.framed-member-photo, .normal-framed-photo {
+    position: absolute;
+    top: 9%;
+    left: 11%;
+    width: 78%;
+    height: 52%;
+    object-fit: cover;
+    border-radius: 8px;
+    z-index: 1;
+}
+
+/* Info Container for Better Alignment */
+.framed-info-container {
+    position: absolute;
+    bottom: 9%;
+    width: 100%;
+    left: 0;
+    padding: 0 15px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+/* Name Styles */
+.framed-member-name, .normal-framed-name {
+    margin: 0;
+    font-size: 1em;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+}
+
+.gold-text { color: #FFF8DC; }
+.silver-text { color: #F0F8FF; }
+.bronze-text { color: #FFE4B5; }
+.normal-framed-name { color: white; }
+
+/* Balance Badge Styles */
+.framed-balance-badge, .normal-balance-badge {
+    font-weight: 800;
+    font-size: 1.1em;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    color: white;
+    width: 80%;
+    margin-top: 4px;
+}
+
+.gold-bg { color: #FFD700; border-color: #FFD700; background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(50,30,0,0.8)); }
+.silver-bg { color: #E0E0E0; border-color: #E0E0E0; background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(40,40,40,0.8)); }
+.bronze-bg { color: #FFA07A; border-color: #FFA07A; background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(60,30,10,0.8)); }
+
+/* Rank Badge for Normal Cards */
+.normal-card-rank {
+    position: absolute;
+    top: 4%;
+    left: 4%;
+    background: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    font-size: 0.85em;
+    font-weight: 800;
+    z-index: 3;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    border: 2px solid #333;
+}
+
+.framed-prime-tag, .normal-prime-tag {
+    position: absolute;
+    bottom: 27%;
+    right: 12%;
+    background-color: var(--prime-color);
+    color: var(--text-color);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75em;
+    font-weight: 800;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    z-index: 4;
+}
 
 /* --- CUSTOM CARDS --- */
 #customCardsSection { background: none; border: none; box-shadow: none; padding: 0; margin-top: -20px; }
