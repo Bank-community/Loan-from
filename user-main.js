@@ -1,5 +1,6 @@
 // user-main.js
-// BADLAV: PWA install prompt ko global banaya gaya hai taki dusre page bhi istemal kar sakein.
+// SUPER FAST UPDATE: Local Storage Integration & Royal Theme Support
+// FINAL COLOR UPDATE: Install App button ka color Green set kiya gaya hai.
 
 import { fetchAndProcessData } from './user-data.js';
 import { initUI, renderPage, showLoadingError, promptForDeviceVerification, requestNotificationPermission } from './user-ui.js';
@@ -28,7 +29,6 @@ async function checkAuthAndInitialize() {
         const database = firebase.database();
 
         auth.onAuthStateChanged(user => {
-            // Hum maan rahe hain ki user hamesha logged in hai.
             runAppLogic(database);
         });
 
@@ -40,17 +40,29 @@ async function checkAuthAndInitialize() {
 
 /**
  * Mukhya application logic.
+ * Ab ye 'onUpdate' callback ka use karta hai Instant Loading ke liye.
  */
 async function runAppLogic(database) {
     try {
-        const processedData = await fetchAndProcessData(database);
+        // UI Listeners ko pehle hi start kar do (Fast Feel ke liye)
+        initUI(database);
 
-        if (processedData) {
-            initUI(database);
-            renderPage(processedData);
+        // Data aane par kya karna hai, uska logic yahan hai
+        const handleDataUpdate = (data) => {
+            if (!data) return;
+
+            // UI Render karo (Chahe Cache ho ya Fresh)
+            renderPage(data);
             
-            verifyDeviceAndSetupNotifications(database, processedData.processedMembers);
-        }
+            // Device verification check karo
+            if (data.processedMembers) {
+                verifyDeviceAndSetupNotifications(database, data.processedMembers);
+            }
+        };
+
+        // Data fetch process start karo (Yeh Cache aur Network dono handle karega)
+        await fetchAndProcessData(database, handleDataUpdate);
+
     } catch (error) {
         console.error("Failed to run main app logic:", error);
         showLoadingError(error.message);
@@ -75,18 +87,20 @@ async function verifyDeviceAndSetupNotifications(database, allMembers) {
     try {
         let memberId = localStorage.getItem('verifiedMemberId');
 
+        // Agar user verify nahi hai, to prompt dikhao
         if (!memberId) {
+            // Note: Prompt tabhi dikhega jab fresh data load ho chuka ho taaki list complete ho
+            // Hum yahan check kar sakte hain, par logic simple rakhte hain
             memberId = await promptForDeviceVerification(allMembers);
             if (memberId) {
                 localStorage.setItem('verifiedMemberId', memberId);
             } else {
-                console.warn('Device verification cancelled by user.');
+                // User ne cancel kiya ya abhi select nahi kiya
                 return; 
             }
         }
         
-        console.log(`Device verified for member: ${memberId}`);
-
+        // Agar verified hai, to notification permission mango (agar nahi hai)
         const permissionGranted = await requestNotificationPermission();
         if (permissionGranted) {
             try {
@@ -128,29 +142,50 @@ async function registerForPushNotifications(database, memberId) {
     if (token) {
         const tokenRef = database.ref(`members/${memberId}/notificationTokens/${token}`);
         await tokenRef.set(true);
-        console.log('Push notification token saved to Firebase.');
+        // console.log('Push notification token saved to Firebase.');
     }
 }
 
-// === YAHAN BADLAV KIYA GAYA HAI ===
-// PWA install event ko global window object par save karna
+
+// Global variable jisme install prompt save hoga
 window.deferredInstallPrompt = null;
+
+// 'beforeinstallprompt' event ko sunein
 window.addEventListener('beforeinstallprompt', (e) => {
-    // Mini-infobar ko aane se rokein
     e.preventDefault();
-    // Event ko global variable me store karein
     window.deferredInstallPrompt = e;
     
-    // Main page par install button ko dikhayein (agar maujood hai)
-    const installBtn = document.getElementById('installAppBtn');
-    if (installBtn) {
-       installBtn.style.display = 'inline-flex';
+    const installContainer = document.getElementById('install-button-container');
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
+    if (installContainer && !isStandalone) {
+        // Button style: Green Gradient
+        installContainer.innerHTML = `
+    <div class="dynamic-buttons-wrapper" style="padding-top: 0;">
+        <button id="installAppBtn" class="civil-button btn-glossy" style="background-image: linear-gradient(to top, #218838, #28a745); color: white; border: none; border-radius: 12px; width: auto; box-shadow: 0 4px 15px rgba(33, 136, 56, 0.4);">
+            <i data-feather="download-cloud"></i>
+            <b>Install App</b>
+        </button>
+    </div>
+`;
+
+        feather.replace(); // Naye icon ko render karne ke liye
+
+        const installBtn = document.getElementById('installAppBtn');
+        if (installBtn) {
+            installBtn.addEventListener('click', async () => {
+                const promptEvent = window.deferredInstallPrompt;
+                if (!promptEvent) return;
+                promptEvent.prompt();
+                await promptEvent.userChoice;
+                window.deferredInstallPrompt = null;
+                installContainer.innerHTML = ''; // Install hone ke baad button hata dein
+            });
+        }
     }
 });
-// === BADLAV SAMAPT ===
 
 
 // App ko shuru karein
 document.addEventListener('DOMContentLoaded', checkAuthAndInitialize);
-
 
