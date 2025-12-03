@@ -95,19 +95,33 @@
         <p>© <span id="currentYear"></span> Trust Community Fund. All rights reserved. <a href="Exit_Letter.html" style="color: #a0aec0; text-decoration: none; font-size: 0.8em; opacity: 0.7;" title="Exit Community Letter">Exit</a></p>
     </footer>
 
+    <!-- RESTRUCTURED BALANCE MODAL FOR LUXURY LOOK -->
     <div id="balanceModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content luxury-modal">
             <span class="close" id="closeBalanceModal">×</span>
-            <h2>Community Funds</h2>
-            <div id="totalSipAmountDisplay" class="balance-display" style="color: var(--info-color); font-size: 2.4em;">₹0</div>
-            <small class="balance-label">Total SIP Amount</small>
-            <div id="totalCurrentLoanDisplay" class="balance-display" style="color: var(--danger-color); font-size: 2.2em; margin-top: 15px;">₹0</div>
-            <small class="balance-label">Total Current Loan Amount</small>
-            <div id="netReturnAmountDisplay" class="balance-display return" style="margin-top: 15px;">₹0</div>
-            <small class="balance-label">Net Return Amount (After 10% Deduction)</small>
-            <hr style="margin: 20px auto; width: 80%; border: 0; height: 1px; background: var(--border-color);">
-            <div id="availableAmountDisplay" class="balance-display total">₹0</div>
-            <small class="balance-label">Available Community Balance</small>
+            <h2 class="luxury-title">Community Funds</h2>
+            
+            <div class="balance-group">
+                <p class="balance-label">Total SIP Amount</p>
+                <div id="totalSipAmountDisplay" class="balance-value green-text">₹0</div>
+            </div>
+
+            <div class="balance-group">
+                <p class="balance-label">Total Current Loan Amount</p>
+                <div id="totalCurrentLoanDisplay" class="balance-value red-text">₹0</div>
+            </div>
+
+            <div class="balance-group">
+                <p class="balance-label">Net Return Amount (After 10% Deduction)</p>
+                <div id="netReturnAmountDisplay" class="balance-value gold-text-value">₹0</div>
+            </div>
+
+            <hr class="luxury-divider">
+
+            <div class="balance-group total-group">
+                <p class="balance-label total-label">Available Community Balance</p>
+                <div id="availableAmountDisplay" class="balance-value green-text large-text">₹0</div>
+            </div>
         </div>
     </div>
     
@@ -215,5 +229,4 @@
 
 </body>
 </html>
-
 
