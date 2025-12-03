@@ -1,8 +1,8 @@
 /*
-FINAL & STRICT UPDATE FOR SPECIAL CARDS (Gold, Silver, Bronze):
-1. Fixed Width/Height for PERFECT uniformity.
-2. Photo z-index: 1, Frame z-index: 2, Text z-index: 3.
-3. Colors aur Shadows ko adjust kiya gaya hai.
+FINAL MASTER UPDATE:
+1. Header Buttons: Pill shape + 3D Shadow (Blue screenshot style).
+2. Wallet/Balance Buttons: White bg + Black border + Pill shape.
+3. Special Cards: Name/Amount perfect positioning on plate + Bold Glowing Text.
 */
 
 :root {
@@ -74,11 +74,33 @@ header h1 { color: white; font-size: 2.2em; margin: 15px 0 5px 0; text-shadow: 2
 header h4 { color: rgba(255, 255, 255, 0.8); margin: 0 0 20px 0; font-weight: 400; font-size: 0.9em; letter-spacing: 2px; text-transform: uppercase; }
 
 .header-actions { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; padding: 0 15px; margin-top: 15px; box-sizing: border-box; }
-.dynamic-buttons-wrapper { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%; padding: 0 15px; }
+.dynamic-buttons-wrapper { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; width: 100%; padding: 0 10px; }
 
-/* BUTTONS */
-.civil-button { padding: 12px 28px; font-size: 1em; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
-.civil-button svg, .notification-btn svg { width: 20px; height: 20px; }
+/* === UPDATED BUTTON STYLES (Blue Screenshot Look) === */
+.civil-button { 
+    padding: 10px 24px; 
+    font-size: 0.95em; 
+    font-weight: 700; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 8px; 
+    text-decoration: none; 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+    border-radius: 50px; /* PILL SHAPE */
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2); /* 3D Shadow Effect */
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.civil-button:active {
+    transform: translateY(3px); /* Press effect */
+    box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+}
+
+.civil-button svg, .notification-btn svg { width: 18px; height: 18px; }
 .notification-btn { position: relative; line-height: 1; display: inline-flex; align-items: center; justify-content: center; }
 .notification-dot { position: absolute; top: 8px; right: 12px; width: 10px; height: 10px; background-color: var(--danger-color); border-radius: 50%; border: 2px solid #fff; display: none; }
 .install-button { display: none; font-weight: bold; cursor: pointer; transition: all 0.3s ease; gap: 10px; align-items: center; justify-content: center; }
@@ -142,13 +164,52 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 
 /* --- MEMBER CARDS SECTION --- */
 .bank-members { background: linear-gradient(to bottom, #eef2f8, #ffffff); padding: 30px 0; width: 100%; border-bottom: 1px solid var(--border-color); }
-.header-container { display: flex; justify-content: space-between; align-items: center; padding: 0 25px 20px 25px; max-width: 1140px; margin: 0 auto; }
-.bank-headline { font-size: 1.8em; font-weight: 800; color: var(--primary-color); margin: 0; flex-grow: 1; text-transform: uppercase; }
+
+/* Updated Header Container to support Wallet Buttons properly */
+.header-container { 
+    display: flex; 
+    flex-direction: column; /* Stack Title and Buttons */
+    align-items: center; 
+    padding: 0 15px 20px 15px; 
+    max-width: 1140px; 
+    margin: 0 auto; 
+    gap: 15px;
+}
+.bank-headline { font-size: 1.8em; font-weight: 800; color: var(--primary-color); margin: 0; text-transform: uppercase; }
+
+/* New Wrapper for Wallet Buttons */
+.header-buttons-wrapper {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+/* === WALLET & BALANCE BUTTONS (Specific Styling) === */
+#viewBalanceBtn, #viewPenaltyWalletBtn {
+    background-color: #ffffff !important;
+    color: #1a1a1a !important;
+    border: 2px solid #1a1a1a !important; /* Black Border */
+    border-radius: 50px !important;
+    padding: 10px 20px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+    font-size: 0.9em !important;
+    text-transform: uppercase;
+}
+
+#viewBalanceBtn:hover, #viewPenaltyWalletBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+    background-color: #f8f8f8 !important;
+}
+
 .member-slider { display: flex; gap: 15px; overflow-x: auto; scroll-behavior: smooth; padding: 30px 10px; max-width: 1140px; margin: 0 auto; }
 .member-slider::-webkit-scrollbar { height: 6px; }
 .member-slider::-webkit-scrollbar-thumb { background-color: var(--accent-gold); border-radius: 4px; }
 
-/* === SPECIAL CARDS (GOLD, SILVER, BRONZE) === */
+/* === SPECIAL CARDS (GOLD, SILVER, BRONZE) - REFINED === */
 .framed-card-wrapper {
     flex: 0 0 auto;
     width: 200px;  /* FIXED WIDTH */
@@ -156,7 +217,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     cursor: pointer;
     transition: transform 0.3s ease;
     filter: drop-shadow(0 8px 15px rgba(0,0,0,0.2));
-    position: relative; /* Ensure container is reference for absolute positioning */
+    position: relative; 
 }
 
 .framed-card-wrapper:hover {
@@ -174,10 +235,10 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 /* Layer 1: Photo */
 .framed-member-photo {
     position: absolute;
-    top: 13%;      /* Adjust based on frame window */
-    left: 14%;     /* Adjust based on frame window */
-    width: 72%;    /* Fit inside frame window */
-    height: 50%;   /* Fit inside frame window */
+    top: 13%;      
+    left: 14%;     
+    width: 72%;    
+    height: 50%;   
     object-fit: cover;
     border-radius: 6px;
     z-index: 1;
@@ -194,51 +255,70 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     pointer-events: none;
 }
 
-/* Layer 3: Text Info */
-/* Is container ko absolute position dekar frame ke niche wale hisse me set kiya hai */
+/* Layer 3: Text Info - POSITION CORRECTED */
+/* Moved UP to sit exactly on the metal plate */
 .framed-info-container {
     position: absolute;
-    bottom: 12%;   /* Adjust to sit on the plate */
-    left: 0;
-    width: 100%;
+    bottom: 18%;   /* ADJUSTED HEIGHT to fit plate */
+    left: 10%;     /* Centering Adjustment */
+    width: 80%;    /* Centering Adjustment */
     z-index: 3;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
-    padding: 0 10px;
-    box-sizing: border-box;
+    justify-content: center;
+    gap: 0px;      /* Tighter spacing */
 }
 
 .framed-member-name {
     margin: 0;
-    font-size: 1.05em;
-    font-weight: 800;
+    font-size: 0.85em; /* Slightly smaller to fit */
+    font-weight: 700;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.9);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
     text-transform: capitalize;
+    color: #f0f0f0; /* Default readable color */
+    margin-bottom: 2px;
 }
 
-.framed-member-balance {
-    font-size: 1.15em;
-    font-weight: 900;
+/* AMOUNT STYLING - EXTRA BOLD & GLOWING */
+.framed-balance-badge {
+    font-size: 1.4em; /* Bigger Amount */
+    font-weight: 900; /* Extra Bold */
     margin: 0;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    letter-spacing: 0.5px;
+    /* Common Shadow */
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    background: transparent; /* No background box, just text on plate */
 }
 
-/* Special Colors per Rank */
+/* Special Colors per Rank with GLOW */
 .gold-text { color: #FFF8DC; }
+.gold-bg { 
+    color: #FFD700 !important; 
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 2px 4px rgba(0,0,0,1) !important; 
+}
+
 .silver-text { color: #F0F8FF; }
+.silver-bg { 
+    color: #E0E0E0 !important; 
+    text-shadow: 0 0 10px rgba(224, 224, 224, 0.6), 0 2px 4px rgba(0,0,0,1) !important;
+}
+
 .bronze-text { color: #FFE4B5; }
+.bronze-bg { 
+    color: #CD7F32 !important; 
+    text-shadow: 0 0 10px rgba(205, 127, 50, 0.6), 0 2px 4px rgba(0,0,0,1) !important;
+}
 
 /* Prime Tag for Special Cards */
 .framed-prime-tag {
     position: absolute;
     top: 3%;
-    right: 2%; /* Corner Position */
+    right: 2%; 
     background-color: var(--prime-color);
     color: var(--text-color);
     padding: 2px 6px;
@@ -399,5 +479,4 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 /* Media Queries */
 @media (min-width: 768px) { .action-cards { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 992px) { .action-cards { grid-template-columns: repeat(4, 1fr); } }
-
 
