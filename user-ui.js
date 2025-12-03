@@ -2,6 +2,8 @@
 // 1. Back Button Support: Modals close on back press.
 // 2. All Members: Grid Layout implementation.
 // 3. SIP Status: Fixed display logic.
+// 4. Specific Classes for Top 3 Cards (Gold, Silver, Bronze).
+// 5. All Members Image Click -> Full View.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -185,7 +187,10 @@ function displayMembers(members, adminSettings) {
     members.forEach((member, index) => {
         if (index < 3) {
             const card = document.createElement('div');
-            card.className = 'framed-card-wrapper animate-on-scroll'; 
+            // CHANGE: Added specific classes 'gold-card', 'silver-card', 'bronze-card'
+            const rankClasses = ['gold-card', 'silver-card', 'bronze-card'];
+            const rankClass = rankClasses[index] || '';
+            card.className = `framed-card-wrapper ${rankClass} animate-on-scroll`; 
             
             const rankType = ['gold', 'silver', 'bronze'][index];
             const frameImageUrls = {
@@ -467,7 +472,7 @@ function showSipStatusModal() {
     openModal(elements.sipStatusModal);
 }
 
-// FIXED: All Members - Small Card Grid Layout
+// FIXED: All Members - Small Card Grid Layout WITH IMAGE ZOOM
 function showAllMembersModal() {
     const container = getElement('allMembersListContainer');
     if (!container) return;
@@ -479,12 +484,31 @@ function showAllMembersModal() {
     
     sortedMembers.forEach(member => {
         const item = document.createElement('div');
-        item.className = 'small-member-card'; // New Class for Grid Item
-        item.onclick = () => { closeModal(elements.allMembersModal); showMemberProfileModal(member.id); }; // Click to view full profile
+        item.className = 'small-member-card';
         
-        item.innerHTML = `
-            <img src="${member.displayImageUrl}" alt="${member.name}" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
-            <span>${member.name}</span>`;
+        // CLICK 1: Card click opens Profile (Default behavior)
+        item.onclick = () => { 
+            closeModal(elements.allMembersModal); 
+            showMemberProfileModal(member.id); 
+        }; 
+        
+        // Create Image element manually to add specific Event Listener
+        const img = document.createElement('img');
+        img.src = member.displayImageUrl;
+        img.alt = member.name;
+        img.onerror = function() { this.src = DEFAULT_IMAGE; };
+        
+        // CLICK 2: Image click opens Full Image (Zoom) - STOPS PROPAGATION
+        img.onclick = (e) => {
+            e.stopPropagation(); // Prevents card click (profile open)
+            showFullImage(member.displayImageUrl, member.name);
+        };
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = member.name;
+
+        item.appendChild(img);
+        item.appendChild(nameSpan);
         container.appendChild(item);
     });
     openModal(elements.allMembersModal);
@@ -922,5 +946,4 @@ function observeElements(elements) {
 }
 
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
-
 
