@@ -17,14 +17,11 @@
             --primary-color: #002366; /* Royal Blue */
             --primary-darker: #001233;
             --accent-gold: #D4AF37;   /* Royal Gold */
-            --gold-gradient: linear-gradient(135deg, #FFD700, #D4AF37);
             --bg-color: #f4f6f9;
             --glass-bg: rgba(255, 255, 255, 0.95);
             --text-color: #1a1a1a;
-            --light-text: #555;
             --danger-color: #dc3545;
             --success-color: #28a745;
-            --warning-color: #ffc107;
         }
 
         body {
@@ -36,11 +33,11 @@
             padding-bottom: 40px;
         }
 
-        /* === ROYAL HEADER === */
+        /* === HEADER === */
         .header {
             background: linear-gradient(160deg, #002366 0%, #001233 100%);
             color: white;
-            padding: 20px 20px 60px 20px; /* Extra padding for tabs overlap */
+            padding: 20px 20px 60px 20px;
             display: flex;
             align-items: center;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
@@ -53,269 +50,123 @@
         }
 
         .header h1 {
-            font-size: 1.4em;
-            margin: 0;
-            flex-grow: 1;
-            font-family: 'Times New Roman', serif;
-            letter-spacing: 1px;
+            font-size: 1.4em; margin: 0; flex-grow: 1;
+            font-family: 'Times New Roman', serif; letter-spacing: 1px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
 
         .back-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--accent-gold);
-            color: var(--accent-gold);
-            cursor: pointer;
-            margin-right: 15px;
-            padding: 8px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-        
-        .back-btn:hover {
-            background: var(--accent-gold);
-            color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.1); border: 1px solid var(--accent-gold);
+            color: var(--accent-gold); cursor: pointer; margin-right: 15px;
+            padding: 8px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center;
         }
 
-        /* === TABS SYSTEM === */
+        /* === TABS === */
         .tabs-container {
-            display: flex;
-            justify-content: center;
-            margin-top: -30px;
-            margin-bottom: 20px;
-            padding: 0 15px;
-            position: relative;
-            z-index: 101;
+            display: flex; justify-content: center; margin-top: -30px; margin-bottom: 20px;
+            padding: 0 15px; position: relative; z-index: 101;
         }
-
         .tabs-wrapper {
-            background: white;
-            padding: 5px;
-            border-radius: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            display: flex;
-            width: 100%;
-            max-width: 500px;
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: white; padding: 5px; border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; width: 100%;
+            max-width: 500px; border: 1px solid rgba(212, 175, 55, 0.3);
         }
-
         .tab-btn {
-            flex: 1;
-            padding: 10px 5px;
-            border: none;
-            background: transparent;
-            color: var(--light-text);
-            font-weight: 600;
-            font-size: 0.9em;
-            cursor: pointer;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            text-align: center;
+            flex: 1; padding: 10px 5px; border: none; background: transparent;
+            color: #555; font-weight: 600; font-size: 0.9em; cursor: pointer;
+            border-radius: 25px; transition: all 0.3s ease; text-align: center;
         }
-
         .tab-btn.active {
-            background: var(--primary-color);
-            color: var(--accent-gold);
+            background: var(--primary-color); color: var(--accent-gold);
             box-shadow: 0 4px 10px rgba(0, 35, 102, 0.3);
         }
 
-        /* === CONTENT AREA === */
-        .main-container {
-            padding: 10px 15px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
+        .main-container { padding: 10px 15px; max-width: 800px; margin: 0 auto; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-out; }
+        .tab-content.active { display: block; }
 
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* === SMART LOAN CARD (LUXURY) === */
+        /* === LUXURY LOAN CARD (UPDATED WITH PROFILE) === */
         .loan-tracker-card {
-            background: var(--glass-bg);
-            border-radius: 16px;
-            padding: 0;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            border: 1px solid rgba(0,0,0,0.05);
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease;
+            background: var(--glass-bg); border-radius: 16px; margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden; position: relative;
         }
-        
-        /* Dynamic Border based on Status */
-        .loan-tracker-card.status-safe { border-left: 6px solid var(--success-color); }
-        .loan-tracker-card.status-warning { border-left: 6px solid var(--accent-gold); border: 1px solid var(--accent-gold); }
-        .loan-tracker-card.status-critical { 
-            border-left: 6px solid var(--danger-color); 
-            border: 2px solid var(--danger-color);
-            box-shadow: 0 0 20px rgba(220, 53, 69, 0.15);
-        }
+        .loan-tracker-card.status-safe { border-top: 5px solid var(--success-color); }
+        .loan-tracker-card.status-warning { border-top: 5px solid var(--accent-gold); }
+        .loan-tracker-card.status-critical { border-top: 5px solid var(--danger-color); }
 
-        .card-header-bg {
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(to right, #f8f9fa, #ffffff);
+        .card-header-profile {
+            display: flex; align-items: center; padding: 15px;
+            background: linear-gradient(to bottom, #ffffff, #f9f9f9);
             border-bottom: 1px solid #eee;
         }
+        .profile-img-large {
+            width: 55px; height: 55px; border-radius: 50%;
+            object-fit: cover; border: 2px solid var(--accent-gold);
+            margin-right: 12px;
+        }
+        .profile-info h3 { margin: 0; color: var(--primary-color); font-size: 1.1em; font-weight: 700; }
+        .profile-info span { font-size: 0.85em; color: #777; display: flex; align-items: center; gap: 5px; }
 
-        .loan-title { font-size: 1.1em; font-weight: 700; color: var(--primary-color); display: flex; align-items: center; gap: 8px; }
-        .loan-amount { font-size: 1.3em; font-weight: 800; color: var(--text-color); }
-
-        .card-body { padding: 25px 15px; text-align: center; }
-
+        .card-body { padding: 20px 15px; text-align: center; }
+        .outstanding-amount { font-size: 1.4em; font-weight: 800; color: #333; margin-bottom: 5px; }
+        
         .days-counter-big {
-            font-size: 2.8em;
-            font-weight: 900;
-            line-height: 1;
-            margin: 10px 0;
+            font-size: 3em; font-weight: 900; line-height: 1; margin: 15px 0;
             font-variant-numeric: tabular-nums;
         }
-        .days-label { font-size: 0.85em; text-transform: uppercase; letter-spacing: 2px; color: #777; font-weight: 600; }
-
-        .progress-bar-container {
-            width: 80%;
-            height: 6px;
-            background: #e9ecef;
-            border-radius: 10px;
-            margin: 20px auto 10px auto;
-            overflow: hidden;
-            position: relative;
-        }
-        .progress-bar { height: 100%; transition: width 0.8s ease; border-radius: 10px; }
-
         .status-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: 700;
-            background: #eee;
-            margin-top: 5px;
+            display: inline-block; padding: 6px 15px; border-radius: 20px;
+            font-size: 0.85em; font-weight: 700; margin-bottom: 15px;
         }
+        
+        .progress-bar-container {
+            width: 100%; height: 8px; background: #e9ecef; border-radius: 4px;
+            margin: 10px 0; overflow: hidden;
+        }
+        .progress-bar { height: 100%; transition: width 0.8s ease; border-radius: 4px; }
 
         .action-area {
-            padding: 15px;
-            background: #fcfcfc;
-            border-top: 1px solid #eee;
-            display: flex;
-            gap: 12px;
+            padding: 15px; background: #fcfcfc; border-top: 1px solid #eee;
+            display: flex; gap: 10px;
         }
-
         .btn-pay {
-            flex: 1;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            text-decoration: none;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 35, 102, 0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            transition: transform 0.2s;
+            flex: 2; background: var(--primary-color); color: white; border: none;
+            padding: 12px; border-radius: 8px; font-weight: bold; text-decoration: none;
+            text-align: center; display: flex; justify-content: center; align-items: center; gap: 8px;
         }
-        .btn-pay:active { transform: scale(0.98); }
-        
         .btn-details {
-            flex: 1;
-            background: white;
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            text-align: center;
-            text-decoration: none;
+            flex: 1; background: white; color: var(--primary-color); border: 2px solid var(--primary-color);
+            padding: 12px; border-radius: 8px; font-weight: bold; text-align: center; text-decoration: none;
         }
 
-        /* === TRANSACTION LIST === */
-        .transaction-card {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border: 1px solid #eee;
+        /* === TRANSACTION & NOTICE ITEMS === */
+        .transaction-card, .notice-card {
+            background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 15px; border: 1px solid #eee;
             box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-            transition: transform 0.2s;
         }
-        .transaction-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-
         .tx-icon {
-            width: 42px; height: 42px;
-            border-radius: 50%;
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            flex-shrink: 0;
-            font-size: 1.2em;
+            width: 40px; height: 40px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 1.2em; flex-shrink: 0;
         }
         .tx-info { flex-grow: 1; }
-        .tx-title { font-weight: 600; font-size: 0.95em; color: var(--text-color); margin: 0 0 4px 0; }
-        .tx-date { font-size: 0.75em; color: #999; font-weight: 500; }
-        .tx-amount { font-weight: 800; font-size: 1.1em; white-space: nowrap; }
+        .tx-title { font-weight: 600; font-size: 0.95em; margin: 0 0 3px 0; }
+        .tx-date { font-size: 0.8em; color: #999; }
+        .tx-amount { font-weight: 700; font-size: 1em; }
         .tx-positive { color: var(--success-color); }
         .tx-negative { color: var(--danger-color); }
 
-        /* === MANUAL NOTIFICATIONS === */
-        .notice-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            border: 1px solid var(--border-color);
-        }
-        .notice-img { width: 100%; height: 180px; object-fit: cover; }
-        .notice-content { padding: 15px; }
-        .notice-title { font-size: 1.1em; font-weight: 700; color: var(--primary-color); margin: 0 0 8px 0; }
-        .notice-body { font-size: 0.95em; color: var(--light-text); line-height: 1.5; margin-bottom: 15px; }
-        .explore-btn {
-            display: inline-block;
-            background-color: var(--accent-gold);
-            color: var(--primary-darker);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-weight: 700;
-            text-decoration: none;
-            font-size: 0.9em;
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
-        }
-
         /* === INSTALL BUTTON === */
-        #install-container {
-            display: none;
-            margin-bottom: 20px;
-            animation: fadeInDown 0.5s ease-out;
-        }
+        #install-container { display: none; margin-bottom: 15px; animation: fadeInDown 0.5s ease-out; }
         #install-btn {
-            display: flex; align-items: center; justify-content: center;
-            width: 100%;
+            display: flex; align-items: center; justify-content: center; width: 100%;
             background-image: linear-gradient(45deg, #28a745 0%, #218838 100%);
-            color: white; padding: 12px; border-radius: 12px;
-            font-size: 1em; font-weight: 700; border: none; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            color: white; padding: 12px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer;
         }
 
-        .loading-text, .no-data { text-align: center; padding: 40px 20px; color: #999; font-style: italic; }
-
+        .loading-text, .no-data { text-align: center; padding: 40px 20px; color: #999; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -339,7 +190,6 @@
     </div>
 
     <main class="main-container">
-        <!-- === INSTALL BUTTON === -->
         <div id="install-container">
             <button id="install-btn">
                 <i data-feather="download-cloud" style="margin-right: 8px;"></i>
@@ -347,34 +197,27 @@
             </button>
         </div>
 
-        <!-- === TAB 1: DASHBOARD (SMART ALERTS) === -->
+        <!-- === TAB 1: DASHBOARD (Active Loan with Profile) === -->
         <div id="dashboard" class="tab-content active">
             <div id="activeLoanContainer">
-                <p class="loading-text">Analyzing your profile...</p>
-            </div>
-            
-            <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; border: 1px solid #ffeeba; display: flex; gap: 10px; align-items: start;">
-                 <i data-feather="info" style="color: #856404; flex-shrink: 0;"></i>
-                 <p style="margin: 0; font-size: 0.85em; color: #856404; line-height: 1.4;">
-                     <strong>Note:</strong> Loan days counter updates automatically. Status changes color based on duration.
-                 </p>
+                <p class="loading-text">Analyzing loan status...</p>
             </div>
         </div>
 
-        <!-- === TAB 2: TRANSACTIONS === -->
+        <!-- === TAB 2: TRANSACTIONS (Current Month Only) === -->
         <div id="transactions" class="tab-content">
             <div class="month-header" style="text-align: center; padding: 10px; margin-bottom: 10px; color: var(--primary-color); font-weight: 700; background: #eef2f8; border-radius: 8px;">
                 <span id="currentMonthDisplay">Current Month</span> Activity
             </div>
             <div id="transactionsList">
-                <p class="loading-text">Loading transactions...</p>
+                <p class="loading-text">Loading...</p>
             </div>
         </div>
 
-        <!-- === TAB 3: NOTICES (MANUAL) === -->
+        <!-- === TAB 3: NOTICES === -->
         <div id="notices" class="tab-content">
             <div id="manualNoticesList">
-                <p class="loading-text">Checking for notices...</p>
+                <p class="loading-text">Loading notices...</p>
             </div>
         </div>
     </main>
@@ -382,51 +225,51 @@
     <script>
         const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
 
-        // --- 1. ADVANCED DATE PARSER (Fixes NaN Issue) ---
-        function parseLooseDate(dateString) {
-            if (!dateString) return null;
+        // === 1. POWERFUL DATE PARSER (Solves "NaN Days") ===
+        function parseFlexibleDate(dateInput) {
+            if (!dateInput) return new Date(); // Fallback to today if empty
 
-            // Try standard Date parse first
-            let date = new Date(dateString);
-            if (!isNaN(date.getTime())) return date;
+            // A. Check if it's already a valid Date object or Timestamp
+            const d = new Date(dateInput);
+            if (!isNaN(d.getTime())) return d;
 
-            // Handle "8 Sept 2025" or "8 September 2025"
-            // Remove common separators and split
-            const parts = dateString.replace(/,/g, '').split(' ');
+            // B. Handle text formats like "8 Sept 2025", "16 September 2025"
+            // Remove commas and extra spaces
+            const cleanStr = String(dateInput).replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
+            const parts = cleanStr.split(' ');
+
             if (parts.length >= 3) {
                 const day = parseInt(parts[0]);
                 const year = parseInt(parts[2]);
-                const monthStr = parts[1].toLowerCase();
-                
+                const monthStr = parts[1].toLowerCase().substring(0, 3); // Get first 3 letters
+
                 const months = {
-                    'jan': 0, 'january': 0,
-                    'feb': 1, 'february': 1,
-                    'mar': 2, 'march': 2,
-                    'apr': 3, 'april': 3,
-                    'may': 4,
-                    'jun': 5, 'june': 5,
-                    'jul': 6, 'july': 6,
-                    'aug': 7, 'august': 7,
-                    'sep': 8, 'sept': 8, 'september': 8,
-                    'oct': 9, 'october': 9,
-                    'nov': 10, 'november': 10,
-                    'dec': 11, 'december': 11
+                    'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5,
+                    'jul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11
                 };
 
                 if (!isNaN(day) && !isNaN(year) && months.hasOwnProperty(monthStr)) {
                     return new Date(year, months[monthStr], day);
                 }
             }
-            
-            return null; // Failed to parse
+
+            // C. Fallback for "DD-MM-YYYY" or "DD/MM/YYYY" (Indian format)
+            const dateParts = cleanStr.split(/[-/]/);
+            if (dateParts.length === 3) {
+                // Assume DD-MM-YYYY
+                return new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+            }
+
+            console.warn("Date Parsing Failed for:", dateInput);
+            return new Date(); // Ultimate fallback to prevent crash
         }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            
             document.getElementById(tabId).classList.add('active');
-            // Find the button that triggered this or find by iterating
+            
+            // Find the button and activate it
             const btns = document.querySelectorAll('.tab-btn');
             btns.forEach(btn => {
                 if(btn.getAttribute('onclick').includes(tabId)) btn.classList.add('active');
@@ -442,12 +285,9 @@
                 if (!firebase.apps.length) firebase.initializeApp(config);
                 
                 firebase.auth().onAuthStateChanged(user => {
-                    fetchAndRenderData(); // Always try to render, auth handles data access
+                    fetchAndRenderData(); 
                 });
-
-            } catch (error) {
-                console.error("Init Error:", error);
-            }
+            } catch (error) { console.error("Init Error:", error); }
         }
 
         async function fetchAndRenderData() {
@@ -461,122 +301,117 @@
                 const verifiedMemberId = localStorage.getItem('verifiedMemberId');
                 
                 if (!data || !verifiedMemberId) {
-                    container.innerHTML = `<div class="no-data">Please verify your device on Home page first.</div>`;
-                    document.getElementById('transactionsList').innerHTML = "";
-                    document.getElementById('manualNoticesList').innerHTML = "";
+                    container.innerHTML = `<div class="no-data">Please verify device.</div>`;
                     return;
                 }
 
                 const allMembers = data.members || {};
                 const currentUser = allMembers[verifiedMemberId];
-                
+
                 if (!currentUser) {
-                    container.innerHTML = `<div class="no-data">Member profile not found.</div>`;
+                    container.innerHTML = `<div class="no-data">Profile not found.</div>`;
                     return;
                 }
 
-                // 1. RENDER SMART LOAN CARD (Fixed Logic)
-                renderSmartLoanCard(verifiedMemberId, data.activeLoans || {}, container);
-
-                // 2. RENDER TRANSACTIONS (Current Month Only)
+                // Render Sections
+                renderSmartLoanCard(verifiedMemberId, data.activeLoans || {}, allMembers, container);
                 renderTransactions(verifiedMemberId, data.transactions || {}, allMembers);
-
-                // 3. RENDER MANUAL NOTICES
                 renderManualNotices(data.admin?.notifications?.manual || {});
 
             } catch (error) {
                 console.error("Render Error:", error);
-                container.innerHTML = `<p class="no-data">Error loading data. Check console.</p>`;
+                container.innerHTML = `<p class="no-data">Error loading data.</p>`;
             }
         }
 
-        // === CORE LOGIC: SINGLE CARD FOR ACTIVE LOAN ===
-        function renderSmartLoanCard(memberId, allActiveLoans, container) {
+        // === 2. SMART LOAN CARD (With Profile & Correct Days) ===
+        function renderSmartLoanCard(memberId, allActiveLoans, allMembers, container) {
             container.innerHTML = '';
             
-            // Find ALL active loans for this user
+            // Get user's active loans
             const loans = Object.values(allActiveLoans).filter(l => l.memberId === memberId && l.status === 'Active');
 
             if (loans.length === 0) {
                 container.innerHTML = `
                     <div style="text-align: center; padding: 40px 20px; background: white; border-radius: 12px; border: 1px dashed #ccc;">
-                        <i data-feather="check-circle" style="width: 40px; height: 40px; color: var(--success-color); margin-bottom: 10px;"></i>
-                        <h3 style="margin: 0; color: var(--primary-color);">You are Debt Free!</h3>
-                        <p style="color: #777;">You have no active loans at the moment.</p>
-                        <a href="loan_form.html" class="explore-btn" style="margin-top: 10px; background: var(--primary-color); color: white;">Apply Loan</a>
+                        <i data-feather="check-circle" style="width: 50px; height: 50px; color: var(--success-color); margin-bottom: 10px;"></i>
+                        <h3 style="margin: 0; color: var(--primary-color);">No Active Loans</h3>
+                        <p style="color: #777;">You are currently debt free.</p>
+                        <a href="loan_form.html" class="btn-pay" style="margin-top: 15px; width: auto; display: inline-flex;">Apply New Loan</a>
                     </div>
                 `;
                 feather.replace();
                 return;
             }
 
-            // Render Single Card (if multiple loans, we stack logic or just show the oldest/largest)
-            // Showing the oldest active loan usually makes sense for urgency
             loans.forEach(loan => {
-                // TRY PARSING DATE
-                let loanDate = parseLooseDate(loan.date);
-                if (!loanDate && loan.timestamp) loanDate = new Date(loan.timestamp);
+                // Member Details for Header
+                const member = allMembers[loan.memberId] || { fullName: 'Unknown Member', profilePicUrl: DEFAULT_IMAGE };
                 
-                // Fallback if Date is completely broken (Prevents NaN)
-                if (!loanDate) {
-                    console.warn("Invalid Loan Date Found:", loan);
-                    loanDate = new Date(); // Treat as today to avoid crash
-                }
-
+                // --- DATE CALCULATION LOGIC ---
+                // Use the new parser
+                let loanDate = parseFlexibleDate(loan.date || loan.timestamp);
                 const today = new Date();
                 
-                // Calculate Days Logic
+                // Calculate Days Difference
                 const diffTime = Math.abs(today - loanDate);
-                const daysElapsed = Math.floor(diffTime / (1000 * 60 * 60 * 24)); 
+                const daysElapsed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
                 
-                // === 90 DAY RULE & COLOR CODING ===
+                // --- STATUS LOGIC (30/90 Days) ---
                 let statusClass = 'status-safe';
-                let dayColor = 'var(--success-color)';
+                let colorCode = 'var(--success-color)';
                 let statusText = 'On Track';
-                let progressPercent = Math.min((daysElapsed / 90) * 100, 100);
-                let displayDays = `${daysElapsed} Days`;
-                let statusBadgeBg = '#d4edda';
-                let statusBadgeColor = '#155724';
+                let daysText = `${daysElapsed} Days`;
+                let bgColor = '#d4edda';
+                let textColor = '#155724';
+                let progress = Math.min((daysElapsed / 90) * 100, 100);
 
                 if (daysElapsed > 90) {
-                    // CRITICAL RULE: If > 90, show "OVER DAYS"
                     statusClass = 'status-critical';
-                    dayColor = 'var(--danger-color)';
-                    statusText = 'CRITICAL OVERDUE';
-                    displayDays = 'OVER DAYS'; 
-                    progressPercent = 100;
-                    statusBadgeBg = '#f8d7da';
-                    statusBadgeColor = '#721c24';
+                    colorCode = 'var(--danger-color)';
+                    statusText = 'OVER DAYS (CRITICAL)';
+                    daysText = 'OVER DAYS'; 
+                    bgColor = '#f8d7da';
+                    textColor = '#721c24';
+                    progress = 100;
                 } else if (daysElapsed > 30) {
                     statusClass = 'status-warning';
-                    dayColor = '#b8860b'; // Dark Gold
+                    colorCode = '#b8860b'; // Dark Gold
                     statusText = 'Attention Needed';
-                    statusBadgeBg = '#fff3cd';
-                    statusBadgeColor = '#856404';
+                    bgColor = '#fff3cd';
+                    textColor = '#856404';
                 }
 
+                // --- CARD HTML ---
                 const card = document.createElement('div');
                 card.className = `loan-tracker-card ${statusClass}`;
                 card.innerHTML = `
-                    <div class="card-header-bg">
-                        <span class="loan-title"><i data-feather="clock"></i> Active Loan</span>
-                        <span class="loan-amount">₹${(loan.amount || 0).toLocaleString('en-IN')}</span>
+                    <div class="card-header-profile">
+                        <img src="${member.profilePicUrl || DEFAULT_IMAGE}" class="profile-img-large" alt="Profile" onerror="this.src='${DEFAULT_IMAGE}'">
+                        <div class="profile-info">
+                            <h3>${member.fullName}</h3>
+                            <span><i data-feather="calendar" style="width: 14px;"></i> ${loanDate.toLocaleDateString('en-GB')}</span>
+                        </div>
                     </div>
+                    
                     <div class="card-body">
-                        <div class="days-label">Time Elapsed Since Disbursal</div>
-                        <div class="days-counter-big" style="color: ${dayColor}">${displayDays}</div>
+                        <div style="font-size: 0.9em; color: #777; text-transform: uppercase; letter-spacing: 1px;">Outstanding Amount</div>
+                        <div class="outstanding-amount">₹${(loan.outstandingAmount || loan.amount || 0).toLocaleString('en-IN')}</div>
                         
-                        <div class="status-badge" style="background: ${statusBadgeBg}; color: ${statusBadgeColor};">
+                        <div style="margin-top: 20px; font-size: 0.85em; color: #555;">Time Elapsed Since Disbursal</div>
+                        <div class="days-counter-big" style="color: ${colorCode}">${daysText}</div>
+                        
+                        <div class="status-badge" style="background: ${bgColor}; color: ${textColor};">
                             ${statusText}
                         </div>
-                        
+
                         <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: ${progressPercent}%; background-color: ${dayColor};"></div>
+                            <div class="progress-bar" style="width: ${progress}%; background-color: ${colorCode};"></div>
                         </div>
-                        <p style="font-size: 0.8em; color: #999; margin: 5px 0 0 0;">Loan Date: ${loanDate.toLocaleDateString('en-GB')}</p>
                     </div>
+                    
                     <div class="action-area">
-                        <a href="qr.html" class="btn-pay"><i data-feather="credit-card" style="width: 16px;"></i> Pay Now</a>
+                        <a href="qr.html" class="btn-pay"><i data-feather="credit-card" style="width: 18px;"></i> Pay Now</a>
                         <a href="loan_dashbord.html" class="btn-details">Details</a>
                     </div>
                 `;
@@ -585,44 +420,40 @@
             feather.replace();
         }
 
-        // === FILTER: ONLY CURRENT MONTH TRANSACTIONS ===
+        // === 3. FILTER: ONLY CURRENT MONTH TRANSACTIONS ===
         function renderTransactions(memberId, allTransactions, allMembers) {
             const list = document.getElementById('transactionsList');
             const monthDisplay = document.getElementById('currentMonthDisplay');
             list.innerHTML = '';
 
             const now = new Date();
-            const currentMonth = now.getMonth(); // 0-11
+            const currentMonth = now.getMonth(); 
             const currentYear = now.getFullYear();
             
-            // Set header text
             monthDisplay.textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' });
 
-            // Convert to array and filter
+            // Filter & Sort
             const txArray = Object.values(allTransactions)
                 .filter(tx => {
-                    let txDate = parseLooseDate(tx.date) || new Date(tx.timestamp || 0);
-                    // STRICT FILTER: Only Current Month & Year
+                    let txDate = parseFlexibleDate(tx.date || tx.timestamp);
+                    // STRICT FILTER: Only Current Month
                     return txDate.getMonth() === currentMonth && txDate.getFullYear() === currentYear;
                 })
-                .sort((a, b) => new Date(b.date) - new Date(a.date)); // Newest first
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
 
             if(txArray.length === 0) {
-                list.innerHTML = `
-                    <div class="no-data" style="background: white; border-radius: 12px; margin-top:10px;">
-                        No transactions found for ${monthDisplay.textContent}.
-                    </div>`;
+                list.innerHTML = `<div class="no-data" style="background: white; border-radius: 12px; margin-top:10px;">No transactions found for ${monthDisplay.textContent}.</div>`;
                 return;
             }
 
             txArray.forEach(tx => {
                 const member = allMembers[tx.memberId];
-                if(!member) return; // Skip if member data missing
+                if(!member) return; 
 
                 let icon = 'dollar-sign';
-                let colorClass = '';
-                let sign = '';
-                let bg = '#f0f2f5';
+                let colorClass = 'tx-positive';
+                let sign = '+';
+                let bg = '#d4edda';
 
                 switch(tx.type) {
                     case 'SIP': 
@@ -632,10 +463,10 @@
                     case 'Loan Payment': 
                         icon = 'check-circle'; colorClass = 'tx-positive'; sign = '+'; bg = '#cce5ff'; break;
                     default: 
-                        icon = 'activity'; colorClass = 'tx-positive';
+                        icon = 'activity';
                 }
                 
-                // Highlight if it's the current user's transaction
+                // Highlight User's Transaction
                 const isMine = tx.memberId === memberId;
                 const highlightStyle = isMine ? 'border-left: 4px solid var(--primary-color);' : '';
 
@@ -651,7 +482,7 @@
                             ${isMine ? '<strong>You</strong>' : `<strong>${member.fullName}</strong>`}
                             <span style="font-weight:400; color:#555;"> - ${tx.type}</span>
                         </p>
-                        <span class="tx-date">${new Date(tx.date).toLocaleDateString('en-GB')}</span>
+                        <span class="tx-date">${parseFlexibleDate(tx.date).toLocaleDateString('en-GB')}</span>
                     </div>
                     <div class="tx-amount ${colorClass}">
                         ${sign}₹${(tx.amount || tx.principalPaid || 0).toLocaleString()}
@@ -668,7 +499,7 @@
             const noticeArray = Object.values(notices).sort((a,b) => b.createdAt - a.createdAt);
 
             if(noticeArray.length === 0) {
-                list.innerHTML = '<div class="no-data">No notices from Admin.</div>';
+                list.innerHTML = '<div class="no-data">No notices.</div>';
                 return;
             }
 
@@ -676,40 +507,32 @@
                 const item = document.createElement('div');
                 item.className = 'notice-card';
                 item.innerHTML = `
-                    ${notice.imageUrl ? `<img src="${notice.imageUrl}" class="notice-img" alt="Notice">` : ''}
-                    <div class="notice-content">
-                        <h3 class="notice-title">${notice.title}</h3>
-                        <div class="notice-body">${notice.body || ''}</div>
-                        ${notice.link ? `<a href="${notice.link}" target="_blank" class="explore-btn">Explore</a>` : ''}
-                        <span style="float: right; font-size: 0.75em; color: #999; margin-top: 10px;">${new Date(notice.createdAt).toLocaleDateString()}</span>
+                    ${notice.imageUrl ? `<img src="${notice.imageUrl}" style="width:100%; height:180px; object-fit:cover; display:block;" alt="Notice">` : ''}
+                    <div style="padding: 15px;">
+                        <h3 style="margin:0 0 8px 0; color:var(--primary-color); font-size:1.1em;">${notice.title}</h3>
+                        <p style="color:#555; font-size:0.95em; line-height:1.5;">${notice.body || ''}</p>
+                        ${notice.link ? `<a href="${notice.link}" target="_blank" style="display:inline-block; background:var(--accent-gold); color:var(--primary-darker); padding:8px 20px; border-radius:50px; text-decoration:none; font-weight:700; font-size:0.9em; margin-top:10px;">Explore</a>` : ''}
                     </div>
                 `;
                 list.appendChild(item);
             });
         }
 
-        // === PWA LOGIC ===
+        // PWA Setup
         function setupPWAInstall() {
             const installContainer = document.getElementById('install-container');
             const installBtn = document.getElementById('install-btn');
-
             const showInstallButton = () => {
-                const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-                if (!isStandalone && window.deferredInstallPrompt && installContainer) {
+                if (!window.matchMedia('(display-mode: standalone)').matches && window.deferredInstallPrompt && installContainer) {
                     installContainer.style.display = 'block';
                 }
             };
-            
             showInstallButton();
             window.addEventListener('pwa-install-ready', showInstallButton);
-
             if (installBtn) {
                 installBtn.addEventListener('click', async () => {
                     const promptEvent = window.deferredInstallPrompt;
-                    if (!promptEvent) {
-                        alert("Cannot install right now. Please try again from the main page.");
-                        return;
-                    }
+                    if (!promptEvent) return alert("Install not available.");
                     promptEvent.prompt();
                     await promptEvent.userChoice;
                     window.deferredInstallPrompt = null;
