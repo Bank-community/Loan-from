@@ -1,9 +1,5 @@
-// FINAL UPDATE:
-// 1. Top 3 cards ke liye HTML structure ko layering ke liye badla gaya hai (Photo neeche, Frame upar).
-// 2. Framed cards aur Normal cards ke liye alag-alag classes ka istemal kiya gaya hai.
-// 3. Rank medals/badges hata diye gaye hain.
-// 4. Amount ke colors ko set karne ka logic update kiya gaya hai.
-// 5. [USER REQUEST] Normal card (Rank 4+) ke liye naya frame-based design aur ranking number system joda gaya hai.
+// FINAL FIX: Blank Page issue resolved.
+// Logic: Animate-on-scroll elements ko forcefully visible kiya jayega agar observer fail ho.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -16,6 +12,9 @@ let allAutomatedQueue = {};
 let allProducts = {};
 let currentMemberForFullView = null;
 let deferredInstallPrompt = null;
+
+// Sound file path check (Ensure this file exists or change path)
+const balanceClickSound = new Audio('/mixkit-clinking-coins-1993.wav');
 
 const getElement = (id) => document.getElementById(id);
 const elements = {
@@ -43,13 +42,20 @@ const elements = {
 
 const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
 const WHATSAPP_NUMBER = '7903698180';
-const BANK_LOGO_URL = 'https://i.ibb.co/pjB1bQ7J/1752978674430.jpg';
+const BANK_LOGO_URL = 'https://ik.imagekit.io/kdtvm0r78/IMG-20251202-WA0000.jpg'; // Updated Logo
 
 // --- Initialization ---
 export function initUI(database) {
     setupEventListeners(database);
     setupPWA();
+    // Start observing but also set a timeout to force visibility
     observeElements(document.querySelectorAll('.animate-on-scroll'));
+    
+    // FAILSAFE: Force elements to be visible after 500ms if observer is stuck
+    setTimeout(() => {
+        document.querySelectorAll('.animate-on-scroll').forEach(el => el.classList.add('is-visible'));
+    }, 500);
+
     if (elements.currentYear) elements.currentYear.textContent = new Date().getFullYear();
 }
 
@@ -66,7 +72,6 @@ export function renderPage(data) {
     displayHeaderButtons(data.headerButtons || {});
     
     const approvedMembers = allMembersData.filter(m => m.status === 'Approved');
-    // Pass adminSettings to displayMembers to get the normal card frame URL
     displayMembers(approvedMembers, data.adminSettings || {});
 
     displayCustomCards((data.adminSettings && data.adminSettings.custom_cards) || {});
@@ -77,7 +82,16 @@ export function renderPage(data) {
     processAndShowNotifications();
     renderProducts();
 
+    // Re-run feather icons and observer for new dynamic content
     feather.replace();
+    
+    const newAnimatedElements = document.querySelectorAll('.animate-on-scroll:not(.is-visible)');
+    observeElements(newAnimatedElements);
+    
+    // FAILSAFE for dynamic content
+    setTimeout(() => {
+        newAnimatedElements.forEach(el => el.classList.add('is-visible'));
+    }, 300);
 }
 
 export function showLoadingError(message) {
@@ -147,7 +161,6 @@ function displayHeaderButtons(buttons) {
     });
     
     elements.headerActionsContainer.appendChild(buttonWrapper);
-    
     attachDynamicButtonListeners();
 }
 
@@ -159,14 +172,12 @@ function displayMembers(members, adminSettings) {
         return;
     }
 
-    // Naya normal card frame URL database se lein, fallback URL bhi dein
     const normalCardFrameUrl = adminSettings.normal_card_frame_url || 'https://i.ibb.co/Y7LYKDcb/20251007-103318.png';
 
     members.forEach((member, index) => {
         const isNegative = (member.balance || 0) < 0;
 
         if (index < 3) {
-            // === TOP 3 FRAMED CARDS (KOI BADLAV NAHI) ===
             const card = document.createElement('div');
             card.className = 'framed-card-wrapper animate-on-scroll'; 
             const rankType = ['gold', 'silver', 'bronze'][index];
@@ -191,12 +202,10 @@ function displayMembers(members, adminSettings) {
             elements.memberContainer.appendChild(card);
 
         } else {
-            // === NORMAL CARDS (RANK 4+) KE LIYE NAYA DESIGN ===
             const card = document.createElement('div');
             card.className = 'normal-framed-card-wrapper animate-on-scroll';
             const balanceClass = isNegative ? 'negative-balance' : '';
             
-            // Ranking number ke liye Suffix (4th, 5th, etc.)
             const getRankSuffix = (i) => {
                 const j = i % 10, k = i % 100;
                 if (j === 1 && k !== 11) return "st";
@@ -209,13 +218,8 @@ function displayMembers(members, adminSettings) {
 
             card.innerHTML = `
                 <div class="normal-card-content">
-                    <!-- Layer 1: Frame Image -->
                     <img src="${normalCardFrameUrl}" alt="Card Frame" class="normal-card-frame-image">
-                    
-                    <!-- Layer 2: Profile Picture -->
                     <img src="${member.displayImageUrl}" alt="${member.name}" class="normal-framed-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
-                    
-                    <!-- Layer 3: Text Content & Rank -->
                     <div class="normal-card-rank">${rankText}</div>
                     <p class="normal-framed-name" title="${member.name}">${member.name}</p>
                     <p class="normal-framed-balance ${balanceClass}">${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}</p>
@@ -226,7 +230,6 @@ function displayMembers(members, adminSettings) {
             elements.memberContainer.appendChild(card);
         }
     });
-    observeElements(document.querySelectorAll('.animate-on-scroll'));
 }
 
 function renderProducts() {
@@ -243,7 +246,7 @@ function renderProducts() {
     container.innerHTML = '';
     productEntries.forEach(([id, product]) => {
         const card = document.createElement('div');
-        card.className = 'product-card';
+        card.className = 'product-card animate-on-scroll'; // Added animation class
         const price = parseFloat(product.price) || 0;
         const mrp = parseFloat(product.mrp) || 0;
 
@@ -332,7 +335,7 @@ function displayCustomCards(cards) {
     section.style.display = 'block';
     cardArray.forEach(cardData => {
         const cardElement = document.createElement('div');
-        cardElement.className = 'custom-card';
+        cardElement.className = 'custom-card animate-on-scroll';
         cardElement.innerHTML = `
             <div class="custom-card-img-wrapper">
                 <img src="${cardData.imageUrl || DEFAULT_IMAGE}" alt="${cardData.title || ''}" class="custom-card-img" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
@@ -542,7 +545,16 @@ function attachDynamicButtonListeners() {
     const viewPenaltyWalletBtn = getElement('viewPenaltyWalletBtn');
     
     if (sipStatusBtn) sipStatusBtn.onclick = showSipStatusModal;
-    if (viewBalanceBtn) viewBalanceBtn.onclick = showBalanceModal;
+    
+    if (viewBalanceBtn) {
+        viewBalanceBtn.onclick = () => {
+            if(balanceClickSound) {
+                balanceClickSound.play().catch(error => console.warn("Audio play failed:", error));
+            }
+            showBalanceModal();
+        };
+    }
+    
     if (viewPenaltyWalletBtn) viewPenaltyWalletBtn.onclick = showPenaltyWalletModal;
     
     if (notificationBtn) {
@@ -707,7 +719,7 @@ function buildInfoSlider() {
         let content = card.text ? `<p>${card.text}</p>` : card.htmlContent;
         
         elements.infoSlider.innerHTML += `
-            <div class="info-card-slide">
+            <div class="info-card-slide animate-on-scroll">
                 <h3><i data-feather="${card.icon}"></i> ${card.title}</h3>
                 ${content}
                 ${imageHTML} 
@@ -856,7 +868,21 @@ function showFullImage(src, alt) {
         openModal(imageModal);
     }
 }
-const scrollObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.1 });
-function observeElements(elements) { elements.forEach(el => scrollObserver.observe(el)); }
+
+// Fixed Observer
+const scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            scrollObserver.unobserve(entry.target); // Stop observing once visible to save performance
+        }
+    });
+}, { threshold: 0.1 });
+
+function observeElements(elements) {
+    if(!elements || elements.length === 0) return;
+    elements.forEach(el => scrollObserver.observe(el));
+}
+
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
 
