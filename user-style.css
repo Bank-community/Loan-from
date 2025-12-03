@@ -267,8 +267,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 .framed-info-container { 
     position: absolute; 
-    bottom: 15%; /* Ye pure naam aur amount ko upar/niche karta hai */
-    left: 6%; 
+    bottom: 14%; /* Ye pure naam aur amount ko upar/niche karta hai */
+    left: 7%; 
     width: 90%; 
     z-index: 3; 
     display: flex; 
