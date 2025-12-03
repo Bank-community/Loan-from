@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notifications - Bank Community Loan</title>
+    <title>Notification Center - Trust Community Fund</title>
     <!-- Feather Icons -->
     <script src="https://unpkg.com/feather-icons"></script>
     
@@ -14,151 +14,292 @@
 
     <style>
         :root {
-            --primary-color: #007bff; --primary-darker: #0056b3;
-            --bg-color: #f0f2f5; --card-bg: #ffffff;
-            --border-color: #dee2e6; --shadow-color: rgba(0, 0, 0, 0.08);
-            --text-color: #333; --light-text: #555;
-            --danger-color: #dc3545; --success-color: #28a745;
+            --primary-color: #002366; /* Royal Blue */
+            --primary-darker: #001233;
+            --accent-gold: #D4AF37;   /* Royal Gold */
+            --gold-gradient: linear-gradient(135deg, #FFD700, #D4AF37);
+            --bg-color: #f4f6f9;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #1a1a1a;
+            --light-text: #555;
+            --danger-color: #dc3545;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
         }
+
         body {
             font-family: 'Roboto', 'Arial', sans-serif;
             margin: 0;
-            background-color: var(--bg-color);
+            background-color: #f0f2f5;
+            background-image: linear-gradient(to bottom, #eef2f8, #ffffff);
             color: var(--text-color);
+            padding-bottom: 40px;
         }
+
+        /* === ROYAL HEADER === */
         .header {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-darker));
+            background: linear-gradient(160deg, #002366 0%, #001233 100%);
             color: white;
-            padding: 15px 20px;
+            padding: 20px 20px 60px 20px; /* Extra padding for tabs overlap */
             display: flex;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             position: sticky;
             top: 0;
             z-index: 100;
-        }
-        .header h1 {
-            font-size: 1.3em;
-            margin: 0;
-            flex-grow: 1;
-        }
-        .back-btn {
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            margin-right: 15px;
-        }
-        .notifications-container {
-            padding: 15px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .notification-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 15px var(--shadow-color);
-            margin-bottom: 15px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-        .notification-content {
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-        .notification-header {
-            font-size: 1.2em;
-            font-weight: 700;
-            color: var(--primary-darker);
-            margin: 0 0 10px 0;
-        }
-        .manual-image {
-            width: 100%;
-            height: auto;
-            max-height: 200px;
-            object-fit: cover;
-            display: block;
-        }
-        .notification-body {
-            font-size: 0.95em;
-            line-height: 1.6;
-            color: var(--light-text);
-            margin: 0;
-        }
-        .notification-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-        }
-        .notification-time {
-            font-size: 0.85em;
-            color: var(--light-text);
-        }
-        .explore-btn, .pay-now-btn {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        .explore-btn:hover, .pay-now-btn:hover {
-            background-color: var(--primary-darker);
-        }
-        .personal-reminder, .transaction-item {
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .personal-reminder img, .transaction-item img {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-        .personal-reminder .reminder-text, .transaction-item .transaction-text {
-            flex-grow: 1;
-        }
-        .loading-text, .no-notifications {
-            text-align: center;
-            padding: 50px 20px;
-            color: var(--light-text);
-            font-size: 1.1em;
+            border-bottom: 3px solid var(--accent-gold);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
         }
 
-        #install-btn {
+        .header h1 {
+            font-size: 1.4em;
+            margin: 0;
+            flex-grow: 1;
+            font-family: 'Times New Roman', serif;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            cursor: pointer;
+            margin-right: 15px;
+            padding: 8px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: var(--accent-gold);
+            color: var(--primary-color);
+        }
+
+        /* === TABS SYSTEM === */
+        .tabs-container {
+            display: flex;
+            justify-content: center;
+            margin-top: -30px;
+            margin-bottom: 20px;
+            padding: 0 15px;
+            position: relative;
+            z-index: 101;
+        }
+
+        .tabs-wrapper {
+            background: white;
+            padding: 5px;
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: flex;
             width: 100%;
-            background-color: var(--success-color);
+            max-width: 500px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 5px;
+            border: none;
+            background: transparent;
+            color: var(--light-text);
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: var(--accent-gold);
+            box-shadow: 0 4px 10px rgba(0, 35, 102, 0.3);
+        }
+
+        /* === CONTENT AREA === */
+        .main-container {
+            padding: 10px 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* === SMART LOAN CARD (LUXURY) === */
+        .loan-tracker-card {
+            background: var(--glass-bg);
+            border-radius: 16px;
+            padding: 0;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        /* Dynamic Border based on Status */
+        .loan-tracker-card.status-safe { border-left: 5px solid var(--success-color); }
+        .loan-tracker-card.status-warning { border-left: 5px solid var(--accent-gold); border: 1px solid var(--accent-gold); }
+        .loan-tracker-card.status-critical { 
+            border-left: 5px solid var(--danger-color); 
+            border: 1px solid var(--danger-color);
+            box-shadow: 0 0 15px rgba(220, 53, 69, 0.2);
+        }
+
+        .card-header-bg {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to right, #f8f9fa, #ffffff);
+            border-bottom: 1px solid #eee;
+        }
+
+        .loan-title { font-size: 1.1em; font-weight: 700; color: var(--primary-color); display: flex; align-items: center; gap: 8px; }
+        .loan-amount { font-size: 1.2em; font-weight: 800; color: var(--text-color); }
+
+        .card-body { padding: 20px 15px; text-align: center; }
+
+        .days-counter-big {
+            font-size: 2.5em;
+            font-weight: 900;
+            line-height: 1;
+            margin: 10px 0;
+        }
+        .days-label { font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; color: var(--light-text); }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        .progress-bar { height: 100%; transition: width 0.5s ease; }
+
+        .action-area {
+            padding: 15px;
+            background: #fcfcfc;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-pay {
+            flex: 1;
+            background: var(--primary-color);
             color: white;
-            padding: 12px 20px;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 35, 102, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-details {
+            flex: 1;
+            background: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        /* === TRANSACTION LIST === */
+        .transaction-card {
+            background: white;
             border-radius: 12px;
-            font-size: 1.1em;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid #eee;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .tx-icon {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .tx-info { flex-grow: 1; }
+        .tx-title { font-weight: 600; font-size: 0.95em; color: var(--text-color); margin: 0; }
+        .tx-date { font-size: 0.8em; color: #999; }
+        .tx-amount { font-weight: 700; font-size: 1em; }
+        .tx-positive { color: var(--success-color); }
+        .tx-negative { color: var(--danger-color); }
+
+        /* === MANUAL NOTIFICATIONS === */
+        .notice-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+        }
+        .notice-img { width: 100%; height: 180px; object-fit: cover; }
+        .notice-content { padding: 15px; }
+        .notice-title { font-size: 1.1em; font-weight: 700; color: var(--primary-color); margin: 0 0 8px 0; }
+        .notice-body { font-size: 0.95em; color: var(--light-text); line-height: 1.5; margin-bottom: 15px; }
+        .explore-btn {
+            display: inline-block;
+            background-color: var(--accent-gold);
+            color: var(--primary-darker);
+            padding: 8px 20px;
+            border-radius: 50px;
             font-weight: 700;
             text-decoration: none;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
+            font-size: 0.9em;
+        }
+
+        /* === INSTALL BUTTON === */
+        #install-container {
+            display: none;
+            margin-bottom: 20px;
+            animation: fadeInDown 0.5s ease-out;
+        }
+        #install-btn {
+            display: flex; align-items: center; justify-content: center;
+            width: 100%;
+            background-image: linear-gradient(45deg, #28a745 0%, #218838 100%);
+            color: white; padding: 12px; border-radius: 12px;
+            font-size: 1em; font-weight: 700; border: none; cursor: pointer;
             box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
-        #install-btn:hover {
-            background-color: #218838;
-        }
-        #install-btn img {
-            width: 28px;
-            height: 28px;
-            margin-right: 12px;
-        }
+
+        .loading-text, .no-data { text-align: center; padding: 40px 20px; color: #777; font-style: italic; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
     </style>
 </head>
 <body>
@@ -170,259 +311,323 @@
         <h1>Notifications</h1>
     </header>
 
-    <main id="notificationsContainer" class="notifications-container">
-        <div id="install-container" style="display: none; margin-bottom: 15px;">
+    <div class="tabs-container">
+        <div class="tabs-wrapper">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('transactions')">Transactions</button>
+            <button class="tab-btn" onclick="switchTab('notices')">Notices</button>
+        </div>
+    </div>
+
+    <main class="main-container">
+        <!-- === INSTALL BUTTON === -->
+        <div id="install-container">
             <button id="install-btn">
-                <img src="https://i.ibb.co/pjB1bQ7J/1752978674430.jpg" alt="App Logo">
-                <span>BANK Install App</span>
+                <i data-feather="download-cloud" style="margin-right: 8px;"></i>
+                <span>Install App</span>
             </button>
         </div>
-        <p class="loading-text">Loading notifications...</p>
+
+        <!-- === TAB 1: DASHBOARD (SMART ALERTS) === -->
+        <div id="dashboard" class="tab-content active">
+            <div id="activeLoanContainer">
+                <p class="loading-text">Analyzing your profile...</p>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; border: 1px solid #ffeeba; display: flex; gap: 10px; align-items: start;">
+                 <i data-feather="info" style="color: #856404; flex-shrink: 0;"></i>
+                 <p style="margin: 0; font-size: 0.9em; color: #856404;">
+                     <strong>Tip:</strong> Loan notification will automatically update daily. No spam messages.
+                 </p>
+            </div>
+        </div>
+
+        <!-- === TAB 2: TRANSACTIONS === -->
+        <div id="transactions" class="tab-content">
+            <div id="transactionsList">
+                <p class="loading-text">Loading transactions...</p>
+            </div>
+        </div>
+
+        <!-- === TAB 3: NOTICES (MANUAL) === -->
+        <div id="notices" class="tab-content">
+            <div id="manualNoticesList">
+                <p class="loading-text">Checking for notices...</p>
+            </div>
+        </div>
     </main>
 
     <script>
         const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
 
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
         async function initializeApp() {
             try {
                 const response = await fetch('/api/firebase-config');
-                if (!response.ok) throw new Error('Failed to load Firebase configuration.');
+                if (!response.ok) throw new Error('Failed config');
                 const config = await response.json();
                 
-                firebase.initializeApp(config);
+                if (!firebase.apps.length) firebase.initializeApp(config);
                 
                 firebase.auth().onAuthStateChanged(user => {
                     if (user) {
-                        fetchAndRenderNotifications();
+                        fetchAndRenderData();
                     } else {
-                        window.location.href = '/login.html';
+                        // Fallback logic if needed or redirect
+                        fetchAndRenderData(); // Try rendering anyway (maybe cached id)
                     }
                 });
 
             } catch (error) {
-                const container = document.getElementById('notificationsContainer');
-                container.innerHTML = `<p class="no-notifications">Error: ${error.message}</p>`;
+                console.error("Init Error:", error);
             }
         }
 
-        // === YAHAN BADLAV KIYA GAYA HAI: PWA Install Logic ko update kiya gaya hai ===
-        function setupPWAInstall() {
-            const installContainer = document.getElementById('install-container');
-            const installBtn = document.getElementById('install-btn');
-
-            // Check karein ki global deferredInstallPrompt maujood hai ya nahi
-            if (window.deferredInstallPrompt) {
-                if (installContainer) {
-                    installContainer.style.display = 'block';
-                }
-            }
-            
-            if (installBtn) {
-                installBtn.addEventListener('click', async () => {
-                    // Global prompt ka istemal karein
-                    const promptEvent = window.deferredInstallPrompt;
-                    if (promptEvent) {
-                        promptEvent.prompt();
-                        await promptEvent.userChoice;
-                        // Prompt ka istemal hone ke baad global variable ko clear kar dein
-                        window.deferredInstallPrompt = null;
-                        if (installContainer) {
-                            installContainer.style.display = 'none';
-                        }
-                    }
-                });
-            }
-        }
-        // === BADLAV SAMAPT ===
-
-
-        function getTodayDateStringLocal() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = (today.getMonth() + 1).toString().padStart(2, '0');
-            const day = today.getDate().toString().padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        async function fetchAndRenderNotifications() {
+        async function fetchAndRenderData() {
+            const container = document.getElementById('activeLoanContainer');
             const database = firebase.database();
-            const container = document.getElementById('notificationsContainer');
             
             try {
                 const snapshot = await database.ref().once('value');
                 const data = snapshot.val();
-                if (!data) {
-                    container.innerHTML = `<p class="no-notifications">No data found.</p>`;
-                    return;
-                }
-
-                const allMembersRaw = data.members || {};
-                const allManualNotifications = data.admin?.notifications?.manual || {};
-                const allAutomatedQueue = data.admin?.notifications?.automatedQueue || {};
-                const allTransactions = data.transactions || {};
-
+                
                 const verifiedMemberId = localStorage.getItem('verifiedMemberId');
-                if (!verifiedMemberId) {
-                    container.innerHTML = `<p class="no-notifications">Please verify your device on the main page to see notifications.</p>`;
+                
+                if (!data || !verifiedMemberId) {
+                    container.innerHTML = `<div class="no-data">Please verify your device on Home page first.</div>`;
+                    document.getElementById('transactionsList').innerHTML = "";
+                    document.getElementById('manualNoticesList').innerHTML = "";
                     return;
                 }
-                const currentUser = allMembersRaw[verifiedMemberId];
-                if (!currentUser) {
-                     container.innerHTML = `<p class="no-notifications">Could not find your profile. Please re-verify your device.</p>`;
-                     return;
-                }
-                currentUser.id = verifiedMemberId;
 
-                renderNotifications(container, currentUser, allManualNotifications, allAutomatedQueue, allMembersRaw, allTransactions);
+                const allMembers = data.members || {};
+                const currentUser = allMembers[verifiedMemberId];
+                
+                if (!currentUser) {
+                    container.innerHTML = `<div class="no-data">Member profile not found.</div>`;
+                    return;
+                }
+
+                // 1. RENDER SMART LOAN CARD (Replacing duplicates)
+                renderSmartLoanCard(verifiedMemberId, data.activeLoans || {}, container);
+
+                // 2. RENDER TRANSACTIONS
+                renderTransactions(verifiedMemberId, data.transactions || {}, allMembers);
+
+                // 3. RENDER MANUAL NOTICES
+                renderManualNotices(data.admin?.notifications?.manual || {});
 
             } catch (error) {
-                console.error("Failed to fetch data:", error);
-                container.innerHTML = `<p class="no-notifications">Could not load notifications. Please try again later.</p>`;
+                console.error("Render Error:", error);
+                container.innerHTML = `<p class="no-data">Error loading data.</p>`;
             }
         }
 
-        function renderNotifications(container, currentUser, manualNotifs, automatedQueue, allMembers, allTransactions) {
+        // === CORE LOGIC: SINGLE CARD FOR ACTIVE LOAN ===
+        function renderSmartLoanCard(memberId, allActiveLoans, container) {
+            container.innerHTML = '';
             
-            const manualNotificationsList = Object.values(manualNotifs)
-                .map(item => ({ ...item, category: 'manual', date: item.createdAt }));
+            // Find ALL active loans for this user
+            const loans = Object.values(allActiveLoans).filter(l => l.memberId === memberId && l.status === 'Active');
 
-            let userReminders = Object.values(automatedQueue)
-                .filter(item => item.memberId === currentUser.id && item.status === 'active');
-            
-            const now = new Date();
-            const memberTransactions = Object.values(allTransactions).filter(tx => tx.memberId === currentUser.id);
-            const currentMonthSipPaid = memberTransactions.some(tx => 
-                tx.type === 'SIP' &&
-                new Date(tx.date).getMonth() === now.getMonth() &&
-                new Date(tx.date).getFullYear() === now.getFullYear()
-            );
-
-            if (currentMonthSipPaid) {
-                userReminders = userReminders.filter(item => !item.type.includes('SIP Payment Reminder'));
-            }
-            
-            const personalRemindersList = userReminders.map(item => ({ ...item, category: 'reminder', date: Date.now() }));
-            
-            const todayDateString = getTodayDateStringLocal();
-            const todaysTransactionsList = Object.values(allTransactions).filter(tx => {
-                const txDate = new Date(tx.date);
-                const txDateString = `${txDate.getFullYear()}-${(txDate.getMonth() + 1).toString().padStart(2, '0')}-${txDate.getDate().toString().padStart(2, '0')}`;
-                return txDateString === todayDateString;
-            }).map(tx => ({ ...tx, category: 'transaction', date: tx.timestamp || tx.date }));
-
-            const allNotifications = [...manualNotificationsList, ...todaysTransactionsList, ...personalRemindersList];
-            
-            allNotifications.sort((a, b) => {
-                if (a.category === 'manual' && b.category !== 'manual') return -1;
-                if (a.category !== 'manual' && b.category === 'manual') return 1;
-                return new Date(b.date) - new Date(a.date);
-            });
-
-            const loadingText = container.querySelector('.loading-text');
-            if(loadingText) loadingText.remove();
-            
-            if (allNotifications.length === 0) {
-                 if (container.children.length === 1 && container.querySelector('#install-container')) {
-                 } else if (container.children.length === 0) {
-                    container.innerHTML += `<p class="no-notifications">No new notifications for you.</p>`;
-                 }
+            if (loans.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; background: white; border-radius: 12px; border: 1px dashed #ccc;">
+                        <i data-feather="check-circle" style="width: 40px; height: 40px; color: var(--success-color); margin-bottom: 10px;"></i>
+                        <h3 style="margin: 0; color: var(--primary-color);">You are Debt Free!</h3>
+                        <p style="color: #777;">You have no active loans at the moment.</p>
+                        <a href="loan_form.html" class="explore-btn" style="margin-top: 10px; background: var(--primary-color); color: white;">Apply Loan</a>
+                    </div>
+                `;
+                feather.replace();
                 return;
             }
 
-            allNotifications.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'notification-card';
+            // Loop through active loans (usually 1, but handles multiple)
+            loans.forEach(loan => {
+                const loanDate = new Date(loan.date); // Use 'date' or 'timestamp'
+                const today = new Date();
+                
+                // Calculate Days Logic
+                const diffTime = Math.abs(today - loanDate);
+                const daysElapsed = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                
+                // 90 Day Rule & Color Coding
+                let statusClass = 'status-safe';
+                let dayColor = 'var(--success-color)';
+                let statusText = 'On Track';
+                let progressPercent = Math.min((daysElapsed / 90) * 100, 100);
+                let displayDays = `${daysElapsed} Days`;
 
-                if (item.category === 'manual') {
-                    card.innerHTML = `
-                        ${item.imageUrl ? `<img src="${item.imageUrl}" class="manual-image" alt="${item.title}" onerror="this.style.display='none'">` : ''}
-                        <div class="notification-content">
-                            <h3 class="notification-header">${item.title}</h3>
-                            ${item.body ? `<p class="notification-body">${item.body}</p>` : ''}
-                            <div class="notification-footer">
-                                <span class="notification-time">${new Date(item.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
-                                ${item.link ? `<a href="${item.link}" target="_blank" class="explore-btn">Explore</a>` : ''}
-                            </div>
-                        </div>
-                    `;
-                } else if (item.category === 'reminder') {
-                    let bodyHTML = '';
-                    if (item.type.includes('SIP Payment Reminder')) {
-                        const today = new Date();
-                        let daysLeftText = '';
-                        const dueDate = 10;
-                        if (today.getDate() <= dueDate) {
-                            const daysLeft = dueDate - today.getDate();
-                            if (daysLeft > 1) daysLeftText = `<strong style="color: var(--primary-color);">(Only ${daysLeft} days left)</strong>`;
-                            else if (daysLeft === 1) daysLeftText = `<strong style="color: var(--danger-color);">(Only 1 day left!)</strong>`;
-                            else daysLeftText = `<strong style="color: var(--danger-color);">(Today is the last day!)</strong>`;
-                        } else {
-                            daysLeftText = `<strong style="color: var(--danger-color);">(Due date has passed)</strong>`;
-                        }
-                        
-                        const sipAmountHTML = `<strong style="color: var(--danger-color);">₹${currentUser.sipAmount || 500}</strong>`;
-                        const reminderMessage = `<strong>Hi ${currentUser.fullName}</strong>, this is a monthly SIP reminder for your ${sipAmountHTML} SIP. ${daysLeftText}`;
-                        
-                        bodyHTML = `
-                            <p class="notification-body">${reminderMessage}</p>
-                            <div class="notification-footer">
-                                <span></span>
-                                <a href="qr.html" class="pay-now-btn">Pay Now</a>
-                            </div>
-                        `;
-                    } else {
-                        bodyHTML = `<p class="notification-body"><strong>Hi ${currentUser.fullName}</strong>, ${item.type}</p>`;
-                    }
-
-                    card.innerHTML = `
-                        <div class="personal-reminder">
-                            <img src="${currentUser.profilePicUrl || DEFAULT_IMAGE}" alt="${currentUser.fullName}" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
-                            <div class="reminder-text">
-                                ${bodyHTML}
-                            </div>
-                        </div>
-                    `;
-                } else if (item.category === 'transaction') {
-                    const member = allMembers[item.memberId];
-                    if (!member) return;
-
-                    let text = '', amount = '', typeClass = '';
-                    switch(item.type) {
-                        case 'SIP': text = `paid their SIP.`; amount = `+ ₹${(item.amount || 0).toLocaleString()}`; typeClass = 'sip'; break;
-                        case 'Loan Taken': text = `received a loan.`; amount = `- ₹${(item.amount || 0).toLocaleString()}`; typeClass = 'loan'; break;
-                        case 'Loan Payment': text = `made a loan payment.`; amount = `+ ₹${(item.principalPaid || 0).toLocaleString()}`; typeClass = 'payment'; break;
-                        case 'Extra Payment': text = `made an extra payment.`; amount = `+ ₹${(item.amount || 0).toLocaleString()}`; typeClass = 'sip'; break;
-                        case 'Extra Withdraw': text = `withdrew money.`; amount = `- ₹${(item.amount || 0).toLocaleString()}`; typeClass = 'loan'; break;
-                        default: text = 'made a transaction.'; break;
-                    }
-
-                    card.innerHTML = `
-                        <div class="transaction-item">
-                            <img src="${member.profilePicUrl || DEFAULT_IMAGE}" alt="${member.fullName}" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
-                            <div class="transaction-text">
-                                <p class="notification-body">
-                                    <strong>${member.fullName}</strong> ${text}
-                                    <strong style="color: ${item.type.includes('Loan Taken') || item.type.includes('Extra Withdraw') ? 'var(--danger-color)' : 'var(--success-color)'}; float: right;">${amount}</strong>
-                                </p>
-                                <span class="notification-time">${new Date(item.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
-                            </div>
-                        </div>
-                    `;
+                if (daysElapsed > 90) {
+                    // CRITICAL RULE: If > 90, show "OVER DAYS"
+                    statusClass = 'status-critical';
+                    dayColor = 'var(--danger-color)';
+                    statusText = 'OVERDUE (Critical)';
+                    displayDays = 'OVER DAYS'; // Rule Applied
+                    progressPercent = 100;
+                } else if (daysElapsed > 30) {
+                    statusClass = 'status-warning';
+                    dayColor = 'var(--accent-gold)'; // Gold for 30-90
+                    statusText = 'Attention Needed';
                 }
 
+                const card = document.createElement('div');
+                card.className = `loan-tracker-card ${statusClass}`;
+                card.innerHTML = `
+                    <div class="card-header-bg">
+                        <span class="loan-title"><i data-feather="clock"></i> Active Loan</span>
+                        <span class="loan-amount">₹${(loan.amount || 0).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="days-label">Elapsed Time</div>
+                        <div class="days-counter-big" style="color: ${dayColor}">${displayDays}</div>
+                        <div style="color: ${dayColor}; font-weight: 600; font-size: 0.9em; margin-top: 5px;">${statusText}</div>
+                        
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: ${progressPercent}%; background-color: ${dayColor};"></div>
+                        </div>
+                        <p style="font-size: 0.85em; color: #777; margin: 0;">Loan Taken: ${loanDate.toLocaleDateString('en-GB')}</p>
+                    </div>
+                    <div class="action-area">
+                        <a href="qr.html" class="btn-pay"><i data-feather="credit-card" style="width: 16px;"></i> Pay Now</a>
+                        <a href="loan_dashbord.html" class="btn-details">Details</a>
+                    </div>
+                `;
                 container.appendChild(card);
             });
-            
             feather.replace();
+        }
+
+        function renderTransactions(memberId, allTransactions, allMembers) {
+            const list = document.getElementById('transactionsList');
+            list.innerHTML = '';
+
+            // Filter transactions involving this user (either they did it, or it was related to them)
+            // Or if user wants to see ALL transactions (Community style)? 
+            // Usually Notifications show "Your Activity" or "Important Community Activity".
+            // Let's show ALL transactions but highlight user's ones, or just show last 20 global transactions.
+            // Requirement: "notification page... show updates". Usually global.
+            
+            const txArray = Object.values(allTransactions)
+                .sort((a, b) => new Date(b.date) - new Date(a.date)) // Newest first
+                .slice(0, 30); // Limit to 30
+
+            if(txArray.length === 0) {
+                list.innerHTML = '<div class="no-data">No recent transactions.</div>';
+                return;
+            }
+
+            txArray.forEach(tx => {
+                const member = allMembers[tx.memberId];
+                if(!member) return;
+
+                let icon = 'dollar-sign';
+                let colorClass = '';
+                let sign = '';
+                let bg = '#f0f2f5';
+
+                switch(tx.type) {
+                    case 'SIP': 
+                        icon = 'arrow-up-circle'; colorClass = 'tx-positive'; sign = '+'; bg = '#d4edda'; break;
+                    case 'Loan Taken': 
+                        icon = 'arrow-down-circle'; colorClass = 'tx-negative'; sign = '-'; bg = '#f8d7da'; break;
+                    case 'Loan Payment': 
+                        icon = 'check-circle'; colorClass = 'tx-positive'; sign = '+'; bg = '#cce5ff'; break;
+                    default: 
+                        icon = 'activity'; colorClass = 'tx-positive';
+                }
+
+                const item = document.createElement('div');
+                item.className = 'transaction-card';
+                item.innerHTML = `
+                    <div class="tx-icon" style="background-color: ${bg};">
+                        <i data-feather="${icon}" class="${colorClass}"></i>
+                    </div>
+                    <div class="tx-info">
+                        <p class="tx-title">
+                            <strong>${member.fullName}</strong> - ${tx.type}
+                        </p>
+                        <span class="tx-date">${new Date(tx.date).toLocaleDateString('en-GB')} • ${new Date(tx.timestamp || tx.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                    <div class="tx-amount ${colorClass}">
+                        ${sign}₹${(tx.amount || tx.principalPaid || 0).toLocaleString()}
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+            feather.replace();
+        }
+
+        function renderManualNotices(notices) {
+            const list = document.getElementById('manualNoticesList');
+            list.innerHTML = '';
+            const noticeArray = Object.values(notices).sort((a,b) => b.createdAt - a.createdAt);
+
+            if(noticeArray.length === 0) {
+                list.innerHTML = '<div class="no-data">No notices from Admin.</div>';
+                return;
+            }
+
+            noticeArray.forEach(notice => {
+                const item = document.createElement('div');
+                item.className = 'notice-card';
+                item.innerHTML = `
+                    ${notice.imageUrl ? `<img src="${notice.imageUrl}" class="notice-img" alt="Notice">` : ''}
+                    <div class="notice-content">
+                        <h3 class="notice-title">${notice.title}</h3>
+                        <div class="notice-body">${notice.body || ''}</div>
+                        ${notice.link ? `<a href="${notice.link}" target="_blank" class="explore-btn">Explore</a>` : ''}
+                        <span style="float: right; font-size: 0.8em; color: #999; margin-top: 10px;">${new Date(notice.createdAt).toLocaleDateString()}</span>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // === PWA LOGIC (From previous files) ===
+        function setupPWAInstall() {
+            const installContainer = document.getElementById('install-container');
+            const installBtn = document.getElementById('install-btn');
+
+            const showInstallButton = () => {
+                const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+                if (!isStandalone && window.deferredInstallPrompt && installContainer) {
+                    installContainer.style.display = 'block';
+                }
+            };
+            
+            showInstallButton();
+            window.addEventListener('pwa-install-ready', showInstallButton);
+
+            if (installBtn) {
+                installBtn.addEventListener('click', async () => {
+                    const promptEvent = window.deferredInstallPrompt;
+                    if (!promptEvent) {
+                        alert("Cannot install right now. Please try again from the main page.");
+                        return;
+                    }
+                    promptEvent.prompt();
+                    await promptEvent.userChoice;
+                    window.deferredInstallPrompt = null;
+                    if (installContainer) installContainer.style.display = 'none';
+                });
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             initializeApp();
-            setupPWAInstall(); 
+            setupPWAInstall();
             feather.replace();
         });
     </script>
 </body>
 </html>
-
 
