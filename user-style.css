@@ -1,7 +1,8 @@
 /*
-FINAL MASTER UPDATE V4:
-1. Special Cards (Gold, Silver, Bronze) section ab fully detailed Hindi comments ke saath hai.
-2. Har element (Photo, Name, Amount) ko adjust karne ke liye instructions code ke andar likhi gayi hain.
+FINAL MASTER UPDATE V5:
+1. Footer Design Update: Dark Blue background, White text, Gold Border.
+2. Special Cards (Gold, Silver, Bronze) section detailed Hindi comments.
+3. All Members: Image Zoom logic.
 */
 
 :root {
@@ -232,7 +233,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .framed-card-wrapper { 
     flex: 0 0 auto; 
     width: 200px; 
-    height: 340px; 
+    height: 330px; 
     cursor: pointer; 
     transition: transform 0.3s ease; 
     filter: drop-shadow(0 8px 15px rgba(0,0,0,0.2)); 
@@ -659,5 +660,37 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 /* Media Queries */
 @media (min-width: 768px) { .action-cards { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 992px) { .action-cards { grid-template-columns: repeat(4, 1fr); } }
+
+/* === FOOTER STYLES (NEW UPDATE) === */
+footer {
+    background-color: var(--primary-darker); /* Dark Blue Background */
+    color: white; /* White Text */
+    padding: 30px 20px;
+    text-align: center;
+    border-top: 4px solid var(--accent-gold); /* Gold Border Top */
+    margin-top: 40px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+}
+
+footer p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 0.95em;
+    letter-spacing: 0.5px;
+}
+
+footer a {
+    color: var(--accent-gold) !important; /* Force Gold Link Color */
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: white !important;
+    text-decoration: underline;
+}
 
 
