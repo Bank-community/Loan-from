@@ -152,12 +152,12 @@
         }
         
         /* Dynamic Border based on Status */
-        .loan-tracker-card.status-safe { border-left: 5px solid var(--success-color); }
-        .loan-tracker-card.status-warning { border-left: 5px solid var(--accent-gold); border: 1px solid var(--accent-gold); }
+        .loan-tracker-card.status-safe { border-left: 6px solid var(--success-color); }
+        .loan-tracker-card.status-warning { border-left: 6px solid var(--accent-gold); border: 1px solid var(--accent-gold); }
         .loan-tracker-card.status-critical { 
-            border-left: 5px solid var(--danger-color); 
-            border: 1px solid var(--danger-color);
-            box-shadow: 0 0 15px rgba(220, 53, 69, 0.2);
+            border-left: 6px solid var(--danger-color); 
+            border: 2px solid var(--danger-color);
+            box-shadow: 0 0 20px rgba(220, 53, 69, 0.15);
         }
 
         .card-header-bg {
@@ -170,34 +170,46 @@
         }
 
         .loan-title { font-size: 1.1em; font-weight: 700; color: var(--primary-color); display: flex; align-items: center; gap: 8px; }
-        .loan-amount { font-size: 1.2em; font-weight: 800; color: var(--text-color); }
+        .loan-amount { font-size: 1.3em; font-weight: 800; color: var(--text-color); }
 
-        .card-body { padding: 20px 15px; text-align: center; }
+        .card-body { padding: 25px 15px; text-align: center; }
 
         .days-counter-big {
-            font-size: 2.5em;
+            font-size: 2.8em;
             font-weight: 900;
             line-height: 1;
             margin: 10px 0;
+            font-variant-numeric: tabular-nums;
         }
-        .days-label { font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; color: var(--light-text); }
+        .days-label { font-size: 0.85em; text-transform: uppercase; letter-spacing: 2px; color: #777; font-weight: 600; }
 
         .progress-bar-container {
-            width: 100%;
-            height: 8px;
+            width: 80%;
+            height: 6px;
             background: #e9ecef;
-            border-radius: 4px;
-            margin: 15px 0;
+            border-radius: 10px;
+            margin: 20px auto 10px auto;
             overflow: hidden;
+            position: relative;
         }
-        .progress-bar { height: 100%; transition: width 0.5s ease; }
+        .progress-bar { height: 100%; transition: width 0.8s ease; border-radius: 10px; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 700;
+            background: #eee;
+            margin-top: 5px;
+        }
 
         .action-area {
             padding: 15px;
             background: #fcfcfc;
             border-top: 1px solid #eee;
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .btn-pay {
@@ -215,13 +227,15 @@
             justify-content: center;
             align-items: center;
             gap: 8px;
+            transition: transform 0.2s;
         }
+        .btn-pay:active { transform: scale(0.98); }
         
         .btn-details {
             flex: 1;
             background: white;
             color: var(--primary-color);
-            border: 1px solid var(--primary-color);
+            border: 2px solid var(--primary-color);
             padding: 12px;
             border-radius: 8px;
             font-weight: bold;
@@ -240,19 +254,23 @@
             gap: 15px;
             border: 1px solid #eee;
             box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            transition: transform 0.2s;
         }
+        .transaction-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+
         .tx-icon {
-            width: 40px; height: 40px;
+            width: 42px; height: 42px;
             border-radius: 50%;
             display: flex; 
             align-items: center; 
             justify-content: center;
             flex-shrink: 0;
+            font-size: 1.2em;
         }
         .tx-info { flex-grow: 1; }
-        .tx-title { font-weight: 600; font-size: 0.95em; color: var(--text-color); margin: 0; }
-        .tx-date { font-size: 0.8em; color: #999; }
-        .tx-amount { font-weight: 700; font-size: 1em; }
+        .tx-title { font-weight: 600; font-size: 0.95em; color: var(--text-color); margin: 0 0 4px 0; }
+        .tx-date { font-size: 0.75em; color: #999; font-weight: 500; }
+        .tx-amount { font-weight: 800; font-size: 1.1em; white-space: nowrap; }
         .tx-positive { color: var(--success-color); }
         .tx-negative { color: var(--danger-color); }
 
@@ -278,6 +296,7 @@
             font-weight: 700;
             text-decoration: none;
             font-size: 0.9em;
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
         }
 
         /* === INSTALL BUTTON === */
@@ -295,7 +314,7 @@
             box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
 
-        .loading-text, .no-data { text-align: center; padding: 40px 20px; color: #777; font-style: italic; }
+        .loading-text, .no-data { text-align: center; padding: 40px 20px; color: #999; font-style: italic; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -336,14 +355,17 @@
             
             <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; border: 1px solid #ffeeba; display: flex; gap: 10px; align-items: start;">
                  <i data-feather="info" style="color: #856404; flex-shrink: 0;"></i>
-                 <p style="margin: 0; font-size: 0.9em; color: #856404;">
-                     <strong>Tip:</strong> Loan notification will automatically update daily. No spam messages.
+                 <p style="margin: 0; font-size: 0.85em; color: #856404; line-height: 1.4;">
+                     <strong>Note:</strong> Loan days counter updates automatically. Status changes color based on duration.
                  </p>
             </div>
         </div>
 
         <!-- === TAB 2: TRANSACTIONS === -->
         <div id="transactions" class="tab-content">
+            <div class="month-header" style="text-align: center; padding: 10px; margin-bottom: 10px; color: var(--primary-color); font-weight: 700; background: #eef2f8; border-radius: 8px;">
+                <span id="currentMonthDisplay">Current Month</span> Activity
+            </div>
             <div id="transactionsList">
                 <p class="loading-text">Loading transactions...</p>
             </div>
@@ -360,12 +382,55 @@
     <script>
         const DEFAULT_IMAGE = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
 
+        // --- 1. ADVANCED DATE PARSER (Fixes NaN Issue) ---
+        function parseLooseDate(dateString) {
+            if (!dateString) return null;
+
+            // Try standard Date parse first
+            let date = new Date(dateString);
+            if (!isNaN(date.getTime())) return date;
+
+            // Handle "8 Sept 2025" or "8 September 2025"
+            // Remove common separators and split
+            const parts = dateString.replace(/,/g, '').split(' ');
+            if (parts.length >= 3) {
+                const day = parseInt(parts[0]);
+                const year = parseInt(parts[2]);
+                const monthStr = parts[1].toLowerCase();
+                
+                const months = {
+                    'jan': 0, 'january': 0,
+                    'feb': 1, 'february': 1,
+                    'mar': 2, 'march': 2,
+                    'apr': 3, 'april': 3,
+                    'may': 4,
+                    'jun': 5, 'june': 5,
+                    'jul': 6, 'july': 6,
+                    'aug': 7, 'august': 7,
+                    'sep': 8, 'sept': 8, 'september': 8,
+                    'oct': 9, 'october': 9,
+                    'nov': 10, 'november': 10,
+                    'dec': 11, 'december': 11
+                };
+
+                if (!isNaN(day) && !isNaN(year) && months.hasOwnProperty(monthStr)) {
+                    return new Date(year, months[monthStr], day);
+                }
+            }
+            
+            return null; // Failed to parse
+        }
+
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            // Find the button that triggered this or find by iterating
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(btn => {
+                if(btn.getAttribute('onclick').includes(tabId)) btn.classList.add('active');
+            });
         }
 
         async function initializeApp() {
@@ -377,12 +442,7 @@
                 if (!firebase.apps.length) firebase.initializeApp(config);
                 
                 firebase.auth().onAuthStateChanged(user => {
-                    if (user) {
-                        fetchAndRenderData();
-                    } else {
-                        // Fallback logic if needed or redirect
-                        fetchAndRenderData(); // Try rendering anyway (maybe cached id)
-                    }
+                    fetchAndRenderData(); // Always try to render, auth handles data access
                 });
 
             } catch (error) {
@@ -415,10 +475,10 @@
                     return;
                 }
 
-                // 1. RENDER SMART LOAN CARD (Replacing duplicates)
+                // 1. RENDER SMART LOAN CARD (Fixed Logic)
                 renderSmartLoanCard(verifiedMemberId, data.activeLoans || {}, container);
 
-                // 2. RENDER TRANSACTIONS
+                // 2. RENDER TRANSACTIONS (Current Month Only)
                 renderTransactions(verifiedMemberId, data.transactions || {}, allMembers);
 
                 // 3. RENDER MANUAL NOTICES
@@ -426,7 +486,7 @@
 
             } catch (error) {
                 console.error("Render Error:", error);
-                container.innerHTML = `<p class="no-data">Error loading data.</p>`;
+                container.innerHTML = `<p class="no-data">Error loading data. Check console.</p>`;
             }
         }
 
@@ -450,33 +510,49 @@
                 return;
             }
 
-            // Loop through active loans (usually 1, but handles multiple)
+            // Render Single Card (if multiple loans, we stack logic or just show the oldest/largest)
+            // Showing the oldest active loan usually makes sense for urgency
             loans.forEach(loan => {
-                const loanDate = new Date(loan.date); // Use 'date' or 'timestamp'
+                // TRY PARSING DATE
+                let loanDate = parseLooseDate(loan.date);
+                if (!loanDate && loan.timestamp) loanDate = new Date(loan.timestamp);
+                
+                // Fallback if Date is completely broken (Prevents NaN)
+                if (!loanDate) {
+                    console.warn("Invalid Loan Date Found:", loan);
+                    loanDate = new Date(); // Treat as today to avoid crash
+                }
+
                 const today = new Date();
                 
                 // Calculate Days Logic
                 const diffTime = Math.abs(today - loanDate);
-                const daysElapsed = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                const daysElapsed = Math.floor(diffTime / (1000 * 60 * 60 * 24)); 
                 
-                // 90 Day Rule & Color Coding
+                // === 90 DAY RULE & COLOR CODING ===
                 let statusClass = 'status-safe';
                 let dayColor = 'var(--success-color)';
                 let statusText = 'On Track';
                 let progressPercent = Math.min((daysElapsed / 90) * 100, 100);
                 let displayDays = `${daysElapsed} Days`;
+                let statusBadgeBg = '#d4edda';
+                let statusBadgeColor = '#155724';
 
                 if (daysElapsed > 90) {
                     // CRITICAL RULE: If > 90, show "OVER DAYS"
                     statusClass = 'status-critical';
                     dayColor = 'var(--danger-color)';
-                    statusText = 'OVERDUE (Critical)';
-                    displayDays = 'OVER DAYS'; // Rule Applied
+                    statusText = 'CRITICAL OVERDUE';
+                    displayDays = 'OVER DAYS'; 
                     progressPercent = 100;
+                    statusBadgeBg = '#f8d7da';
+                    statusBadgeColor = '#721c24';
                 } else if (daysElapsed > 30) {
                     statusClass = 'status-warning';
-                    dayColor = 'var(--accent-gold)'; // Gold for 30-90
+                    dayColor = '#b8860b'; // Dark Gold
                     statusText = 'Attention Needed';
+                    statusBadgeBg = '#fff3cd';
+                    statusBadgeColor = '#856404';
                 }
 
                 const card = document.createElement('div');
@@ -487,14 +563,17 @@
                         <span class="loan-amount">₹${(loan.amount || 0).toLocaleString('en-IN')}</span>
                     </div>
                     <div class="card-body">
-                        <div class="days-label">Elapsed Time</div>
+                        <div class="days-label">Time Elapsed Since Disbursal</div>
                         <div class="days-counter-big" style="color: ${dayColor}">${displayDays}</div>
-                        <div style="color: ${dayColor}; font-weight: 600; font-size: 0.9em; margin-top: 5px;">${statusText}</div>
+                        
+                        <div class="status-badge" style="background: ${statusBadgeBg}; color: ${statusBadgeColor};">
+                            ${statusText}
+                        </div>
                         
                         <div class="progress-bar-container">
                             <div class="progress-bar" style="width: ${progressPercent}%; background-color: ${dayColor};"></div>
                         </div>
-                        <p style="font-size: 0.85em; color: #777; margin: 0;">Loan Taken: ${loanDate.toLocaleDateString('en-GB')}</p>
+                        <p style="font-size: 0.8em; color: #999; margin: 5px 0 0 0;">Loan Date: ${loanDate.toLocaleDateString('en-GB')}</p>
                     </div>
                     <div class="action-area">
                         <a href="qr.html" class="btn-pay"><i data-feather="credit-card" style="width: 16px;"></i> Pay Now</a>
@@ -506,28 +585,39 @@
             feather.replace();
         }
 
+        // === FILTER: ONLY CURRENT MONTH TRANSACTIONS ===
         function renderTransactions(memberId, allTransactions, allMembers) {
             const list = document.getElementById('transactionsList');
+            const monthDisplay = document.getElementById('currentMonthDisplay');
             list.innerHTML = '';
 
-            // Filter transactions involving this user (either they did it, or it was related to them)
-            // Or if user wants to see ALL transactions (Community style)? 
-            // Usually Notifications show "Your Activity" or "Important Community Activity".
-            // Let's show ALL transactions but highlight user's ones, or just show last 20 global transactions.
-            // Requirement: "notification page... show updates". Usually global.
+            const now = new Date();
+            const currentMonth = now.getMonth(); // 0-11
+            const currentYear = now.getFullYear();
             
+            // Set header text
+            monthDisplay.textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+            // Convert to array and filter
             const txArray = Object.values(allTransactions)
-                .sort((a, b) => new Date(b.date) - new Date(a.date)) // Newest first
-                .slice(0, 30); // Limit to 30
+                .filter(tx => {
+                    let txDate = parseLooseDate(tx.date) || new Date(tx.timestamp || 0);
+                    // STRICT FILTER: Only Current Month & Year
+                    return txDate.getMonth() === currentMonth && txDate.getFullYear() === currentYear;
+                })
+                .sort((a, b) => new Date(b.date) - new Date(a.date)); // Newest first
 
             if(txArray.length === 0) {
-                list.innerHTML = '<div class="no-data">No recent transactions.</div>';
+                list.innerHTML = `
+                    <div class="no-data" style="background: white; border-radius: 12px; margin-top:10px;">
+                        No transactions found for ${monthDisplay.textContent}.
+                    </div>`;
                 return;
             }
 
             txArray.forEach(tx => {
                 const member = allMembers[tx.memberId];
-                if(!member) return;
+                if(!member) return; // Skip if member data missing
 
                 let icon = 'dollar-sign';
                 let colorClass = '';
@@ -544,18 +634,24 @@
                     default: 
                         icon = 'activity'; colorClass = 'tx-positive';
                 }
+                
+                // Highlight if it's the current user's transaction
+                const isMine = tx.memberId === memberId;
+                const highlightStyle = isMine ? 'border-left: 4px solid var(--primary-color);' : '';
 
                 const item = document.createElement('div');
                 item.className = 'transaction-card';
+                item.style.cssText = highlightStyle;
                 item.innerHTML = `
                     <div class="tx-icon" style="background-color: ${bg};">
                         <i data-feather="${icon}" class="${colorClass}"></i>
                     </div>
                     <div class="tx-info">
                         <p class="tx-title">
-                            <strong>${member.fullName}</strong> - ${tx.type}
+                            ${isMine ? '<strong>You</strong>' : `<strong>${member.fullName}</strong>`}
+                            <span style="font-weight:400; color:#555;"> - ${tx.type}</span>
                         </p>
-                        <span class="tx-date">${new Date(tx.date).toLocaleDateString('en-GB')} • ${new Date(tx.timestamp || tx.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        <span class="tx-date">${new Date(tx.date).toLocaleDateString('en-GB')}</span>
                     </div>
                     <div class="tx-amount ${colorClass}">
                         ${sign}₹${(tx.amount || tx.principalPaid || 0).toLocaleString()}
@@ -585,14 +681,14 @@
                         <h3 class="notice-title">${notice.title}</h3>
                         <div class="notice-body">${notice.body || ''}</div>
                         ${notice.link ? `<a href="${notice.link}" target="_blank" class="explore-btn">Explore</a>` : ''}
-                        <span style="float: right; font-size: 0.8em; color: #999; margin-top: 10px;">${new Date(notice.createdAt).toLocaleDateString()}</span>
+                        <span style="float: right; font-size: 0.75em; color: #999; margin-top: 10px;">${new Date(notice.createdAt).toLocaleDateString()}</span>
                     </div>
                 `;
                 list.appendChild(item);
             });
         }
 
-        // === PWA LOGIC (From previous files) ===
+        // === PWA LOGIC ===
         function setupPWAInstall() {
             const installContainer = document.getElementById('install-container');
             const installBtn = document.getElementById('install-btn');
@@ -630,4 +726,5 @@
     </script>
 </body>
 </html>
+
 
