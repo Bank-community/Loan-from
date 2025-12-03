@@ -1,29 +1,22 @@
 /*
-ROYAL THEME UPDATE:
-1. Primary Color: Royal Blue (#002366) - Trust aur Authority ke liye.
-2. Accent Color: Metallic Gold (#D4AF37) - Premium aur Wealth ke liye.
-3. Header: Deep Royal Gradient with Gold Border.
-4. Cards: Crisp shadows aur subtle borders.
-5. Typography: Clean aur Bold.
+ROYAL THEME & VISIBILITY FIX:
+1. animate-on-scroll ab default visible rahega taaki JS fail hone par blank page na aaye.
+2. JS load hote hi 'hidden-initially' class add karega animation ke liye.
 */
 
 :root {
     --primary-color: #002366; /* Royal Blue */
-    --primary-darker: #001540; /* Deep Dark Blue */
+    --primary-darker: #001540;
     --accent-gold: #D4AF37; /* Royal Gold */
     --gold-gradient: linear-gradient(135deg, #FFD700, #D4AF37);
-    
-    --secondary-color: #25D366; /* WhatsApp Green */
+    --secondary-color: #25D366;
     --secondary-darker: #128C7E;
-    
     --text-color: #1a1a1a;
     --light-text: #555;
-    
-    --bg-color: #f4f6f9; /* Soft bluish-grey background */
+    --bg-color: #f4f6f9;
     --card-bg: #ffffff;
     --border-color: #e0e0e0;
     --shadow-color: rgba(0, 0, 0, 0.1);
-    
     --prime-color: #FFD700;
     --danger-color: #dc3545;
     --success-color: #28a745;
@@ -56,7 +49,7 @@ header {
     border-bottom-right-radius: 20px;
 }
 
-.header-display { width: 100%; max-width: 500px; height: 180px; margin: 0 auto 20px auto; padding: 8px; box-sizing: border-box; border-radius: 20px; background: linear-gradient(145deg, #D4AF37, #B8860B); /* Gold Frame */ box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4); position: relative; display: flex; flex-direction: column; }
+.header-display { width: 100%; max-width: 500px; height: 180px; margin: 0 auto 20px auto; padding: 8px; box-sizing: border-box; border-radius: 20px; background: linear-gradient(145deg, #D4AF37, #B8860B); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4); position: relative; display: flex; flex-direction: column; }
 .ad-content { background-color: #0b1021; border-radius: 14px; width: 100%; height: 100%; position: relative; overflow: hidden; box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; animation: fadeIn 0.8s ease-in-out; flex-grow: 1; }
 .ad-content::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle, rgba(212, 175, 55, 0.1) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.3; pointer-events: none; }
 
@@ -378,7 +371,15 @@ footer p { color: #cbd5e0; margin: 0; }
 .image-modal-overlay.show .image-modal-content { transform: scale(1); }
 .image-modal-close { position: absolute; top: 25px; right: 35px; color: #ccc; font-size: 45px; font-weight: bold; cursor: pointer; transition: color 0.3s ease, transform 0.3s ease; z-index: 1003; }
 .image-modal-close:hover { color: #fff; transform: scale(1.1); }
-.animate-on-scroll { opacity: 0; transform: translateY(40px); transition: opacity var(--animation-duration) ease-out, transform var(--animation-duration) ease-out; }
+.animate-on-scroll { 
+    opacity: 1; /* Safety Fix: Default visible */
+    transform: translateY(0); 
+    transition: opacity var(--animation-duration) ease-out, transform var(--animation-duration) ease-out; 
+}
+.animate-on-scroll.hidden-initially {
+    opacity: 0;
+    transform: translateY(40px);
+}
 .animate-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
 #fullProfileViewModal .modal-content { max-width: 95%; width: 600px; max-height: 90vh; display: flex; flex-direction: column; }
 .full-profile-body { overflow-y: auto; padding: 20px; }
@@ -411,4 +412,5 @@ footer p { color: #cbd5e0; margin: 0; }
 @media (min-width: 992px) { .member-card { flex: 0 0 20%; max-width: 210px; } .balance-display { font-size: 3.2em; } h2 { font-size: 2.1em; } }
 @media (min-width: 1200px) { .content-wrapper, .header-container, .member-slider { max-width: 1140px; } .member-card { flex: 0 0 15%; max-width: 220px; } h2 { font-size: 2.2em; } }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
 
