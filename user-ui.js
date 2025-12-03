@@ -1,7 +1,7 @@
-// FINAL STRICT UPDATE:
-// 1. Special Cards HTML structure optimized for "Name Plate" alignment.
-// 2. Header Buttons logic refined for Pill Shape.
-// 3. Wallet/Balance buttons targeted correctly.
+// FINAL STRICT UPDATE V2:
+// 1. Back Button Support: Modals close on back press.
+// 2. All Members: Grid Layout implementation.
+// 3. SIP Status: Fixed display logic.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -14,6 +14,7 @@ let allAutomatedQueue = {};
 let allProducts = {};
 let currentMemberForFullView = null;
 let deferredInstallPrompt = null;
+let currentOpenModal = null; // Track open modal for back button
 
 // Sound file path check
 const balanceClickSound = new Audio('/mixkit-clinking-coins-1993.wav');
@@ -22,7 +23,7 @@ const getElement = (id) => document.getElementById(id);
 const elements = {
     memberContainer: getElement('memberContainer'),
     headerActionsContainer: getElement('headerActionsContainer'),
-    staticHeaderButtonsContainer: getElement('staticHeaderButtons'), // For Wallet/Balance
+    staticHeaderButtonsContainer: getElement('staticHeaderButtons'),
     customCardsContainer: getElement('customCardsContainer'),
     communityLetterSlides: getElement('communityLetterSlides'),
     totalMembersValue: getElement('totalMembersValue'),
@@ -58,6 +59,16 @@ export function initUI(database) {
     }, 500);
 
     if (elements.currentYear) elements.currentYear.textContent = new Date().getFullYear();
+    
+    // Handle Browser Back Button for Modals
+    window.onpopstate = function(event) {
+        if (currentOpenModal) {
+            // If a modal is open, close it visually but don't call history.back() again
+            currentOpenModal.classList.remove('show');
+            document.body.style.overflow = '';
+            currentOpenModal = null;
+        }
+    };
 }
 
 export function renderPage(data) {
@@ -127,8 +138,6 @@ function displayHeaderButtons(buttons) {
         const isLink = btnData.url && !isAutoUrl;
         
         const element = document.createElement(isLink ? 'a' : 'button');
-        
-        // Base class + Custom Style Preset
         element.className = `${btnData.base_class || 'civil-button'} ${btnData.style_preset || ''}`;
         
         if (btnData.id) {
@@ -140,25 +149,18 @@ function displayHeaderButtons(buttons) {
             if (btnData.target) element.target = btnData.target;
         }
 
-        // Inner HTML: Icon + Text (Flexbox handles alignment)
         element.innerHTML = `${btnData.icon_svg || ''}<b>${btnData.name || ''}</b>` + (btnData.id === 'notificationBtn' ? '<span id="notificationDot" class="notification-dot"></span>' : '');
         
-        // Apply inline styles ONLY if they don't conflict with our new "Pill" design drastically.
-        // For Wallet/Balance buttons, we let CSS ID selectors take priority.
         if (!['viewBalanceBtn', 'viewPenaltyWalletBtn'].includes(btnData.id)) {
             Object.assign(element.style, {
                 backgroundColor: btnData.transparent ? 'transparent' : (btnData.color || 'var(--primary-color)'),
                 color: btnData.textColor || 'white',
-                // Width/Height removed to let padding define the Pill shape
                 borderColor: btnData.borderColor,
                 borderWidth: btnData.borderWidth,
                 borderStyle: (parseFloat(btnData.borderWidth) > 0 || btnData.style_preset === 'btn-outline') ? 'solid' : 'none'
             });
         }
 
-        // SEPARATION LOGIC:
-        // Wallet & Balance go to "Bank Members" section.
-        // Others go to Top Header.
         if (['viewBalanceBtn', 'viewPenaltyWalletBtn'].includes(btnData.id)) {
             elements.staticHeaderButtonsContainer.appendChild(element);
         } else {
@@ -181,7 +183,6 @@ function displayMembers(members, adminSettings) {
     const normalCardFrameUrl = adminSettings.normal_card_frame_url || 'https://i.ibb.co/Y7LYKDcb/20251007-103318.png';
 
     members.forEach((member, index) => {
-        // --- SPECIAL LOGIC FOR TOP 3 (Gold, Silver, Bronze) ---
         if (index < 3) {
             const card = document.createElement('div');
             card.className = 'framed-card-wrapper animate-on-scroll'; 
@@ -195,31 +196,20 @@ function displayMembers(members, adminSettings) {
 
             card.innerHTML = `
                 <div class="framed-card-content">
-                    <!-- Layer 1: Photo -->
                     <img src="${member.displayImageUrl}" alt="${member.name}" class="framed-member-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
-                    
-                    <!-- Layer 2: Frame -->
                     <img src="${frameImageUrls[rankType]}" alt="${rankType} frame" class="card-frame-image">
-                    
-                    <!-- Layer 3: Info (Aligned to Plate) -->
                     <div class="framed-info-container">
-                        <!-- Text color class injected here -->
                         <p class="framed-member-name ${rankType}-text" title="${member.name}">${member.name}</p>
-                        
-                        <!-- Glow BG class injected here for Amount -->
                         <div class="framed-balance-badge ${rankType}-bg">
                             ${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}
                         </div>
                     </div>
-                    
                     ${member.isPrime ? '<div class="framed-prime-tag">Prime</div>' : ''}
-                </div>
-            `;
+                </div>`;
             card.onclick = () => showMemberProfileModal(member.id);
             elements.memberContainer.appendChild(card);
 
         } else {
-            // --- LOGIC FOR NORMAL CARDS (Rank 4+) ---
             const card = document.createElement('div');
             card.className = 'normal-framed-card-wrapper animate-on-scroll';
             
@@ -235,25 +225,17 @@ function displayMembers(members, adminSettings) {
 
             card.innerHTML = `
                 <div class="normal-card-content">
-                    <!-- Layer 1: Photo -->
                     <img src="${member.displayImageUrl}" alt="${member.name}" class="normal-framed-photo" loading="lazy" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
-                    
-                    <!-- Layer 2: Frame -->
                     <img src="${normalCardFrameUrl}" alt="Card Frame" class="normal-card-frame-image">
-                    
-                    <!-- Layer 3: Rank & Info -->
                     <div class="normal-card-rank">${rankText}</div>
-                    
                     <div class="normal-info-container">
                         <p class="normal-framed-name" title="${member.name}">${member.name}</p>
                         <div class="normal-framed-balance">
                             ${(member.balance || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}
                         </div>
                     </div>
-
                     ${member.isPrime ? '<div class="normal-prime-tag">Prime</div>' : ''}
-                </div>
-            `;
+                </div>`;
             card.onclick = () => showMemberProfileModal(member.id);
             elements.memberContainer.appendChild(card);
         }
@@ -266,9 +248,7 @@ function renderProducts() {
     const productEntries = Object.entries(allProducts);
     if (productEntries.length === 0) {
         const productSection = container.closest('.products-section');
-        if (productSection) {
-            productSection.style.display = 'none';
-        }
+        if (productSection) productSection.style.display = 'none';
         return;
     }
     container.innerHTML = '';
@@ -291,7 +271,6 @@ function renderProducts() {
         const productLink = product.exploreLink || 'Not available';
         const finalMessage = `Hello, I want to know more about *${product.name}*.\n\n*Price:* ₹${price.toLocaleString('en-IN')}\n*Product Link:* ${productLink}${emiText}`;
         const whatsappMessage = encodeURIComponent(finalMessage);
-        
         const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
         
         card.innerHTML = `
@@ -311,8 +290,7 @@ function renderProducts() {
                     <img src="https://www.svgrepo.com/show/452133/whatsapp.svg" alt="WhatsApp">
                 </a>
                 <a href="${product.exploreLink || '#'}" target="_blank" class="product-btn explore">Explore</a>
-            </div>
-        `;
+            </div>`;
 
         const emiLink = card.querySelector('.product-emi-link');
         if (emiLink) {
@@ -470,6 +448,7 @@ function showBalanceModal() {
     animateValue(getElement('availableAmountDisplay'), 0, communityStats.availableCommunityBalance || 0, 1200);
 }
 
+// FIXED: SIP Status List
 function showSipStatusModal() {
     const container = getElement('sipStatusListContainer');
     if (!container) return;
@@ -488,17 +467,24 @@ function showSipStatusModal() {
     openModal(elements.sipStatusModal);
 }
 
+// FIXED: All Members - Small Card Grid Layout
 function showAllMembersModal() {
     const container = getElement('allMembersListContainer');
     if (!container) return;
     container.innerHTML = '';
+    // Use Grid Class
+    container.className = 'all-members-grid'; 
+    
     const sortedMembers = [...allMembersData].filter(m => m.status === 'Approved').sort((a, b) => a.name.localeCompare(b.name));
+    
     sortedMembers.forEach(member => {
         const item = document.createElement('div');
-        item.className = 'sip-status-item';
+        item.className = 'small-member-card'; // New Class for Grid Item
+        item.onclick = () => { closeModal(elements.allMembersModal); showMemberProfileModal(member.id); }; // Click to view full profile
+        
         item.innerHTML = `
-            <img src="${member.profilePicUrl || DEFAULT_IMAGE}" alt="${member.name}">
-            <span class="sip-status-name">${member.name}</span>`;
+            <img src="${member.displayImageUrl}" alt="${member.name}" onerror="this.onerror=null; this.src='${DEFAULT_IMAGE}';">
+            <span>${member.name}</span>`;
         container.appendChild(item);
     });
     openModal(elements.allMembersModal);
@@ -885,8 +871,31 @@ async function handlePasswordCheck(database) {
     }
 }
 
-function openModal(modal) { if (modal) { modal.classList.add('show'); document.body.style.overflow = 'hidden'; } }
-function closeModal(modal) { if (modal) { modal.classList.remove('show'); document.body.style.overflow = ''; } }
+// === HISTORY API LOGIC FOR MODALS ===
+function openModal(modal) { 
+    if (modal) { 
+        modal.classList.add('show'); 
+        document.body.style.overflow = 'hidden'; 
+        
+        // Push state to history
+        window.history.pushState({modalOpen: true}, "", "");
+        currentOpenModal = modal;
+    } 
+}
+
+function closeModal(modal) { 
+    if (modal) { 
+        modal.classList.remove('show'); 
+        document.body.style.overflow = ''; 
+        currentOpenModal = null;
+        
+        // Only go back if state was pushed (avoid double back)
+        if (window.history.state && window.history.state.modalOpen) {
+            window.history.back();
+        }
+    } 
+}
+
 function showFullImage(src, alt) {
     const fullImageSrc = getElement('fullImageSrc');
     const imageModal = getElement('imageModal');
@@ -902,7 +911,7 @@ const scrollObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('is-visible');
-            scrollObserver.unobserve(entry.target); // Stop observing once visible to save performance
+            scrollObserver.unobserve(entry.target); 
         }
     });
 }, { threshold: 0.1 });
@@ -913,4 +922,5 @@ function observeElements(elements) {
 }
 
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
+
 
