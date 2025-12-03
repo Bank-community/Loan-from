@@ -181,7 +181,7 @@ function displayMembers(members, adminSettings) {
             const rankType = ['gold', 'silver', 'bronze'][index];
             const frameImageUrls = {
                 gold: 'https://ik.imagekit.io/kdtvm0r78/1764742107098.png',
-                silver: 'https://ik.imagekit.io/kdtvm0r78/1764747268497.png',
+                silver: 'https://ik.imagekit.io/kdtvm0r78/20251203_134510.png',
                 bronze: 'https://ik.imagekit.io/kdtvm0r78/20251203_133726.png'
             };
 
