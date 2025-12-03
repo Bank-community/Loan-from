@@ -1,7 +1,7 @@
-// FINAL STRICT UPDATE V3:
-// 1. Penalty Wallet Logic Updated (Toggle History, Colors).
-// 2. All Members: Image Zoom logic retained.
-// 3. Top 3 Cards Specific Classes retained.
+// FINAL STRICT UPDATE V4:
+// 1. "Full View" Button now triggers Password Modal (Security Check).
+// 2. "All Members" Modal Close Button fixed explicitly.
+// 3. Password Verification redirects to view.html on success.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -63,7 +63,6 @@ export function initUI(database) {
     // Handle Browser Back Button for Modals
     window.onpopstate = function(event) {
         if (currentOpenModal) {
-            // If a modal is open, close it visually but don't call history.back() again
             currentOpenModal.classList.remove('show');
             document.body.style.overflow = '';
             currentOpenModal = null;
@@ -185,7 +184,6 @@ function displayMembers(members, adminSettings) {
     members.forEach((member, index) => {
         if (index < 3) {
             const card = document.createElement('div');
-            // CHANGE: Added specific classes 'gold-card', 'silver-card', 'bronze-card'
             const rankClasses = ['gold-card', 'silver-card', 'bronze-card'];
             const rankClass = rankClasses[index] || '';
             card.className = `framed-card-wrapper ${rankClass} animate-on-scroll`; 
@@ -562,19 +560,31 @@ function showPenaltyWalletModal() {
 }
 
 function setupEventListeners(database) {
+    // === FIX 1: Explicitly handle All Members Modal Close Button ===
+    const closeAllMembersBtn = getElement('closeAllMembersModal');
+    if (closeAllMembersBtn) {
+        closeAllMembersBtn.onclick = () => closeModal(elements.allMembersModal);
+    }
+
     document.body.addEventListener('click', (e) => {
-        // Close Modal Logic (Updated for better target detection)
+        // Generic Close Modal Logic
         if (e.target.matches('.close') || e.target.matches('.close *')) {
             const modal = e.target.closest('.modal');
             if (modal) closeModal(modal);
         }
         if (e.target.classList.contains('modal')) closeModal(e.target);
         
+        // Open All Members Grid
         if (e.target.closest('#totalMembersCard')) showAllMembersModal();
+        
+        // === FIX 2: Full View Button opens Password Prompt (Not Home Page) ===
         if (e.target.closest('#fullViewBtn')) {
+            e.preventDefault(); // Prevent default button behavior
             closeModal(elements.memberProfileModal);
             openModal(elements.passwordPromptModal);
         }
+        
+        // Submit Password
         if (e.target.closest('#submitPasswordBtn')) handlePasswordCheck(database);
         
         // LUXURY UPDATE: View History Toggle Logic
@@ -596,9 +606,11 @@ function setupEventListeners(database) {
             if (imgSrc) showFullImage(imgSrc, getElement('profileModalName').textContent);
         }
     });
+    
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') document.querySelectorAll('.modal.show').forEach(closeModal);
     });
+    
     const passwordInput = getElement('passwordInput');
     if (passwordInput) {
         passwordInput.addEventListener('keyup', (e) => {
@@ -907,22 +919,36 @@ function animateValue(el, start, end, duration) {
     window.requestAnimationFrame(step);
 }
 
+// === UPDATED PASSWORD HANDLER ===
 async function handlePasswordCheck(database) {
     const input = getElement('passwordInput');
     const password = input.value;
-    if (!password) return alert('Please enter password.');
+    
+    if (!password) {
+        alert('Please enter password.');
+        return;
+    }
+    
+    if (!currentMemberForFullView) {
+        alert("System Error: No member selected. Please try again.");
+        return;
+    }
+
     try {
+        // Fetch specific password from Firebase
         const snapshot = await database.ref(`members/${currentMemberForFullView}/password`).once('value');
         const correctPassword = snapshot.val();
+        
         if (password === correctPassword) {
             closeModal(elements.passwordPromptModal);
+            // Redirect to view.html on success
             window.location.href = `view.html?memberId=${currentMemberForFullView}`;
         } else {
-            alert('Incorrect password.');
-            input.value = '';
+            alert('Incorrect password. Please try again.');
+            input.value = ''; // Clear input
         }
     } catch (error) {
-        alert('Could not verify password. Please try again.');
+        alert('Could not verify password. Please check your internet connection.');
         console.error("Password check failed:", error);
     }
 }
@@ -978,5 +1004,4 @@ function observeElements(elements) {
 }
 
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
-
 
