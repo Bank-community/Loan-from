@@ -95,7 +95,7 @@
         <p>© <span id="currentYear"></span> Trust Community Fund. All rights reserved. <a href="Exit_Letter.html" style="color: #a0aec0; text-decoration: none; font-size: 0.8em; opacity: 0.7;" title="Exit Community Letter">Exit</a></p>
     </footer>
 
-    <!-- RESTRUCTURED BALANCE MODAL FOR LUXURY LOOK -->
+    <!-- LUXURY BALANCE MODAL -->
     <div id="balanceModal" class="modal">
         <div class="modal-content luxury-modal">
             <span class="close" id="closeBalanceModal">×</span>
@@ -125,15 +125,21 @@
         </div>
     </div>
     
+    <!-- LUXURY PENALTY WALLET MODAL (UPDATED) -->
     <div id="penaltyWalletModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content luxury-modal">
             <span class="close" id="closePenaltyWalletModal">×</span>
-            <h2>Penalty Wallet</h2>
-            <div id="penaltyBalance" class="balance-display" style="color: var(--danger-color);">₹0</div>
-            <small class="balance-label">Current Penalty Balance</small>
-            <hr style="margin: 15px auto; width: 80%; border: 0; height: 1px; background: var(--border-color);">
-            <button id="viewHistoryBtn" class="view-history-btn">View History</button>
-            <ul class="penalty-history-list" id="penaltyHistoryList"></ul>
+            <h2 class="luxury-title">PENALTY WALLET</h2>
+            
+            <div class="balance-group total-group">
+                <div id="penaltyBalance" class="balance-value red-text large-text">₹0</div>
+                <p class="balance-label">Current Penalty Balance</p>
+            </div>
+
+            <hr class="luxury-divider">
+            
+            <button id="viewHistoryBtn" class="civil-button" style="margin-bottom: 20px; width: 100%; border-radius: 8px;">View History</button>
+            <ul class="penalty-history-list" id="penaltyHistoryList" style="display: none;"></ul>
         </div>
     </div>
 
@@ -229,4 +235,5 @@
 
 </body>
 </html>
+
 
