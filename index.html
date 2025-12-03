@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>बैंक कम्युनिटी लोन</title>
+    <meta name="theme-color" content="#002366"> <!-- Royal Blue Theme for Mobile Browser -->
+    <title>Trust Community Fund</title>
+    
+    <!-- Speed Optimization: Preload Critical Assets -->
+    <link rel="preload" href="user-style.css" as="style">
+    <link rel="preload" href="https://ik.imagekit.io/kdtvm0r78/1764742107098.png" as="image">
     
     <link rel="manifest" href="/manifest-user.json">
-    <link rel="shortcut icon" href="https://i.ibb.co/pjB1bQ7J/1752978674430.jpg" type="image/x-icon">
-    <link rel="apple-touch-icon" href="https://i.ibb.co/9HF2cM4w/1752676628661.jpg" sizes="180x180">
+    <!-- NEW LOGO SET HERE -->
+    <link rel="shortcut icon" href="https://ik.imagekit.io/kdtvm0r78/1764742107098.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="https://ik.imagekit.io/kdtvm0r78/1764742107098.png" sizes="180x180">
     
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -24,20 +30,23 @@
         <div id="headerDisplay" class="header-display">
             <div class="ad-content"></div>
             <div class="ticker-wrap">
-                <div class="ticker" id="newsTicker">Welcome to Bank Community Loan... Your trusted financial partner...</div>
+                <div class="ticker" id="newsTicker">Welcome to Trust Community Fund... Your trusted financial partner...</div>
             </div>
         </div>
-        <h1>Bank Community Loan</h1>
+        <h1>Trust Community Fund</h1>
         <h4>ESTD: 23 June 2024</h4>
         <div class="header-actions" id="headerActionsContainer">
             <p class="loading-text" style="color: white;">Loading Actions...</p>
         </div>
+        
+        <div id="install-button-container" class="header-actions" style="padding-top: 0;"></div>
+
     </header>
      
     <main class="content-wrapper">
         <section class="bank-members animate-on-scroll"> 
             <div class="header-container"> 
-                <h2 class="bank-headline">BANK MEMBERS</h2> 
+                <h2 class="bank-headline">COMMUNITY MEMBERS</h2> 
                 <div class="header-buttons-wrapper" id="staticHeaderButtons">
                 </div>
             </div> 
@@ -47,11 +56,13 @@
         <section class="action-cards-section animate-on-scroll"> 
             <h2>Quick Actions</h2> 
             <div class="action-cards"> 
+                <!-- FIRST CARD UPDATED WITH NEW LOGO IMAGE -->
                 <div class="action-card info-card animate-on-scroll" id="totalMembersCard" style="cursor: pointer;">
-                    <i data-feather="users" class="action-card-icon"></i>
+                    <img src="https://ik.imagekit.io/kdtvm0r78/1764742107098.png" class="action-card-icon-img" alt="TCF Logo" style="width: 50px; height: 50px;">
                     <span class="info-card-label">All members</span>
                     <span class="info-card-value" id="totalMembersValue">--</span>
                 </div> 
+                
                 <div class="action-card info-card animate-on-scroll" id="totalLoanCard" onclick="window.open('loan_dashbord.html')" style="cursor: pointer;">
                     <i data-feather="trending-up" class="action-card-icon"></i>
                     <span class="info-card-label">All time loan<br><small style="color: var(--primary-color); font-weight: bold; font-size: 0.9em;">Click here</small></span>
@@ -59,9 +70,8 @@
                 </div> 
                 <a href="members.html" class="action-card animate-on-scroll"><i data-feather="list" class="action-card-icon"></i><span>All members info</span></a> 
                 <a href="https://wa.me/917903698180" target="_blank" class="action-card whatsapp-card animate-on-scroll"><img src="https://www.svgrepo.com/show/452133/whatsapp.svg" alt="WhatsApp Icon" class="action-card-icon-img"><span>Whatsapp Support</span></a> 
-                <a href="loan-form.html" class="action-card animate-on-scroll"><i data-feather="file-text" class="action-card-icon"></i><span>Loan form</span></a> 
+                <a href="loan_form.html" class="action-card animate-on-scroll"><i data-feather="file-text" class="action-card-icon"></i><span>Loan form</span></a> 
                 
-                <!-- YAHAN BADLAV KIYA GAYA HAI: Links ko update kiya gaya hai -->
                 <a href="Jarvis.html" class="action-card animate-on-scroll"><i data-feather="cpu" class="action-card-icon"></i><span>Jarvis Ai</span></a>
                 <a href="gallery.html" class="action-card animate-on-scroll"><i data-feather="image" class="action-card-icon"></i><span>Gallery</span></a>
                 <a href="calculator.html" class="action-card animate-on-scroll"><i data-feather="percent" class="action-card-icon"></i><span>Loan Calculator</span></a>
@@ -80,10 +90,9 @@
     </main>
 
     <footer>
-        <p>© <span id="currentYear"></span> Bank Community Loan. All rights reserved.<a href="Exit_Letter.html" style="color: #a0aec0; text-decoration: none; font-size: 0.8em; opacity: 0.7;" title="Exit Community Letter">Exit</a></p>
+        <p>© <span id="currentYear"></span> Trust Community Fund. All rights reserved. <a href="Exit_Letter.html" style="color: #a0aec0; text-decoration: none; font-size: 0.8em; opacity: 0.7;" title="Exit Community Letter">Exit</a></p>
     </footer>
 
-    <!-- Baaki ka poora HTML code aapke original file jaisa hi hai -->
     <div id="balanceModal" class="modal">
         <div class="modal-content">
             <span class="close" id="closeBalanceModal">×</span>
@@ -103,7 +112,7 @@
     <div id="penaltyWalletModal" class="modal">
         <div class="modal-content">
             <span class="close" id="closePenaltyWalletModal">×</span>
-            <h2>Bank Penalty Wallet</h2>
+            <h2>Penalty Wallet</h2>
             <div id="penaltyBalance" class="balance-display" style="color: var(--danger-color);">₹0</div>
             <small class="balance-label">Current Penalty Balance</small>
             <hr style="margin: 15px auto; width: 80%; border: 0; height: 1px; background: var(--border-color);">
@@ -199,9 +208,8 @@
     
     <div id="notification-popup-container"></div>
 
-    <script src="user-main.js" type="module"></script>
+    <script src="app.js"></script>
 
 </body>
 </html>
-
 
