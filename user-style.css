@@ -248,7 +248,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 .framed-member-photo { 
     position: absolute; 
-    top: 10%; /* Photo ko frame ke andar fit karne ke liye adjust karein */
+    top: 9%; /* Photo ko frame ke andar fit karne ke liye adjust karein */
     left: 12%; 
     width: 80%; 
     height: 50%; 
@@ -267,8 +267,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 .framed-info-container { 
     position: absolute; 
-    bottom: 20%; /* Ye pure naam aur amount ko upar/niche karta hai */
-    left: 5%; 
+    bottom: 10%; /* Ye pure naam aur amount ko upar/niche karta hai */
+    left: 6%; 
     width: 90%; 
     z-index: 3; 
     display: flex; 
@@ -347,8 +347,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 /* IMAGE ADJUSTMENT FOR NORMAL CARDS */
 .normal-framed-photo { 
     position: absolute; 
-    top: 10%; /* Photo ko upar/niche karne ke liye ise adjust karein */
-    left: 12%; /* Photo ko left/right center karne ke liye */
+    top: 8%; /* Photo ko upar/niche karne ke liye ise adjust karein */
+    left: 14%; /* Photo ko left/right center karne ke liye */
     width: 80%; /* Photo ki chaudai */
     height: 50%; 
     object-fit: cover; 
