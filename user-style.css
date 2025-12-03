@@ -1,9 +1,8 @@
 /*
-FINAL MASTER UPDATE V2:
-1. Header Title: One Line fixed.
-2. Modals: Scrollable content (max-height fix).
-3. All Members: Grid Layout (Small Cards).
-4. Quick Actions: Premium Glass/Gradient Look.
+FINAL MASTER UPDATE V3:
+1. Top 3 Cards Separated: Gold, Silver, Bronze now have independent styling blocks.
+2. All Members: Image Click Zoom logic added.
+3. Image Modal: Improved Close button visibility.
 */
 
 :root {
@@ -223,10 +222,11 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .member-slider::-webkit-scrollbar-thumb { background-color: var(--accent-gold); border-radius: 4px; }
 
 
+/* ==========================================================================
+   TOP 3 CARDS: INDIVIDUAL STYLING (GOLD, SILVER, BRONZE)
+   ========================================================================== */
 
-
-
-/* === SPECIAL CARDS === */
+/* Base Wrapper for all 3 cards */
 .framed-card-wrapper { 
     flex: 0 0 auto; 
     width: 200px; 
@@ -236,26 +236,19 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     filter: drop-shadow(0 8px 15px rgba(0,0,0,0.2)); 
     position: relative; 
 }
+
 .framed-card-wrapper:hover { 
     transform: translateY(-8px) scale(1.02); 
     filter: drop-shadow(0 12px 20px rgba(212, 175, 55, 0.4)); 
 }
+
 .framed-card-content { 
     position: relative; 
     width: 100%; 
     height: 100%; 
     text-align: center; 
 }
-.framed-member-photo { 
-    position: absolute; 
-    top: 9%; /* Photo ko frame ke andar fit karne ke liye adjust karein */
-    left: 12%; 
-    width: 80%; 
-    height: 50%; 
-    object-fit: cover; 
-    border-radius: 6px; 
-    z-index: 1; 
-}
+
 .card-frame-image { 
     position: absolute; 
     top: 0; 
@@ -265,9 +258,22 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     z-index: 2; 
     pointer-events: none; 
 }
-.framed-info-container { 
+
+/* --- 1. GOLD CARD (RANK 1) --- */
+.gold-card .framed-member-photo { 
     position: absolute; 
-    bottom: 14%; /* Ye pure naam aur amount ko upar/niche karta hai */
+    top: 9%; 
+    left: 12%; 
+    width: 80%; 
+    height: 50%; 
+    object-fit: cover; 
+    border-radius: 6px; 
+    z-index: 1; 
+}
+
+.gold-card .framed-info-container { 
+    position: absolute; 
+    bottom: 14%; 
     left: 7%; 
     width: 90%; 
     z-index: 3; 
@@ -277,8 +283,72 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     justify-content: center; 
     gap: 0px; 
 }
+
+.gold-card .framed-balance-badge { 
+    margin-top: 5px; /* Adjust this to move amount up/down */
+}
+
+/* --- 2. SILVER CARD (RANK 2) --- */
+.silver-card .framed-member-photo { 
+    position: absolute; 
+    top: 9%; 
+    left: 12%; 
+    width: 80%; 
+    height: 50%; 
+    object-fit: cover; 
+    border-radius: 6px; 
+    z-index: 1; 
+}
+
+.silver-card .framed-info-container { 
+    position: absolute; 
+    bottom: 14%; 
+    left: 7%; 
+    width: 90%; 
+    z-index: 3; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 0px; 
+}
+
+.silver-card .framed-balance-badge { 
+    margin-top: 5px; 
+}
+
+/* --- 3. BRONZE CARD (RANK 3) --- */
+.bronze-card .framed-member-photo { 
+    position: absolute; 
+    top: 9%; 
+    left: 12%; 
+    width: 80%; 
+    height: 50%; 
+    object-fit: cover; 
+    border-radius: 6px; 
+    z-index: 1; 
+}
+
+.bronze-card .framed-info-container { 
+    position: absolute; 
+    bottom: 14%; 
+    left: 7%; 
+    width: 90%; 
+    z-index: 3; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 0px; 
+}
+
+.bronze-card .framed-balance-badge { 
+    margin-top: 5px; 
+}
+
+/* Common Text Styles for Top 3 */
 .framed-member-name { 
-    margin: 2; 
+    margin: 2px; 
     font-size: 0.9em; 
     font-weight: 700; 
     text-shadow: 1px 1px 2px rgba(0,0,0,0.9); 
@@ -290,19 +360,16 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     color: #f0f0f0; 
     margin-bottom: 2px; 
 }
+
 .framed-balance-badge { 
     font-size: 1.5em; 
     font-weight: 900; 
     letter-spacing: 0.5px; 
     text-shadow: 0 2px 4px rgba(0,0,0,0.8); 
     background: transparent;
-    
-    /* NIJJI ADJUSTMENT (Change this value to move Amount Up/Down) */
-    /* Is value ko badhane se amount niche jayega, kam karne se upar */
-    margin-top: 5px; 
 }
 
-/* Colors */
+/* Colors for Rank Text/BG */
 .gold-text { color: #FFF8DC; }
 .gold-bg { color: #FFD700 !important; text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 2px 4px rgba(0,0,0,1) !important; }
 .silver-text { color: #F0F8FF; }
@@ -474,6 +541,26 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     line-height: 1;
 }
 
+/* Specific Close Button for Image Modal (Bigger & Clearer) */
+#closeImageModal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    background: rgba(0,0,0,0.5); /* Semi-transparent black background */
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1002;
+    border: 2px solid white;
+}
+
 .balance-display { font-size: 2.8em; font-weight: 700; margin: 10px 0 0 0; color: var(--success-color); }
 .balance-display.return { color: var(--info-color); font-size: 2.2em; }
 .balance-display.total { color: var(--primary-color); font-size: 3.2em; }
@@ -496,10 +583,12 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     align-items: center;
     border: 1px solid var(--border-color);
     transition: transform 0.2s;
+    cursor: pointer;
 }
 
 .small-member-card:hover { transform: translateY(-3px); border-color: var(--accent-gold); }
 
+/* NEW: Image Zoom Interaction for All Members Grid */
 .small-member-card img {
     width: 60px;
     height: 60px;
@@ -507,6 +596,15 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     object-fit: cover;
     margin-bottom: 8px;
     border: 2px solid #eee;
+    
+    /* Important for Zoom Effect */
+    cursor: zoom-in;
+    transition: transform 0.2s ease;
+}
+
+.small-member-card img:hover {
+    transform: scale(1.1); /* Slight enlarge on hover */
+    border-color: var(--accent-gold);
 }
 
 .small-member-card span {
@@ -550,5 +648,4 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 /* Media Queries */
 @media (min-width: 768px) { .action-cards { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 992px) { .action-cards { grid-template-columns: repeat(4, 1fr); } }
-
 
