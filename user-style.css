@@ -1,8 +1,7 @@
 /*
-FINAL MASTER UPDATE V3:
-1. Top 3 Cards Separated: Gold, Silver, Bronze now have independent styling blocks.
-2. All Members: Image Click Zoom logic added.
-3. Image Modal: Improved Close button visibility.
+FINAL MASTER UPDATE V4:
+1. Special Cards (Gold, Silver, Bronze) section ab fully detailed Hindi comments ke saath hai.
+2. Har element (Photo, Name, Amount) ko adjust karne ke liye instructions code ke andar likhi gayi hain.
 */
 
 :root {
@@ -31,13 +30,13 @@ body { font-family: 'Roboto', 'Arial', sans-serif; background-color: var(--bg-co
 h1, h2, h3, h4, h5, h6 { color: var(--primary-color); margin-top: 1.5em; margin-bottom: 0.8em; font-weight: 700; }
 header h1 { 
     color: white; 
-    font-size: 1.8em; /* Thoda chhota kiya taaki ek line me aaye */
+    font-size: 1.8em; 
     margin: 15px 0 5px 0; 
     text-shadow: 2px 2px 4px rgba(0,0,0,0.6); 
     font-weight: 800; 
     letter-spacing: 0.5px; 
     font-family: 'Times New Roman', serif;
-    white-space: nowrap; /* Force one line */
+    white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 0 10px;
@@ -89,7 +88,7 @@ header h4 { color: rgba(255, 255, 255, 0.8); margin: 0 0 20px 0; font-weight: 40
 .header-actions { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; padding: 0 15px; margin-top: 15px; box-sizing: border-box; }
 .dynamic-buttons-wrapper { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; width: 100%; padding: 0 10px; }
 
-/* === UPDATED BUTTON STYLES (Blue Screenshot Look) === */
+/* === BUTTON STYLES === */
 .civil-button { 
     padding: 10px 24px; 
     font-size: 0.95em; 
@@ -101,8 +100,8 @@ header h4 { color: rgba(255, 255, 255, 0.8); margin: 0 0 20px 0; font-weight: 40
     text-decoration: none; 
     cursor: pointer; 
     transition: all 0.2s ease; 
-    border-radius: 50px; /* PILL SHAPE */
-    box-shadow: 0 4px 0 rgba(0,0,0,0.2); /* 3D Shadow Effect */
+    border-radius: 50px; 
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2); 
     border: none;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -116,7 +115,7 @@ header h4 { color: rgba(255, 255, 255, 0.8); margin: 0 0 20px 0; font-weight: 40
 .install-button img { width: 24px; height: 24px; }
 
 .btn-glossy {
-    background-image: linear-gradient(to top, #003399, #0044cc); /* Blue Glossy */
+    background-image: linear-gradient(to top, #003399, #0044cc); 
     color: white !important;
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 15px rgba(0, 35, 102, 0.4);
@@ -151,10 +150,10 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 
 .action-card { 
     background-color: var(--card-bg); 
-    border-radius: 16px; /* Smooth corners */
+    border-radius: 16px; 
     padding: 15px 20px; 
     text-align: center; 
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08); /* Softer shadow */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
     transition: transform 0.3s ease, box-shadow 0.3s ease; 
     cursor: pointer; 
     display: flex; 
@@ -165,7 +164,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     color: var(--primary-color); 
     border: 1px solid rgba(0,35,102,0.05); 
     min-height: 100px;
-    background: linear-gradient(145deg, #ffffff, #f0f4ff); /* Premium Gradient */
+    background: linear-gradient(145deg, #ffffff, #f0f4ff); 
 }
 
 .action-card:hover { 
@@ -223,10 +222,13 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 
 
 /* ==========================================================================
-   TOP 3 CARDS: INDIVIDUAL STYLING (GOLD, SILVER, BRONZE)
+   TOP 3 CARDS: SPECIAL CONFIGURATION (GOLD, SILVER, BRONZE)
+   --------------------------------------------------------------------------
+   Yahan har card (Rank 1, 2, 3) ke liye alag settings hain.
+   Aap Photo, Naam, aur Amount ko upar-niche (Top/Bottom) kar sakte hain.
    ========================================================================== */
 
-/* Base Wrapper for all 3 cards */
+/* Sabhi top 3 cards ka base size */
 .framed-card-wrapper { 
     flex: 0 0 auto; 
     width: 200px; 
@@ -262,7 +264,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 /* --- 1. GOLD CARD (RANK 1) --- */
 .gold-card .framed-member-photo { 
     position: absolute; 
-    top: 9%; 
+    /* PHOTO KI POSITION: Is number ko badhane se photo niche jayegi */
+    top: 9%;  
     left: 12%; 
     width: 80%; 
     height: 50%; 
@@ -273,6 +276,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 
 .gold-card .framed-info-container { 
     position: absolute; 
+    /* NAAM + AMOUNT KI POSITION: Is number ko badhane se pura text UPAR jayega */
     bottom: 14%; 
     left: 7%; 
     width: 90%; 
@@ -285,12 +289,14 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 
 .gold-card .framed-balance-badge { 
-    margin-top: 5px; /* Adjust this to move amount up/down */
+    /* AMOUNT KO NAAM SE DOOR KARNA: Isko badhane se Amount niche khiskega */
+    margin-top: 5px; 
 }
 
 /* --- 2. SILVER CARD (RANK 2) --- */
 .silver-card .framed-member-photo { 
     position: absolute; 
+    /* PHOTO KI POSITION: Is number ko badhane se photo niche jayegi */
     top: 9%; 
     left: 12%; 
     width: 80%; 
@@ -302,6 +308,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 
 .silver-card .framed-info-container { 
     position: absolute; 
+    /* NAAM + AMOUNT KI POSITION: Is number ko badhane se pura text UPAR jayega */
     bottom: 14%; 
     left: 7%; 
     width: 90%; 
@@ -314,12 +321,14 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 
 .silver-card .framed-balance-badge { 
+    /* AMOUNT KO NAAM SE DOOR KARNA: Isko badhane se Amount niche khiskega */
     margin-top: 5px; 
 }
 
 /* --- 3. BRONZE CARD (RANK 3) --- */
 .bronze-card .framed-member-photo { 
     position: absolute; 
+    /* PHOTO KI POSITION: Is number ko badhane se photo niche jayegi */
     top: 9%; 
     left: 12%; 
     width: 80%; 
@@ -331,6 +340,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 
 .bronze-card .framed-info-container { 
     position: absolute; 
+    /* NAAM + AMOUNT KI POSITION: Is number ko badhane se pura text UPAR jayega */
     bottom: 14%; 
     left: 7%; 
     width: 90%; 
@@ -343,6 +353,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 
 .bronze-card .framed-balance-badge { 
+    /* AMOUNT KO NAAM SE DOOR KARNA: Isko badhane se Amount niche khiskega */
     margin-top: 5px; 
 }
 
@@ -648,4 +659,5 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 /* Media Queries */
 @media (min-width: 768px) { .action-cards { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 992px) { .action-cards { grid-template-columns: repeat(4, 1fr); } }
+
 
