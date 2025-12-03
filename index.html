@@ -12,13 +12,14 @@
     
     <link rel="manifest" href="/manifest-user.json">
     
-    <!-- NEW LOGO UPDATED HERE -->
+    <!-- NEW LOGO -->
     <link rel="shortcut icon" href="https://ik.imagekit.io/kdtvm0r78/IMG-20251202-WA0000.jpg" type="image/x-icon">
     <link rel="apple-touch-icon" href="https://ik.imagekit.io/kdtvm0r78/IMG-20251202-WA0000.jpg" sizes="180x180">
     
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
+    <!-- Firebase Libraries -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -57,7 +58,7 @@
         <section class="action-cards-section animate-on-scroll"> 
             <h2>Quick Actions</h2> 
             <div class="action-cards"> 
-                <!-- FIRST CARD IMAGE UPDATED (GOLD COIN) -->
+                <!-- FIRST CARD IMAGE (GOLD COIN) -->
                 <div class="action-card info-card animate-on-scroll" id="totalMembersCard" style="cursor: pointer;">
                     <img src="https://ik.imagekit.io/kdtvm0r78/1764742107098.png" class="action-card-icon-img" alt="TCF Coin" style="width: 55px; height: 55px; margin-bottom: 8px;">
                     <span class="info-card-label">All members</span>
@@ -209,7 +210,8 @@
     
     <div id="notification-popup-container"></div>
 
-    <script src="app.js"></script>
+    <!-- FIXED SCRIPT LOADING: Pointing to user-main.js as module -->
+    <script type="module" src="user-main.js"></script>
 
 </body>
 </html>
