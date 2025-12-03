@@ -322,7 +322,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 
 .silver-card .framed-balance-badge { 
     /* AMOUNT KO NAAM SE DOOR KARNA: Isko badhane se Amount niche khiskega */
-    margin-top: 12px; 
+    margin-top: 18px; 
 }
 
 /* --- 3. BRONZE CARD (RANK 3) --- */
