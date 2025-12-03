@@ -134,7 +134,7 @@
         };
 
         amountInput.addEventListener('input', (e) => updateState(e.target.value));
-        amountInput.addEventListener('change', (e) => updateState(e.target.value)); // For direct edits
+        amountInput.addEventListener('change', (e) => updateState(e.target.value)); 
         amountSlider.addEventListener('input', (e) => updateState(e.target.value));
         
         document.getElementById('whatsapp-btn').addEventListener('click', () => {
@@ -174,7 +174,7 @@
             setTimeout(() => msgBox.innerText = '', 3000);
         }
 
-        // --- PREMIUM DOWNLOAD CARD GENERATOR (FIXED ALIGNMENT) ---
+        // --- UPDATED PREMIUM DOWNLOAD CARD GENERATOR (Single Box Layout) ---
         function downloadQRCard() {
             const amount = parseFloat(amountInput.value);
             if(amount <= 0) { showMessage("Enter an amount to download.", "error"); return; }
@@ -183,25 +183,24 @@
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
-            // Define Canvas Size (High Resolution)
+            // Canvas Size (High Resolution)
             const width = 800;
-            const height = 1200; // Increased height for better spacing
+            const height = 1200;
 
             canvas.width = width;
             canvas.height = height;
 
-            // 1. Premium Background & Pattern
+            // 1. Background & Subtle Pattern
             const bgGradient = ctx.createLinearGradient(0, 0, width, height);
-            bgGradient.addColorStop(0, '#f8f9fa');
-            bgGradient.addColorStop(1, '#e9ecef');
+            bgGradient.addColorStop(0, '#ffffff');
+            bgGradient.addColorStop(1, '#f0f2f5');
             ctx.fillStyle = bgGradient;
             ctx.fillRect(0, 0, width, height);
             
-            // Add Subtle Gold Pattern
-            ctx.fillStyle = 'rgba(212, 175, 55, 0.05)';
-            for(let i=0; i<width; i+=25) {
-                for(let j=0; j<height; j+=25) {
-                    ctx.fillRect(i, j, 3, 3);
+            ctx.fillStyle = 'rgba(212, 175, 55, 0.03)';
+            for(let i=0; i<width; i+=30) {
+                for(let j=0; j<height; j+=30) {
+                    ctx.fillRect(i, j, 4, 4);
                 }
             }
 
@@ -211,9 +210,9 @@
             topBarGrad.addColorStop(0.5, '#D4AF37');
             topBarGrad.addColorStop(1, '#002366');
             ctx.fillStyle = topBarGrad;
-            ctx.fillRect(0, 0, width, 25);
+            ctx.fillRect(0, 0, width, 30);
 
-            // 2. Logo & Header
+            // 2. Load Assets & Draw
             const logo = new Image();
             logo.crossOrigin = "Anonymous";
             logo.src = document.getElementById('logo-img').src;
@@ -221,9 +220,13 @@
             logo.onload = () => {
                 ctx.textAlign = 'center';
 
+                // Header Positions (Shifted up slightly)
+                const logoY = 110;
+                const logoSize = 130;
+                const titleY = 220;
+                const subtitleY = 255;
+
                 // Draw Logo
-                const logoY = 120;
-                const logoSize = 140;
                 ctx.save();
                 ctx.beginPath();
                 ctx.arc(width/2, logoY, logoSize/2, 0, Math.PI * 2, true);
@@ -235,90 +238,116 @@
                 // Gold Border for Logo
                 ctx.beginPath();
                 ctx.arc(width/2, logoY, logoSize/2, 0, Math.PI * 2, true);
-                ctx.lineWidth = 8;
+                ctx.lineWidth = 6;
                 ctx.strokeStyle = '#D4AF37';
                 ctx.stroke();
 
-                // Main Title
+                // Main Title & Subtitle
                 ctx.fillStyle = '#002366';
-                ctx.font = '900 42px "Playfair Display", serif';
-                ctx.fillText('TRUST COMMUNITY FUND', width/2, 250);
-                
-                // Subtitle
+                ctx.font = '900 38px "Playfair Display", serif';
+                ctx.fillText('TRUST COMMUNITY FUND', width/2, titleY);
                 ctx.fillStyle = '#D4AF37';
-                ctx.font = 'bold 20px Manrope, sans-serif';
-                ctx.fillText('PREMIUM FINANCIAL PARTNER', width/2, 290);
+                ctx.font = 'bold 18px Manrope, sans-serif';
+                ctx.fillText('PREMIUM FINANCIAL PARTNER', width/2, subtitleY);
 
-                // 3. Payment Amount Box
-                const boxTop = 340;
-                const boxHeight = 200;
-                const boxWidth = 650;
-                const boxX = (width - boxWidth) / 2;
+                // --- 3. MAIN SINGLE PREMIUM BOX (The core change) ---
+                const mainBoxTop = 300;
+                const mainBoxHeight = 680;
+                const mainBoxWidth = 700;
+                const mainBoxX = (width - mainBoxWidth) / 2;
+                const boxRadius = 20; // Corner radius
 
-                // Box Background & Shadow
+                // Main Box Shadow
+                ctx.save();
+                ctx.shadowColor = 'rgba(0, 35, 102, 0.2)';
+                ctx.shadowBlur = 40;
+                ctx.shadowOffsetY = 20;
                 ctx.fillStyle = '#ffffff';
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
-                ctx.shadowBlur = 25;
-                ctx.shadowOffsetY = 10;
-                ctx.fillRect(boxX, boxTop, boxWidth, boxHeight);
-                ctx.shadowBlur = 0;
-                ctx.shadowOffsetY = 0;
+                
+                // Draw Rounded Rectangle for Main Box background
+                ctx.beginPath();
+                ctx.roundRect(mainBoxX, mainBoxTop, mainBoxWidth, mainBoxHeight, boxRadius);
+                ctx.fill();
+                ctx.restore();
 
-                // Box Border
-                ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
-                ctx.lineWidth = 3;
-                ctx.strokeRect(boxX, boxTop, boxWidth, boxHeight);
+                // Main Box Gold Border
+                ctx.save();
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = 'rgba(212, 175, 55, 0.6)';
+                ctx.beginPath();
+                ctx.roundRect(mainBoxX, mainBoxTop, mainBoxWidth, mainBoxHeight, boxRadius);
+                ctx.stroke();
+                ctx.restore();
+                
+                // Inner Top Gradient Accent
+                const boxGrad = ctx.createLinearGradient(mainBoxX, mainBoxTop, mainBoxX + mainBoxWidth, mainBoxTop);
+                boxGrad.addColorStop(0, 'transparent');
+                boxGrad.addColorStop(0.5, 'rgba(212, 175, 55, 0.3)');
+                boxGrad.addColorStop(1, 'transparent');
+                ctx.fillStyle = boxGrad;
+                ctx.fillRect(mainBoxX, mainBoxTop, mainBoxWidth, 4);
 
-                // Amount Label
+
+                // --- 4. CONTENT INSIDE MAIN BOX ---
+                
+                // Amount Label & Value (Shifted Up)
+                const amountLabelY = mainBoxTop + 60;
+                const amountValueY = mainBoxTop + 135;
+
                 ctx.fillStyle = '#666';
-                ctx.font = '600 24px Manrope, sans-serif';
-                ctx.fillText('TOTAL PAYABLE AMOUNT', width/2, boxTop + 60);
+                ctx.font = '600 22px Manrope, sans-serif';
+                ctx.fillText('TOTAL PAYABLE AMOUNT', width/2, amountLabelY);
 
-                // Amount Value
                 ctx.fillStyle = '#d32f2f';
-                ctx.font = '900 80px "Playfair Display", serif';
-                ctx.fillText(`₹${amount.toLocaleString('en-IN')}`, width/2, boxTop + 150);
+                ctx.font = '900 75px "Playfair Display", serif';
+                ctx.fillText(`₹${amount.toLocaleString('en-IN')}`, width/2, amountValueY);
 
-                // 4. QR Code
+                // QR Code (MASSIVE SIZE & Priority Placement)
                 const qrCanvas = qrContainer.querySelector('canvas');
                 if (qrCanvas) {
-                    const qrSize = 350;
-                    const qrY = 600;
+                    // QR Size increased significantly
+                    const qrSize = 450; 
+                    // Positioned below amount text with good spacing
+                    const qrY = amountValueY + 50; 
                     const qrX = (width - qrSize) / 2;
+                    const qrPadding = 20;
 
-                    // Gold shadow for QR
-                    ctx.shadowColor = 'rgba(212, 175, 55, 0.5)';
-                    ctx.shadowBlur = 20;
-                    ctx.shadowOffsetY = 5;
-                    ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
-                    ctx.shadowBlur = 0;
-                    ctx.shadowOffsetY = 0;
+                    // QR Background Box (White with Gold Border inside main box)
+                    ctx.save();
+                    ctx.shadowColor = 'rgba(0,0,0,0.05)';
+                    ctx.shadowBlur = 10;
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(qrX - qrPadding, qrY - qrPadding, qrSize + qrPadding*2, qrSize + qrPadding*2);
                     
-                    // Gold Border for QR
+                    ctx.lineWidth = 3;
                     ctx.strokeStyle = '#D4AF37';
-                    ctx.lineWidth = 5;
-                    ctx.strokeRect(qrX - 5, qrY - 5, qrSize + 10, qrSize + 10);
+                    ctx.strokeRect(qrX - qrPadding, qrY - qrPadding, qrSize + qrPadding*2, qrSize + qrPadding*2);
+                    ctx.restore();
+
+                    // Draw QR
+                    ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
                 }
 
-                // 5. Footer Section
-                const footerY = 1050;
+                // --- 5. Footer Section (Below Main Box) ---
+                const footerY = mainBoxTop + mainBoxHeight + 50;
+
                 ctx.fillStyle = '#002366';
                 ctx.font = 'bold 24px Manrope, sans-serif';
                 ctx.fillText('Scan via any UPI App to Pay', width/2, footerY);
                 
                 ctx.fillStyle = '#555';
                 ctx.font = '20px monospace';
-                ctx.fillText('UPI ID: princekumar954684-1@okicici', width/2, footerY + 40);
+                ctx.fillText('UPI ID: princekumar954684-1@okicici', width/2, footerY + 35);
 
                 ctx.fillStyle = '#D4AF37';
                 ctx.font = 'bold 18px Manrope, sans-serif';
-                ctx.fillText('Thank you for your trust.', width/2, footerY + 100);
+                ctx.fillText('Thank you for your trust.', width/2, height - 40);
 
                 // 6. Trigger Download
                 try {
                     const link = document.createElement('a');
                     link.download = `TCF_Premium_Payment_₹${amount}.png`;
-                    link.href = canvas.toDataURL('image/png', 1.0); // High quality
+                    link.href = canvas.toDataURL('image/png', 1.0);
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -337,5 +366,4 @@
     </script>
 </body>
 </html>
-
 
