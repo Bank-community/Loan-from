@@ -3,133 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Payment - Trust Community Fund</title>
+    <title>Payment - TCF</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #002366;
-            --gold: #D4AF37;
+        body { font-family: sans-serif; background: #f0f2f5; }
+        .scan-card {
+            background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden; max-width: 400px; width: 90%;
         }
-        body { font-family: 'Inter', sans-serif; background: #f4f6f9; }
-        .royal-header { font-family: 'Playfair Display', serif; }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: 0 10px 40px rgba(0, 35, 102, 0.15);
-        }
-        .gold-border { border: 2px solid var(--gold); }
-        .btn-royal {
-            background: linear-gradient(135deg, #002366 0%, #001233 100%);
-            border: 1px solid var(--gold);
-            color: #D4AF37;
-        }
-        .fade-in { animation: fadeIn 0.6s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+<body class="flex items-center justify-center min-h-screen">
 
-    <div class="w-full max-w-md glass-card rounded-2xl overflow-hidden fade-in relative">
-        <div class="h-2 w-full bg-[#D4AF37]"></div>
+    <div class="scan-card">
+        <div class="bg-[#002366] p-4 text-center">
+            <h1 class="text-white font-bold text-lg">TRUST COMMUNITY FUND</h1>
+            <p class="text-gray-300 text-xs uppercase tracking-wider">Secure Payment Gateway</p>
+        </div>
 
-        <header class="text-center pt-8 pb-4 px-6">
-            <img src="https://ik.imagekit.io/kdtvm0r78/IMG-20251202-WA0000.jpg" alt="Bank Logo" class="mx-auto h-20 w-20 rounded-full border-4 border-[#D4AF37] shadow-lg object-cover mb-4">
-            <h1 class="text-2xl font-bold text-[#002366] royal-header tracking-wide">TRUST COMMUNITY FUND</h1>
-            <p class="text-gray-500 text-sm mt-1 uppercase tracking-widest" id="payment-context">Payment Gateway</p>
-        </header>
+        <div class="p-8 text-center">
+            <p class="text-gray-500 text-sm font-semibold mb-2">Total Payable Amount</p>
+            <h2 id="display-amount" class="text-4xl font-extrabold text-[#d32f2f] mb-6">₹0</h2>
 
-        <main class="px-6 pb-8">
-            <div class="bg-white p-6 rounded-xl shadow-inner border border-gray-200 text-center">
-                <p class="text-gray-600 font-medium mb-4">Scan & Pay <span id="display-amount" class="text-[#002366] font-bold text-xl">₹0</span></p>
-                
-                <div id="qrcode" class="flex justify-center p-3 bg-white border-2 border-[#D4AF37] rounded-lg w-fit mx-auto shadow-sm"></div>
-                
-                <p class="text-xs text-gray-400 mt-4">Safe & Secure UPI Payment</p>
+            <div class="flex justify-center mb-6">
+                <div id="qrcode" class="p-2 border-2 border-dashed border-yellow-500 rounded-lg"></div>
             </div>
 
-            <div class="mt-6">
-                <label class="text-xs font-bold text-[#002366] uppercase tracking-wider ml-1">Payment Amount</label>
-                <div class="relative mt-1">
-                    <span class="absolute left-4 top-3 text-gray-500 font-bold">₹</span>
-                    <input type="number" id="amount" class="w-full pl-8 pr-4 py-3 rounded-lg border border-gray-300 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none font-bold text-lg text-gray-800" placeholder="0">
-                </div>
-            </div>
+            <p class="text-xs text-gray-400 mb-6">Scan using any UPI App (GPay, PhonePe, Paytm)</p>
 
-            <div class="mt-6 space-y-3">
-                <button id="whatsapp-btn" class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-3.5 rounded-lg shadow-md flex items-center justify-center transition-all">
-                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.548l-6.168 1.654zm5.326-3.613c.272.147.587.266.909.421 1.637.79 3.475 1.206 5.336 1.207 6.456 0 11.706-5.25 11.706-11.706 0-3.132-1.218-6.074-3.432-8.286-2.213-2.214-5.156-3.43-8.286-3.431-6.457 0-11.709 5.25-11.709 11.706 0 2.067.536 4.058 1.553 5.753l-.337.535-1.109 4.053 4.148-1.09.521.31zm10.08-4.881c-.544-.272-3.219-1.586-3.717-1.767-.499-.181-.861-.272-1.223.272-.361.544-1.408 1.767-1.725 2.129-.317.363-.634.408-1.178.136-.544-.272-2.296-1.503-4.375-3.359-1.614-1.439-2.705-3.216-3.022-3.76-.317-.544-.034-.838.238-1.11.246-.246.544-.634.816-.952.272-.317.363-.544.544-.906.181-.363.091-.68-.045-.952-.136-.272-1.223-2.946-1.676-4.035-.441-1.064-.888-.919-1.223-.936-.317-.016-.68-.02-1.043-.02-.363 0-.952.136-1.45.68-.499.544-1.903 1.859-1.903 4.534 0 2.675 1.947 5.26 2.219 5.623.272.363 3.832 5.851 9.281 8.203 3.654 1.577 4.393 1.262 5.184 1.176.861-.093 2.766-1.132 3.155-2.226.39-1.093.39-2.031.273-2.226-.118-.195-.426-.312-.97-.584z"/></svg>
-                    Send Screenshot
-                </button>
-            </div>
-        </main>
+            <!-- Hidden Input for Logic -->
+            <input type="number" id="amount" class="hidden">
+
+            <button id="whatsapp-btn" class="w-full bg-[#25D366] text-white font-bold py-3 rounded-lg shadow-md hover:bg-[#128C7E] transition">
+                Share Screenshot on WhatsApp
+            </button>
+        </div>
     </div>
 
     <script>
-        // CONFIG
-        const upiId = 'princekumar954684-1@okicici';
+        const upiId = 'princekumar954684-1@okicici'; 
         const payeeName = 'Trust Community Fund';
         const whatsappNumber = '917903698180';
 
-        const amountInput = document.getElementById('amount');
-        const displayAmount = document.getElementById('display-amount');
-        const qrContainer = document.getElementById('qrcode');
-        const contextText = document.getElementById('payment-context');
-
-        // Logic on Load
         window.onload = function() {
-            // URL Params Read karo
-            const urlParams = new URLSearchParams(window.location.search);
-            const paramAmount = urlParams.get('amount');
-            const paramType = urlParams.get('type'); // 'loan' or 'sip'
-
-            if (paramAmount) {
-                amountInput.value = paramAmount;
-                // Agar automatic aaya hai to input ko disable kar sakte hain ya user change bhi kar sakta hai
-                // amountInput.readOnly = true; 
-                if(paramType === 'sip') {
-                    contextText.innerText = "Monthly SIP Payment";
-                    contextText.classList.add('text-green-600');
-                } else if (paramType === 'loan') {
-                    contextText.innerText = "Loan Repayment";
-                    contextText.classList.add('text-red-600');
-                }
-                
-                generateQR(paramAmount);
-            } else {
-                generateQR(500); // Default
-                amountInput.value = 500;
-            }
-        };
-
-        // Real-time Update
-        amountInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            if(val > 0) generateQR(val);
-        });
-
-        document.getElementById('whatsapp-btn').addEventListener('click', () => {
-            const amt = amountInput.value;
-            const msg = `Payment of ₹${amt} done. Screenshot attached.`;
-            window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank');
-        });
-
-        function generateQR(amount) {
-            displayAmount.innerText = `₹${parseFloat(amount).toLocaleString('en-IN')}`;
-            const url = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${amount}&cu=INR`;
+            const params = new URLSearchParams(window.location.search);
+            const amt = params.get('amount') || 500;
             
-            qrContainer.innerHTML = '';
-            new QRCode(qrContainer, {
-                text: url,
-                width: 180,
-                height: 180,
-                colorDark : "#002366",
-                colorLight : "#ffffff",
+            document.getElementById('amount').value = amt;
+            document.getElementById('display-amount').innerText = `₹${parseFloat(amt).toLocaleString('en-IN')}`;
+            
+            // Generate QR
+            const url = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${amt}&cu=INR`;
+            new QRCode(document.getElementById("qrcode"), {
+                text: url, width: 180, height: 180,
+                colorDark : "#000000", colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.H
             });
-        }
+        };
+
+        document.getElementById('whatsapp-btn').addEventListener('click', () => {
+            const amt = document.getElementById('amount').value;
+            const msg = `Payment of ₹${amt} completed successfully.`;
+            window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+        });
     </script>
 </body>
 </html>
+
+
