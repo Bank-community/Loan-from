@@ -7,6 +7,10 @@ import { initUI, renderPage, showLoadingError, promptForDeviceVerification, requ
 
 let VAPID_KEY = null;
 
+// IMMEDIATE INIT: Jaise hi script load ho, UI ko ready karo.
+// Yeh blank page issue ko khatam karega.
+initUI(null);
+
 /**
  * App ko shuru karne ka mukhya function.
  */
@@ -40,13 +44,9 @@ async function checkAuthAndInitialize() {
 
 /**
  * Mukhya application logic.
- * Ab ye 'onUpdate' callback ka use karta hai Instant Loading ke liye.
  */
 async function runAppLogic(database) {
     try {
-        // UI Listeners ko pehle hi start kar do (Fast Feel ke liye)
-        initUI(database);
-
         // Data aane par kya karna hai, uska logic yahan hai
         const handleDataUpdate = (data) => {
             if (!data) return;
@@ -89,18 +89,14 @@ async function verifyDeviceAndSetupNotifications(database, allMembers) {
 
         // Agar user verify nahi hai, to prompt dikhao
         if (!memberId) {
-            // Note: Prompt tabhi dikhega jab fresh data load ho chuka ho taaki list complete ho
-            // Hum yahan check kar sakte hain, par logic simple rakhte hain
             memberId = await promptForDeviceVerification(allMembers);
             if (memberId) {
                 localStorage.setItem('verifiedMemberId', memberId);
             } else {
-                // User ne cancel kiya ya abhi select nahi kiya
                 return; 
             }
         }
         
-        // Agar verified hai, to notification permission mango (agar nahi hai)
         const permissionGranted = await requestNotificationPermission();
         if (permissionGranted) {
             try {
@@ -114,17 +110,10 @@ async function verifyDeviceAndSetupNotifications(database, allMembers) {
     }
 }
 
-/**
- * Push notifications ke liye register karta hai aur token save karta hai.
- */
 async function registerForPushNotifications(database, memberId) {
-    if (!VAPID_KEY) {
-        console.error("VAPID Key is not available from config. Push notifications will not work.");
-        return;
-    }
+    if (!VAPID_KEY) return;
 
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        console.warn('Push messaging is not supported');
         return;
     }
 
@@ -142,10 +131,8 @@ async function registerForPushNotifications(database, memberId) {
     if (token) {
         const tokenRef = database.ref(`members/${memberId}/notificationTokens/${token}`);
         await tokenRef.set(true);
-        // console.log('Push notification token saved to Firebase.');
     }
 }
-
 
 // Global variable jisme install prompt save hoga
 window.deferredInstallPrompt = null;
@@ -159,7 +146,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 
     if (installContainer && !isStandalone) {
-        // Button style: Green Gradient
         installContainer.innerHTML = `
     <div class="dynamic-buttons-wrapper" style="padding-top: 0;">
         <button id="installAppBtn" class="civil-button btn-glossy" style="background-image: linear-gradient(to top, #218838, #28a745); color: white; border: none; border-radius: 12px; width: auto; box-shadow: 0 4px 15px rgba(33, 136, 56, 0.4);">
@@ -168,8 +154,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
         </button>
     </div>
 `;
-
-        feather.replace(); // Naye icon ko render karne ke liye
+        feather.replace();
 
         const installBtn = document.getElementById('installAppBtn');
         if (installBtn) {
@@ -179,13 +164,13 @@ window.addEventListener('beforeinstallprompt', (e) => {
                 promptEvent.prompt();
                 await promptEvent.userChoice;
                 window.deferredInstallPrompt = null;
-                installContainer.innerHTML = ''; // Install hone ke baad button hata dein
+                installContainer.innerHTML = '';
             });
         }
     }
 });
 
-
 // App ko shuru karein
 document.addEventListener('DOMContentLoaded', checkAuthAndInitialize);
+
 
