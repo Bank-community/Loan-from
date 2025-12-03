@@ -1,9 +1,7 @@
-// FINAL STRICT UPDATE V2:
-// 1. Back Button Support: Modals close on back press.
-// 2. All Members: Grid Layout implementation.
-// 3. SIP Status: Fixed display logic.
-// 4. Specific Classes for Top 3 Cards (Gold, Silver, Bronze).
-// 5. All Members Image Click -> Full View.
+// FINAL STRICT UPDATE V3:
+// 1. Penalty Wallet Logic Updated (Toggle History, Colors).
+// 2. All Members: Image Zoom logic retained.
+// 3. Top 3 Cards Specific Classes retained.
 
 // --- Global Variables & Element Cache ---
 let allMembersData = [];
@@ -514,27 +512,49 @@ function showAllMembersModal() {
     openModal(elements.allMembersModal);
 }
 
+// LUXURY UPDATE: Penalty Wallet Modal Logic
 function showPenaltyWalletModal() {
     const incomes = Object.values(penaltyWalletData.incomes || {}).map(i => ({...i, type: 'income'}));
     const expenses = Object.values(penaltyWalletData.expenses || {}).map(e => ({...e, type: 'expense'}));
     const history = [...incomes, ...expenses].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    
+    // Main Balance Update
     getElement('penaltyBalance').textContent = `₹${(communityStats.totalPenaltyBalance || 0).toLocaleString('en-IN')}`;
+    
+    // List Logic
     const list = getElement('penaltyHistoryList');
     list.innerHTML = '';
-    list.classList.remove('visible');
+    
+    // Ensure Hidden initially
+    list.style.display = 'none';
     getElement('viewHistoryBtn').textContent = 'View History';
+    
     if (history.length === 0) {
-        list.innerHTML = `<li class="no-penalty-history">No records found.</li>`;
+        list.innerHTML = `<li class="no-penalty-history" style="text-align: center; color: #777;">No records found.</li>`;
     } else {
         history.forEach(tx => {
             const isIncome = tx.type === 'income';
+            
+            // Logic: Income = Green, Expense = Red
+            const amountClass = isIncome ? 'green-text' : 'red-text';
+            const sign = isIncome ? '+' : '-';
+            
+            // Date Formatting
+            const dateObj = new Date(tx.timestamp);
+            const dateStr = dateObj.toLocaleDateString('en-GB'); // DD/MM/YYYY
+            const timeStr = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
             list.innerHTML += `
-                <li class="penalty-history-item">
-                    <div class="penalty-details">
-                        <p class="penalty-text"><strong>${isIncome ? tx.from : tx.reason}</strong></p>
-                        <div class="penalty-time">${isIncome ? tx.reason : ''} · ${new Date(tx.timestamp).toLocaleString('en-GB')}</div>
+                <li class="luxury-history-item">
+                    <div class="history-main">
+                        <span class="history-name">${isIncome ? tx.from : (tx.reason || 'Admin Expense')}</span>
+                        <div class="history-meta">
+                            ${isIncome ? tx.reason : 'Expense'} · ${dateStr}, ${timeStr}
+                        </div>
                     </div>
-                    <span class="penalty-amount ${isIncome ? 'income' : 'expense'}">${isIncome ? '+' : '-'} ₹${(tx.amount || 0).toLocaleString('en-IN')}</span>
+                    <span class="history-amount ${amountClass}">
+                        ${sign} ₹${(tx.amount || 0).toLocaleString('en-IN')}
+                    </span>
                 </li>`;
         });
     }
@@ -543,22 +563,34 @@ function showPenaltyWalletModal() {
 
 function setupEventListeners(database) {
     document.body.addEventListener('click', (e) => {
-        if (e.target.matches('.close, .close *')) {
+        // Close Modal Logic (Updated for better target detection)
+        if (e.target.matches('.close') || e.target.matches('.close *')) {
             const modal = e.target.closest('.modal');
             if (modal) closeModal(modal);
         }
-        if (e.target.matches('.modal')) closeModal(e.target);
+        if (e.target.classList.contains('modal')) closeModal(e.target);
+        
         if (e.target.closest('#totalMembersCard')) showAllMembersModal();
         if (e.target.closest('#fullViewBtn')) {
             closeModal(elements.memberProfileModal);
             openModal(elements.passwordPromptModal);
         }
         if (e.target.closest('#submitPasswordBtn')) handlePasswordCheck(database);
+        
+        // LUXURY UPDATE: View History Toggle Logic
         if (e.target.closest('#viewHistoryBtn')) {
             const list = getElement('penaltyHistoryList');
-            list.classList.toggle('visible');
-            e.target.textContent = list.classList.contains('visible') ? 'Hide History' : 'View History';
+            const btn = e.target.closest('#viewHistoryBtn');
+            
+            if (list.style.display === 'none' || list.style.display === '') {
+                list.style.display = 'block';
+                btn.textContent = 'Hide History';
+            } else {
+                list.style.display = 'none';
+                btn.textContent = 'View History';
+            }
         }
+        
         if (e.target.closest('#profileModalHeader')) {
             const imgSrc = getElement('profileModalImage').src;
             if (imgSrc) showFullImage(imgSrc, getElement('profileModalName').textContent);
@@ -946,4 +978,5 @@ function observeElements(elements) {
 }
 
 function formatDate(dateString) { return dateString ? new Date(new Date(dateString).getTime()).toLocaleDateString('en-GB') : 'N/A'; }
+
 
