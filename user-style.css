@@ -309,7 +309,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .silver-card .framed-info-container { 
     position: absolute; 
     /* NAAM + AMOUNT KI POSITION: Is number ko badhane se pura text UPAR jayega */
-    bottom: 12%; 
+    bottom: 11%; 
     left: 7%; 
     width: 90%; 
     z-index: 3; 
@@ -322,7 +322,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 
 .silver-card .framed-balance-badge { 
     /* AMOUNT KO NAAM SE DOOR KARNA: Isko badhane se Amount niche khiskega */
-    margin-top: 8px; 
+    margin-top: 12px; 
 }
 
 /* --- 3. BRONZE CARD (RANK 3) --- */
@@ -341,7 +341,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .bronze-card .framed-info-container { 
     position: absolute; 
     /* NAAM + AMOUNT KI POSITION: Is number ko badhane se pura text UPAR jayega */
-    bottom: 14%; 
+    bottom: 13%; 
     left: 7%; 
     width: 90%; 
     z-index: 3; 
