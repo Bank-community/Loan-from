@@ -230,7 +230,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .framed-card-wrapper { 
     flex: 0 0 auto; 
     width: 200px; 
-    height: 320px; 
+    height: 330px; 
     cursor: pointer; 
     transition: transform 0.3s ease; 
     filter: drop-shadow(0 8px 15px rgba(0,0,0,0.2)); 
@@ -267,7 +267,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 .framed-info-container { 
     position: absolute; 
-    bottom: 25%; /* Ye pure naam aur amount ko upar/niche karta hai */
+    bottom: 10%; /* Ye pure naam aur amount ko upar/niche karta hai */
     left: 5%; 
     width: 90%; 
     z-index: 3; 
@@ -299,7 +299,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     
     /* NIJJI ADJUSTMENT (Change this value to move Amount Up/Down) */
     /* Is value ko badhane se amount niche jayega, kam karne se upar */
-    margin-top: 25px; 
+    margin-top: 15px; 
 }
 
 /* Colors */
@@ -329,7 +329,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .normal-framed-card-wrapper { 
     flex: 0 0 auto; 
     width: 200px; 
-    height: 320px; 
+    height: 340px; 
     cursor: pointer; 
     transition: transform 0.3s ease; 
     filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); 
@@ -348,9 +348,9 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .normal-framed-photo { 
     position: absolute; 
     top: 6%; /* Photo ko upar/niche karne ke liye ise adjust karein */
-    left: 8%; /* Photo ko left/right center karne ke liye */
-    width: 60%; /* Photo ki chaudai */
-    height: 60%; 
+    left: 2%; /* Photo ko left/right center karne ke liye */
+    width: 50%; /* Photo ki chaudai */
+    height: 50%; 
     object-fit: cover; 
     border-radius: 0px; 
     z-index: 1; 
@@ -395,8 +395,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     top: 2%; 
     left: 2%; 
     background: white; 
-    width: 43px; /* Size updated to 43px */
-    height: 43px; /* Size updated to 43px */
+    width: 45px; /* Size updated to 43px */
+    height: 45px; /* Size updated to 43px */
     border-radius: 50%; 
     display: flex; 
     align-items: center; 
