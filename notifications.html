@@ -11,92 +11,113 @@
 
     <style>
         :root {
-            --primary: #002366; /* Royal Blue */
-            --gold: #D4AF37;    /* Luxury Gold */
-            --bg: #f4f6f9;
-            --danger: #d32f2f;
-            --success: #2e7d32;
+            --primary: #002366;
+            --gold: #FFC107; /* Screenshot wala yellow/gold */
+            --red-amount: #D50000; /* Screenshot wala Red */
+            --bg: #f4f7f6;
+            --text-dark: #212529;
+            --text-grey: #6c757d;
         }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 50px; color: #333; }
-        
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 50px; }
+
         /* HEADER */
         .header {
-            background: linear-gradient(145deg, var(--primary), #000); color: white; padding: 15px 20px;
-            position: sticky; top: 0; z-index: 99; border-bottom: 2px solid var(--gold);
-            display: flex; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            background: linear-gradient(to right, #001233, #002366);
+            padding: 20px 20px 50px 20px;
+            color: white; border-bottom: 3px solid var(--gold);
+            display: flex; align-items: center; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-        .header h1 { margin: 0; flex: 1; font-size: 1.1em; letter-spacing: 1px; text-transform: uppercase; }
-        .back-btn { background: rgba(255,255,255,0.1); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; padding: 6px; cursor: pointer; margin-right: 15px; }
+        .header h1 { margin: 0; font-size: 1.2em; text-transform: uppercase; letter-spacing: 1px; flex: 1; }
+        .back-btn { 
+            background: rgba(255,255,255,0.1); border: 1px solid var(--gold); color: var(--gold);
+            border-radius: 50%; padding: 8px; cursor: pointer; margin-right: 15px; 
+        }
 
-        .tabs-container { display: flex; justify-content: center; margin: 15px 0; padding: 0 15px; }
-        .tabs { background: white; border-radius: 50px; padding: 4px; display: flex; width: 100%; max-width: 400px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .tab { flex: 1; padding: 8px; border: none; background: none; border-radius: 40px; font-weight: 600; color: #666; font-size: 0.85em; cursor: pointer; transition: 0.3s; }
-        .tab.active { background: var(--primary); color: var(--gold); }
+        /* TABS */
+        .tabs-container { margin-top: -25px; display: flex; justify-content: center; padding: 0 15px; position: relative; z-index: 101; }
+        .tabs { background: white; border-radius: 50px; padding: 5px; display: flex; width: 100%; max-width: 400px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .tab { flex: 1; padding: 10px; border: none; background: none; border-radius: 40px; font-weight: 700; color: #555; cursor: pointer; transition: 0.3s; font-size: 0.9em; }
+        .tab.active { background: var(--primary); color: white; }
 
-        .content { display: none; padding: 0 15px; max-width: 600px; margin: 0 auto; }
-        .content.active { display: block; animation: fadeUp 0.3s; }
+        .content { display: none; padding: 0 15px; max-width: 600px; margin: 20px auto; }
+        .content.active { display: block; animation: slideUp 0.3s; }
 
-        /* === 1. COMPACT LOAN CARD === */
+        /* === 1. RESTORED SCREENSHOT LOAN CARD === */
         .loan-card {
-            background: white; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px;
-            position: relative; border: 1px solid rgba(0,0,0,0.05);
+            background: white; border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08); margin-bottom: 20px;
+            position: relative; overflow: hidden; display: flex;
         }
-        .loan-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; }
-        .loan-card.safe::before { background: var(--success); }
-        .loan-card.warning::before { background: var(--gold); }
-        .loan-card.critical::before { background: var(--danger); }
-
-        /* Compact Header */
-        .card-header { padding: 10px 15px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; }
-        .user-row { display: flex; align-items: center; gap: 10px; }
-        .user-avatar { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--gold); object-fit: cover; }
-        .user-name { font-size: 0.95em; font-weight: 700; color: var(--primary); margin: 0; }
-        .loan-type { font-size: 0.7em; background: #f0f4ff; color: var(--primary); padding: 2px 8px; border-radius: 10px; font-weight: 600; }
-
-        /* Compact Body */
-        .card-body { padding: 12px 15px; }
-        .info-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; }
         
-        .amount-big { font-size: 1.6em; font-weight: 800; color: var(--danger); line-height: 1; }
-        .days-badge { 
-            background: #fff3e0; color: #e65100; padding: 4px 8px; 
-            border-radius: 6px; font-size: 0.8em; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;
+        /* The Left Strip (Screenshot Style) */
+        .loan-strip { width: 8px; background: var(--gold); flex-shrink: 0; }
+        
+        .loan-content { flex: 1; padding: 15px 15px 15px 10px; }
+
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .user-block { display: flex; align-items: center; gap: 10px; }
+        .user-img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
+        .user-details h3 { margin: 0; font-size: 1.1em; color: var(--primary); font-weight: 700; }
+        .user-details p { margin: 0; font-size: 0.8em; color: #888; display: flex; align-items: center; gap: 4px; }
+        
+        .loan-badge { 
+            background: #e8eaf6; color: var(--primary); font-size: 0.75em; 
+            padding: 4px 10px; border-radius: 20px; font-weight: 700; text-transform: uppercase; 
         }
-        .days-over { color: var(--danger); background: #ffebee; }
 
-        .progress-track { height: 4px; background: #eee; border-radius: 10px; overflow: hidden; margin-top: 8px; }
-        .progress-fill { height: 100%; }
+        .amount-block { text-align: left; margin-bottom: 15px; }
+        .amount-label { font-size: 0.75em; font-weight: 700; color: #adb5bd; letter-spacing: 1px; text-transform: uppercase; }
+        .amount-val { 
+            font-size: 2.5em; font-weight: 800; color: var(--red-amount); /* RED COLOR FIXED */
+            line-height: 1.1; letter-spacing: -1px; margin-top: 5px;
+        }
 
-        /* Compact Actions */
-        .card-actions { display: flex; border-top: 1px solid #f0f0f0; }
-        .action-btn { flex: 1; padding: 10px; text-decoration: none; font-size: 0.9em; font-weight: 600; text-align: center; display: flex; justify-content: center; align-items: center; gap: 6px; }
-        .btn-pay { background: var(--primary); color: white; }
-        .btn-details { background: white; color: #555; }
+        .stats-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
+        .days-val { font-size: 1.8em; font-weight: 700; color: #e65100; line-height: 1; }
+        .days-label { font-size: 0.8em; color: #888; }
+        
+        /* Over Days - Bottom Right */
+        .over-days { 
+            font-size: 0.85em; font-weight: 700; color: #D50000; 
+            background: #ffebee; padding: 4px 8px; border-radius: 4px;
+        }
 
-        /* === 2. SIP PENDING CARD (NEW) === */
+        /* Progress Bar (Traffic Light) */
+        .progress-container { height: 10px; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 15px; }
+        .progress-bar { height: 100%; border-radius: 10px; transition: width 0.5s; }
+        .bg-green { background: #2e7d32; }
+        .bg-yellow { background: #ffc107; }
+        .bg-red { background: #d32f2f; }
+
+        .btn-row { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 12px; border-radius: 8px; font-weight: 700; text-align: center; text-decoration: none; cursor: pointer; border: none; font-size: 0.95em; }
+        .btn-pay { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,35,102,0.3); }
+        .btn-detail { background: white; border: 1px solid #ddd; color: #555; }
+
+        /* === 2. COMPACT SIP CARD (Distinct Design) === */
         .sip-card {
-            background: white; border-radius: 12px; margin-bottom: 15px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden;
-            border: 1px solid rgba(212, 175, 55, 0.4); /* Gold Border */
+            background: linear-gradient(135deg, #fff, #f8f9fa);
+            border-radius: 12px; padding: 12px 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            border-left: 5px solid var(--primary);
         }
-        .sip-body { padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; }
-        .sip-info { display: flex; align-items: center; gap: 10px; }
-        .sip-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--danger); } /* Red border indicates pending */
-        .sip-text h4 { margin: 0; font-size: 0.95em; color: var(--primary); font-weight: 700; }
-        .sip-text p { margin: 0; font-size: 0.8em; color: var(--danger); font-weight: 600; }
-        .sip-btn { 
-            background: var(--gold); color: #000; padding: 6px 15px; 
-            border-radius: 20px; font-size: 0.8em; font-weight: 700; 
-            text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .sip-left { display: flex; align-items: center; gap: 12px; }
+        .sip-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .sip-info h4 { margin: 0; color: var(--primary); font-size: 0.95em; font-weight: 700; }
+        .sip-alert { font-size: 0.8em; color: #d32f2f; font-weight: 700; }
+        .sip-btn {
+            background: var(--primary); color: white; padding: 8px 16px;
+            border-radius: 20px; font-size: 0.8em; font-weight: 700; text-decoration: none;
         }
 
-        /* Transactions & Notices (Simplified) */
-        .tx-list { background: white; border-radius: 12px; border: 1px solid #f0f0f0; }
-        .tx-item { padding: 10px 15px; border-bottom: 1px solid #f8f8f8; display: flex; align-items: center; justify-content: space-between; }
+        /* Transactions */
+        .tx-card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
         
-        .loading { text-align: center; color: #999; padding: 20px; font-size: 0.9em; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .loading { text-align: center; color: #888; padding: 20px; font-style: italic; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -108,24 +129,27 @@
 
     <div class="tabs-container">
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('dashboard')">Due Payments</button>
+            <button class="tab active" onclick="switchTab('dashboard')">Active Loan</button>
             <button class="tab" onclick="switchTab('transactions')">History</button>
             <button class="tab" onclick="switchTab('notices')">Notices</button>
         </div>
     </div>
 
     <main>
+        <!-- DASHBOARD -->
         <div id="dashboard" class="content active">
             <div id="sipContainer"></div>
             <div id="loanContainer">
-                <p class="loading">Checking dues...</p>
+                <p class="loading">Loading status...</p>
             </div>
         </div>
 
+        <!-- TRANSACTIONS -->
         <div id="transactions" class="content">
-             <div class="tx-list" id="txContainer"><p class="loading">Loading...</p></div>
+            <div id="txContainer"><p class="loading">Loading history...</p></div>
         </div>
 
+        <!-- NOTICES -->
         <div id="notices" class="content">
             <div id="noticeContainer"></div>
         </div>
@@ -146,67 +170,54 @@
         async function fetchData() {
             const db = firebase.database();
             const memberId = localStorage.getItem('verifiedMemberId');
-            if (!memberId) return;
+            if(!memberId) return;
 
             const snap = await db.ref().once('value');
             const data = snap.val() || {};
-            const allMembers = data.members || {};
-            const myProfile = allMembers[memberId];
+            const profile = data.members?.[memberId] || {};
 
-            // 1. Render SIP Card (If Pending)
-            renderSipCard(memberId, data.transactions || {}, myProfile);
-
-            // 2. Render Loan Cards (Compact)
-            renderLoanCards(memberId, data.activeLoans || {}, allMembers);
-
-            // 3. Transactions & Notices
-            renderTransactions(memberId, data.transactions || {}, allMembers);
+            renderSipCard(memberId, data.transactions || {}, profile);
+            renderLoanCards(memberId, data.activeLoans || {}, data.members || {});
+            renderTransactions(memberId, data.transactions || {}, data.members || {});
             renderNotices(data.admin?.notifications?.manual || {});
         }
 
-        // === 1. SIP PENDING LOGIC ===
-        function renderSipCard(memberId, allTx, profile) {
+        // 1. SIP CARD LOGIC
+        function renderSipCard(memberId, txs, profile) {
             const container = document.getElementById('sipContainer');
             container.innerHTML = '';
-
+            
             const now = new Date();
-            // Check if SIP exists for this month
-            const hasPaidSIP = Object.values(allTx).some(tx => {
-                const d = new Date(tx.date || tx.timestamp);
-                return tx.memberId === memberId && 
-                       tx.type === 'SIP' && 
-                       d.getMonth() === now.getMonth() && 
-                       d.getFullYear() === now.getFullYear();
-            });
+            const hasPaid = Object.values(txs).some(t => 
+                t.memberId === memberId && t.type === 'SIP' && 
+                new Date(t.date).getMonth() === now.getMonth()
+            );
 
-            if (!hasPaidSIP) {
-                // Show Card
+            if (!hasPaid) {
                 container.innerHTML = `
                     <div class="sip-card">
-                        <div class="sip-body">
+                        <div class="sip-left">
+                            <img src="${profile.profilePicUrl || DEFAULT_IMG}" class="sip-img">
                             <div class="sip-info">
-                                <img src="${profile?.profilePicUrl || DEFAULT_IMG}" class="sip-img">
-                                <div class="sip-text">
-                                    <h4>${profile?.fullName || 'Member'}</h4>
-                                    <p>SIP Due: ₹500</p>
-                                </div>
+                                <h4>${profile.fullName || 'Member'}</h4>
+                                <div class="sip-alert">⚠️ SIP Due: ₹500</div>
                             </div>
-                            <a href="qr.html?amount=500&type=sip" class="sip-btn">PAY NOW</a>
                         </div>
+                        <a href="qr.html?amount=500&type=sip" class="sip-btn">PAY NOW</a>
                     </div>
                 `;
             }
         }
 
-        // === 2. COMPACT LOAN CARD ===
+        // 2. LOAN CARD LOGIC (SCREENSHOT MATCH)
         function renderLoanCards(memberId, loans, members) {
             const container = document.getElementById('loanContainer');
             container.innerHTML = '';
-            
+
             const myLoans = Object.values(loans).filter(l => l.memberId === memberId && l.status === 'Active');
 
             if(myLoans.length === 0 && document.getElementById('sipContainer').innerHTML === '') {
-                container.innerHTML = '<p class="loading">No dues pending!</p>';
+                container.innerHTML = '<p class="loading">No active dues.</p>';
                 return;
             }
 
@@ -214,51 +225,56 @@
                 const mem = members[memberId];
                 
                 // Date Logic
-                let d = new Date(loan.loanDate || loan.date || Date.now());
-                let diff = Math.floor(Math.abs(new Date() - d) / (864e5));
-                
-                // Styles
-                let status='safe', col='var(--success)';
-                if(diff > 90) { status='critical'; col='var(--danger)'; }
-                else if(diff > 30) { status='warning'; col='var(--gold)'; }
+                let d = new Date(loan.loanDate || loan.timestamp || Date.now());
+                if(isNaN(d)) d = new Date();
+                const diff = Math.floor(Math.abs(new Date() - d) / (864e5));
+
+                // Color Logic (Traffic Light)
+                let barClass = 'bg-green';
+                let statusText = 'On Track';
+                if(diff > 90) { barClass = 'bg-red'; statusText = 'Critical'; }
+                else if(diff > 30) { barClass = 'bg-yellow'; statusText = 'Attention'; }
 
                 const overDays = diff > 90 ? diff - 90 : 0;
-                
-                // Construct URL for QR
-                const payUrl = `qr.html?amount=${loan.outstandingAmount || loan.amount}&type=loan`;
 
                 container.innerHTML += `
-                    <div class="loan-card ${status}">
-                        <div class="card-header">
-                            <div class="user-row">
-                                <img src="${mem.profilePicUrl || DEFAULT_IMG}" class="user-avatar">
-                                <div>
-                                    <h4 class="user-name">${mem.fullName}</h4>
-                                    <span style="font-size:0.7em; color:#888">${new Date(d).toLocaleDateString()}</span>
-                                </div>
-                            </div>
-                            <span class="loan-type">${loan.loanType || 'Personal'}</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="info-row">
-                                <div>
-                                    <div style="font-size:0.7em; color:#999; font-weight:700">OUTSTANDING</div>
-                                    <div class="amount-big" style="color:${col}">₹${(loan.outstandingAmount || loan.amount).toLocaleString()}</div>
-                                </div>
-                                <div class="days-badge ${overDays > 0 ? 'days-over' : ''}">
-                                    <i data-feather="clock" style="width:12px"></i> ${diff} Days
-                                </div>
-                            </div>
+                    <div class="loan-card">
+                        <div class="loan-strip"></div>
+                        <div class="loan-content">
                             
-                            ${overDays > 0 ? `<div style="text-align:right; font-size:0.75em; color:var(--danger); font-weight:bold">+${overDays} Days Overdue</div>` : ''}
-
-                            <div class="progress-track">
-                                <div class="progress-fill" style="width:${Math.min((diff/90)*100, 100)}%; background:${col}"></div>
+                            <div class="card-header">
+                                <div class="user-block">
+                                    <img src="${mem.profilePicUrl || DEFAULT_IMG}" class="user-img">
+                                    <div class="user-details">
+                                        <h3>${mem.fullName}</h3>
+                                        <p><i data-feather="calendar" style="width:12px"></i> ${d.toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+                                <div class="loan-badge">${loan.loanType || 'Personal Loan'}</div>
                             </div>
-                        </div>
-                        <div class="card-actions">
-                            <a href="${payUrl}" class="action-btn btn-pay">PAY NOW</a>
-                            <a href="loan_dashbord.html" class="action-btn btn-details">DETAILS</a>
+
+                            <div class="amount-block">
+                                <div class="amount-label">OUTSTANDING AMOUNT</div>
+                                <div class="amount-val">₹${(loan.outstandingAmount || loan.amount).toLocaleString()}</div>
+                            </div>
+
+                            <div class="stats-row">
+                                <div>
+                                    <span class="days-val" style="color: ${barClass === 'bg-red' ? '#d32f2f' : '#e65100'}">${diff}</span>
+                                    <span class="days-label">Days Elapsed</span>
+                                </div>
+                                ${overDays > 0 ? `<div class="over-days">+${overDays} Days Over</div>` : ''}
+                            </div>
+
+                            <div class="progress-container">
+                                <div class="progress-bar ${barClass}" style="width: ${Math.min((diff/90)*100, 100)}%"></div>
+                            </div>
+
+                            <div class="btn-row">
+                                <a href="qr.html?amount=${loan.outstandingAmount || loan.amount}&type=loan" class="btn btn-pay">PAY NOW</a>
+                                <a href="loan_dashbord.html" class="btn btn-detail">Details</a>
+                            </div>
+
                         </div>
                     </div>
                 `;
@@ -266,7 +282,7 @@
             feather.replace();
         }
 
-        // === 3. SIMPLE TRANSACTIONS (Current Month) ===
+        // 3. TRANSACTIONS
         function renderTransactions(mid, txs, members) {
             const el = document.getElementById('txContainer');
             el.innerHTML = '';
@@ -277,16 +293,17 @@
                 .sort((a,b) => new Date(b.date) - new Date(a.date))
                 .forEach(t => {
                     const isMe = t.memberId === mid;
-                    let color = t.type.includes('Loan') ? 'var(--danger)' : 'var(--success)';
                     el.innerHTML += `
-                        <div class="tx-item">
+                        <div class="tx-card">
                             <div>
-                                <div style="font-size:0.9em; font-weight:700; color:${isMe ? 'var(--primary)' : '#333'}">
+                                <div style="font-weight:700; color:${isMe ? 'var(--primary)' : '#333'}">
                                     ${isMe ? 'You' : (members[t.memberId]?.fullName || 'Member')}
                                 </div>
-                                <div style="font-size:0.75em; color:#888">${t.type} • ${new Date(t.date).getDate()}th</div>
+                                <div style="font-size:0.8em; color:#888">${t.type}</div>
                             </div>
-                            <div style="font-weight:700; color:${color}">${t.type.includes('Loan')?'-':'+'}₹${t.amount}</div>
+                            <div style="font-weight:bold; color:${t.type.includes('Loan')?'#d32f2f':'#2e7d32'}">
+                                ${t.type.includes('Loan')?'-':'+'}₹${t.amount}
+                            </div>
                         </div>
                     `;
                 });
@@ -297,7 +314,7 @@
             el.innerHTML = '';
             Object.values(notices).forEach(n => {
                 el.innerHTML += `
-                    <div style="background:white; padding:15px; margin-bottom:15px; border-radius:12px; border:1px solid #eee;">
+                    <div style="background:white; padding:15px; margin-bottom:15px; border-radius:12px;">
                         <h4 style="margin:0 0 5px 0; color:var(--primary)">${n.title}</h4>
                         <p style="font-size:0.9em; color:#555">${n.body || ''}</p>
                     </div>
@@ -317,4 +334,4 @@
 </body>
 </html>
 
-            
+
