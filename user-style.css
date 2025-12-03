@@ -249,9 +249,9 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .framed-member-photo { 
     position: absolute; 
     top: 6%; /* Photo ko frame ke andar fit karne ke liye adjust karein */
-    left: 8%; 
-    width: 80%; 
-    height: 80%; 
+    left: 6%; 
+    width: 65%; 
+    height: 65%; 
     object-fit: cover; 
     border-radius: 6px; 
     z-index: 1; 
@@ -267,7 +267,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 }
 .framed-info-container { 
     position: absolute; 
-    bottom: 15%; /* Ye pure naam aur amount ko upar/niche karta hai */
+    bottom: 25%; /* Ye pure naam aur amount ko upar/niche karta hai */
     left: 5%; 
     width: 90%; 
     z-index: 3; 
@@ -278,7 +278,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     gap: 0px; 
 }
 .framed-member-name { 
-    margin: 0; 
+    margin: 5; 
     font-size: 0.9em; 
     font-weight: 700; 
     text-shadow: 1px 1px 2px rgba(0,0,0,0.9); 
@@ -299,7 +299,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     
     /* NIJJI ADJUSTMENT (Change this value to move Amount Up/Down) */
     /* Is value ko badhane se amount niche jayega, kam karne se upar */
-    margin-top: 15px; 
+    margin-top: 25px; 
 }
 
 /* Colors */
@@ -318,7 +318,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     color: var(--text-color); 
     padding: 1px 3px; 
     border-radius: 4px; 
-    font-size: 0.7em; 
+    font-size: 0.5em; 
     font-weight: 800; 
     box-shadow: 0 2px 4px rgba(0,0,0,0.3); 
     z-index: 4; 
@@ -349,8 +349,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     position: absolute; 
     top: 6%; /* Photo ko upar/niche karne ke liye ise adjust karein */
     left: 8%; /* Photo ko left/right center karne ke liye */
-    width: 80%; /* Photo ki chaudai */
-    height: 80%; 
+    width: 60%; /* Photo ki chaudai */
+    height: 60%; 
     object-fit: cover; 
     border-radius: 0px; 
     z-index: 1; 
@@ -392,8 +392,8 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 /* RANK SIZE ADJUSTMENT (43px) */
 .normal-card-rank { 
     position: absolute; 
-    top: 5%; 
-    left: 5%; 
+    top: 2%; 
+    left: 2%; 
     background: white; 
     width: 43px; /* Size updated to 43px */
     height: 43px; /* Size updated to 43px */
