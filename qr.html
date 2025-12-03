@@ -174,7 +174,7 @@
             setTimeout(() => msgBox.innerText = '', 3000);
         }
 
-        // --- PREMIUM DOWNLOAD CARD GENERATOR ---
+        // --- PREMIUM DOWNLOAD CARD GENERATOR (FIXED ALIGNMENT) ---
         function downloadQRCard() {
             const amount = parseFloat(amountInput.value);
             if(amount <= 0) { showMessage("Enter an amount to download.", "error"); return; }
@@ -182,8 +182,10 @@
             showMessage("Generating Premium Card...", "success");
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
+            
+            // Define Canvas Size (High Resolution)
             const width = 800;
-            const height = 1000;
+            const height = 1200; // Increased height for better spacing
 
             canvas.width = width;
             canvas.height = height;
@@ -195,11 +197,11 @@
             ctx.fillStyle = bgGradient;
             ctx.fillRect(0, 0, width, height);
             
-            // Add Subtle Pattern
+            // Add Subtle Gold Pattern
             ctx.fillStyle = 'rgba(212, 175, 55, 0.05)';
-            for(let i=0; i<width; i+=20) {
-                for(let j=0; j<height; j+=20) {
-                    ctx.fillRect(i, j, 2, 2);
+            for(let i=0; i<width; i+=25) {
+                for(let j=0; j<height; j+=25) {
+                    ctx.fillRect(i, j, 3, 3);
                 }
             }
 
@@ -209,7 +211,7 @@
             topBarGrad.addColorStop(0.5, '#D4AF37');
             topBarGrad.addColorStop(1, '#002366');
             ctx.fillStyle = topBarGrad;
-            ctx.fillRect(0, 0, width, 20);
+            ctx.fillRect(0, 0, width, 25);
 
             // 2. Logo & Header
             const logo = new Image();
@@ -217,88 +219,119 @@
             logo.src = document.getElementById('logo-img').src;
             
             logo.onload = () => {
+                ctx.textAlign = 'center';
+
+                // Draw Logo
+                const logoY = 120;
+                const logoSize = 140;
                 ctx.save();
                 ctx.beginPath();
-                ctx.arc(width/2, 140, 60, 0, Math.PI * 2, true);
+                ctx.arc(width/2, logoY, logoSize/2, 0, Math.PI * 2, true);
                 ctx.closePath();
                 ctx.clip();
-                ctx.drawImage(logo, width/2 - 60, 80, 120, 120);
+                ctx.drawImage(logo, width/2 - logoSize/2, logoY - logoSize/2, logoSize, logoSize);
                 ctx.restore();
                 
                 // Gold Border for Logo
                 ctx.beginPath();
-                ctx.arc(width/2, 140, 60, 0, Math.PI * 2, true);
-                ctx.lineWidth = 6;
+                ctx.arc(width/2, logoY, logoSize/2, 0, Math.PI * 2, true);
+                ctx.lineWidth = 8;
                 ctx.strokeStyle = '#D4AF37';
                 ctx.stroke();
 
-                // Text
+                // Main Title
                 ctx.fillStyle = '#002366';
-                ctx.font = '900 36px "Playfair Display", serif';
-                ctx.textAlign = 'center';
+                ctx.font = '900 42px "Playfair Display", serif';
                 ctx.fillText('TRUST COMMUNITY FUND', width/2, 250);
                 
+                // Subtitle
                 ctx.fillStyle = '#D4AF37';
-                ctx.font = 'bold 18px Manrope, sans-serif';
-                ctx.fillText('PREMIUM FINANCIAL PARTNER', width/2, 280);
+                ctx.font = 'bold 20px Manrope, sans-serif';
+                ctx.fillText('PREMIUM FINANCIAL PARTNER', width/2, 290);
 
-                // 3. Payment Box & Amount
+                // 3. Payment Amount Box
+                const boxTop = 340;
+                const boxHeight = 200;
+                const boxWidth = 650;
+                const boxX = (width - boxWidth) / 2;
+
+                // Box Background & Shadow
                 ctx.fillStyle = '#ffffff';
                 ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
-                ctx.shadowBlur = 20;
-                ctx.fillRect(100, 320, 600, 480);
+                ctx.shadowBlur = 25;
+                ctx.shadowOffsetY = 10;
+                ctx.fillRect(boxX, boxTop, boxWidth, boxHeight);
                 ctx.shadowBlur = 0;
-                ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(100, 320, 600, 480);
+                ctx.shadowOffsetY = 0;
 
+                // Box Border
+                ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(boxX, boxTop, boxWidth, boxHeight);
+
+                // Amount Label
                 ctx.fillStyle = '#666';
-                ctx.font = '600 22px Manrope, sans-serif';
-                ctx.fillText('Total Payable Amount', width/2, 380);
+                ctx.font = '600 24px Manrope, sans-serif';
+                ctx.fillText('TOTAL PAYABLE AMOUNT', width/2, boxTop + 60);
 
+                // Amount Value
                 ctx.fillStyle = '#d32f2f';
-                ctx.font = '900 70px "Playfair Display", serif';
-                ctx.fillText(`₹${amount.toLocaleString('en-IN')}`, width/2, 460);
+                ctx.font = '900 80px "Playfair Display", serif';
+                ctx.fillText(`₹${amount.toLocaleString('en-IN')}`, width/2, boxTop + 150);
 
                 // 4. QR Code
                 const qrCanvas = qrContainer.querySelector('canvas');
                 if (qrCanvas) {
-                    const qrSize = 300;
+                    const qrSize = 350;
+                    const qrY = 600;
+                    const qrX = (width - qrSize) / 2;
+
                     // Gold shadow for QR
-                    ctx.shadowColor = 'rgba(212, 175, 55, 0.4)';
-                    ctx.shadowBlur = 15;
-                    ctx.drawImage(qrCanvas, (width - qrSize)/2, 500, qrSize, qrSize);
+                    ctx.shadowColor = 'rgba(212, 175, 55, 0.5)';
+                    ctx.shadowBlur = 20;
+                    ctx.shadowOffsetY = 5;
+                    ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
                     ctx.shadowBlur = 0;
+                    ctx.shadowOffsetY = 0;
                     
                     // Gold Border for QR
                     ctx.strokeStyle = '#D4AF37';
-                    ctx.lineWidth = 4;
-                    ctx.strokeRect((width - qrSize)/2 - 5, 500 - 5, qrSize + 10, qrSize + 10);
+                    ctx.lineWidth = 5;
+                    ctx.strokeRect(qrX - 5, qrY - 5, qrSize + 10, qrSize + 10);
                 }
 
-                // 5. Footer
+                // 5. Footer Section
+                const footerY = 1050;
                 ctx.fillStyle = '#002366';
-                ctx.font = 'bold 20px Manrope, sans-serif';
-                ctx.fillText('Scan via any UPI App', width/2, 880);
+                ctx.font = 'bold 24px Manrope, sans-serif';
+                ctx.fillText('Scan via any UPI App to Pay', width/2, footerY);
                 
-                ctx.fillStyle = '#666';
-                ctx.font = '18px monospace';
-                ctx.fillText('UPI: princekumar954684-1@okicici', width/2, 910);
+                ctx.fillStyle = '#555';
+                ctx.font = '20px monospace';
+                ctx.fillText('UPI ID: princekumar954684-1@okicici', width/2, footerY + 40);
 
                 ctx.fillStyle = '#D4AF37';
-                ctx.font = 'bold 16px Manrope, sans-serif';
-                ctx.fillText('Thank you for your trust.', width/2, 960);
+                ctx.font = 'bold 18px Manrope, sans-serif';
+                ctx.fillText('Thank you for your trust.', width/2, footerY + 100);
 
-                // 6. Download
-                const link = document.createElement('a');
-                link.download = `TCF_Premium_Payment_₹${amount}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                showMessage("Premium Card Downloaded!", "success");
+                // 6. Trigger Download
+                try {
+                    const link = document.createElement('a');
+                    link.download = `TCF_Premium_Payment_₹${amount}.png`;
+                    link.href = canvas.toDataURL('image/png', 1.0); // High quality
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    showMessage("Premium Card Downloaded!", "success");
+                } catch (err) {
+                    console.error("Download failed:", err);
+                    showMessage("Download failed. Please try again.", "error");
+                }
             };
 
-            logo.onerror = () => {
-                showMessage("Error generating card. Please try again.", "error");
+            logo.onerror = (err) => {
+                console.error("Logo load failed:", err);
+                showMessage("Error loading logo for download.", "error");
             };
         }
     </script>
