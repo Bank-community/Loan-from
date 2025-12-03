@@ -309,7 +309,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .silver-card .framed-info-container { 
     position: absolute; 
     /* NAAM + AMOUNT KI POSITION: Is number ko badhane se pura text UPAR jayega */
-    bottom: 11%; 
+    bottom: 13%; 
     left: 7%; 
     width: 90%; 
     z-index: 3; 
@@ -342,7 +342,7 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     position: absolute; 
     /* NAAM + AMOUNT KI POSITION: Is number ko badhane se pura text UPAR jayega */
     bottom: 13%; 
-    left: 8%; 
+    left: 9%; 
     width: 90%; 
     z-index: 3; 
     display: flex; 
