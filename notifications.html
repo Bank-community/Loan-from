@@ -3,184 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notification Center - Trust Community Fund</title>
+    <title>Notifications</title>
     <script src="https://unpkg.com/feather-icons"></script>
-    
-    <!-- Firebase Libraries -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
         :root {
-            --primary: #002366;      /* Royal Blue */
-            --primary-dark: #001233;
-            --gold: #D4AF37;         /* Luxury Gold */
-            --gold-light: #F9F1D8;
-            --bg-color: #f8f9fa;
-            --text-dark: #2c3e50;
-            --danger: #d90429;       /* Striking Red */
-            --warning: #f59e0b;      /* Amber */
-            --success: #10b981;      /* Emerald */
+            --primary: #002366; /* Royal Blue */
+            --gold: #D4AF37;
+            --bg: #f8f9fa;
+            --red-text: #d32f2f;
+            --green-text: #2e7d32;
         }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 40px; }
 
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding-bottom: 40px;
-            color: var(--text-dark);
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* === HEADER === */
+        /* HEADER */
         .header {
-            background: linear-gradient(135deg, var(--primary), #0a1128);
-            color: white;
-            padding: 20px 20px 60px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 3px solid var(--gold);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-            display: flex; align-items: center;
+            background: #001233; color: white; padding: 15px 20px;
+            display: flex; align-items: center; position: sticky; top: 0; z-index: 100;
+            border-bottom: 2px solid var(--gold);
         }
-        .header h1 {
-            font-size: 1.3em; margin: 0; flex: 1; letter-spacing: 0.5px; font-weight: 700; text-transform: uppercase;
-        }
-        .back-btn {
-            background: rgba(255,255,255,0.1); border: 1px solid var(--gold);
-            color: var(--gold); padding: 8px; border-radius: 50%; 
-            cursor: pointer; margin-right: 15px; display: flex;
-        }
+        .back-btn { background: none; border: 1px solid var(--gold); border-radius: 50%; padding: 5px; color: var(--gold); cursor: pointer; margin-right: 15px; }
+        .header h1 { font-size: 1.1em; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
 
-        /* === TABS === */
-        .tabs-container {
-            margin-top: -30px; display: flex; justify-content: center; padding: 0 15px; position: relative; z-index: 101;
-        }
-        .tabs-wrapper {
-            background: white; padding: 5px; border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08); display: flex; width: 100%; max-width: 450px;
-        }
-        .tab-btn {
-            flex: 1; padding: 12px; border: none; background: none;
-            color: #64748b; font-weight: 600; font-size: 0.9em; cursor: pointer;
-            border-radius: 8px; transition: 0.3s;
-        }
-        .tab-btn.active {
-            background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0, 35, 102, 0.2);
-        }
+        /* TABS (Screenshot Style) */
+        .tabs-container { background: white; padding: 10px 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 60px; z-index: 99; }
+        .tabs { display: flex; background: #f1f3f5; border-radius: 25px; padding: 4px; }
+        .tab { flex: 1; border: none; background: none; padding: 8px; border-radius: 20px; font-weight: 600; color: #666; font-size: 0.9em; cursor: pointer; transition: 0.2s; }
+        .tab.active { background: #002366; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        .main-container { padding: 20px 15px; max-width: 600px; margin: 0 auto; }
-        .tab-content { display: none; animation: slideUp 0.4s ease-out; }
-        .tab-content.active { display: block; }
+        .content { display: none; padding: 15px; max-width: 600px; margin: 0 auto; }
+        .content.active { display: block; }
 
-        /* === ULTRA PREMIUM LOAN CARD === */
-        .loan-card {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-            margin-bottom: 25px;
-            border: 1px solid rgba(0,0,0,0.04);
-            position: relative;
-        }
-        
-        /* Status Indicator Strip */
-        .loan-card::before { content: ''; position: absolute; top:0; left:0; width:6px; height:100%; }
-        .loan-card.status-safe::before { background: var(--success); }
-        .loan-card.status-warning::before { background: var(--warning); }
-        .loan-card.status-critical::before { background: var(--danger); }
-
-        /* Card Header */
-        .card-header {
-            padding: 15px 20px;
-            background: linear-gradient(to right, #ffffff, #f8f9fa);
-            border-bottom: 1px solid #f1f1f1;
+        /* === 1. SIP CARD (Specific Requirement) === */
+        .sip-card {
+            background: white; border-radius: 12px; padding: 12px 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 15px;
             display: flex; align-items: center; justify-content: space-between;
+            border-left: 4px solid var(--red-text); /* Red indicator for urgency */
         }
-        .profile-section { display: flex; align-items: center; gap: 12px; }
-        .profile-img {
-            width: 48px; height: 48px; border-radius: 50%; object-fit: cover;
-            border: 2px solid var(--gold); padding: 1px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .profile-name h3 { margin: 0; font-size: 1.05em; color: var(--primary); font-weight: 700; }
-        .profile-date { font-size: 0.75em; color: #888; display: flex; align-items: center; gap: 4px; margin-top: 2px; }
-
-        .loan-type-badge {
-            font-size: 0.7em; font-weight: 700; text-transform: uppercase;
-            padding: 4px 10px; border-radius: 20px; letter-spacing: 0.5px;
-            background: #eef2ff; color: var(--primary); border: 1px solid rgba(0, 35, 102, 0.1);
+        .sip-left { display: flex; align-items: center; gap: 12px; }
+        .sip-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; }
+        .sip-info h4 { margin: 0; font-size: 0.95em; color: var(--primary); font-weight: 700; }
+        .sip-info p { margin: 0; font-size: 0.8em; color: var(--red-text); font-weight: 600; }
+        .sip-btn {
+            background: #FFC107; color: #000; padding: 8px 16px;
+            border-radius: 20px; font-size: 0.8em; font-weight: 700; text-decoration: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* Card Body */
-        .card-body { padding: 25px 20px; text-align: center; position: relative; }
+        /* === 2. LOAN CARD (Screenshot Design) === */
+        .loan-card {
+            background: white; border-radius: 12px; padding: 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 20px;
+            overflow: hidden; border: 1px solid #eee;
+        }
+        .loan-card-top {
+            padding: 15px; display: flex; justify-content: space-between; align-items: flex-start;
+            border-left: 5px solid var(--gold); /* Gold Strip */
+        }
+        .user-sec { display: flex; gap: 12px; align-items: center; }
+        .user-pic { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); }
+        .user-data h3 { margin: 0; font-size: 1em; color: var(--primary); font-weight: 700; }
+        .user-data span { font-size: 0.8em; color: #777; }
+        .loan-tag { background: #eef2ff; color: var(--primary); font-size: 0.7em; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
+
+        .loan-body { padding: 0 15px 15px 15px; border-left: 5px solid var(--gold); }
+        .label { font-size: 0.75em; color: #999; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
         
-        .amount-label { font-size: 0.75em; text-transform: uppercase; color: #94a3b8; font-weight: 700; letter-spacing: 1.2px; }
+        /* RED AMOUNT as requested */
+        .amount-main { 
+            font-size: 2em; font-weight: 800; color: var(--red-text); margin: 5px 0 15px 0; 
+        }
+
+        .days-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .days-count { font-size: 1.4em; font-weight: 700; color: #e65100; } /* Orange/Goldish */
+        .days-sub { font-size: 0.8em; color: #777; }
         
-        /* RED COLOR REQUIREMENT */
-        .amount-value { 
-            font-size: 2.2em; font-weight: 800; color: var(--danger); 
-            margin: 5px 0 20px 0; text-shadow: 0 2px 4px rgba(217, 4, 41, 0.1);
+        .status-pill { background: #fff3e0; color: #e65100; padding: 4px 10px; border-radius: 12px; font-size: 0.75em; font-weight: 700; }
+
+        .progress-bar { height: 8px; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+        .fill { height: 100%; transition: width 0.5s; }
+
+        .actions { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 12px; border-radius: 8px; text-align: center; text-decoration: none; font-weight: 600; font-size: 0.9em; }
+        .btn-pay { background: var(--primary); color: white; }
+        .btn-detail { background: white; border: 1px solid #ddd; color: #333; }
+
+        /* HISTORY TAB */
+        .hist-item { 
+            background: white; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; 
+            display: flex; justify-content: space-between; align-items: center; 
         }
+        .hist-left h4 { margin: 0; font-size: 0.95em; color: #333; }
+        .hist-left p { margin: 0; font-size: 0.75em; color: #888; }
+        .hist-amt { font-weight: 700; font-size: 0.95em; }
+        .red { color: var(--red-text); }
+        .green { color: var(--green-text); }
 
-        /* Days Circle Display */
-        .days-wrapper {
-            display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px;
-        }
-        .days-info { text-align: left; }
-        .days-number { font-size: 1.6em; font-weight: 800; line-height: 1; }
-        .days-text { font-size: 0.8em; color: #64748b; font-weight: 600; }
+        /* NOTICES TAB */
+        .notice-card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .notice-title { font-weight: 700; color: var(--primary); margin-bottom: 5px; }
+        .notice-body { font-size: 0.9em; color: #555; }
 
-        /* OVER DAYS (Right Bottom) */
-        .over-days-badge {
-            text-align: right; font-size: 0.85em; font-weight: 700; color: var(--danger);
-            background: #fff0f0; padding: 4px 10px; border-radius: 8px;
-            display: inline-block; border: 1px solid #ffdcdc;
-        }
-
-        /* Progress Bar */
-        .progress-track {
-            height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; margin: 15px 0;
-        }
-        .progress-fill { height: 100%; transition: width 0.8s ease, background-color 0.8s ease; border-radius: 10px; }
-
-        .status-message { font-size: 0.85em; font-weight: 600; color: #64748b; margin-top: 5px; }
-
-        /* Card Actions */
-        .card-actions { display: flex; gap: 12px; padding: 0 20px 20px 20px; }
-        .btn {
-            flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; font-size: 0.95em;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
-            transition: transform 0.2s;
-        }
-        .btn:active { transform: scale(0.98); }
-        .btn-pay {
-            background: linear-gradient(135deg, var(--primary), #1e40af); color: white;
-            box-shadow: 0 4px 12px rgba(0, 35, 102, 0.25);
-        }
-        .btn-details {
-            background: white; color: var(--text-dark); border: 2px solid #e2e8f0;
-        }
-
-        /* === TRANSACTIONS & NOTICES === */
-        .tx-list { background: white; border-radius: 12px; border: 1px solid #f0f0f0; overflow: hidden; }
-        .tx-item { padding: 14px 18px; border-bottom: 1px solid #f8f8f8; display: flex; align-items: center; }
-        .tx-icon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-size: 1.1em; flex-shrink: 0; }
-        .tx-info { flex: 1; }
-        .tx-name { font-weight: 700; font-size: 0.9em; margin-bottom: 2px; }
-        .tx-meta { font-size: 0.75em; color: #94a3b8; }
-        .tx-amt { font-weight: 700; font-size: 0.95em; }
-
-        .notice-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
-        .notice-img { width: 100%; height: auto; display: block; }
-        .notice-body { padding: 18px; }
-        .notice-btn { display: block; width: 100%; padding: 12px; background: var(--gold); color: #000; text-align: center; font-weight: 700; text-decoration: none; border-radius: 8px; margin-top: 15px; }
-
-        #install-btn { display: none; width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 10px; font-weight: 700; margin-bottom: 20px; align-items: center; justify-content: center; gap: 10px; }
-
-        .loading-text { text-align: center; color: #94a3b8; padding: 40px; font-style: italic; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .loading { text-align: center; color: #999; padding: 20px; font-size: 0.9em; }
     </style>
 </head>
 <body>
@@ -191,224 +119,40 @@
     </header>
 
     <div class="tabs-container">
-        <div class="tabs-wrapper">
-            <button class="tab-btn active" onclick="switchTab('dashboard')">Active Loan</button>
-            <button class="tab-btn" onclick="switchTab('transactions')">History</button>
-            <button class="tab-btn" onclick="switchTab('notices')">Notices</button>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('due')">Due Payments</button>
+            <button class="tab" onclick="switchTab('history')">History</button>
+            <button class="tab" onclick="switchTab('notices')">Notices</button>
         </div>
     </div>
 
-    <main class="main-container">
-        <button id="install-btn"><i data-feather="download-cloud"></i> Install App</button>
-
-        <!-- DASHBOARD TAB -->
-        <div id="dashboard" class="tab-content active">
-            <div id="loanContainer">
-                <p class="loading-text">Analyzing financial status...</p>
-            </div>
+    <!-- 1. DUE PAYMENTS TAB -->
+    <div id="due" class="content active">
+        <!-- SIP Card will be injected here -->
+        <div id="sipContainer"></div>
+        
+        <!-- Active Loan Card -->
+        <div id="loanContainer">
+            <p class="loading">Loading status...</p>
         </div>
+    </div>
 
-        <!-- TRANSACTIONS TAB -->
-        <div id="transactions" class="tab-content">
-            <div style="text-align: center; padding: 10px; margin-bottom: 10px; color: var(--primary); font-weight: 700; background: #eef2ff; border-radius: 8px;">
-                <span id="monthDisplay">Current Month</span> Activity
-            </div>
-            <div id="txContainer" class="tx-list">
-                <p class="loading-text">Loading...</p>
-            </div>
+    <!-- 2. HISTORY TAB -->
+    <div id="history" class="content">
+        <div id="historyContainer" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+            <p class="loading">Loading history...</p>
         </div>
+    </div>
 
-        <!-- NOTICES TAB -->
-        <div id="notices" class="tab-content">
-            <div id="noticeContainer">
-                <p class="loading-text">Checking notices...</p>
-            </div>
-        </div>
-    </main>
+    <!-- 3. NOTICES TAB -->
+    <div id="notices" class="content">
+        <div id="noticesContainer"></div>
+    </div>
 
     <script>
         const DEFAULT_IMG = 'https://i.ibb.co/HTNrbJxD/20250716-222246.png';
 
-        // === 1. ROBUST DATE PARSER ===
-        function parseDbDate(loan) {
-            if (loan.loanDate) { const d = new Date(loan.loanDate); if (!isNaN(d)) return d; }
-            if (loan.timestamp) { const d = new Date(loan.timestamp); if (!isNaN(d)) return d; }
-            if (loan.date) { const d = new Date(loan.date); if (!isNaN(d)) return d; }
-            return new Date(); // Fallback
-        }
-
-        // === 2. UI RENDER LOGIC ===
-        function renderLoanCard(memberId, allActiveLoans, allMembers, container) {
-            container.innerHTML = '';
-            
-            const loans = Object.values(allActiveLoans).filter(l => l.memberId === memberId && l.status === 'Active');
-
-            if (loans.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px; background: white; border-radius: 16px; border: 1px dashed #cbd5e1;">
-                        <i data-feather="shield-off" style="color: var(--success); width: 48px; height: 48px; margin-bottom: 10px;"></i>
-                        <h3 style="margin: 0; color: var(--primary);">No Active Loan</h3>
-                        <p style="color: #64748b; font-size: 0.9em;">You are currently debt-free.</p>
-                        <a href="loan_form.html" class="btn" style="background: var(--primary); color: white; margin-top: 15px; display: inline-flex;">Apply Now</a>
-                    </div>`;
-                feather.replace();
-                return;
-            }
-
-            loans.forEach(loan => {
-                const member = allMembers[memberId] || { fullName: 'User', profilePicUrl: DEFAULT_IMG };
-                
-                // Date & Time Logic
-                const loanDate = parseDbDate(loan);
-                const today = new Date();
-                const diffTime = Math.abs(today - loanDate);
-                const daysElapsed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                
-                // Color & Progress Logic
-                let statusClass = 'status-safe';
-                let progressColor = 'var(--success)';
-                let statusText = 'On Track';
-                let progressPercent = (daysElapsed / 90) * 100;
-                
-                // Requirement: Color changes as it gets closer to 90 days
-                if (daysElapsed > 90) {
-                    statusClass = 'status-critical';
-                    progressColor = 'var(--danger)';
-                    statusText = 'CRITICAL OVERDUE';
-                    progressPercent = 100;
-                } else if (daysElapsed > 60) {
-                    statusClass = 'status-warning'; // Orange/Reddish
-                    progressColor = '#e65100'; // Deep Orange
-                    statusText = 'Urgent Attention';
-                } else if (daysElapsed > 30) {
-                    statusClass = 'status-warning';
-                    progressColor = 'var(--warning)'; // Yellow/Gold
-                    statusText = 'Attention Needed';
-                }
-
-                // Over Days Logic (Bottom Right)
-                const overDays = daysElapsed > 90 ? daysElapsed - 90 : 0;
-                const overDaysHtml = overDays > 0 
-                    ? `<div class="over-days-badge"><i data-feather="alert-circle" style="width:12px; vertical-align:middle;"></i> +${overDays} Days Over</div>` 
-                    : '';
-
-                // Loan Type Fallback
-                const loanType = loan.loanType || "Personal Loan";
-
-                const card = document.createElement('div');
-                card.className = `loan-card ${statusClass}`;
-                card.innerHTML = `
-                    <div class="card-header">
-                        <div class="profile-section">
-                            <img src="${member.profilePicUrl || DEFAULT_IMG}" class="profile-img" onerror="this.src='${DEFAULT_IMG}'">
-                            <div class="profile-name">
-                                <h3>${member.fullName}</h3>
-                                <div class="profile-date">
-                                    <i data-feather="calendar" style="width:12px"></i> 
-                                    ${loanDate.toLocaleDateString('en-GB', {day: 'numeric', month: 'short', year: 'numeric'})}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="loan-type-badge">${loanType}</div>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="amount-label">Outstanding Amount</div>
-                        <div class="amount-value">₹${(loan.outstandingAmount || loan.amount || 0).toLocaleString()}</div>
-
-                        <div class="days-wrapper">
-                            <div class="days-info">
-                                <div class="days-number" style="color: ${progressColor}">${daysElapsed}</div>
-                                <div class="days-text">Days Elapsed</div>
-                            </div>
-                            ${overDaysHtml}
-                        </div>
-
-                        <div class="progress-track">
-                            <div class="progress-fill" style="width: ${progressPercent}%; background-color: ${progressColor};"></div>
-                        </div>
-                        <div class="status-message">${statusText}</div>
-                    </div>
-
-                    <div class="card-actions">
-                        <a href="qr.html" class="btn btn-pay">
-                            <i data-feather="credit-card" style="width:18px"></i> PAY NOW
-                        </a>
-                        <a href="loan_dashbord.html" class="btn btn-details">
-                            Details
-                        </a>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-            feather.replace();
-        }
-
-        // === 3. TRANSACTIONS & NOTICES ===
-        function renderTransactions(memberId, allTx, allMembers, container) {
-            container.innerHTML = '';
-            const now = new Date();
-            document.getElementById('monthDisplay').textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' });
-
-            const txList = Object.values(allTx)
-                .filter(tx => {
-                    const d = new Date(tx.date || tx.timestamp);
-                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-                })
-                .sort((a,b) => new Date(b.date) - new Date(a.date));
-
-            if (txList.length === 0) {
-                container.innerHTML = '<p class="loading-text">No activity this month.</p>';
-                return;
-            }
-
-            txList.forEach(tx => {
-                const mem = allMembers[tx.memberId] || { fullName: 'Unknown' };
-                let icon='arrow-up', color='var(--success)', sign='+', bg='#dcfce7';
-
-                if(tx.type === 'Loan Taken' || tx.type === 'Extra Withdraw') {
-                    icon='arrow-down'; color='var(--danger)'; sign='-'; bg='#ffe4e6';
-                }
-
-                const isMe = tx.memberId === memberId;
-                const div = document.createElement('div');
-                div.className = 'tx-item';
-                div.innerHTML = `
-                    <div class="tx-icon" style="background:${bg}; color:${color}"><i data-feather="${icon}" style="width:18px"></i></div>
-                    <div class="tx-info">
-                        <p class="tx-name" style="${isMe?'color:var(--primary)':''}">${isMe?'You':mem.fullName}</p>
-                        <p class="tx-meta">${tx.type} • ${new Date(tx.date || tx.timestamp).toLocaleDateString('en-GB')}</p>
-                    </div>
-                    <div class="tx-amt" style="color:${color}">${sign}₹${(tx.amount || 0).toLocaleString()}</div>
-                `;
-                container.appendChild(div);
-            });
-            feather.replace();
-        }
-
-        function renderNotices(notices, container) {
-            container.innerHTML = '';
-            const list = Object.values(notices).sort((a,b) => b.createdAt - a.createdAt);
-            if(list.length === 0) { container.innerHTML = '<p class="loading-text">No new notices.</p>'; return; }
-
-            list.forEach(n => {
-                const div = document.createElement('div');
-                div.className = 'notice-card';
-                div.innerHTML = `
-                    ${n.imageUrl ? `<img src="${n.imageUrl}" class="notice-img">` : ''}
-                    <div class="notice-body">
-                        <h3 style="margin:0 0 8px 0; color:var(--primary); font-size:1.1em;">${n.title}</h3>
-                        ${n.body ? `<p style="color:#64748b; font-size:0.95em; line-height:1.5; margin:0;">${n.body}</p>` : ''}
-                        ${n.link ? `<a href="${n.link}" target="_blank" class="notice-btn">CLICK HERE</a>` : ''}
-                        <div style="text-align:right; font-size:0.75em; color:#cbd5e1; margin-top:15px;">${new Date(n.createdAt).toLocaleDateString()}</div>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-            feather.replace();
-        }
-
-        // === INIT ===
+        // Initialize
         async function init() {
             try {
                 const res = await fetch('/api/firebase-config');
@@ -418,36 +162,172 @@
             } catch(e) { console.error(e); }
         }
 
+        // Fetch Data
         async function fetchData() {
             const db = firebase.database();
             const memberId = localStorage.getItem('verifiedMemberId');
-            if (!memberId) { document.getElementById('loanContainer').innerHTML = '<p class="loading-text">Please verify your device.</p>'; return; }
+            if(!memberId) {
+                document.getElementById('loanContainer').innerHTML = '<p class="loading">Device not verified.</p>';
+                return;
+            }
 
-            try {
-                const snap = await db.ref().once('value');
-                const data = snap.val() || {};
-                renderLoanCard(memberId, data.activeLoans || {}, data.members || {}, document.getElementById('loanContainer'));
-                renderTransactions(memberId, data.transactions || {}, data.members || {}, document.getElementById('txContainer'));
-                renderNotices(data.admin?.notifications?.manual || {}, document.getElementById('noticeContainer'));
-            } catch(e) { document.getElementById('loanContainer').innerHTML = '<p class="loading-text">Error loading data.</p>'; }
+            const snap = await db.ref().once('value');
+            const data = snap.val() || {};
+            const profile = data.members?.[memberId] || {};
+
+            renderSIP(memberId, data.transactions || {}, profile);
+            renderLoans(memberId, data.activeLoans || {}, data.members || {});
+            renderHistory(memberId, data.transactions || {}, data.members || {});
+            renderNotices(data.admin?.notifications?.manual || {});
+        }
+
+        // --- A. SIP PENDING LOGIC ---
+        function renderSIP(mid, txs, profile) {
+            const container = document.getElementById('sipContainer');
+            container.innerHTML = '';
+            
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            // Check if user PAID SIP this month
+            const hasPaid = Object.values(txs).some(t => 
+                t.memberId === mid && t.type === 'SIP' && 
+                new Date(t.date).getMonth() === currentMonth &&
+                new Date(t.date).getFullYear() === currentYear
+            );
+
+            // If NOT Paid, show card
+            if (!hasPaid) {
+                container.innerHTML = `
+                    <div class="sip-card">
+                        <div class="sip-left">
+                            <img src="${profile.profilePicUrl || DEFAULT_IMG}" class="sip-img">
+                            <div class="sip-info">
+                                <h4>${profile.fullName || 'Member'}</h4>
+                                <p>SIP Due: ₹500</p>
+                            </div>
+                        </div>
+                        <a href="qr.html?amount=500&type=sip" class="sip-btn">PAY NOW</a>
+                    </div>
+                `;
+            }
+        }
+
+        // --- B. ACTIVE LOAN LOGIC (Smart Calc + Screenshot Design) ---
+        function renderLoans(mid, loans, members) {
+            const container = document.getElementById('loanContainer');
+            container.innerHTML = '';
+
+            const myLoans = Object.values(loans).filter(l => l.memberId === mid && l.status === 'Active');
+
+            if (myLoans.length === 0 && document.getElementById('sipContainer').innerHTML === '') {
+                container.innerHTML = '<div style="text-align:center; padding:30px;"><i data-feather="check-circle" style="color:green"></i><p>No dues pending.</p></div>';
+                feather.replace();
+                return;
+            }
+
+            myLoans.forEach(loan => {
+                const mem = members[mid];
+                
+                // Date Logic (The one that works)
+                let d = new Date(loan.loanDate || loan.date || Date.now());
+                if(isNaN(d)) d = new Date();
+                const diff = Math.floor(Math.abs(new Date() - d) / (864e5));
+
+                // Colors
+                let color = '#ffc107'; // Yellow
+                let statusText = 'Attention Needed';
+                if(diff > 90) { color = '#d32f2f'; statusText = 'Critical'; }
+                else if (diff < 30) { color = '#2e7d32'; statusText = 'On Track'; }
+
+                container.innerHTML += `
+                    <div class="loan-card">
+                        <div class="loan-card-top">
+                            <div class="user-sec">
+                                <img src="${mem.profilePicUrl || DEFAULT_IMG}" class="user-pic">
+                                <div class="user-data">
+                                    <h3>${mem.fullName}</h3>
+                                    <span>${d.toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                            <div class="loan-tag">${loan.loanType || 'Business Loan'}</div>
+                        </div>
+                        <div class="loan-body">
+                            <div class="label">OUTSTANDING AMOUNT</div>
+                            <div class="amount-main">₹${(loan.outstandingAmount || loan.amount).toLocaleString()}</div>
+                            
+                            <div class="days-row">
+                                <div>
+                                    <div class="label">TIME ELAPSED</div>
+                                    <div class="days-count" style="color:${color}">${diff} Days</div>
+                                </div>
+                                <div class="status-pill" style="color:${color}; background:${color}15">${statusText}</div>
+                            </div>
+
+                            <div class="progress-bar">
+                                <div class="fill" style="width:${Math.min((diff/90)*100, 100)}%; background:${color}"></div>
+                            </div>
+
+                            <div class="actions">
+                                <a href="qr.html?amount=${loan.outstandingAmount || loan.amount}&type=loan" class="btn btn-pay">PAY NOW</a>
+                                <a href="loan_dashbord.html" class="btn btn-detail">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- C. HISTORY LIST ---
+        function renderHistory(mid, txs, members) {
+            const el = document.getElementById('historyContainer');
+            el.innerHTML = '';
+            
+            // Sort by Date Descending
+            const list = Object.values(txs).sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            list.forEach(t => {
+                const isLoan = t.type.includes('Loan') || t.type.includes('Withdraw');
+                const sign = isLoan ? '-' : '+';
+                const colorClass = isLoan ? 'red' : 'green';
+                const name = members[t.memberId]?.fullName || 'Member';
+
+                el.innerHTML += `
+                    <div class="hist-item">
+                        <div class="hist-left">
+                            <h4>${name}</h4>
+                            <p>${t.type} • ${new Date(t.date).getDate()}th</p>
+                        </div>
+                        <div class="hist-amt ${colorClass}">${sign}₹${t.amount}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- D. NOTICES ---
+        function renderNotices(notices) {
+            const el = document.getElementById('noticesContainer');
+            el.innerHTML = '';
+            Object.values(notices).forEach(n => {
+                el.innerHTML += `
+                    <div class="notice-card">
+                        <div class="notice-title">${n.title}</div>
+                        <div class="notice-body">${n.body || ''}</div>
+                    </div>
+                `;
+            });
         }
 
         function switchTab(id) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
         }
 
-        // PWA
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('install-btn');
-            btn.style.display = 'flex';
-            btn.onclick = () => { e.prompt(); btn.style.display='none'; }
-        });
-
-        document.addEventListener('DOMContentLoaded', () => { init(); feather.replace(); });
+        window.onload = init;
+        feather.replace();
     </script>
 </body>
 </html>
