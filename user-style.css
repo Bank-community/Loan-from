@@ -1,8 +1,8 @@
 /*
-FINAL MASTER UPDATE V5:
-1. Footer Design Update: Dark Blue background, White text, Gold Border.
-2. Special Cards (Gold, Silver, Bronze) section detailed Hindi comments.
-3. All Members: Image Zoom logic.
+FINAL MASTER UPDATE V6:
+1. Luxury Balance Modal Styles added (Gold Border, Gradients, Specific Colors).
+2. Footer Design updated.
+3. Special Cards detailed comments retained.
 */
 
 :root {
@@ -224,284 +224,45 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 
 /* ==========================================================================
    TOP 3 CARDS: SPECIAL CONFIGURATION (GOLD, SILVER, BRONZE)
-   --------------------------------------------------------------------------
-   Yahan har card (Rank 1, 2, 3) ke liye alag settings hain.
-   Aap Photo, Naam, aur Amount ko upar-niche (Top/Bottom) kar sakte hain.
    ========================================================================== */
-
-/* Sabhi top 3 cards ka base size */
-.framed-card-wrapper { 
-    flex: 0 0 auto; 
-    width: 200px; 
-    height: 330px; 
-    cursor: pointer; 
-    transition: transform 0.3s ease; 
-    filter: drop-shadow(0 8px 15px rgba(0,0,0,0.2)); 
-    position: relative; 
-}
-
-.framed-card-wrapper:hover { 
-    transform: translateY(-8px) scale(1.02); 
-    filter: drop-shadow(0 12px 20px rgba(212, 175, 55, 0.4)); 
-}
-
-.framed-card-content { 
-    position: relative; 
-    width: 100%; 
-    height: 100%; 
-    text-align: center; 
-}
-
-.card-frame-image { 
-    position: absolute; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    z-index: 2; 
-    pointer-events: none; 
-}
+.framed-card-wrapper { flex: 0 0 auto; width: 200px; height: 330px; cursor: pointer; transition: transform 0.3s ease; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.2)); position: relative; }
+.framed-card-wrapper:hover { transform: translateY(-8px) scale(1.02); filter: drop-shadow(0 12px 20px rgba(212, 175, 55, 0.4)); }
+.framed-card-content { position: relative; width: 100%; height: 100%; text-align: center; }
+.card-frame-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
 
 /* --- 1. GOLD CARD (RANK 1) --- */
-.gold-card .framed-member-photo { 
-    position: absolute; 
-    /* PHOTO KI POSITION: Is number ko badhane se photo niche jayegi */
-    top: 9%;  
-    left: 12%; 
-    width: 80%; 
-    height: 50%; 
-    object-fit: cover; 
-    border-radius: 6px; 
-    z-index: 1; 
-}
-
-.gold-card .framed-info-container { 
-    position: absolute; 
-    /* NAAM + AMOUNT KI POSITION: Is number ko badhane se pura text UPAR jayega */
-    bottom: 14%; 
-    left: 7%; 
-    width: 90%; 
-    z-index: 3; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 0px; 
-}
-
-.gold-card .framed-balance-badge { 
-    /* AMOUNT KO NAAM SE DOOR KARNA: Isko badhane se Amount niche khiskega */
-    margin-top: 5px; 
-}
+.gold-card .framed-member-photo { position: absolute; top: 9%; left: 12%; width: 80%; height: 50%; object-fit: cover; border-radius: 6px; z-index: 1; }
+.gold-card .framed-info-container { position: absolute; bottom: 14%; left: 7%; width: 90%; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0px; }
+.gold-card .framed-balance-badge { margin-top: 5px; }
 
 /* --- 2. SILVER CARD (RANK 2) --- */
-.silver-card .framed-member-photo { 
-    position: absolute; 
-    /* PHOTO KI POSITION: Is number ko badhane se photo niche jayegi */
-    top: 9%; 
-    left: 12%; 
-    width: 80%; 
-    height: 50%; 
-    object-fit: cover; 
-    border-radius: 6px; 
-    z-index: 1; 
-}
-
-.silver-card .framed-info-container { 
-    position: absolute; 
-    /* NAAM + AMOUNT KI POSITION: Is number ko badhane se pura text UPAR jayega */
-    bottom: 12%; 
-    left: 8%; 
-    width: 90%; 
-    z-index: 3; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 0px; 
-}
-
-.silver-card .framed-balance-badge { 
-    /* AMOUNT KO NAAM SE DOOR KARNA: Isko badhane se Amount niche khiskega */
-    margin-top: 20px; 
-}
+.silver-card .framed-member-photo { position: absolute; top: 9%; left: 12%; width: 80%; height: 50%; object-fit: cover; border-radius: 6px; z-index: 1; }
+.silver-card .framed-info-container { position: absolute; bottom: 12%; left: 8%; width: 90%; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0px; }
+.silver-card .framed-balance-badge { margin-top: 20px; }
 
 /* --- 3. BRONZE CARD (RANK 3) --- */
-.bronze-card .framed-member-photo { 
-    position: absolute; 
-    /* PHOTO KI POSITION: Is number ko badhane se photo niche jayegi */
-    top: 9%; 
-    left: 12%; 
-    width: 80%; 
-    height: 50%; 
-    object-fit: cover; 
-    border-radius: 6px; 
-    z-index: 1; 
-}
+.bronze-card .framed-member-photo { position: absolute; top: 9%; left: 12%; width: 80%; height: 50%; object-fit: cover; border-radius: 6px; z-index: 1; }
+.bronze-card .framed-info-container { position: absolute; bottom: 14%; left: 9%; width: 90%; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0px; }
+.bronze-card .framed-balance-badge { margin-top: 4px; }
 
-.bronze-card .framed-info-container { 
-    position: absolute; 
-    /* NAAM + AMOUNT KI POSITION: Is number ko badhane se pura text UPAR jayega */
-    bottom: 14%; 
-    left: 9%; 
-    width: 90%; 
-    z-index: 3; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 0px; 
-}
-
-.bronze-card .framed-balance-badge { 
-    /* AMOUNT KO NAAM SE DOOR KARNA: Isko badhane se Amount niche khiskega */
-    margin-top: 4px; 
-}
-
-/* Common Text Styles for Top 3 */
-.framed-member-name { 
-    margin: 2px; 
-    font-size: 0.9em; 
-    font-weight: 700; 
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.9); 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-    width: 100%; 
-    text-transform: capitalize; 
-    color: #f0f0f0; 
-    margin-bottom: 2px; 
-}
-
-.framed-balance-badge { 
-    font-size: 1.5em; 
-    font-weight: 900; 
-    letter-spacing: 0.5px; 
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8); 
-    background: transparent;
-}
-
-/* Colors for Rank Text/BG */
-.gold-text { color: #FFF8DC; }
-.gold-bg { color: #FFD700 !important; text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 2px 4px rgba(0,0,0,1) !important; }
-.silver-text { color: #F0F8FF; }
-.silver-bg { color: #E0E0E0 !important; text-shadow: 0 0 10px rgba(224, 224, 224, 0.6), 0 2px 4px rgba(0,0,0,1) !important; }
-.bronze-text { color: #FFE4B5; }
-.bronze-bg { color: #CD7F32 !important; text-shadow: 0 0 10px rgba(205, 127, 50, 0.6), 0 2px 4px rgba(0,0,0,1) !important; }
-
-.framed-prime-tag { 
-    position: absolute; 
-    top: 60%; 
-    right: 11%; 
-    background-color: var(--prime-color); 
-    color: var(--text-color); 
-    padding: 1px 3px; 
-    border-radius: 4px; 
-    font-size: 0.4em; 
-    font-weight: 800; 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3); 
-    z-index: 4; 
-    border: 1px solid #fff; 
-}
+.framed-member-name { margin: 2px; font-size: 0.9em; font-weight: 700; text-shadow: 1px 1px 2px rgba(0,0,0,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-transform: capitalize; color: #f0f0f0; margin-bottom: 2px; }
+.framed-balance-badge { font-size: 1.5em; font-weight: 900; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); background: transparent; }
+.gold-text { color: #FFF8DC; } .gold-bg { color: #FFD700 !important; text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 2px 4px rgba(0,0,0,1) !important; }
+.silver-text { color: #F0F8FF; } .silver-bg { color: #E0E0E0 !important; text-shadow: 0 0 10px rgba(224, 224, 224, 0.6), 0 2px 4px rgba(0,0,0,1) !important; }
+.bronze-text { color: #FFE4B5; } .bronze-bg { color: #CD7F32 !important; text-shadow: 0 0 10px rgba(205, 127, 50, 0.6), 0 2px 4px rgba(0,0,0,1) !important; }
+.framed-prime-tag { position: absolute; top: 60%; right: 11%; background-color: var(--prime-color); color: var(--text-color); padding: 1px 3px; border-radius: 4px; font-size: 0.4em; font-weight: 800; box-shadow: 0 2px 4px rgba(0,0,0,0.3); z-index: 4; border: 1px solid #fff; }
 
 /* === NORMAL CARDS === */
-.normal-framed-card-wrapper { 
-    flex: 0 0 auto; 
-    width: 200px; 
-    height: 340px; 
-    cursor: pointer; 
-    transition: transform 0.3s ease; 
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); 
-    position: relative; 
-}
-.normal-framed-card-wrapper:hover { 
-    transform: translateY(-8px) scale(1.02); 
-}
-.normal-card-content { 
-    position: relative; 
-    width: 100%; 
-    height: 100%; 
-    text-align: center; 
-}
-/* IMAGE ADJUSTMENT FOR NORMAL CARDS */
-.normal-framed-photo { 
-    position: absolute; 
-    top: 8%; /* Photo ko upar/niche karne ke liye ise adjust karein */
-    left: 11%; /* Photo ko left/right center karne ke liye */
-    width: 85%; /* Photo ki chaudai */
-    height: 50%; 
-    object-fit: cover; 
-    border-radius: 0px; 
-    z-index: 1; 
-}
-.normal-card-frame-image { 
-    position: absolute; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    z-index: 2; 
-    pointer-events: none; 
-}
-.normal-info-container { 
-    position: absolute; 
-    bottom: 12%; 
-    left: 0; 
-    width: 100%; 
-    z-index: 3; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    gap: 3px; 
-    padding: 0 10px; 
-}
-.normal-framed-name { 
-    margin: 5; 
-    font-size: 1.2em; 
-    font-weight: 700; 
-    color: white; 
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.9); 
-}
-.normal-framed-balance { 
-    font-size: 1.1em; 
-    font-weight: 800; 
-    color: white; 
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.8); 
-}
-/* RANK SIZE ADJUSTMENT (43px) */
-.normal-card-rank { 
-    position: absolute; 
-    top: 2%; 
-    left: 1%; 
-    background: white; 
-    width: 45px; /* Size updated to 43px */
-    height: 45px; /* Size updated to 43px */
-    border-radius: 50%; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    color: black; 
-    font-size: 0.9em; 
-    font-weight: 800; 
-    z-index: 3; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3); 
-    border: 2px solid #333; 
-}
-.normal-prime-tag { 
-    position: absolute; 
-    top: 58%; 
-    right: 10%; 
-    background-color: var(--prime-color); 
-    color: var(--text-color); 
-    padding: 1px 3px; 
-    border-radius: 4px; 
-    font-size: 0.7em; 
-    font-weight: 800; 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
-    z-index: 3; 
-}
-
-
+.normal-framed-card-wrapper { flex: 0 0 auto; width: 200px; height: 340px; cursor: pointer; transition: transform 0.3s ease; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); position: relative; }
+.normal-framed-card-wrapper:hover { transform: translateY(-8px) scale(1.02); }
+.normal-card-content { position: relative; width: 100%; height: 100%; text-align: center; }
+.normal-framed-photo { position: absolute; top: 8%; left: 11%; width: 85%; height: 50%; object-fit: cover; border-radius: 0px; z-index: 1; }
+.normal-card-frame-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+.normal-info-container { position: absolute; bottom: 12%; left: 0; width: 100%; z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 0 10px; }
+.normal-framed-name { margin: 5; font-size: 1.2em; font-weight: 700; color: white; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); }
+.normal-framed-balance { font-size: 1.1em; font-weight: 800; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+.normal-card-rank { position: absolute; top: 2%; left: 1%; background: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: black; font-size: 0.9em; font-weight: 800; z-index: 3; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 2px solid #333; }
+.normal-prime-tag { position: absolute; top: 58%; right: 10%; background-color: var(--prime-color); color: var(--text-color); padding: 1px 3px; border-radius: 4px; font-size: 0.7em; font-weight: 800; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 3; }
 
 /* Custom Cards */
 #customCardsSection { background: none; border: none; box-shadow: none; padding: 0; margin-top: -20px; }
@@ -533,7 +294,6 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
     box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
     transform: scale(0.9) translateY(20px); 
     transition: transform 0.4s;
-    /* FIX: Scrollable Content */
     max-height: 85vh; 
     overflow-y: auto; 
     position: relative;
@@ -541,101 +301,21 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .modal.show .modal-content { transform: scale(1) translateY(0); }
 
 /* Sticky Close Button for Modals */
-.close { 
-    position: absolute; 
-    top: 15px; 
-    right: 15px; 
-    color: #333; /* Darker for visibility on white */
-    font-size: 35px; 
-    font-weight: bold; 
-    cursor: pointer; 
-    z-index: 10;
-    line-height: 1;
-}
-
-/* Specific Close Button for Image Modal (Bigger & Clearer) */
-#closeImageModal {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    color: white;
-    font-size: 40px;
-    font-weight: bold;
-    background: rgba(0,0,0,0.5); /* Semi-transparent black background */
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 1002;
-    border: 2px solid white;
-}
+.close { position: absolute; top: 15px; right: 15px; color: #333; font-size: 35px; font-weight: bold; cursor: pointer; z-index: 10; line-height: 1; }
+#closeImageModal { position: absolute; top: 20px; right: 20px; color: white; font-size: 40px; font-weight: bold; background: rgba(0,0,0,0.5); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1002; border: 2px solid white; }
 
 .balance-display { font-size: 2.8em; font-weight: 700; margin: 10px 0 0 0; color: var(--success-color); }
 .balance-display.return { color: var(--info-color); font-size: 2.2em; }
 .balance-display.total { color: var(--primary-color); font-size: 3.2em; }
 
 /* === ALL MEMBERS GRID LAYOUT (SMALL CARDS) === */
-.all-members-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 12px;
-    padding: 10px 0;
-}
-
-.small-member-card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 1px solid var(--border-color);
-    transition: transform 0.2s;
-    cursor: pointer;
-}
-
+.all-members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; padding: 10px 0; }
+.small-member-card { background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 10px; display: flex; flex-direction: column; align-items: center; border: 1px solid var(--border-color); transition: transform 0.2s; cursor: pointer; }
 .small-member-card:hover { transform: translateY(-3px); border-color: var(--accent-gold); }
-
-/* NEW: Image Zoom Interaction for All Members Grid */
-.small-member-card img {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 8px;
-    border: 2px solid #eee;
-    
-    /* Important for Zoom Effect */
-    cursor: zoom-in;
-    transition: transform 0.2s ease;
-}
-
-.small-member-card img:hover {
-    transform: scale(1.1); /* Slight enlarge on hover */
-    border-color: var(--accent-gold);
-}
-
-.small-member-card span {
-    font-size: 0.85em;
-    font-weight: 600;
-    color: var(--primary-color);
-    line-height: 1.2;
-}
-
-.sip-status-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px;
-    background: #f8f9fa;
-    margin-bottom: 8px;
-    border-radius: 8px;
-    border: 1px solid #eee;
-}
+.small-member-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid #eee; cursor: zoom-in; transition: transform 0.2s ease; }
+.small-member-card img:hover { transform: scale(1.1); border-color: var(--accent-gold); }
+.small-member-card span { font-size: 0.85em; font-weight: 600; color: var(--primary-color); line-height: 1.2; }
+.sip-status-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #f8f9fa; margin-bottom: 8px; border-radius: 8px; border: 1px solid #eee; }
 .sip-status-item img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px; }
 .sip-status-name { flex-grow: 1; text-align: left; font-weight: 600; }
 .sip-status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; color: white; }
@@ -657,40 +337,81 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .animate-on-scroll.hidden-initially { opacity: 0; transform: translateY(40px); }
 .animate-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
 
-/* Media Queries */
 @media (min-width: 768px) { .action-cards { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 992px) { .action-cards { grid-template-columns: repeat(4, 1fr); } }
 
-/* === FOOTER STYLES (NEW UPDATE) === */
-footer {
-    background-color: var(--primary-darker); /* Dark Blue Background */
-    color: white; /* White Text */
+/* === FOOTER STYLES === */
+footer { background-color: var(--primary-darker); color: white; padding: 30px 20px; text-align: center; border-top: 4px solid var(--accent-gold); margin-top: 40px; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); }
+footer p { margin: 0; opacity: 0.9; font-size: 0.95em; letter-spacing: 0.5px; }
+footer a { color: var(--accent-gold) !important; font-weight: bold; text-decoration: none; transition: color 0.3s ease; }
+footer a:hover { color: white !important; text-decoration: underline; }
+
+/* === LUXURY BALANCE MODAL STYLES (New Addition) === */
+.luxury-modal {
+    background: linear-gradient(145deg, #ffffff, #f0f4ff); /* Royal Gradient */
+    border: 2px solid var(--accent-gold);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
     padding: 30px 20px;
-    text-align: center;
-    border-top: 4px solid var(--accent-gold); /* Gold Border Top */
-    margin-top: 40px;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
 }
 
-footer p {
-    margin: 0;
-    opacity: 0.9;
+.luxury-title {
+    color: var(--accent-gold);
+    font-family: 'Times New Roman', serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    margin-bottom: 25px;
+    border-bottom: none;
+}
+
+.balance-group {
+    margin-bottom: 15px;
+}
+
+.balance-label {
+    color: var(--primary-color); /* Name/Label Color */
+    font-weight: 700;
     font-size: 0.95em;
+    margin-bottom: 2px;
+    text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-footer a {
-    color: var(--accent-gold) !important; /* Force Gold Link Color */
-    font-weight: bold;
-    text-decoration: none;
-    transition: color 0.3s ease;
+.balance-value {
+    font-size: 1.8em;
+    font-weight: 800;
+    line-height: 1.2;
 }
 
-footer a:hover {
-    color: white !important;
-    text-decoration: underline;
+/* Specific Colors for Amounts */
+.green-text { color: var(--success-color); text-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+.red-text { color: var(--danger-color); text-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+.gold-text-value { color: #b8860b; text-shadow: 0 1px 1px rgba(0,0,0,0.1); } /* Darker Gold for visibility */
+
+.luxury-divider {
+    margin: 20px auto;
+    width: 80%;
+    border: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--accent-gold), transparent);
+    opacity: 0.8;
+}
+
+.total-group {
+    margin-top: 10px;
+    background: rgba(212, 175, 55, 0.1); /* Light Gold BG highlight */
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.total-label {
+    color: var(--primary-darker);
+    font-size: 1.1em;
+}
+
+.large-text {
+    font-size: 2.2em; /* Bigger for main balance */
 }
 
 
