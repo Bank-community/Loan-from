@@ -4,6 +4,7 @@ FINAL LUXURY THEME UPDATE:
 2. WhatsApp: Premium Black & Gold Theme.
 3. Close Button: Floating Circle Logic.
 4. Member Cards: Royal Gold Rings.
+5. All Members Grid: Fixed 3 Columns per row.
 */
 
 :root {
@@ -406,7 +407,9 @@ section { margin-bottom: 25px; padding: 25px; background-color: var(--card-bg); 
 .balance-display.total { color: var(--primary-color); font-size: 3.2em; }
 
 /* === ALL MEMBERS GRID LAYOUT (PREMIUM SMALL CARDS) === */
-.all-members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; padding: 10px 5px; }
+/* FIXED: Forced 3 columns per row for all devices */
+.all-members-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px 5px; }
+
 .small-member-card { 
     background: #ffffff; 
     border-radius: 14px; 
